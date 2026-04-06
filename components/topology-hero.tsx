@@ -1706,7 +1706,7 @@ function SmartphoneIllustration({
             <div className="pointer-events-none absolute left-[-18%] top-[-6%] h-[46%] w-[92%] rotate-[16deg] rounded-[999px] bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.11)_0%,rgba(255,255,255,0.042)_24%,rgba(255,255,255,0.010)_45%,transparent_72%)] blur-[1.5px]" />
             {ringing ? (
               <>
-                <Image src="/iphone-call-screen.png" alt="iPhone call screen" fill draggable={false} className="pointer-events-none select-none object-cover object-center" sizes="176px" />
+                <Image src="/portfolio/iphone-call-screen.png" alt="iPhone call screen" fill draggable={false} className="pointer-events-none select-none object-cover object-center" sizes="176px" />
                 <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(92,97,94,0.095)_0%,rgba(90,95,92,0.045)_11%,rgba(72,77,74,0.014)_20%,transparent_27%,transparent_74%,rgba(42,48,46,0.028)_86%,rgba(41,47,45,0.075)_100%)]" />
                 <div className="absolute inset-0 z-[4] shadow-[inset_0_1px_0_rgba(92,97,94,0.42),inset_0_-1px_0_rgba(41,47,45,0.48),inset_1px_0_0_rgba(64,70,67,0.18),inset_-1px_0_0_rgba(57,63,60,0.16)]" />
                 <div className="absolute inset-x-0 top-[-1px] z-[5] h-[8px] bg-[linear-gradient(180deg,rgba(92,97,94,0.98)_0%,rgba(91,96,93,0.95)_24%,rgba(90,95,92,0.78)_46%,rgba(89,94,91,0.34)_66%,rgba(88,93,90,0.06)_100%)]" />
@@ -1778,7 +1778,7 @@ function SmartphoneIllustration({
 function LinkedInMonitorView() {
   return (
     <div className="relative h-full w-full bg-white">
-      <Image src="/linkedin-profile.png" alt="LinkedIn profile preview" fill draggable={false} className="pointer-events-none select-none object-cover object-top-left" sizes="120px" loading="eager" />
+      <Image src="/portfolio/linkedin-profile.png" alt="LinkedIn profile preview" fill draggable={false} className="pointer-events-none select-none object-cover object-top-left" sizes="120px" loading="eager" />
     </div>
   );
 }

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://example.com"),
+  metadataBase: new URL("https://roopeaal.github.io/portfolio"),
   title: "Roope Aaltonen - Interactive network-topology inspired portfolio homepage",
   description:
     "Interactive network-topology inspired portfolio homepage by Roope Aaltonen, focused on junior infrastructure, networking, Linux, cloud and connected systems roles.",
@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/linkedin-browser-page.png",
+        url: "/portfolio/linkedin-browser-page.png",
         width: 1200,
         height: 630,
         alt: "Roope Aaltonen interactive network-topology inspired portfolio homepage",
@@ -22,12 +22,12 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: "/favicon.ico" },
-      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
-      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/portfolio/favicon.ico" },
+      { url: "/portfolio/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/portfolio/favicon-16x16.png", sizes: "16x16", type: "image/png" },
     ],
-    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
-    shortcut: ["/favicon.ico"],
+    apple: [{ url: "/portfolio/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+    shortcut: ["/portfolio/favicon.ico"],
   },
 };
 
