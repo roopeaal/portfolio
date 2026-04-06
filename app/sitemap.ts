@@ -1,12 +1,15 @@
 import type { MetadataRoute } from "next";
 
+export const dynamic = "force-static";
+
 export default function sitemap(): MetadataRoute.Sitemap {
-  const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://example.com";
+  const base = "https://roopeaal.github.io/portfolio";
+  const lastModified = "2026-04-06";
 
   return ["", "/about", "/projects", "/contact"].map((path) => ({
     url: `${base}${path}`,
-    lastModified: new Date(),
-    changeFrequency: "monthly" as const,
+    lastModified,
+    changeFrequency: "monthly",
     priority: path === "" ? 1 : 0.8,
   }));
 }
