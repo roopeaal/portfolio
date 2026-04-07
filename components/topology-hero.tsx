@@ -1773,7 +1773,18 @@ function SmartphoneIllustration({
 function LinkedInMonitorView() {
   return (
     <div className="relative h-full w-full bg-white">
-      <Image src="/portfolio/linkedin-profile.png" alt="LinkedIn profile preview" fill draggable={false} className="pointer-events-none select-none object-cover object-top-left" sizes="120px" loading="eager" />
+      <a
+  href="OMA_LINKEDIN_URL"
+  target="_blank"
+  rel="noreferrer"
+  className="block h-full w-full overflow-hidden cursor-pointer"
+>
+  <img
+    src="/portfolio/linkedin-profile.png"
+    alt="LinkedIn profile preview"
+    className="block h-full w-full object-cover object-top"
+  />
+</a>
     </div>
   );
 }
