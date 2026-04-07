@@ -1529,22 +1529,37 @@ function SwitchIllustration({
 
           <rect x="57.8" y="66.3" width="116.2" height="14.1" rx="1.05" fill="url(#switchPlateV23)" stroke="#d8dde6" strokeWidth="0.9" />
           <path d="M 57.8 66.3 H 174" stroke="rgba(255,255,255,0.36)" strokeWidth="0.7" />
-          {portCenters.map((centerX, index) => (
-            <g key={centerX} opacity={index === ledIndex ? 0.96 : 1}>
+                    {portCenters.map((centerX, index) => (
+            <g key={centerX} opacity={index === ledIndex ? 0.98 : 1}>
               <path
-                d={`M ${centerX - 7.5} 70.9 V 76.2 L ${centerX - 4.6} 79.4 H ${centerX + 4.6} L ${centerX + 7.5} 76.2 V 70.9 L ${centerX + 4.9} 68.45 H ${centerX + 2.15} L ${centerX} 70.2 L ${centerX - 2.15} 68.45 H ${centerX - 4.9} Z`}
-                fill="#2e3748"
-                stroke="#172031"
-                strokeWidth="0.88"
+                d={`M ${centerX - 6.2} 70.2 H ${centerX + 6.2} V 76.1 L ${centerX + 3.4} 79 H ${centerX - 3.4} L ${centerX - 6.2} 76.1 Z`}
+                fill="#283247"
+                stroke="#161d2d"
+                strokeWidth="0.86"
                 strokeLinejoin="round"
               />
+              {Array.from({ length: 6 }).map((_, pinIndex) => (
+                <rect
+                  key={pinIndex}
+                  x={centerX - 4.15 + pinIndex * 1.42}
+                  y={71.55}
+                  width="0.72"
+                  height="1.72"
+                  rx="0.12"
+                  fill="#d7b24f"
+                  opacity="0.96"
+                />
+              ))}
               <path
-                d={`M ${centerX - 5.9} 72.5 V 75.15 L ${centerX - 3.8} 77.7 H ${centerX + 3.8} L ${centerX + 5.9} 75.15 V 72.5 L ${centerX + 3.85} 70.8 H ${centerX + 1.45} L ${centerX} 71.95 L ${centerX - 1.45} 70.8 H ${centerX - 3.85} Z`}
-                fill="#1a2231"
-                opacity="0.98"
+                d={`M ${centerX - 4.8} 73.25 H ${centerX + 4.8} V 75.15 L ${centerX + 2.2} 77.45 H ${centerX - 2.2} L ${centerX - 4.8} 75.15 Z`}
+                fill="#12192a"
               />
-              <path d={`M ${centerX - 4.85} 71.45 H ${centerX + 4.85}`} stroke="rgba(255,255,255,0.14)" strokeWidth="0.42" strokeLinecap="round" />
-              <path d={`M ${centerX - 4.1} 78.5 H ${centerX + 4.1}`} stroke="rgba(0,0,0,0.14)" strokeWidth="0.48" strokeLinecap="round" />
+              <path
+                d={`M ${centerX - 5.2} 70.95 H ${centerX + 5.2}`}
+                stroke="rgba(255,255,255,0.14)"
+                strokeWidth="0.42"
+                strokeLinecap="round"
+              />
             </g>
           ))}
 
