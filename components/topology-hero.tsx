@@ -65,7 +65,7 @@ type KeyboardKey = {
 
 const NODE_META: Record<NodeKey, NodeMeta> = {
   about: { label: "About Me", deviceName: "Wireless Router1", width: 220, height: 204, deviceHeight: 136 },
-  projects: { label: "Projects", deviceName: "Switch0", width: 224, height: 194, deviceHeight: 122 },
+  projects: { label: "Projects", deviceName: "Switch0", width: 242, height: 210, deviceHeight: 138 },
   home: { label: "LinkedIn", deviceName: "PC1", width: 226, height: 262, deviceHeight: 194, previewWidth: 378 },
   contact: { label: "Contact Me", deviceName: "Smartphone0", width: 156, height: 226, deviceHeight: 168 },
 };
@@ -1301,37 +1301,21 @@ function CableSegment({ from, to, disconnected = false, looseEnd }: { from: { x:
 
 function WirelessCable({ from, to, tick, online }: { from: { x: number; y: number }; to: { x: number; y: number }; tick: number; online: boolean }) {
   if (!online) return null;
+  void tick;
 
-  const midX = (from.x + to.x) / 2;
-  const lift = 84 + Math.abs(to.x - from.x) * 0.04;
-  const midY = Math.min(from.y, to.y) - lift;
-  const dashOffset = -((tick * 6) % 240);
-  const outerPath = `M ${from.x} ${from.y} Q ${midX} ${midY} ${to.x} ${to.y}`;
-  const innerPath = `M ${from.x + 8} ${from.y - 10} Q ${midX + 18} ${midY - 16} ${to.x - 10} ${to.y - 6}`;
+  const wirelessPath = `M ${from.x} ${from.y} L ${to.x} ${to.y}`;
 
   return (
     <>
       <path
-        d={outerPath}
+        d={wirelessPath}
         fill="none"
-        stroke="#8fe5ff"
-        strokeWidth={3.3}
+        stroke="#111111"
+        strokeWidth={2.8}
         strokeLinecap="round"
         strokeLinejoin="round"
-        strokeDasharray="26 220"
-        strokeDashoffset={dashOffset}
-        opacity={0.82}
-      />
-      <path
-        d={innerPath}
-        fill="none"
-        stroke="#d7f8ff"
-        strokeWidth={2.2}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeDasharray="18 210"
-        strokeDashoffset={dashOffset - 92}
-        opacity={0.68}
+        strokeDasharray="2.4 7.4"
+        opacity={0.98}
       />
     </>
   );
@@ -1479,7 +1463,7 @@ function SwitchIllustration({
       animate={active ? { y: [0, -1, 0] } : { y: 0 }}
       transition={active ? { duration: 0.55, repeat: 1, ease: "easeInOut" } : { duration: 0.2 }}
     >
-      <div className="relative h-[124px] w-[222px]">
+      <div className="relative h-[138px] w-[246px]">
         <div className="absolute left-[45px] top-[98px] h-[13px] w-[132px] rounded-full bg-[#10233a]/12 blur-[9px]" />
 
         <svg viewBox="0 0 222 124" className="absolute inset-0 h-full w-full" aria-hidden="true">
@@ -1532,32 +1516,28 @@ function SwitchIllustration({
                     {portCenters.map((centerX, index) => (
             <g key={centerX} opacity={index === ledIndex ? 0.98 : 1}>
               <path
-                d={`M ${centerX - 6.2} 70.2 H ${centerX + 6.2} V 76.1 L ${centerX + 3.4} 79 H ${centerX - 3.4} L ${centerX - 6.2} 76.1 Z`}
-                fill="#283247"
-                stroke="#161d2d"
-                strokeWidth="0.86"
+                d={`M ${centerX - 7.1} 70.0 H ${centerX + 7.1} V 74.95 H ${centerX + 3.2} V 77.15 H ${centerX + 1.45} V 79.0 H ${centerX - 1.45} V 77.15 H ${centerX - 3.2} V 74.95 H ${centerX - 7.1} Z`}
+                fill="#05080e"
+                stroke="#1c2740"
+                strokeWidth="0.92"
                 strokeLinejoin="round"
               />
-              {Array.from({ length: 6 }).map((_, pinIndex) => (
+              {Array.from({ length: 8 }).map((_, pinIndex) => (
                 <rect
                   key={pinIndex}
-                  x={centerX - 4.15 + pinIndex * 1.42}
-                  y={71.55}
-                  width="0.72"
-                  height="1.72"
-                  rx="0.12"
+                  x={centerX - 4.9 + pinIndex * 1.22}
+                  y={71.18}
+                  width="0.74"
+                  height="2.08"
+                  rx="0.08"
                   fill="#d7b24f"
-                  opacity="0.96"
+                  opacity="0.98"
                 />
               ))}
               <path
-                d={`M ${centerX - 4.85} 73.2 H ${centerX + 4.85} V 74.95 H ${centerX + 2.35} V 76.55 H ${centerX + 1.05} V 77.9 H ${centerX - 1.05} V 76.55 H ${centerX - 2.35} V 74.95 H ${centerX - 4.85} Z`}
-                fill="#12192a"
-              />
-              <path
-                d={`M ${centerX - 5.2} 70.95 H ${centerX + 5.2}`}
-                stroke="rgba(255,255,255,0.14)"
-                strokeWidth="0.42"
+                d={`M ${centerX - 5.45} 70.92 H ${centerX + 5.45}`}
+                stroke="rgba(255,255,255,0.12)"
+                strokeWidth="0.38"
                 strokeLinecap="round"
               />
             </g>
