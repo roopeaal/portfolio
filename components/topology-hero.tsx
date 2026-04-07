@@ -1774,7 +1774,7 @@ function LinkedInMonitorView() {
   return (
     <div className="relative h-full w-full bg-white">
       <a
-  href="OMA_LINKEDIN_URL"
+  href="https://www.linkedin.com/in/roope-aaltonen/"
   target="_blank"
   rel="noreferrer"
   className="block h-full w-full overflow-hidden cursor-pointer"
