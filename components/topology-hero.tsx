@@ -1551,7 +1551,7 @@ function SwitchIllustration({
                 />
               ))}
               <path
-                d={`M ${centerX - 4.8} 73.25 H ${centerX + 4.8} V 75.15 L ${centerX + 2.2} 77.45 H ${centerX - 2.2} L ${centerX - 4.8} 75.15 Z`}
+                d={`M ${centerX - 4.85} 73.2 H ${centerX + 4.85} V 74.95 H ${centerX + 2.35} V 76.55 H ${centerX + 1.05} V 77.9 H ${centerX - 1.05} V 76.55 H ${centerX - 2.35} V 74.95 H ${centerX - 4.85} Z`}
                 fill="#12192a"
               />
               <path
