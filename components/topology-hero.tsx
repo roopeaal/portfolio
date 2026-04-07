@@ -134,7 +134,7 @@ function buildTypingPattern(step: number) {
   return new Set<number>([key]);
 }
 
-const SWITCH_PORT_CENTERS = [82, 94, 109, 124, 139, 154] as const;
+const SWITCH_PORT_CENTERS = [79, 94, 109, 124, 139, 154] as const;
 const SWITCH_LEFT_CABLE_PORT_INDEX = 0;
 const SWITCH_RIGHT_CABLE_PORT_INDEX = 4;
 const SWITCH_STUB_Y = 90;
