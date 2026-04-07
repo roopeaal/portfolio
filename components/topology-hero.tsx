@@ -1507,12 +1507,12 @@ function SwitchIllustration({
             </linearGradient>
           </defs>
 
-          <path d="M 52 22.5 H 166.2 L 182.4 52 H 36.2 Z" fill="url(#switchTopMainV23)" stroke="#38557d" strokeWidth="1.32" strokeLinejoin="round" />
-          <path d="M 36.2 52 H 182.4 V 84.8 C 182.4 91 177.5 96 171.2 96 H 47.2 C 41 96 36.2 91 36.2 84.8 Z" fill="url(#switchFrontMainV23)" stroke="#29456a" strokeWidth="1.3" strokeLinejoin="round" />
-          <path d="M 36.2 84 H 182.4 V 84.8 C 182.4 91 177.5 96 171.2 96 H 47.2 C 41 96 36.2 91 36.2 84.8 Z" fill="url(#switchBottomLipV23)" opacity="0.95" />
+          <path d="M 49 22.5 H 170 L 181.6 52 H 37.4 Z" fill="url(#switchTopMainV23)" stroke="#38557d" strokeWidth="1.32" strokeLinejoin="round" />
+          <path d="M 37.4 52 H 181.6 V 84.9 C 181.6 90.8 177 95 171.2 95 H 47.8 C 42 95 37.4 90.8 37.4 84.9 Z" fill="url(#switchFrontMainV23)" stroke="#29456a" strokeWidth="1.3" strokeLinejoin="round" />
+          <path d="M 37.4 84.2 H 181.6 V 84.9 C 181.6 90.8 177 95 171.2 95 H 47.8 C 42 95 37.4 90.8 37.4 84.9 Z" fill="url(#switchBottomLipV23)" opacity="0.95" />
 
-          <path d="M 58.5 24.4 L 89.8 52" stroke="#f2f7fb" strokeWidth="4.2" strokeLinecap="round" opacity="0.98" />
-          <path d="M 137.8 22.5 H 166.2 L 174.8 34.1 H 146 Z" fill="url(#switchFacetV23)" opacity="0.99" />
+          <path d="M 59.6 24.2 L 88.9 52" stroke="#eef5fb" strokeWidth="3.8" strokeLinecap="round" opacity="0.98" />
+          <path d="M 136.8 22.5 H 170 L 178.2 34.4 H 144.6 Z" fill="url(#switchFacetV23)" opacity="0.99" />
 
           <path d="M 82.6 29.8 C 96 25.6, 113 24.8, 131.2 27 C 145 28.8, 157 32.8, 166.4 38.5 C 154.8 37.9, 140.6 37.1, 125.4 36 C 107.8 34.9, 93.8 32.9, 82.6 29.8 Z" fill="rgba(122,151,205,0.23)" />
           <path d="M 87.8 32.2 C 101.5 28.6, 122.4 28.5, 143.8 32 C 154 33.7, 162.9 36.8, 169.8 40.7 C 159.4 39.9, 146.1 39, 132.2 38 C 114.5 36.8, 98.3 35.8, 87.8 32.2 Z" fill="rgba(29,45,78,0.3)" />
@@ -1527,28 +1527,28 @@ function SwitchIllustration({
           <rect x="42.8" y="71.4" width="8" height="8" rx="1.05" fill={isAlert ? "#ede0c2" : "#f0f1f2"} stroke="#cfd5de" strokeWidth="0.88" />
           <rect x="44.1" y="72.7" width="5.4" height="1.18" rx="0.5" fill="rgba(255,255,255,0.82)" />
 
-          <rect x="61" y="65.9" width="111" height="14.5" rx="1.7" fill="url(#switchPlateV23)" stroke="#d8dde6" strokeWidth="0.9" />
-          <path d="M 61 65.9 H 172" stroke="rgba(255,255,255,0.36)" strokeWidth="0.7" />
+          <rect x="57.8" y="66.3" width="116.2" height="14.1" rx="1.05" fill="url(#switchPlateV23)" stroke="#d8dde6" strokeWidth="0.9" />
+          <path d="M 57.8 66.3 H 174" stroke="rgba(255,255,255,0.36)" strokeWidth="0.7" />
           {portCenters.map((centerX, index) => (
             <g key={centerX} opacity={index === ledIndex ? 0.96 : 1}>
               <path
-                d={`M ${centerX - 7.3} 70.7 V 75.2 L ${centerX - 4.8} 78.8 H ${centerX + 4.8} L ${centerX + 7.3} 75.2 V 70.7 L ${centerX + 5.2} 69 H ${centerX + 1.9} L ${centerX} 70.4 L ${centerX - 1.9} 69 H ${centerX - 5.2} Z`}
-                fill="#31394a"
-                stroke="#151d2b"
+                d={`M ${centerX - 7.5} 70.9 V 76.2 L ${centerX - 4.6} 79.4 H ${centerX + 4.6} L ${centerX + 7.5} 76.2 V 70.9 L ${centerX + 4.9} 68.45 H ${centerX + 2.15} L ${centerX} 70.2 L ${centerX - 2.15} 68.45 H ${centerX - 4.9} Z`}
+                fill="#2e3748"
+                stroke="#172031"
                 strokeWidth="0.88"
                 strokeLinejoin="round"
               />
               <path
-                d={`M ${centerX - 5.25} 72.1 V 74.6 L ${centerX - 3.5} 76.8 H ${centerX + 3.5} L ${centerX + 5.25} 74.6 V 72.1 L ${centerX + 3.9} 70.95 H ${centerX + 1.35} L ${centerX} 72.1 L ${centerX - 1.35} 70.95 H ${centerX - 3.9} Z`}
-                fill="#1b2230"
+                d={`M ${centerX - 5.9} 72.5 V 75.15 L ${centerX - 3.8} 77.7 H ${centerX + 3.8} L ${centerX + 5.9} 75.15 V 72.5 L ${centerX + 3.85} 70.8 H ${centerX + 1.45} L ${centerX} 71.95 L ${centerX - 1.45} 70.8 H ${centerX - 3.85} Z`}
+                fill="#1a2231"
                 opacity="0.98"
               />
-              <path d={`M ${centerX - 5.1} 71.5 H ${centerX + 5.1}`} stroke="rgba(255,255,255,0.16)" strokeWidth="0.5" strokeLinecap="round" />
-              <path d={`M ${centerX - 3.9} 78 H ${centerX + 3.9}`} stroke="rgba(0,0,0,0.15)" strokeWidth="0.5" strokeLinecap="round" />
+              <path d={`M ${centerX - 4.85} 71.45 H ${centerX + 4.85}`} stroke="rgba(255,255,255,0.14)" strokeWidth="0.42" strokeLinecap="round" />
+              <path d={`M ${centerX - 4.1} 78.5 H ${centerX + 4.1}`} stroke="rgba(0,0,0,0.14)" strokeWidth="0.48" strokeLinecap="round" />
             </g>
           ))}
 
-          <path d="M 61 80.4 H 172" stroke="rgba(0,0,0,0.07)" strokeWidth="0.76" />
+          <path d="M 57.8 80.4 H 174" stroke="rgba(0,0,0,0.07)" strokeWidth="0.76" />
           <path d="M 36.2 88.1 H 182.4" stroke="rgba(0,0,0,0.13)" strokeWidth="0.96" />
         </svg>
       </div>
