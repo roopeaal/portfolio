@@ -940,7 +940,7 @@ export function TopologyHero() {
         browserUrl="https://www.linkedin.com/in/roope-aaltonen/"
         browserLink="https://www.linkedin.com/in/roope-aaltonen/"
       >
-        <HomePanelContent />
+        <LinkedInMonitorView />
       </PacketWindow>
 
       <PacketWindow
