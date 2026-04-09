@@ -1800,7 +1800,7 @@ function LinkedInPopupScreenshotView() {
         className="block h-full w-full overflow-hidden cursor-pointer"
       >
         <img
-          src="/portfolio/linkedin-popup.png?v=20260409-1"
+          src="/portfolio/linkedin-popup.png?v=20260409-2"
           alt="LinkedIn popup screenshot"
           className="block h-full w-full object-cover object-top"
         />
