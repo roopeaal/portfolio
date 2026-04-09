@@ -74,8 +74,13 @@ export function usePortfolioPanelState() {
   }, [updateUrlState]);
 
   const closePanel = useCallback(() => {
-    updateUrlState(null, null);
-  }, [updateUrlState]);
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("panel");
+    params.delete("project");
+
+    const next = params.toString();
+    router.replace(next ? `${pathname}?${next}` : pathname, { scroll: false });
+  }, [pathname, router, searchParams]);
 
   return useMemo(
     () => ({
