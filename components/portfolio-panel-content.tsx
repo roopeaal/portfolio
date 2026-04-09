@@ -91,6 +91,16 @@ export function HomePanelContent() {
   );
 }
 
+
+function FieldCard({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded border border-[#d8d8d8] bg-[linear-gradient(180deg,#ffffff_0%,#f6f8fb_100%)] px-3 py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.85)]">
+      <div className="text-[9px] font-semibold uppercase tracking-[0.12em] text-[#6f87a6]">{label}</div>
+      <div className="mt-1 text-[11px] font-medium text-[#1f2a37]">{value}</div>
+    </div>
+  );
+}
+
 export function AboutPanelContent({
   section,
   preview = false,
@@ -356,6 +366,7 @@ export function ProjectsPanelContent({
 }
 
 
+
 export function ContactPanelContent({
   section = "channels",
   preview = false,
@@ -520,15 +531,6 @@ export function ContactPanelContent({
   );
 }
 
-
-function FieldCard({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="grid gap-2 sm:grid-cols-[170px_1fr] sm:items-start">
-      <p className="text-[12px] uppercase tracking-[0.12em] text-[#8b96a8]">{label}</p>
-      <div className="rounded border border-[#dcdcdc] bg-white px-3 py-2 text-[#111827]">{value}</div>
-    </div>
-  );
-}
 
 function SimpleTile({
   children,

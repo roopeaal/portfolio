@@ -718,17 +718,18 @@ export function TopologyHero() {
     };
   }, [active, draggingNode]);
 
+  
+
   const playPhoneTapSound = useCallback(() => {
     const audio = phoneTapAudioRef.current;
     if (!audio) return;
-
     try {
       audio.pause();
       audio.currentTime = 0;
-      audio.volume = 1;
-      const p = audio.play();
-      if (p && typeof p.catch === "function") {
-        p.catch(() => {});
+      audio.volume = 0.7;
+      const promise = audio.play();
+      if (promise && typeof promise.catch === "function") {
+        promise.catch(() => {});
       }
     } catch {}
   }, []);
@@ -785,6 +786,7 @@ export function TopologyHero() {
 
   return (
     <>
+      <audio ref={phoneTapAudioRef} src="/phone-click.m4a?v=20260409-9" preload="auto" />
       <section
         className="pt-ui relative h-[100dvh] overflow-hidden bg-[#fbfbfb]"
         onMouseMove={(event) => setMousePosition({ x: Math.round(event.clientX), y: Math.round(event.clientY) })}
