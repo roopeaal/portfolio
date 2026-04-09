@@ -664,6 +664,9 @@ export function TopologyHero() {
       setDraggingNode(null);
 
       if (!dragged) {
+        if (state.node === "contact") {
+          playPhoneTapSound();
+        }
         openWindowState(node);
       }
     };
@@ -907,7 +910,7 @@ export function TopologyHero() {
                   dragging={draggingNode === "contact"}
                   onHover={() => { setActive("contact"); triggerNodeAnimation("contact"); }}
                   onLeave={() => setActive((current) => (current === "contact" ? null : current))}
-                  onPointerDown={(node, event) => { playPhoneTapSound(); handlePointerDown(node, event); }}
+                  onPointerDown={handlePointerDown}
                   label={NODE_META.contact.label}
                   deviceName={NODE_META.contact.deviceName}
                 >
