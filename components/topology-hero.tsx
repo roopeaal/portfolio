@@ -1780,7 +1780,7 @@ function LinkedInMonitorView() {
   className="block h-full w-full overflow-hidden cursor-pointer"
 >
   <img
-    src="/portfolio/linkedin-profile.png"
+    src="/portfolio/linkedin-profile.png?v=20260409-1"
     alt="LinkedIn profile preview"
     className="block h-full w-full object-cover object-top"
   />
@@ -1800,7 +1800,7 @@ function LinkedInPopupScreenshotView() {
         className="block h-full w-full overflow-hidden cursor-pointer"
       >
         <img
-          src="/portfolio/linkedin-popup.png"
+          src="/portfolio/linkedin-popup.png?v=20260409-1"
           alt="LinkedIn popup screenshot"
           className="block h-full w-full object-cover object-top"
         />
