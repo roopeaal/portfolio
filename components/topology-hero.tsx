@@ -810,7 +810,7 @@ export function TopologyHero() {
               <div ref={sceneRef} className="relative h-full w-full overflow-hidden">
                 <motion.svg
                   viewBox={`0 0 ${VIEWBOX.width} ${VIEWBOX.height}`}
-                  className="pointer-events-none absolute inset-0 h-full w-full"
+                  className="pointer-events-none absolute inset-0 z-[22] h-full w-full"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.24 }}
