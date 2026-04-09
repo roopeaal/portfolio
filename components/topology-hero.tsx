@@ -1841,24 +1841,15 @@ function LinkedInPopupScreenshotView() {
         target="_blank"
         rel="noreferrer"
         className="block h-full w-full overflow-hidden cursor-pointer"
-        aria-label="Open Roope Aaltonen LinkedIn profile"
       >
         <img
-          src="/portfolio/linkedin-popup-2.png"
+          src="/portfolio/linkedin-popup.png?v=20260409-13"
           alt="LinkedIn popup screenshot"
           className="block h-full w-full object-cover object-top"
-          draggable={false}
         />
       </a>
     </div>
   );
-}
-
-
-function formatClock(value: Date) {
-  return value
-    .toLocaleTimeString("fi-FI", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false })
-    .replace(/:/g, ".");
 }
 
 function formatPhoneClock(value: Date) {
