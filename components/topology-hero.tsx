@@ -713,6 +713,20 @@ export function TopologyHero() {
     };
   }, [active, draggingNode]);
 
+  const playPhoneTapSound = useCallback(() => {
+    const audio = phoneTapAudioRef.current;
+    if (!audio) return;
+    try {
+      audio.pause();
+      audio.currentTime = 0;
+      audio.volume = 0.7;
+      const promise = audio.play();
+      if (promise && typeof promise.catch === "function") {
+        promise.catch(() => {});
+      }
+    } catch {}
+  }, []);
+
   const handlePointerDown = (node: NodeKey, event: ReactPointerEvent<HTMLButtonElement>) => {
     const scene = sceneRef.current;
     const current = nodePositionsRef.current[node];
@@ -752,13 +766,7 @@ export function TopologyHero() {
   };
 
 
-  const playPhoneTapSound = useCallback(() => {
-    const audio = phoneTapAudioRef.current;
-    if (!audio) return;
-    audio.currentTime = 0;
-    audio.volume = 1;
-    void audio.play().catch(() => {});
-  }, []);
+  
 
   return (
     <>
@@ -942,7 +950,7 @@ export function TopologyHero() {
         </div>
       </section>
 
-      <audio ref={phoneTapAudioRef} src="/portfolio/phone-click.m4a?v=20260409-5" preload="auto" />
+      <audio ref={phoneTapAudioRef} src="/phone-click.m4a?v=20260409-9" preload="auto" />
 
       <PacketWindow
         open={openWindow === "home"}
@@ -1112,7 +1120,7 @@ function NodeButton({
         onPointerDown={(event) => onPointerDown(node, event)}
         onContextMenu={(event) => event.preventDefault()}
         className="group relative flex h-full w-full flex-col overflow-visible select-none text-left focus:outline-none"
-        style={{ touchAction: "none", cursor: dragging ? "grabbing" : "grab", userSelect: "none" }}
+        style={{ touchAction: "none", cursor: dragging ? "grabbing" : "grab", userSelect: "none", zIndex: active ? 18 : 12 }}
       >
         <motion.div
           animate={{

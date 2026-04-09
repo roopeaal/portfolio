@@ -124,7 +124,7 @@ export function PacketWindow({
             exit={{ opacity: 0 }}
             transition={overlayTransition}
             className="fixed inset-0 z-[100] bg-black/18 backdrop-blur-[1px]"
-            onClick={onClose}
+            onPointerDown={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => { e.preventDefault(); e.stopPropagation(); onClose(); }}
             aria-hidden="true"
           />
 
@@ -146,7 +146,7 @@ export function PacketWindow({
               <h2 id={titleId}>{title}</h2>
               <button
                 type="button"
-                onClick={onClose}
+                onPointerDown={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => { e.preventDefault(); e.stopPropagation(); onClose(); }}
                 className="absolute right-2 top-1/2 inline-flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-[3px] border border-[#cfcfcf] bg-[#f3f3f3] text-[16px] leading-none text-[#808080] transition hover:bg-[#ebebeb] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4b74ff]"
                 aria-label="Close window"
               >
@@ -190,7 +190,7 @@ export function PacketWindow({
                     <span>Web Browser</span>
                     <button
                       type="button"
-                      onClick={onClose}
+                      onPointerDown={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => { e.preventDefault(); e.stopPropagation(); onClose(); }}
                       className="ml-auto inline-flex h-7 w-7 items-center justify-center border border-[#cfcfcf] bg-[#efefef] text-[16px] leading-none text-[#595959] transition hover:bg-[#e5e5e5] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
                       aria-label="Close browser"
                     >
@@ -213,7 +213,7 @@ export function PacketWindow({
                     </a>
                     <button
                       type="button"
-                      onClick={onClose}
+                      onPointerDown={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => { e.preventDefault(); e.stopPropagation(); onClose(); }}
                       className="inline-flex h-7 items-center justify-center border border-[#c8c8c8] bg-[#f8f8f8] px-4 text-[#575757] transition hover:bg-[#ececec] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4b74ff]"
                     >
                       Stop
