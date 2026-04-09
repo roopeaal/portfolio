@@ -810,7 +810,7 @@ export function TopologyHero() {
               <div ref={sceneRef} className="relative h-full w-full overflow-hidden">
                 <motion.svg
                   viewBox={`0 0 ${VIEWBOX.width} ${VIEWBOX.height}`}
-                  className="pointer-events-none absolute inset-0 z-[22] h-full w-full"
+                  className="pointer-events-none absolute inset-0 z-[25] h-full w-full"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.24 }}
@@ -868,7 +868,7 @@ export function TopologyHero() {
                   active={active === "projects"}
                   opacity={nodeStyle.projects}
                   delay={0.1}
-                  layer={20}
+                  layer={10}
                   dragging={draggingNode === "projects"}
                   onHover={() => { setActive("projects"); triggerNodeAnimation("projects"); }}
                   onLeave={() => setActive((current) => (current === "projects" ? null : current))}
@@ -921,7 +921,7 @@ export function TopologyHero() {
 
                 <motion.svg
                   viewBox={`0 0 ${VIEWBOX.width} ${VIEWBOX.height}`}
-                  className="pointer-events-none absolute inset-0 z-[5] h-full w-full"
+                  className="pointer-events-none absolute inset-0 z-[25] h-full w-full"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.24 }}
@@ -946,7 +946,7 @@ export function TopologyHero() {
                         animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
                         exit={{ opacity: 0, scale: 0.86, y: 12, filter: "blur(6px)" }}
                         transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-                        className="pointer-events-none absolute z-[80]"
+                        className="pointer-events-none absolute z-[25]"
                         style={previewStyle}
                       >
                         {activePreview}
@@ -1098,7 +1098,6 @@ function NodeButton({
   delay,
   layer = 30,
   dragging,
-  layer = 10,
   onHover,
   onLeave,
   onPointerDown,
