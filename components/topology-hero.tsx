@@ -31,6 +31,7 @@ type NetworkMode = "stable" | "dropping" | "grabbing" | "repairing" | "recoverin
 type CursorState = "pointer" | "open" | "closed";
 
 const VIEWBOX = { width: 1280, height: 760 };
+const ASSET_BASE = process.env.NODE_ENV === "production" ? "/portfolio" : "";
 const PREVIEW_WIDTH = 362;
 const PREVIEW_HEIGHT = 266;
 const PREVIEW_GAP = 42;
@@ -324,6 +325,7 @@ export function TopologyHero() {
   const [nodePositions, setNodePositions] = useState<Record<NodeKey, NodePosition>>(INITIAL_NODE_POSITIONS);
   const [draggingNode, setDraggingNode] = useState<NodeKey | null>(null);
   const phoneTapAudioRef = useRef<HTMLAudioElement | null>(null);
+  const phoneTapSoundSrc = `${ASSET_BASE}/phone-click.m4a?v=20260409-6`;
   const [detachedOrigin, setDetachedOrigin] = useState<{ x: number; y: number } | null>(null);
   const [repairLooseEnd, setRepairLooseEnd] = useState<{ x: number; y: number } | null>(null);
   const [routerPowerOn, setRouterPowerOn] = useState(true);
@@ -714,18 +716,14 @@ export function TopologyHero() {
   }, [active, draggingNode]);
 
   const playPhoneTapSound = useCallback(() => {
-    const audio = phoneTapAudioRef.current;
-    if (!audio) return;
     try {
-      audio.pause();
-      audio.currentTime = 0;
-      audio.volume = 0.7;
-      const promise = audio.play();
-      if (promise && typeof promise.catch === "function") {
-        promise.catch(() => {});
-      }
+      const live = new Audio(phoneTapSoundSrc);
+      live.preload = "auto";
+      live.volume = 1;
+      live.currentTime = 0;
+      void live.play().catch(() => {});
     } catch {}
-  }, []);
+  }, [phoneTapSoundSrc]);
 
   const handlePointerDown = (node: NodeKey, event: ReactPointerEvent<HTMLButtonElement>) => {
     const scene = sceneRef.current;
@@ -834,6 +832,7 @@ export function TopologyHero() {
                   active={active === "about"}
                   opacity={nodeStyle.about}
                   delay={0.06}
+                  layer={30}
                   dragging={draggingNode === "about"}
                   onHover={() => { setActive("about"); triggerNodeAnimation("about"); }}
                   onLeave={() => setActive((current) => (current === "about" ? null : current))}
@@ -850,6 +849,7 @@ export function TopologyHero() {
                   active={active === "projects"}
                   opacity={nodeStyle.projects}
                   delay={0.1}
+                  layer={12}
                   dragging={draggingNode === "projects"}
                   onHover={() => { setActive("projects"); triggerNodeAnimation("projects"); }}
                   onLeave={() => setActive((current) => (current === "projects" ? null : current))}
@@ -872,6 +872,7 @@ export function TopologyHero() {
                   active={active === "home"}
                   opacity={nodeStyle.home}
                   delay={0.12}
+                  layer={30}
                   dragging={draggingNode === "home"}
                   onHover={() => { setActive("home"); triggerNodeAnimation("home"); }}
                   onLeave={() => setActive((current) => (current === "home" ? null : current))}
@@ -888,6 +889,7 @@ export function TopologyHero() {
                   active={active === "contact"}
                   opacity={nodeStyle.contact}
                   delay={0.16}
+                  layer={30}
                   dragging={draggingNode === "contact"}
                   onHover={() => { setActive("contact"); triggerNodeAnimation("contact"); }}
                   onLeave={() => setActive((current) => (current === "contact" ? null : current))}
@@ -950,7 +952,7 @@ export function TopologyHero() {
         </div>
       </section>
 
-      <audio ref={phoneTapAudioRef} src="/phone-click.m4a?v=20260409-9" preload="auto" />
+      <audio ref={phoneTapAudioRef} src={phoneTapSoundSrc} preload="auto" />
 
       <PacketWindow
         open={openWindow === "home"}
@@ -1076,6 +1078,7 @@ function NodeButton({
   opacity,
   delay,
   dragging,
+  layer = 10,
   onHover,
   onLeave,
   onPointerDown,
@@ -1089,6 +1092,7 @@ function NodeButton({
   opacity: number;
   delay: number;
   dragging: boolean;
+  layer?: number;
   onHover: () => void;
   onLeave: () => void;
   onPointerDown: (node: NodeKey, event: ReactPointerEvent<HTMLButtonElement>) => void;
