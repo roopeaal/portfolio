@@ -1792,7 +1792,7 @@ function LinkedInMonitorView() {
 
 function LinkedInPopupScreenshotView() {
   return (
-    <div className="relative h-full w-full bg-white">
+    <div className="h-full w-full bg-white">
       <a
         href="https://www.linkedin.com/in/roope-aaltonen/"
         target="_blank"
@@ -1808,6 +1808,7 @@ function LinkedInPopupScreenshotView() {
     </div>
   );
 }
+
 
 function formatClock(value: Date) {
   return value
