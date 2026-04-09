@@ -1096,6 +1096,7 @@ function NodeButton({
   active,
   opacity,
   delay,
+  layer = 30,
   dragging,
   layer = 10,
   onHover,
