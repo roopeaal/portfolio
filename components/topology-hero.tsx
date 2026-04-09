@@ -1835,20 +1835,20 @@ function LinkedInMonitorView() {
 
 function LinkedInPopupScreenshotView() {
   return (
-    <div className="relative h-full w-full overflow-hidden bg-[#eef1f5]">
-      <img
-        src="linkedin-popup.png?v=20260409-3"
-        alt="LinkedIn popup screenshot"
-        className="block h-full w-full object-cover object-top"
-        draggable={false}
-      />
+    <div className="h-full w-full bg-white">
       <a
         href="https://www.linkedin.com/in/roope-aaltonen/"
         target="_blank"
         rel="noreferrer"
-        className="absolute bottom-3 right-3 inline-flex items-center rounded-[4px] border border-[#aeb7c3] bg-white/92 px-3 py-1.5 text-[11px] font-medium text-[#27496d] shadow-[0_2px_8px_rgba(0,0,0,0.12)]"
+        className="block h-full w-full overflow-hidden cursor-pointer"
+        aria-label="Open Roope Aaltonen LinkedIn profile"
       >
-        Open LinkedIn
+        <img
+          src="/portfolio/linkedin-popup.png?v=20260409-6"
+          alt="LinkedIn popup screenshot"
+          className="block h-full w-full object-cover object-top"
+          draggable={false}
+        />
       </a>
     </div>
   );
