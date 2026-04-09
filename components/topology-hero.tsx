@@ -942,7 +942,7 @@ export function TopologyHero() {
         </div>
       </section>
 
-      <audio ref={phoneTapAudioRef} src="/portfolio/phone-click.m4a" preload="auto" />
+      <audio ref={phoneTapAudioRef} src="/portfolio/phone-click.m4a?v=20260409-5" preload="auto" />
 
       <PacketWindow
         open={openWindow === "home"}
