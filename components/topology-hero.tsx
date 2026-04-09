@@ -1844,7 +1844,7 @@ function LinkedInPopupScreenshotView() {
         aria-label="Open Roope Aaltonen LinkedIn profile"
       >
         <img
-          src="/portfolio/linkedin-popup.png?v=20260409-7"
+          src="/portfolio/linkedin-popup-2.png"
           alt="LinkedIn popup screenshot"
           className="block h-full w-full object-cover object-top"
           draggable={false}
