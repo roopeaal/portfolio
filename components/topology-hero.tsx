@@ -323,6 +323,7 @@ export function TopologyHero() {
   const [networkModeStartTick, setNetworkModeStartTick] = useState(0);
   const [nodePositions, setNodePositions] = useState<Record<NodeKey, NodePosition>>(INITIAL_NODE_POSITIONS);
   const [draggingNode, setDraggingNode] = useState<NodeKey | null>(null);
+  const phoneTapAudioRef = useRef<HTMLAudioElement | null>(null);
   const [detachedOrigin, setDetachedOrigin] = useState<{ x: number; y: number } | null>(null);
   const [repairLooseEnd, setRepairLooseEnd] = useState<{ x: number; y: number } | null>(null);
   const [routerPowerOn, setRouterPowerOn] = useState(true);
@@ -750,6 +751,15 @@ export function TopologyHero() {
     } catch {}
   };
 
+
+  const playPhoneTapSound = useCallback(() => {
+    const audio = phoneTapAudioRef.current;
+    if (!audio) return;
+    audio.currentTime = 0;
+    audio.volume = 1;
+    void audio.play().catch(() => {});
+  }, []);
+
   return (
     <>
       <section
@@ -873,7 +883,7 @@ export function TopologyHero() {
                   dragging={draggingNode === "contact"}
                   onHover={() => { setActive("contact"); triggerNodeAnimation("contact"); }}
                   onLeave={() => setActive((current) => (current === "contact" ? null : current))}
-                  onPointerDown={handlePointerDown}
+                  onPointerDown={(node, event) => { playPhoneTapSound(); handlePointerDown(node, event); }}
                   label={NODE_META.contact.label}
                   deviceName={NODE_META.contact.deviceName}
                 >
@@ -931,6 +941,8 @@ export function TopologyHero() {
           </div>
         </div>
       </section>
+
+      <audio ref={phoneTapAudioRef} src="/portfolio/phone-click.m4a" preload="auto" />
 
       <PacketWindow
         open={openWindow === "home"}
