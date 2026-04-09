@@ -325,7 +325,7 @@ export function TopologyHero() {
   const [nodePositions, setNodePositions] = useState<Record<NodeKey, NodePosition>>(INITIAL_NODE_POSITIONS);
   const [draggingNode, setDraggingNode] = useState<NodeKey | null>(null);
   const phoneTapAudioRef = useRef<HTMLAudioElement | null>(null);
-  const phoneTapSoundSrc = `${ASSET_BASE}/phone-click.m4a?v=20260409-6`;
+  const phoneTapSoundSrc = `${ASSET_BASE}/phone-click.m4a?v=20260409-7`;
   const [detachedOrigin, setDetachedOrigin] = useState<{ x: number; y: number } | null>(null);
   const [repairLooseEnd, setRepairLooseEnd] = useState<{ x: number; y: number } | null>(null);
   const [routerPowerOn, setRouterPowerOn] = useState(true);
@@ -716,14 +716,19 @@ export function TopologyHero() {
   }, [active, draggingNode]);
 
   const playPhoneTapSound = useCallback(() => {
+    const audio = phoneTapAudioRef.current;
+    if (!audio) return;
+
     try {
-      const live = new Audio(phoneTapSoundSrc);
-      live.preload = "auto";
-      live.volume = 1;
-      live.currentTime = 0;
-      void live.play().catch(() => {});
+      audio.pause();
+      audio.currentTime = 0;
+      audio.volume = 1;
+      const p = audio.play();
+      if (p && typeof p.catch === "function") {
+        p.catch(() => {});
+      }
     } catch {}
-  }, [phoneTapSoundSrc]);
+  }, []);
 
   const handlePointerDown = (node: NodeKey, event: ReactPointerEvent<HTMLButtonElement>) => {
     const scene = sceneRef.current;
@@ -765,6 +770,15 @@ export function TopologyHero() {
 
 
   
+
+  useEffect(() => {
+    const audio = phoneTapAudioRef.current;
+    if (!audio) return;
+    try {
+      audio.preload = "auto";
+      audio.load();
+    } catch {}
+  }, []);
 
   return (
     <>
@@ -832,7 +846,7 @@ export function TopologyHero() {
                   active={active === "about"}
                   opacity={nodeStyle.about}
                   delay={0.06}
-                  layer={30}
+                  layer={40}
                   dragging={draggingNode === "about"}
                   onHover={() => { setActive("about"); triggerNodeAnimation("about"); }}
                   onLeave={() => setActive((current) => (current === "about" ? null : current))}
@@ -849,7 +863,7 @@ export function TopologyHero() {
                   active={active === "projects"}
                   opacity={nodeStyle.projects}
                   delay={0.1}
-                  layer={12}
+                  layer={20}
                   dragging={draggingNode === "projects"}
                   onHover={() => { setActive("projects"); triggerNodeAnimation("projects"); }}
                   onLeave={() => setActive((current) => (current === "projects" ? null : current))}
@@ -872,7 +886,7 @@ export function TopologyHero() {
                   active={active === "home"}
                   opacity={nodeStyle.home}
                   delay={0.12}
-                  layer={30}
+                  layer={40}
                   dragging={draggingNode === "home"}
                   onHover={() => { setActive("home"); triggerNodeAnimation("home"); }}
                   onLeave={() => setActive((current) => (current === "home" ? null : current))}
@@ -889,7 +903,7 @@ export function TopologyHero() {
                   active={active === "contact"}
                   opacity={nodeStyle.contact}
                   delay={0.16}
-                  layer={30}
+                  layer={40}
                   dragging={draggingNode === "contact"}
                   onHover={() => { setActive("contact"); triggerNodeAnimation("contact"); }}
                   onLeave={() => setActive((current) => (current === "contact" ? null : current))}
@@ -952,7 +966,7 @@ export function TopologyHero() {
         </div>
       </section>
 
-      <audio ref={phoneTapAudioRef} src={phoneTapSoundSrc} preload="auto" />
+      <audio ref={phoneTapAudioRef} src={phoneTapSoundSrc} preload="auto" playsInline />
 
       <PacketWindow
         open={openWindow === "home"}
@@ -1288,7 +1302,7 @@ function EthernetHeadGraphic({ className = "" }: { className?: string }) {
 function DetachedEthernetStub({ bottom }: { bottom: { x: number; y: number } }) {
   return (
     <div
-      className="pointer-events-none absolute z-[24]"
+      className="pointer-events-none absolute z-[31]"
       style={{
         left: `${((bottom.x - 6) / VIEWBOX.width) * 100}%`,
         top: `${(((bottom.y - 14) / VIEWBOX.height)) * 100}%`,
