@@ -810,7 +810,7 @@ export function TopologyHero() {
               <div ref={sceneRef} className="relative h-full w-full overflow-hidden">
                 <motion.svg
                   viewBox={`0 0 ${VIEWBOX.width} ${VIEWBOX.height}`}
-                  className="pointer-events-none absolute inset-0 z-[25] h-full w-full"
+                  className="pointer-events-none absolute inset-0 z-[20] h-full w-full"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.24 }}
@@ -921,7 +921,7 @@ export function TopologyHero() {
 
                 <motion.svg
                   viewBox={`0 0 ${VIEWBOX.width} ${VIEWBOX.height}`}
-                  className="pointer-events-none absolute inset-0 z-[25] h-full w-full"
+                  className="pointer-events-none absolute inset-0 z-[20] h-full w-full"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.24 }}
@@ -946,7 +946,7 @@ export function TopologyHero() {
                         animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
                         exit={{ opacity: 0, scale: 0.86, y: 12, filter: "blur(6px)" }}
                         transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-                        className="pointer-events-none absolute z-[25]"
+                        className="pointer-events-none absolute z-[20]"
                         style={previewStyle}
                       >
                         {activePreview}
@@ -1110,8 +1110,8 @@ function NodeButton({
   active: boolean;
   opacity: number;
   delay: number;
-  dragging: boolean;
   layer?: number;
+  dragging: boolean;
   onHover: () => void;
   onLeave: () => void;
   onPointerDown: (node: NodeKey, event: ReactPointerEvent<HTMLButtonElement>) => void;
@@ -1124,7 +1124,7 @@ function NodeButton({
   return (
     <div
       className="absolute overflow-visible"
-      style={{
+      style={{ zIndex: layer, 
         left: `${(position.x / VIEWBOX.width) * 100}%`,
         top: `${(position.y / VIEWBOX.height) * 100}%`,
         width: `${(meta.width / VIEWBOX.width) * 100}%`,
