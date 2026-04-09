@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { useEffect, useId, useRef, type KeyboardEvent, type ReactNode } from "react";
+import { useEffect, useId, useRef, type KeyboardEvent, type ReactNode, useCallback } from "react";
 import type { PanelSidebarItem } from "@/components/portfolio-panel-content";
 
 interface PacketWindowProps {
@@ -77,7 +77,7 @@ export function PacketWindow({
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     if (event.key === "Escape") {
       event.preventDefault();
-      onClose();
+      handleHardClose();
       return;
     }
 
@@ -114,6 +114,18 @@ export function PacketWindow({
   const overlayTransition = prefersReducedMotion ? { duration: 0 } : { duration: 0.18 };
   const windowTransition = prefersReducedMotion ? { duration: 0 } : { duration: 0.24, ease: [0.22, 1, 0.36, 1] as const };
 
+  const handleHardClose = useCallback(() => {
+    try {
+      onClose?.();
+    } catch {}
+
+    if (typeof window !== "undefined") {
+      const target = window.location.pathname || "/";
+      window.location.assign(target);
+    }
+  }, [onClose]);
+
+
   return (
     <AnimatePresence>
       {open ? (
@@ -124,7 +136,7 @@ export function PacketWindow({
             exit={{ opacity: 0 }}
             transition={overlayTransition}
             className="fixed inset-0 z-[100] bg-black/18 backdrop-blur-[1px]"
-            onPointerDown={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => { e.preventDefault(); e.stopPropagation(); onClose(); }}
+            onPointerDown={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleHardClose(); }}
             aria-hidden="true"
           />
 
@@ -146,7 +158,7 @@ export function PacketWindow({
               <h2 id={titleId}>{title}</h2>
               <button
                 type="button"
-                onPointerDown={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => { e.preventDefault(); e.stopPropagation(); onClose(); }}
+                onPointerDown={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleHardClose(); }}
                 className="absolute right-2 top-1/2 inline-flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-[3px] border border-[#cfcfcf] bg-[#f3f3f3] text-[16px] leading-none text-[#808080] transition hover:bg-[#ebebeb] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4b74ff]"
                 aria-label="Close window"
               >
@@ -190,7 +202,7 @@ export function PacketWindow({
                     <span>Web Browser</span>
                     <button
                       type="button"
-                      onPointerDown={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => { e.preventDefault(); e.stopPropagation(); onClose(); }}
+                      onPointerDown={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleHardClose(); }}
                       className="ml-auto inline-flex h-7 w-7 items-center justify-center border border-[#cfcfcf] bg-[#efefef] text-[16px] leading-none text-[#595959] transition hover:bg-[#e5e5e5] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
                       aria-label="Close browser"
                     >
@@ -213,7 +225,7 @@ export function PacketWindow({
                     </a>
                     <button
                       type="button"
-                      onPointerDown={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => { e.preventDefault(); e.stopPropagation(); onClose(); }}
+                      onPointerDown={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleHardClose(); }}
                       className="inline-flex h-7 items-center justify-center border border-[#c8c8c8] bg-[#f8f8f8] px-4 text-[#575757] transition hover:bg-[#ececec] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4b74ff]"
                     >
                       Stop
