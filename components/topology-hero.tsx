@@ -94,10 +94,10 @@ const NODE_DRAG_BOUNDS: Record<NodeKey, DragBounds> = {
 function createNodeDragBounds(node: NodeKey): DragBounds {
   const meta = NODE_META[node];
   return {
-    minX: -16,
-    maxX: VIEWBOX.width - meta.width + 16,
-    minY: -10,
-    maxY: VIEWBOX.height - meta.height - 12,
+    minX: 0,
+    maxX: VIEWBOX.width - meta.width,
+    minY: 0,
+    maxY: VIEWBOX.height - meta.height,
   };
 }
 
@@ -882,7 +882,7 @@ export function TopologyHero() {
 
                 <motion.svg
                   viewBox={`0 0 ${VIEWBOX.width} ${VIEWBOX.height}`}
-                  className="pointer-events-none absolute inset-0 z-20 h-full w-full"
+                  className="pointer-events-none absolute inset-0 z-[5] h-full w-full"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.24 }}
@@ -940,7 +940,7 @@ export function TopologyHero() {
         browserUrl="https://www.linkedin.com/in/roope-aaltonen/"
         browserLink="https://www.linkedin.com/in/roope-aaltonen/"
       >
-        <LinkedInMonitorView />
+        <LinkedInPopupScreenshotView />
       </PacketWindow>
 
       <PacketWindow
@@ -1213,7 +1213,7 @@ function BrowserPreviewWindow() {
             <span className="inline-flex h-4 items-center border border-[#c8c8c8] bg-[#f8f8f8] px-2">Go</span>
           </div>
           <div className="h-[182px] bg-white">
-            <HomePanelContent />
+            <LinkedInMonitorView />
           </div>
         </div>
       </div>
@@ -1785,6 +1785,26 @@ function LinkedInMonitorView() {
     className="block h-full w-full object-cover object-top"
   />
 </a>
+    </div>
+  );
+}
+
+
+function LinkedInPopupScreenshotView() {
+  return (
+    <div className="relative h-full w-full bg-white">
+      <a
+        href="https://www.linkedin.com/in/roope-aaltonen/"
+        target="_blank"
+        rel="noreferrer"
+        className="block h-full w-full overflow-hidden cursor-pointer"
+      >
+        <img
+          src="/portfolio/linkedin-popup.png"
+          alt="LinkedIn popup screenshot"
+          className="block h-full w-full object-cover object-top"
+        />
+      </a>
     </div>
   );
 }
