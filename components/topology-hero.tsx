@@ -125,14 +125,36 @@ function stepToward(from: { x: number; y: number }, to: { x: number; y: number }
   return { x: from.x + dx * ratio, y: from.y + dy * ratio };
 }
 
-function getNodeRect(node: NodeKey, position: NodePosition) {
+function getNodeCollisionRects(
+  node: NodeKey,
+  position: NodePosition,
+  halo = 0,
+) {
   const meta = NODE_META[node];
-  return {
-    left: position.x,
-    top: position.y,
-    right: position.x + meta.width,
-    bottom: position.y + meta.height,
+  const shape = NODE_COLLISION_SHAPES[node];
+
+  const deviceRect = {
+    left: position.x + shape.device.left - halo,
+    top: position.y + shape.device.top - halo,
+    right: position.x + meta.width - shape.device.right + halo,
+    bottom: position.y + meta.deviceHeight - shape.device.bottom + halo,
   };
+
+  const labelTop = position.y + meta.deviceHeight + shape.label.top - halo;
+  const labelBottom = position.y + meta.height - shape.label.bottom + halo;
+
+  const rects = [deviceRect];
+
+  if (labelBottom > labelTop) {
+    rects.push({
+      left: position.x + shape.label.left - halo,
+      top: labelTop,
+      right: position.x + meta.width - shape.label.right + halo,
+      bottom: labelBottom,
+    });
+  }
+
+  return rects;
 }
 
 function rectsOverlap(
@@ -148,7 +170,6 @@ function resolveNonOverlappingPosition(
   positions: Record<NodeKey, NodePosition>,
 ) {
   const bounds = NODE_DRAG_BOUNDS[node];
-  const meta = NODE_META[node];
   const HALO = NODE_PROTECTIVE_HALO;
 
   let candidate = {
@@ -156,54 +177,45 @@ function resolveNonOverlappingPosition(
     y: clamp(proposed.y, bounds.minY, bounds.maxY),
   };
 
-  for (let i = 0; i < 8; i += 1) {
-    let adjusted = false;
+  for (let i = 0; i < 12; i += 1) {
+    const candidateRects = getNodeCollisionRects(node, candidate, HALO);
+    let pushed = false;
 
-    const nextRect = {
-      left: candidate.x - HALO,
-      top: candidate.y - HALO,
-      right: candidate.x + meta.width + HALO,
-      bottom: candidate.y + meta.height + HALO,
-    };
-
-    for (const other of Object.keys(positions) as NodeKey[]) {
+    outer: for (const other of Object.keys(positions) as NodeKey[]) {
       if (other === node) continue;
 
-      const otherMeta = NODE_META[other];
-      const otherPos = positions[other];
-      const otherRect = {
-        left: otherPos.x - HALO,
-        top: otherPos.y - HALO,
-        right: otherPos.x + otherMeta.width + HALO,
-        bottom: otherPos.y + otherMeta.height + HALO,
-      };
+      const otherRects = getNodeCollisionRects(other, positions[other], HALO);
 
-      if (!rectsOverlap(nextRect, otherRect)) continue;
+      for (const a of candidateRects) {
+        for (const b of otherRects) {
+          if (!rectsOverlap(a, b)) continue;
 
-      const overlapLeft = nextRect.right - otherRect.left;
-      const overlapRight = otherRect.right - nextRect.left;
-      const overlapTop = nextRect.bottom - otherRect.top;
-      const overlapBottom = otherRect.bottom - nextRect.top;
+          const pushLeft = b.left - a.right;
+          const pushRight = b.right - a.left;
+          const pushUp = b.top - a.bottom;
+          const pushDown = b.bottom - a.top;
 
-      const minOverlapX = Math.min(overlapLeft, overlapRight);
-      const minOverlapY = Math.min(overlapTop, overlapBottom);
+          const options = [
+            { axis: "x", delta: pushLeft, abs: Math.abs(pushLeft) },
+            { axis: "x", delta: pushRight, abs: Math.abs(pushRight) },
+            { axis: "y", delta: pushUp, abs: Math.abs(pushUp) },
+            { axis: "y", delta: pushDown, abs: Math.abs(pushDown) },
+          ].sort((m, n) => m.abs - n.abs);
 
-      if (minOverlapX < minOverlapY) {
-        candidate.x += overlapLeft < overlapRight ? -overlapLeft : overlapRight;
-      } else {
-        candidate.y += overlapTop < overlapBottom ? -overlapTop : overlapBottom;
+          const best = options[0];
+
+          candidate = {
+            x: clamp(candidate.x + (best.axis === "x" ? best.delta : 0), bounds.minX, bounds.maxX),
+            y: clamp(candidate.y + (best.axis === "y" ? best.delta : 0), bounds.minY, bounds.maxY),
+          };
+
+          pushed = true;
+          break outer;
+        }
       }
-
-      candidate = {
-        x: clamp(candidate.x, bounds.minX, bounds.maxX),
-        y: clamp(candidate.y, bounds.minY, bounds.maxY),
-      };
-
-      adjusted = true;
-      break;
     }
 
-    if (!adjusted) break;
+    if (!pushed) break;
   }
 
   return candidate;
@@ -225,7 +237,7 @@ const SWITCH_RIGHT_CABLE_PORT_INDEX = 4;
 const SWITCH_STUB_Y = 90;
 
 const DEBUG_NODE_HALOS = true;
-const NODE_PROTECTIVE_HALO = 18;
+const NODE_PROTECTIVE_HALO = 10;
 
 const DEBUG_HALO_COLORS: Record<NodeKey, string> = {
   about: "rgba(59,130,246,0.14)",
@@ -239,6 +251,31 @@ const DEBUG_HALO_BORDERS: Record<NodeKey, string> = {
   projects: "rgba(245,158,11,0.55)",
   home: "rgba(34,197,94,0.55)",
   contact: "rgba(236,72,153,0.55)",
+};
+
+const NODE_COLLISION_SHAPES: Record<
+  NodeKey,
+  {
+    device: { left: number; top: number; right: number; bottom: number };
+    label: { left: number; top: number; right: number; bottom: number };
+  }
+> = {
+  about: {
+    device: { left: 34, top: 16, right: 34, bottom: 54 },
+    label: { left: 56, top: 4, right: 56, bottom: 10 },
+  },
+  projects: {
+    device: { left: 26, top: 18, right: 24, bottom: 62 },
+    label: { left: 58, top: 6, right: 58, bottom: 12 },
+  },
+  home: {
+    device: { left: 30, top: 10, right: 30, bottom: 34 },
+    label: { left: 52, top: 6, right: 52, bottom: 12 },
+  },
+  contact: {
+    device: { left: 40, top: 4, right: 38, bottom: 18 },
+    label: { left: 26, top: 8, right: 26, bottom: 10 },
+  },
 };
 
 function getAttachPoint(node: NodeKey, positions: Record<NodeKey, NodePosition>) {
@@ -1226,6 +1263,7 @@ function NodeButton({
 }) {
   const meta = NODE_META[node];
   const haloSize = NODE_PROTECTIVE_HALO;
+  const debugRects = DEBUG_NODE_HALOS ? getNodeCollisionRects(node, { x: 0, y: 0 }, haloSize) : [];
 
   return (
     <div
@@ -1263,21 +1301,25 @@ function NodeButton({
           className="pointer-events-none relative z-10 flex justify-center"
         >
           
-        {DEBUG_NODE_HALOS ? (
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute rounded-[26px]"
-            style={{
-              left: `${-haloSize}px`,
-              top: `${-haloSize}px`,
-              width: `${meta.width + haloSize * 2}px`,
-              height: `${meta.height + haloSize * 2}px`,
-              background: DEBUG_HALO_COLORS[node],
-              border: `1px dashed ${DEBUG_HALO_BORDERS[node]}`,
-              boxShadow: `inset 0 0 0 1px ${DEBUG_HALO_BORDERS[node]}`,
-            }}
-          />
-        ) : null}
+        {DEBUG_NODE_HALOS
+          ? debugRects.map((rect, index) => (
+              <div
+                key={`${node}-halo-${index}`}
+                aria-hidden="true"
+                className="pointer-events-none absolute"
+                style={{
+                  left: `${rect.left}px`,
+                  top: `${rect.top}px`,
+                  width: `${rect.right - rect.left}px`,
+                  height: `${rect.bottom - rect.top}px`,
+                  background: DEBUG_HALO_COLORS[node],
+                  border: `1px dashed ${DEBUG_HALO_BORDERS[node]}`,
+                  boxShadow: `inset 0 0 0 1px ${DEBUG_HALO_BORDERS[node]}`,
+                  borderRadius: index === 0 ? "22px" : "12px",
+                }}
+              />
+            ))
+          : null}
         {children}
         </motion.div>
 
