@@ -1416,7 +1416,7 @@ function BottomBlueBar({ elapsedSeconds, onReset, onForward }: { elapsedSeconds:
           className="inline-flex h-[30px] w-[30px] items-center justify-center rounded-[4px] border border-[#8394ab] bg-[rgba(255,255,255,0.04)] text-white/72 transition hover:bg-[rgba(255,255,255,0.08)]"
           aria-label="Reset timer"
         >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true" className="block">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" className="block">
             <path
               d="M8.2 7.2H4.4V3.4M5 6.2C6.7 4.2 9.2 3 12 3C17 3 21 7 21 12C21 17 17 21 12 21C7.7 21 4.2 18 3.3 14.1"
               stroke="currentColor"
@@ -1433,7 +1433,7 @@ function BottomBlueBar({ elapsedSeconds, onReset, onForward }: { elapsedSeconds:
           className="inline-flex h-[30px] w-[44px] items-center justify-center rounded-[4px] border border-[#8394ab] bg-[rgba(255,255,255,0.04)] text-white/72 transition hover:bg-[rgba(255,255,255,0.08)]"
           aria-label="Add 30 seconds"
         >
-          <svg width="20" height="16" viewBox="0 0 20 16" fill="none" aria-hidden="true" className="block translate-x-[1.5px]">
+          <svg width="20" height="16" viewBox="0 0 20 16" fill="none" aria-hidden="true" className="block">
             <path d="M2 2.2L8.2 8L2 13.8V2.2Z" fill="currentColor" />
             <path d="M9.2 2.2L15.4 8L9.2 13.8V2.2Z" fill="currentColor" />
           </svg>
@@ -1939,7 +1939,7 @@ function SwitchIllustration({
                     {portCenters.map((centerX, index) => (
             <g key={centerX} opacity={index === ledIndex ? 0.98 : 1}>
               <path
-                d={`M ${centerX - 7.1} 70.0 H ${centerX + 7.1} V 74.95 H ${centerX + 3.2} V 77.15 H ${centerX + 1.45} V 79.0 H ${centerX - 1.45} V 77.15 H ${centerX - 3.2} V 74.95 H ${centerX - 7.1} Z`}
+                d={`M ${centerX - 6.15} 70.0 H ${centerX + 6.15} V 74.95 H ${centerX + 2.8} V 77.15 H ${centerX + 1.2} V 79.0 H ${centerX - 1.2} V 77.15 H ${centerX - 2.8} V 74.95 H ${centerX - 6.15} Z`}
                 fill="#05080e"
                 stroke="#1c2740"
                 strokeWidth="0.92"
