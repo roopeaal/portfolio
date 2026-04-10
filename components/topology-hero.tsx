@@ -78,6 +78,39 @@ const INITIAL_NODE_POSITIONS: Record<NodeKey, NodePosition> = {
   contact: { x: 958, y: 454 },
 };
 
+const NODE_POSITIONS_STORAGE_KEY = "portfolio-node-positions-v1";
+
+function getInitialNodePositions(): Record<NodeKey, NodePosition> {
+  if (typeof window === "undefined") return INITIAL_NODE_POSITIONS;
+
+  try {
+    const raw = window.sessionStorage.getItem(NODE_POSITIONS_STORAGE_KEY);
+    if (!raw) return INITIAL_NODE_POSITIONS;
+
+    const parsed = JSON.parse(raw);
+    const keys: NodeKey[] = ["about", "projects", "home", "contact"];
+
+    for (const key of keys) {
+      if (
+        !parsed?.[key] ||
+        typeof parsed[key].x !== "number" ||
+        typeof parsed[key].y !== "number"
+      ) {
+        return INITIAL_NODE_POSITIONS;
+      }
+    }
+
+    return {
+      about: { x: parsed.about.x, y: parsed.about.y },
+      projects: { x: parsed.projects.x, y: parsed.projects.y },
+      home: { x: parsed.home.x, y: parsed.home.y },
+      contact: { x: parsed.contact.x, y: parsed.contact.y },
+    };
+  } catch {
+    return INITIAL_NODE_POSITIONS;
+  }
+}
+
 const SIDEBAR_TITLE: Record<Exclude<WindowType, null>, string> = {
   home: "DESKTOP",
   about: "GLOBAL",
@@ -565,8 +598,15 @@ export function TopologyHero() {
   const [networkMode, setNetworkMode] = useState<NetworkMode>("stable");
   const [motionTick, setMotionTick] = useState(0);
   const [networkModeStartTick, setNetworkModeStartTick] = useState(0);
-  const [nodePositions, setNodePositions] = useState<Record<NodeKey, NodePosition>>(INITIAL_NODE_POSITIONS);
+  const [nodePositions, setNodePositions] = useState<Record<NodeKey, NodePosition>>(() => getInitialNodePositions());
   const [draggingNode, setDraggingNode] = useState<NodeKey | null>(null);
+
+  useEffect(() => {
+    try {
+      window.sessionStorage.setItem(NODE_POSITIONS_STORAGE_KEY, JSON.stringify(nodePositions));
+    } catch {}
+  }, [nodePositions]);
+
   const phoneTapAudioRef = useRef<HTMLAudioElement | null>(null);
   const phoneTapSoundSrc = `${ASSET_BASE}/phone-click.m4a?v=20260409-7`;
   const [detachedOrigin, setDetachedOrigin] = useState<{ x: number; y: number } | null>(null);
@@ -1105,7 +1145,7 @@ export function TopologyHero() {
           onForward={() => setManualOffset((value) => value + 30)}
         />
 
-        <div className="absolute inset-x-0 bottom-[54px] top-[58px] px-2 pb-2 pt-2 sm:px-3 md:px-5">
+        <div className="absolute inset-x-0 bottom-[54px] top-[58px] mx-auto max-w-[1500px] px-2 pb-2 pt-2 sm:px-3 md:px-5">
           <div className="relative h-full w-full">
             <div className="relative h-full w-full">
               <div ref={sceneRef} className="relative h-full w-full overflow-hidden">
@@ -1376,18 +1416,13 @@ function BottomBlueBar({ elapsedSeconds, onReset, onForward }: { elapsedSeconds:
         <button
           type="button"
           onClick={onForward}
-          className="inline-flex h-[30px] w-[44px] items-center justify-center rounded-[4px] border border-[#8394ab] bg-[rgba(255,255,255,0.04)] text-white/72 transition hover:bg-[rgba(255,255,255,0.08)]"
+          className="inline-flex h-[30px] w-[38px] items-center justify-center rounded-[4px] border border-[#8394ab] bg-[rgba(255,255,255,0.04)] text-white/72 transition hover:bg-[rgba(255,255,255,0.08)]"
           aria-label="Add 30 seconds"
         >
-          <span className="relative inline-flex h-[16px] w-[22px] items-center justify-center">
-            <svg width="20" height="16" viewBox="0 0 20 16" fill="none" aria-hidden="true">
-              <path d="M2 2.2L8.2 8L2 13.8V2.2Z" fill="currentColor" />
-              <path d="M9.2 2.2L15.4 8L9.2 13.8V2.2Z" fill="currentColor" />
-            </svg>
-            <span className="absolute -right-[8px] -top-[6px] rounded-full border border-[#91a1b8] bg-[#0a3c76] px-[3px] py-[1px] text-[8px] font-semibold leading-none text-white">
-              30
-            </span>
-          </span>
+          <svg width="18" height="14" viewBox="0 0 18 14" fill="none" aria-hidden="true">
+            <path d="M1.5 1.4L7.2 7L1.5 12.6V1.4Z" fill="currentColor" />
+            <path d="M8.2 1.4L13.9 7L8.2 12.6V1.4Z" fill="currentColor" />
+          </svg>
         </button>
       </div>
 
