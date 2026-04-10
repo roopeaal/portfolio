@@ -168,7 +168,20 @@ function rectsOverlap(
   a: { left: number; top: number; right: number; bottom: number },
   b: { left: number; top: number; right: number; bottom: number },
 ) {
-  return a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+  const aCx = (a.left + a.right) / 2;
+  const aCy = (a.top + a.bottom) / 2;
+  const bCx = (b.left + b.right) / 2;
+  const bCy = (b.top + b.bottom) / 2;
+
+  const aRx = Math.max((a.right - a.left) / 2, 1);
+  const aRy = Math.max((a.bottom - a.top) / 2, 1);
+  const bRx = Math.max((b.right - b.left) / 2, 1);
+  const bRy = Math.max((b.bottom - b.top) / 2, 1);
+
+  const nx = Math.abs(aCx - bCx) / (aRx + bRx);
+  const ny = Math.abs(aCy - bCy) / (aRy + bRy);
+
+  return nx * nx + ny * ny < 1;
 }
 
 function resolveNonOverlappingPosition(
@@ -1271,10 +1284,18 @@ function BottomBlueBar({ elapsedSeconds, onReset, onForward }: { elapsedSeconds:
         <button
           type="button"
           onClick={onForward}
-          className="inline-flex h-[30px] items-center justify-center rounded-[4px] border border-[#8394ab] bg-[rgba(255,255,255,0.04)] px-2 text-[12px] text-white/64 transition hover:bg-[rgba(255,255,255,0.08)]"
+          className="inline-flex h-[30px] w-[44px] items-center justify-center rounded-[4px] border border-[#8394ab] bg-[rgba(255,255,255,0.04)] text-white/72 transition hover:bg-[rgba(255,255,255,0.08)]"
           aria-label="Add 30 seconds"
         >
-          +30s
+          <span className="relative inline-flex h-[16px] w-[22px] items-center justify-center">
+            <svg width="20" height="16" viewBox="0 0 20 16" fill="none" aria-hidden="true">
+              <path d="M2 2.2L8.2 8L2 13.8V2.2Z" fill="currentColor" />
+              <path d="M9.2 2.2L15.4 8L9.2 13.8V2.2Z" fill="currentColor" />
+            </svg>
+            <span className="absolute -right-[8px] -top-[6px] rounded-full border border-[#91a1b8] bg-[#0a3c76] px-[3px] py-[1px] text-[8px] font-semibold leading-none text-white">
+              30
+            </span>
+          </span>
         </button>
       </div>
 
