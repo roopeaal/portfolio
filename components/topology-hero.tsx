@@ -125,7 +125,7 @@ function stepToward(from: { x: number; y: number }, to: { x: number; y: number }
   return { x: from.x + dx * ratio, y: from.y + dy * ratio };
 }
 
-function getNodeCollisionRects(
+function getNodeMagnetZone(
   node: NodeKey,
   position: NodePosition,
   halo = 0,
@@ -143,25 +143,46 @@ function getNodeCollisionRects(
   const labelTop = position.y + meta.deviceHeight + shape.label.top - halo;
   const labelBottom = position.y + meta.height - shape.label.bottom + halo;
 
-  if (labelBottom > labelTop) {
-    const labelRect = {
-      left: position.x + shape.label.left - halo,
-      top: labelTop,
-      right: position.x + meta.width - shape.label.right + halo,
-      bottom: labelBottom,
-    };
+  const labelRect = labelBottom > labelTop
+    ? {
+        left: position.x + shape.label.left - halo,
+        top: labelTop,
+        right: position.x + meta.width - shape.label.right + halo,
+        bottom: labelBottom,
+      }
+    : deviceRect;
 
-    return [
-      {
-        left: Math.min(deviceRect.left, labelRect.left),
-        top: Math.min(deviceRect.top, labelRect.top),
-        right: Math.max(deviceRect.right, labelRect.right),
-        bottom: Math.max(deviceRect.bottom, labelRect.bottom),
-      },
-    ];
-  }
+  const left = Math.min(deviceRect.left, labelRect.left);
+  const top = Math.min(deviceRect.top, labelRect.top);
+  const right = Math.max(deviceRect.right, labelRect.right);
+  const bottom = Math.max(deviceRect.bottom, labelRect.bottom);
 
-  return [deviceRect];
+  return {
+    left,
+    top,
+    right,
+    bottom,
+    cx: (left + right) / 2,
+    cy: (top + bottom) / 2,
+    rx: Math.max((right - left) / 2, 1),
+    ry: Math.max((bottom - top) / 2, 1),
+  };
+}
+
+function getNodeCollisionRects(
+  node: NodeKey,
+  position: NodePosition,
+  halo = 0,
+) {
+  const zone = getNodeMagnetZone(node, position, halo);
+  return [
+    {
+      left: zone.left,
+      top: zone.top,
+      right: zone.right,
+      bottom: zone.bottom,
+    },
+  ];
 }
 
 function rectsOverlap(
@@ -190,7 +211,6 @@ function resolveNonOverlappingPosition(
   positions: Record<NodeKey, NodePosition>,
 ) {
   const bounds = NODE_DRAG_BOUNDS[node];
-  const HALO = NODE_PROTECTIVE_HALO;
   const current = positions[node];
 
   const clampPos = (pos: NodePosition) => ({
@@ -198,94 +218,49 @@ function resolveNonOverlappingPosition(
     y: clamp(pos.y, bounds.minY, bounds.maxY),
   });
 
-  const collidesAt = (pos: NodePosition) => {
-    const aRects = getNodeCollisionRects(node, pos, HALO);
+  let candidate = clampPos(proposed);
+
+  for (let i = 0; i < 14; i += 1) {
+    let moved = false;
+    const selfZone = getNodeMagnetZone(node, candidate, NODE_PROTECTIVE_HALO);
 
     for (const other of Object.keys(positions) as NodeKey[]) {
       if (other === node) continue;
-      const bRects = getNodeCollisionRects(other, positions[other], HALO);
 
-      for (const a of aRects) {
-        for (const b of bRects) {
-          if (rectsOverlap(a, b)) return true;
-        }
-      }
+      const otherZone = getNodeMagnetZone(other, positions[other], NODE_PROTECTIVE_HALO);
+
+      const dx = selfZone.cx - otherZone.cx;
+      const dy = selfZone.cy - otherZone.cy;
+
+      const combinedRx = selfZone.rx + otherZone.rx;
+      const combinedRy = selfZone.ry + otherZone.ry;
+
+      const nx = dx / Math.max(combinedRx, 1);
+      const ny = dy / Math.max(combinedRy, 1);
+      const d2 = nx * nx + ny * ny;
+
+      if (d2 >= 1) continue;
+
+      const rawLen = Math.hypot(dx, dy);
+      const ux = rawLen > 0.0001 ? dx / rawLen : 1;
+      const uy = rawLen > 0.0001 ? dy / rawLen : 0;
+
+      const inside = 1 - Math.sqrt(Math.max(d2, 0));
+      const push = 3 + inside * 26;
+
+      candidate = clampPos({
+        x: candidate.x + ux * push,
+        y: candidate.y + uy * push,
+      });
+
+      moved = true;
+      break;
     }
 
-    return false;
-  };
-
-  const desired = clampPos(proposed);
-  if (!collidesAt(desired)) return desired;
-
-  const dx = desired.x - current.x;
-  const dy = desired.y - current.y;
-  const horizontalDominant = Math.abs(dx) >= Math.abs(dy);
-
-  const slideA = clampPos({
-    x: horizontalDominant ? desired.x : current.x,
-    y: horizontalDominant ? current.y : desired.y,
-  });
-
-  if (!collidesAt(slideA)) return slideA;
-
-  const slideB = clampPos({
-    x: horizontalDominant ? current.x : desired.x,
-    y: horizontalDominant ? desired.y : current.y,
-  });
-
-  if (!collidesAt(slideB)) return slideB;
-
-  let candidate = { ...desired };
-
-  for (let i = 0; i < 14; i += 1) {
-    const candidateRects = getNodeCollisionRects(node, candidate, HALO);
-    let adjusted = false;
-
-    outer: for (const other of Object.keys(positions) as NodeKey[]) {
-      if (other === node) continue;
-
-      const otherRects = getNodeCollisionRects(other, positions[other], HALO);
-
-      for (const a of candidateRects) {
-        for (const b of otherRects) {
-          if (!rectsOverlap(a, b)) continue;
-
-          const pushLeft = b.left - a.right;
-          const pushRight = b.right - a.left;
-          const pushUp = b.top - a.bottom;
-          const pushDown = b.bottom - a.top;
-
-          const pushX = Math.abs(pushLeft) < Math.abs(pushRight) ? pushLeft : pushRight;
-          const pushY = Math.abs(pushUp) < Math.abs(pushDown) ? pushUp : pushDown;
-
-          const options = horizontalDominant
-            ? [
-                { axis: "y", delta: pushY, abs: Math.abs(pushY) },
-                { axis: "x", delta: pushX, abs: Math.abs(pushX) },
-              ]
-            : [
-                { axis: "x", delta: pushX, abs: Math.abs(pushX) },
-                { axis: "y", delta: pushY, abs: Math.abs(pushY) },
-              ];
-
-          const best = options.sort((m, n) => m.abs - n.abs)[0];
-
-          candidate = clampPos({
-            x: candidate.x + (best.axis === "x" ? best.delta : 0),
-            y: candidate.y + (best.axis === "y" ? best.delta : 0),
-          });
-
-          adjusted = true;
-          break outer;
-        }
-      }
-    }
-
-    if (!adjusted) break;
+    if (!moved) break;
   }
 
-  return collidesAt(candidate) ? current : candidate;
+  return candidate;
 }
 
 function randomFromSeed(seed: number) {
@@ -869,6 +844,18 @@ export function TopologyHero() {
 
       const dragged = state.dragStarted;
       const node = state.node;
+
+      if (dragged) {
+        nodeTargetPositionsRef.current = {
+          ...nodeTargetPositionsRef.current,
+          [node]: resolveNonOverlappingPosition(
+            node,
+            nodeTargetPositionsRef.current[node] ?? nodePositionsRef.current[node],
+            nodePositionsRef.current,
+          ),
+        };
+      }
+
       dragRef.current = null;
       setDraggingNode(null);
 
