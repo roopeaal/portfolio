@@ -143,8 +143,6 @@ function getNodeCollisionRects(
   const labelTop = position.y + meta.deviceHeight + shape.label.top - halo;
   const labelBottom = position.y + meta.height - shape.label.bottom + halo;
 
-  const rects = [deviceRect];
-
   if (labelBottom > labelTop) {
     const labelRect = {
       left: position.x + shape.label.left - halo,
@@ -153,21 +151,17 @@ function getNodeCollisionRects(
       bottom: labelBottom,
     };
 
-    const bridgeRect = {
-      left: Math.min(deviceRect.left, labelRect.left),
-      top: deviceRect.bottom,
-      right: Math.max(deviceRect.right, labelRect.right),
-      bottom: labelRect.top,
-    };
-
-    if (bridgeRect.bottom > bridgeRect.top) {
-      rects.push(bridgeRect);
-    }
-
-    rects.push(labelRect);
+    return [
+      {
+        left: Math.min(deviceRect.left, labelRect.left),
+        top: Math.min(deviceRect.top, labelRect.top),
+        right: Math.max(deviceRect.right, labelRect.right),
+        bottom: Math.max(deviceRect.bottom, labelRect.bottom),
+      },
+    ];
   }
 
-  return rects;
+  return [deviceRect];
 }
 
 function rectsOverlap(
@@ -1375,7 +1369,7 @@ function NodeButton({
                   background: DEBUG_HALO_COLORS[node],
                   border: `1px dashed ${DEBUG_HALO_BORDERS[node]}`,
                   boxShadow: `inset 0 0 0 1px ${DEBUG_HALO_BORDERS[node]}`,
-                  borderRadius: index === 0 ? "22px" : "12px",
+                  borderRadius: "999px",
                 }}
               />
             ))
