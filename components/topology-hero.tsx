@@ -1939,7 +1939,7 @@ function SwitchIllustration({
                     {portCenters.map((centerX, index) => (
             <g key={centerX} opacity={index === ledIndex ? 0.98 : 1}>
               <path
-                d={`M ${centerX - 6.15} 70.0 H ${centerX + 6.15} V 74.95 H ${centerX + 2.8} V 77.15 H ${centerX + 1.2} V 79.0 H ${centerX - 1.2} V 77.15 H ${centerX - 2.8} V 74.95 H ${centerX - 6.15} Z`}
+                d={`M ${centerX - 6.35} 72.15 V 79.0 H ${centerX + 6.35} V 72.15 L ${centerX + 4.65} 70.15 H ${centerX - 4.65} L ${centerX - 6.35} 72.15 Z`}
                 fill="#05080e"
                 stroke="#1c2740"
                 strokeWidth="0.92"
@@ -1949,16 +1949,16 @@ function SwitchIllustration({
                 <rect
                   key={pinIndex}
                   x={centerX - 4.9 + pinIndex * 1.22}
-                  y={71.18}
+                  y={71.35}
                   width="0.74"
-                  height="2.08"
+                  height="1.95"
                   rx="0.08"
                   fill="#d7b24f"
                   opacity="0.98"
                 />
               ))}
               <path
-                d={`M ${centerX - 5.45} 70.92 H ${centerX + 5.45}`}
+                d={`M ${centerX - 4.7} 71.0 H ${centerX + 4.7}`}
                 stroke="rgba(255,255,255,0.12)"
                 strokeWidth="0.38"
                 strokeLinecap="round"
