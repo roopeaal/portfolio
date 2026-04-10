@@ -127,11 +127,13 @@ const NODE_DRAG_BOUNDS: Record<NodeKey, DragBounds> = {
 
 function createNodeDragBounds(node: NodeKey): DragBounds {
   const meta = NODE_META[node];
+  const BOTTOM_SAFE_MARGIN = 32;
+
   return {
     minX: 0,
     maxX: VIEWBOX.width - meta.width,
     minY: 0,
-    maxY: VIEWBOX.height - meta.height,
+    maxY: VIEWBOX.height - meta.height - BOTTOM_SAFE_MARGIN,
   };
 }
 
