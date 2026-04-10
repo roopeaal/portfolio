@@ -125,6 +125,47 @@ function stepToward(from: { x: number; y: number }, to: { x: number; y: number }
   return { x: from.x + dx * ratio, y: from.y + dy * ratio };
 }
 
+function getNodeRect(node: NodeKey, position: NodePosition) {
+  const meta = NODE_META[node];
+  return {
+    left: position.x,
+    top: position.y,
+    right: position.x + meta.width,
+    bottom: position.y + meta.height,
+  };
+}
+
+function rectsOverlap(
+  a: { left: number; top: number; right: number; bottom: number },
+  b: { left: number; top: number; right: number; bottom: number },
+) {
+  return a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+}
+
+function resolveNonOverlappingPosition(
+  node: NodeKey,
+  proposed: NodePosition,
+  positions: Record<NodeKey, NodePosition>,
+) {
+  const bounds = NODE_DRAG_BOUNDS[node];
+  const bounded = {
+    x: clamp(proposed.x, bounds.minX, bounds.maxX),
+    y: clamp(proposed.y, bounds.minY, bounds.maxY),
+  };
+
+  const nextRect = getNodeRect(node, bounded);
+
+  for (const other of Object.keys(positions) as NodeKey[]) {
+    if (other === node) continue;
+    const otherRect = getNodeRect(other, positions[other]);
+    if (rectsOverlap(nextRect, otherRect)) {
+      return positions[node];
+    }
+  }
+
+  return bounded;
+}
+
 function randomFromSeed(seed: number) {
   const value = Math.sin(seed * 999.31) * 43758.5453123;
   return value - Math.floor(value);
@@ -650,7 +691,11 @@ export function TopologyHero() {
 
       nodeTargetPositionsRef.current = {
         ...nodeTargetPositionsRef.current,
-        [state.node]: { x: nextX, y: nextY },
+        [state.node]: resolveNonOverlappingPosition(
+          state.node,
+          { x: nextX, y: nextY },
+          nodePositionsRef.current,
+        ),
       };
     };
 
