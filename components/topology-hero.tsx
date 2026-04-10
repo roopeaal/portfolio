@@ -218,11 +218,38 @@ function resolveNonOverlappingPosition(
     y: clamp(pos.y, bounds.minY, bounds.maxY),
   });
 
+  const zonesOverlap = (
+    a: ReturnType<typeof getNodeMagnetZone>,
+    b: ReturnType<typeof getNodeMagnetZone>,
+  ) => {
+    const dx = a.cx - b.cx;
+    const dy = a.cy - b.cy;
+    const rx = Math.max(a.rx + b.rx, 1);
+    const ry = Math.max(a.ry + b.ry, 1);
+    const nx = dx / rx;
+    const ny = dy / ry;
+    return nx * nx + ny * ny < 1;
+  };
+
+  const overlapsAny = (pos: NodePosition) => {
+    const selfZone = getNodeMagnetZone(node, pos, NODE_PROTECTIVE_HALO);
+
+    for (const other of Object.keys(positions) as NodeKey[]) {
+      if (other === node) continue;
+      const otherZone = getNodeMagnetZone(other, positions[other], NODE_PROTECTIVE_HALO);
+      if (zonesOverlap(selfZone, otherZone)) return true;
+    }
+
+    return false;
+  };
+
   let candidate = clampPos(proposed);
 
-  for (let i = 0; i < 14; i += 1) {
-    let moved = false;
+  for (let i = 0; i < 24; i += 1) {
     const selfZone = getNodeMagnetZone(node, candidate, NODE_PROTECTIVE_HALO);
+    let totalPushX = 0;
+    let totalPushY = 0;
+    let hitCount = 0;
 
     for (const other of Object.keys(positions) as NodeKey[]) {
       if (other === node) continue;
@@ -231,36 +258,70 @@ function resolveNonOverlappingPosition(
 
       const dx = selfZone.cx - otherZone.cx;
       const dy = selfZone.cy - otherZone.cy;
+      const rx = Math.max(selfZone.rx + otherZone.rx, 1);
+      const ry = Math.max(selfZone.ry + otherZone.ry, 1);
 
-      const combinedRx = selfZone.rx + otherZone.rx;
-      const combinedRy = selfZone.ry + otherZone.ry;
+      const nx = dx / rx;
+      const ny = dy / ry;
+      const dist = Math.hypot(nx, ny);
 
-      const nx = dx / Math.max(combinedRx, 1);
-      const ny = dy / Math.max(combinedRy, 1);
-      const d2 = nx * nx + ny * ny;
+      if (dist >= 1) continue;
 
-      if (d2 >= 1) continue;
+      hitCount += 1;
 
-      const rawLen = Math.hypot(dx, dy);
-      const ux = rawLen > 0.0001 ? dx / rawLen : 1;
-      const uy = rawLen > 0.0001 ? dy / rawLen : 0;
+      let pushX = 0;
+      let pushY = 0;
 
-      const inside = 1 - Math.sqrt(Math.max(d2, 0));
-      const push = 3 + inside * 26;
+      if (Math.abs(dx) < 0.001 && Math.abs(dy) < 0.001) {
+        const fallbackDx = candidate.x - positions[other].x;
+        const fallbackDy = candidate.y - positions[other].y;
 
-      candidate = clampPos({
-        x: candidate.x + ux * push,
-        y: candidate.y + uy * push,
-      });
+        if (Math.abs(fallbackDx) >= Math.abs(fallbackDy)) {
+          pushX = fallbackDx >= 0 ? 12 : -12;
+        } else {
+          pushY = fallbackDy >= 0 ? 12 : -12;
+        }
+      } else {
+        const factor = (1.06 / Math.max(dist, 0.0001)) - 1;
+        pushX = dx * factor;
+        pushY = dy * factor;
+      }
 
-      moved = true;
-      break;
+      totalPushX += pushX;
+      totalPushY += pushY;
     }
 
-    if (!moved) break;
+    if (hitCount === 0) {
+      return candidate;
+    }
+
+    candidate = clampPos({
+      x: candidate.x + totalPushX / hitCount,
+      y: candidate.y + totalPushY / hitCount,
+    });
   }
 
-  return candidate;
+  if (!overlapsAny(candidate)) {
+    return candidate;
+  }
+
+  const origin = clampPos(proposed);
+
+  for (let radius = 6; radius <= 220; radius += 6) {
+    for (let i = 0; i < 24; i += 1) {
+      const angle = (Math.PI * 2 * i) / 24;
+      const test = clampPos({
+        x: origin.x + Math.cos(angle) * radius,
+        y: origin.y + Math.sin(angle) * radius,
+      });
+
+      if (!overlapsAny(test)) {
+        return test;
+      }
+    }
+  }
+
+  return current;
 }
 
 function randomFromSeed(seed: number) {
