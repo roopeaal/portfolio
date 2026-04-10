@@ -148,23 +148,16 @@ function resolveNonOverlappingPosition(
   positions: Record<NodeKey, NodePosition>,
 ) {
   const bounds = NODE_DRAG_BOUNDS[node];
-  const current = positions[node];
   const meta = NODE_META[node];
   const HALO = NODE_PROTECTIVE_HALO;
-  const GAP = HALO * 2;
 
   let candidate = {
     x: clamp(proposed.x, bounds.minX, bounds.maxX),
     y: clamp(proposed.y, bounds.minY, bounds.maxY),
   };
 
-  const desiredMove = {
-    x: candidate.x - current.x,
-    y: candidate.y - current.y,
-  };
-
-  for (let i = 0; i < 6; i += 1) {
-    let collided = false;
+  for (let i = 0; i < 8; i += 1) {
+    let adjusted = false;
 
     const nextRect = {
       left: candidate.x - HALO,
@@ -187,22 +180,18 @@ function resolveNonOverlappingPosition(
 
       if (!rectsOverlap(nextRect, otherRect)) continue;
 
-      collided = true;
+      const overlapLeft = nextRect.right - otherRect.left;
+      const overlapRight = otherRect.right - nextRect.left;
+      const overlapTop = nextRect.bottom - otherRect.top;
+      const overlapBottom = otherRect.bottom - nextRect.top;
 
-      const horizontalMoveDominant = Math.abs(desiredMove.x) >= Math.abs(desiredMove.y);
+      const minOverlapX = Math.min(overlapLeft, overlapRight);
+      const minOverlapY = Math.min(overlapTop, overlapBottom);
 
-      if (horizontalMoveDominant) {
-        if (desiredMove.x >= 0) {
-          candidate.x = otherPos.x - meta.width - GAP;
-        } else {
-          candidate.x = otherPos.x + otherMeta.width + GAP;
-        }
+      if (minOverlapX < minOverlapY) {
+        candidate.x += overlapLeft < overlapRight ? -overlapLeft : overlapRight;
       } else {
-        if (desiredMove.y >= 0) {
-          candidate.y = otherPos.y - meta.height - GAP;
-        } else {
-          candidate.y = otherPos.y + otherMeta.height + GAP;
-        }
+        candidate.y += overlapTop < overlapBottom ? -overlapTop : overlapBottom;
       }
 
       candidate = {
@@ -210,10 +199,11 @@ function resolveNonOverlappingPosition(
         y: clamp(candidate.y, bounds.minY, bounds.maxY),
       };
 
+      adjusted = true;
       break;
     }
 
-    if (!collided) break;
+    if (!adjusted) break;
   }
 
   return candidate;
