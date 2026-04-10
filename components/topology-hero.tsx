@@ -1147,7 +1147,7 @@ export function TopologyHero() {
           onForward={() => setManualOffset((value) => value + 30)}
         />
 
-        <div className="absolute inset-x-0 bottom-[54px] top-[58px] px-2 pb-2 pt-2 sm:px-3 md:px-5">
+        <div className="absolute inset-x-0 bottom-[54px] top-[58px] px-1 pb-2 pt-2 sm:px-2 md:px-2 xl:px-1 2xl:px-0">
           <div className="relative h-full w-full">
             <div className="relative h-full w-full">
               <div ref={sceneRef} className="relative h-full w-full overflow-hidden">
