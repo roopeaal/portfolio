@@ -339,7 +339,7 @@ const SWITCH_LEFT_CABLE_PORT_INDEX = 0;
 const SWITCH_RIGHT_CABLE_PORT_INDEX = 4;
 const SWITCH_STUB_Y = 90;
 
-const DEBUG_NODE_HALOS = true;
+const DEBUG_NODE_HALOS = false;
 const NODE_PROTECTIVE_HALO = 10;
 
 const DEBUG_HALO_COLORS: Record<NodeKey, string> = {
