@@ -1904,7 +1904,7 @@ function SwitchIllustration({
       animate={active ? { y: [0, -1, 0] } : { y: 0 }}
       transition={active ? { duration: 0.55, repeat: 1, ease: "easeInOut" } : { duration: 0.2 }}
     >
-      <div className="relative h-[120px] w-[252px]">
+      <div className="relative h-[86px] w-[176px]">
         <div className="absolute left-[36px] top-[93px] h-[16px] w-[176px] rounded-full bg-[#12233f]/12 blur-[10px]" />
 
         <svg
