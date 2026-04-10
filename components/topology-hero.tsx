@@ -1927,7 +1927,7 @@ function SwitchIllustration({
           />
 
           <path
-            d="M 31 52 H 206 V 95 C 206 103 199.2 108.6 191.2 108.6 H 45.8 C 37.8 108.6 31 103 31 95 Z"
+            d="M 31 52 H 206 V 92.2 C 206 99.2 199.4 104.2 191.8 104.2 H 45.2 C 37.6 104.2 31 99.2 31 92.2 Z"
             fill="url(#switchFrontRefA)"
             stroke="#29456b"
             strokeWidth="1.45"
@@ -1935,7 +1935,7 @@ function SwitchIllustration({
           />
 
           <path
-            d="M 31 93.6 H 206 V 95 C 206 103 199.2 108.6 191.2 108.6 H 45.8 C 37.8 108.6 31 103 31 95 Z"
+            d="M 31 90.6 H 206 V 92.2 C 206 99.2 199.4 104.2 191.8 104.2 H 45.2 C 37.6 104.2 31 99.2 31 92.2 Z"
             fill="url(#switchBottomRefA)"
             opacity="0.98"
           />
@@ -1949,7 +1949,7 @@ function SwitchIllustration({
           />
 
           <path
-            d="M 142 18 H 190 L 201 37 H 154 Z"
+            d="M 146.5 18 H 189.2 L 198.6 33.8 H 158.8 Z"
             fill="url(#switchGlassRefA)"
             opacity="0.95"
           />
@@ -1981,21 +1981,21 @@ function SwitchIllustration({
           />
 
           <rect
-            x="39.5"
-            y="70.5"
-            width="12.6"
-            height="12.6"
-            rx="2.2"
+            x="40.6"
+            y="71.6"
+            width="10.2"
+            height="10.2"
+            rx="1.9"
             fill={isAlert ? "#efe1bd" : "#f1f2f4"}
             stroke="#c9cfda"
             strokeWidth="0.95"
           />
           <rect
-            x="41.4"
-            y="72.3"
-            width="8.6"
-            height="2.05"
-            rx="0.6"
+            x="42.0"
+            y="73.0"
+            width="7.0"
+            height="1.8"
+            rx="0.55"
             fill="rgba(255,255,255,0.88)"
           />
 
