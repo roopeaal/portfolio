@@ -148,22 +148,75 @@ function resolveNonOverlappingPosition(
   positions: Record<NodeKey, NodePosition>,
 ) {
   const bounds = NODE_DRAG_BOUNDS[node];
-  const bounded = {
+  const current = positions[node];
+  const meta = NODE_META[node];
+  const HALO = 18;
+  const GAP = HALO * 2;
+
+  let candidate = {
     x: clamp(proposed.x, bounds.minX, bounds.maxX),
     y: clamp(proposed.y, bounds.minY, bounds.maxY),
   };
 
-  const nextRect = getNodeRect(node, bounded);
+  const desiredMove = {
+    x: candidate.x - current.x,
+    y: candidate.y - current.y,
+  };
 
-  for (const other of Object.keys(positions) as NodeKey[]) {
-    if (other === node) continue;
-    const otherRect = getNodeRect(other, positions[other]);
-    if (rectsOverlap(nextRect, otherRect)) {
-      return positions[node];
+  for (let i = 0; i < 6; i += 1) {
+    let collided = false;
+
+    const nextRect = {
+      left: candidate.x - HALO,
+      top: candidate.y - HALO,
+      right: candidate.x + meta.width + HALO,
+      bottom: candidate.y + meta.height + HALO,
+    };
+
+    for (const other of Object.keys(positions) as NodeKey[]) {
+      if (other === node) continue;
+
+      const otherMeta = NODE_META[other];
+      const otherPos = positions[other];
+      const otherRect = {
+        left: otherPos.x - HALO,
+        top: otherPos.y - HALO,
+        right: otherPos.x + otherMeta.width + HALO,
+        bottom: otherPos.y + otherMeta.height + HALO,
+      };
+
+      if (!rectsOverlap(nextRect, otherRect)) continue;
+
+      collided = true;
+
+      const horizontalMoveDominant = Math.abs(desiredMove.x) >= Math.abs(desiredMove.y);
+
+      if (horizontalMoveDominant) {
+        if (desiredMove.x >= 0) {
+          candidate.x = otherPos.x - meta.width - GAP;
+        } else {
+          candidate.x = otherPos.x + otherMeta.width + GAP;
+        }
+      } else {
+        if (desiredMove.y >= 0) {
+          candidate.y = otherPos.y - meta.height - GAP;
+        } else {
+          candidate.y = otherPos.y + otherMeta.height + GAP;
+        }
+      }
+
+      candidate = {
+        x: clamp(candidate.x, bounds.minX, bounds.maxX),
+        y: clamp(candidate.y, bounds.minY, bounds.maxY),
+      };
+
+      break;
     }
+
+    if (!collided) break;
   }
 
-  return bounded;
+  return candidate;
 }
 
 function randomFromSeed(seed: number) {
