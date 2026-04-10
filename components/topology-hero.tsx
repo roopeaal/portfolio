@@ -5,6 +5,7 @@ import Image from "next/image";
 import {
   useCallback,
   useEffect,
+  useId,
   useMemo,
   useRef,
   useState,
@@ -1876,9 +1877,26 @@ function SwitchIllustration({
   uplinkConnected?: boolean;
   pcConnected?: boolean;
 }) {
-  const ledIndex = Math.floor(tick / 3) % SWITCH_PORT_CENTERS.length;
-  const isAlert = networkMode !== "stable";
-  const portCenters = SWITCH_PORT_CENTERS;
+  void networkMode;
+  void tick;
+
+  const uid = useId().replace(/:/g, "");
+
+  const ids = {
+    left: `${uid}-left`,
+    top: `${uid}-top`,
+    front: `${uid}-front`,
+    bezel: `${uid}-bezel`,
+    led: `${uid}-led`,
+    portShell: `${uid}-port-shell`,
+    portInner: `${uid}-port-inner`,
+    portLip: `${uid}-port-lip`,
+    topClip: `${uid}-top-clip`,
+    leftClip: `${uid}-left-clip`,
+    frontClip: `${uid}-front-clip`,
+  };
+
+  const portXs = [214, 308, 402, 496, 590, 684, 778];
 
   return (
     <motion.div
@@ -1886,181 +1904,282 @@ function SwitchIllustration({
       animate={active ? { y: [0, -1, 0] } : { y: 0 }}
       transition={active ? { duration: 0.55, repeat: 1, ease: "easeInOut" } : { duration: 0.2 }}
     >
-      <div className="relative h-[140px] w-[252px]">
-        <div className="absolute left-[40px] top-[101px] h-[15px] w-[152px] rounded-full bg-[#12233f]/14 blur-[10px]" />
+      <div className="relative h-[120px] w-[252px]">
+        <div className="absolute left-[36px] top-[93px] h-[16px] w-[176px] rounded-full bg-[#12233f]/12 blur-[10px]" />
 
-        <svg viewBox="0 0 228 128" className="absolute inset-0 h-full w-full" aria-hidden="true">
+        <svg
+          viewBox="0 0 1018 482"
+          xmlns="http://www.w3.org/2000/svg"
+          role="img"
+          aria-label="Blue network switch"
+          className="absolute inset-0 h-full w-full"
+          style={{ display: "block", shapeRendering: "geometricPrecision" }}
+          preserveAspectRatio="none"
+        >
           <defs>
-            <linearGradient id="switchTopRefA" x1="0.08" y1="0.02" x2="0.92" y2="0.92">
-              <stop offset="0%" stopColor="#5d7fb4" />
-              <stop offset="52%" stopColor="#29446f" />
-              <stop offset="100%" stopColor="#162d52" />
+            <linearGradient id={ids.left} x1="50" y1="22" x2="553" y2="289" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stopColor="#5c739b" />
+              <stop offset="100%" stopColor="#4b648f" />
             </linearGradient>
 
-            <linearGradient id="switchFrontRefA" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#5977a9" />
-              <stop offset="100%" stopColor="#304d79" />
+            <linearGradient id={ids.top} x1="306" y1="22" x2="967" y2="289" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stopColor="#314a73" />
+              <stop offset="100%" stopColor="#223961" />
             </linearGradient>
 
-            <linearGradient id="switchBottomRefA" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#314e7a" />
-              <stop offset="100%" stopColor="#243e66" />
+            <linearGradient id={ids.front} x1="50" y1="289" x2="967" y2="454" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stopColor="#45618f" />
+              <stop offset="100%" stopColor="#2f4975" />
             </linearGradient>
 
-            <linearGradient id="switchPortPlateRefA" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#f3f4f7" />
-              <stop offset="100%" stopColor="#d8dce3" />
+            <linearGradient id={ids.bezel} x1="191" y1="318" x2="892" y2="425" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stopColor="#f5f3ef" />
+              <stop offset="70%" stopColor="#d8d7d3" />
+              <stop offset="100%" stopColor="#c8c7c3" />
             </linearGradient>
 
-            <linearGradient id="switchGlassRefA" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stopColor="rgba(205,237,255,0.88)" />
-              <stop offset="100%" stopColor="rgba(170,221,255,0.58)" />
+            <linearGradient id={ids.led} x1="73" y1="322" x2="107" y2="356" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stopColor="#faf8f2" />
+              <stop offset="100%" stopColor="#dddbd4" />
             </linearGradient>
+
+            <linearGradient id={ids.portShell} x1="0" y1="334" x2="0" y2="402" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stopColor="#2d4670" />
+              <stop offset="40%" stopColor="#243d66" />
+              <stop offset="100%" stopColor="#142949" />
+            </linearGradient>
+
+            <linearGradient id={ids.portInner} x1="0" y1="344" x2="0" y2="401" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stopColor="#2f4874" />
+              <stop offset="100%" stopColor="#1f365d" />
+            </linearGradient>
+
+            <linearGradient id={ids.portLip} x1="0" y1="334" x2="0" y2="347" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stopColor="#50688f" />
+              <stop offset="100%" stopColor="#304a74" />
+            </linearGradient>
+
+            <clipPath id={ids.topClip}>
+              <path d="M306 22H812L967 289H553L306 22Z" />
+            </clipPath>
+
+            <clipPath id={ids.leftClip}>
+              <path d="M50 289L228 22H306L553 289H50Z" />
+            </clipPath>
+
+            <clipPath id={ids.frontClip}>
+              <rect x="50" y="289" width="917" height="165" rx="11" />
+            </clipPath>
           </defs>
 
-          <path
-            d="M 48 18 H 190 L 206 52 H 31 Z"
-            fill="url(#switchTopRefA)"
-            stroke="#385481"
-            strokeWidth="1.6"
-            strokeLinejoin="round"
-          />
+          <g>
+            <path
+              d="M50 289L228 22H306L553 289H50Z"
+              fill={`url(#${ids.left})`}
+              stroke="#324b75"
+              strokeWidth="3"
+            />
 
-          <path
-            d="M 31 52 H 206 V 92.2 C 206 99.2 199.4 104.2 191.8 104.2 H 45.2 C 37.6 104.2 31 99.2 31 92.2 Z"
-            fill="url(#switchFrontRefA)"
-            stroke="#29456b"
-            strokeWidth="1.45"
-            strokeLinejoin="round"
-          />
+            <path
+              d="M306 22H812L967 289H553L306 22Z"
+              fill={`url(#${ids.top})`}
+              stroke="#22355a"
+              strokeWidth="3"
+            />
 
-          <path
-            d="M 31 90.6 H 206 V 92.2 C 206 99.2 199.4 104.2 191.8 104.2 H 45.2 C 37.6 104.2 31 99.2 31 92.2 Z"
-            fill="url(#switchBottomRefA)"
-            opacity="0.98"
-          />
+            <polygon points="247,22 288,22 585,289 544,289" fill="#eef6f6" />
 
-          <path
-            d="M 57 19.5 L 98 58"
-            stroke="#eef8fb"
-            strokeWidth="5.4"
-            strokeLinecap="round"
-            opacity="0.96"
-          />
+            <polygon
+              points="620,22 812,22 889,154 767,154"
+              fill="#b9d2e6"
+              opacity="0.97"
+            />
 
-          <path
-            d="M 146.5 18 H 189.2 L 198.6 33.8 H 158.8 Z"
-            fill="url(#switchGlassRefA)"
-            opacity="0.95"
-          />
-
-          <path
-            d="M 79 26 C 102 23.8, 141 25.6, 178 34 C 168 35.5, 153 36.4, 138 35.8 C 111 34.8, 90 31.4, 79 26 Z"
-            fill="rgba(129,157,214,0.18)"
-          />
-
-          <path
-            d="M 91 41 C 115 37.6, 154 40.2, 188 49.4 C 172 49.8, 150 49.2, 128 47.6 C 111 46.3, 98 44.4, 91 41 Z"
-            fill="rgba(17,31,59,0.26)"
-          />
-
-          <path
-            d="M 67 50 H 201"
-            stroke="rgba(255,255,255,0.12)"
-            strokeWidth="1"
-          />
-          <path
-            d="M 31 52 H 206"
-            stroke="rgba(255,255,255,0.16)"
-            strokeWidth="1"
-          />
-          <path
-            d="M 31 53 H 206"
-            stroke="rgba(15,24,41,0.18)"
-            strokeWidth="0.95"
-          />
-
-          <rect
-            x="40.6"
-            y="71.6"
-            width="10.2"
-            height="10.2"
-            rx="1.9"
-            fill={isAlert ? "#efe1bd" : "#f1f2f4"}
-            stroke="#c9cfda"
-            strokeWidth="0.95"
-          />
-          <rect
-            x="42.0"
-            y="73.0"
-            width="7.0"
-            height="1.8"
-            rx="0.55"
-            fill="rgba(255,255,255,0.88)"
-          />
-
-          <rect
-            x="60.6"
-            y="63.6"
-            width="131.4"
-            height="26.2"
-            rx="2.8"
-            fill="url(#switchPortPlateRefA)"
-            stroke="#cfd4dc"
-            strokeWidth="1"
-          />
-
-          <path
-            d="M 60.6 63.6 H 192"
-            stroke="rgba(255,255,255,0.42)"
-            strokeWidth="0.8"
-          />
-
-          {portCenters.map((centerX, index) => (
-            <g key={centerX} opacity={index === ledIndex ? 0.98 : 1}>
+            <g clipPath={`url(#${ids.topClip})`}>
               <path
-                d={`M ${centerX - 6.7} 76.3 V 85.2 H ${centerX + 6.7} V 76.3 L ${centerX + 5.05} 73.85 H ${centerX + 2.1} L ${centerX + 0.8} 72.6 H ${centerX - 0.8} L ${centerX - 2.1} 73.85 H ${centerX - 5.05} Z`}
-                fill="#172544"
-                stroke="#223456"
-                strokeWidth="0.95"
-                strokeLinejoin="round"
+                d="M338 48C398 34 488 36 569 55C629 70 671 93 686 116C697 133 690 147 664 154C621 166 550 162 475 145C401 128 345 102 325 77C314 63 318 53 338 48Z"
+                fill="#2a426b"
+                opacity="0.34"
               />
-              {Array.from({ length: 7 }).map((_, pinIndex) => (
-                <rect
-                  key={pinIndex}
-                  x={centerX - 4.65 + pinIndex * 1.45}
-                  y={74.75}
-                  width="0.88"
-                  height="2.7"
-                  rx="0.12"
-                  fill="#d4b14b"
-                  opacity="0.98"
-                />
-              ))}
               <path
-                d={`M ${centerX - 4.95} 74.2 H ${centerX + 4.95}`}
-                stroke="rgba(255,255,255,0.11)"
-                strokeWidth="0.42"
-                strokeLinecap="round"
+                d="M449 78C500 70 566 74 615 92C648 104 668 121 670 135C671 147 660 156 634 160C585 167 520 162 471 145C437 133 416 116 412 102C409 90 421 82 449 78Z"
+                fill="#1d3458"
+                opacity="0.22"
+              />
+              <path
+                d="M602 149C660 143 737 151 798 170C850 186 890 211 906 235C917 251 911 263 886 269C833 281 752 275 678 255C609 236 560 210 547 187C538 171 553 155 602 149Z"
+                fill="#183052"
+                opacity="0.28"
+              />
+              <path
+                d="M539 244C558 240 587 241 605 248C617 253 619 262 609 267C593 274 565 275 547 270C534 266 529 257 539 244Z"
+                fill="#7f9fc4"
+                opacity="0.24"
+              />
+              <path
+                d="M705 40C752 37 805 45 839 63C860 74 871 89 869 101C867 113 851 120 822 121C775 124 721 116 687 99C666 88 655 74 658 62C661 50 676 42 705 40Z"
+                fill="#aac8df"
+                opacity="0.18"
               />
             </g>
-          ))}
 
-          <path
-            d="M 60.6 89.8 H 192"
-            stroke="rgba(0,0,0,0.08)"
-            strokeWidth="0.86"
-          />
-          <path
-            d="M 31 97.5 H 206"
-            stroke="rgba(0,0,0,0.12)"
-            strokeWidth="1"
-          />
+            <g clipPath={`url(#${ids.leftClip})`}>
+              <path
+                d="M86 245C138 238 213 239 273 248C316 255 344 267 347 277C349 287 325 293 279 294C220 295 152 286 103 274C72 266 58 257 60 250C63 248 72 247 86 245Z"
+                fill="#6f89b1"
+                opacity="0.16"
+              />
+              <path
+                d="M74 282C126 276 211 278 294 289H50L74 282Z"
+                fill="#3f5884"
+                opacity="0.12"
+              />
+            </g>
+
+            <rect
+              x="50"
+              y="289"
+              width="917"
+              height="165"
+              rx="11"
+              fill={`url(#${ids.front})`}
+              stroke="#2b416c"
+              strokeWidth="3"
+            />
+
+            <rect x="50" y="289" width="917" height="14" fill="#38527d" opacity="0.9" />
+
+            <g clipPath={`url(#${ids.frontClip})`}>
+              <path
+                d="M523 293C560 286 608 289 628 300C642 308 637 319 613 323C577 330 527 327 508 317C496 310 501 297 523 293Z"
+                fill="#6b86af"
+                opacity="0.20"
+              />
+              <path
+                d="M511 331C553 322 609 325 633 341C648 352 641 367 605 370C562 373 512 364 493 349C481 340 487 336 511 331Z"
+                fill="#5673a0"
+                opacity="0.24"
+              />
+              <path
+                d="M731 338C814 328 913 338 951 360C971 372 966 390 927 397C856 409 764 405 719 389C690 378 691 343 731 338Z"
+                fill="#1c3257"
+                opacity="0.22"
+              />
+              <path
+                d="M58 421C132 414 224 417 250 429C261 434 259 444 234 447C164 456 83 454 58 442C47 437 45 424 58 421Z"
+                fill="#5875a1"
+                opacity="0.22"
+              />
+              <path
+                d="M445 437C548 423 673 424 711 439C726 446 719 454 681 459C583 468 474 467 437 454C424 449 425 440 445 437Z"
+                fill="#20375c"
+                opacity="0.20"
+              />
+            </g>
+
+            <rect
+              x="73"
+              y="322"
+              width="34"
+              height="34"
+              rx="2"
+              fill={`url(#${ids.led})`}
+              stroke="#d6d4cd"
+              strokeWidth="2"
+            />
+
+            <rect
+              x="191"
+              y="318"
+              width="701"
+              height="107"
+              rx="1.5"
+              fill={`url(#${ids.bezel})`}
+              stroke="#acaca8"
+              strokeWidth="3"
+            />
+
+            {portXs.map((x) => (
+              <g key={x}>
+                <path
+                  d={`
+                    M ${x} 401
+                    L ${x} 352
+                    Q ${x} 345 ${x + 6} 345
+                    L ${x + 23} 345
+                    L ${x + 31} 334
+                    L ${x + 53} 334
+                    L ${x + 61} 345
+                    L ${x + 78} 345
+                    Q ${x + 84} 345 ${x + 84} 352
+                    L ${x + 84} 401
+                    Z
+                  `}
+                  fill={`url(#${ids.portShell})`}
+                />
+
+                <path
+                  d={`
+                    M ${x + 7} 399
+                    L ${x + 7} 355
+                    Q ${x + 7} 350 ${x + 11} 350
+                    L ${x + 26} 350
+                    L ${x + 33} 341
+                    L ${x + 51} 341
+                    L ${x + 58} 350
+                    L ${x + 73} 350
+                    Q ${x + 77} 350 ${x + 77} 355
+                    L ${x + 77} 399
+                    Z
+                  `}
+                  fill={`url(#${ids.portInner})`}
+                />
+
+                <path
+                  d={`
+                    M ${x + 2} 347
+                    Q ${x + 3} 341 ${x + 9} 341
+                    L ${x + 24} 341
+                    L ${x + 32} 331
+                    L ${x + 52} 331
+                    L ${x + 60} 341
+                    L ${x + 75} 341
+                    Q ${x + 81} 341 ${x + 82} 347
+                    L ${x + 77} 347
+                    Q ${x + 76} 345 ${x + 73} 345
+                    L ${x + 58} 345
+                    L ${x + 51} 336
+                    L ${x + 33} 336
+                    L ${x + 26} 345
+                    L ${x + 11} 345
+                    Q ${x + 8} 345 ${x + 7} 347
+                    Z
+                  `}
+                  fill={`url(#${ids.portLip})`}
+                  opacity="0.95"
+                />
+
+                <line
+                  x1={x + 8}
+                  y1={398}
+                  x2={x + 76}
+                  y2={398}
+                  stroke="#29456f"
+                  strokeWidth="1"
+                  opacity="0.35"
+                />
+              </g>
+            ))}
+
+            <line x1="191" y1="318" x2="892" y2="318" stroke="#faf8f3" strokeWidth="1.2" opacity="0.65" />
+            <line x1="191" y1="425" x2="892" y2="425" stroke="#888987" strokeWidth="1.1" opacity="0.55" />
+          </g>
         </svg>
       </div>
     </motion.div>
   );
 }
+
 
 function PCIllustration({ compact = false, typingStep = 0, typingActive = false }: { compact?: boolean; typingStep?: number; typingActive?: boolean }) {
   const activeKeys = typingActive ? buildTypingPattern(typingStep) : new Set<number>();
