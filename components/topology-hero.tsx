@@ -232,11 +232,11 @@ function resolveNonOverlappingPosition(
   };
 
   const overlapsAny = (pos: NodePosition) => {
-    const selfZone = getNodeMagnetZone(node, pos, NODE_PROTECTIVE_HALO);
+    const selfZone = getNodeMagnetZone(node, pos, CURRENT_PROTECTIVE_HALO);
 
     for (const other of Object.keys(positions) as NodeKey[]) {
       if (other === node) continue;
-      const otherZone = getNodeMagnetZone(other, positions[other], NODE_PROTECTIVE_HALO);
+      const otherZone = getNodeMagnetZone(other, positions[other], CURRENT_PROTECTIVE_HALO);
       if (zonesOverlap(selfZone, otherZone)) return true;
     }
 
@@ -246,7 +246,7 @@ function resolveNonOverlappingPosition(
   let candidate = clampPos(proposed);
 
   for (let i = 0; i < 24; i += 1) {
-    const selfZone = getNodeMagnetZone(node, candidate, NODE_PROTECTIVE_HALO);
+    const selfZone = getNodeMagnetZone(node, candidate, CURRENT_PROTECTIVE_HALO);
     let totalPushX = 0;
     let totalPushY = 0;
     let hitCount = 0;
@@ -254,7 +254,7 @@ function resolveNonOverlappingPosition(
     for (const other of Object.keys(positions) as NodeKey[]) {
       if (other === node) continue;
 
-      const otherZone = getNodeMagnetZone(other, positions[other], NODE_PROTECTIVE_HALO);
+      const otherZone = getNodeMagnetZone(other, positions[other], CURRENT_PROTECTIVE_HALO);
 
       const dx = selfZone.cx - otherZone.cx;
       const dy = selfZone.cy - otherZone.cy;
@@ -341,6 +341,8 @@ const SWITCH_STUB_Y = 90;
 
 const DEBUG_NODE_HALOS = false;
 const NODE_PROTECTIVE_HALO = 10;
+let CURRENT_PROTECTIVE_HALO = NODE_PROTECTIVE_HALO;
+const NODE_KEYS: NodeKey[] = ["about", "projects", "home", "contact"];
 
 const DEBUG_HALO_COLORS: Record<NodeKey, string> = {
   about: "rgba(59,130,246,0.14)",
@@ -576,6 +578,48 @@ export function TopologyHero() {
   const [contactSection, setContactSection] = useState<"channels" | "roles" | "cv" | "status">("channels");
 
   const sceneRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const scene = sceneRef.current;
+    if (!scene) return;
+
+    const syncResponsiveHalo = () => {
+      const rect = scene.getBoundingClientRect();
+      if (!rect.width || !rect.height) return;
+
+      CURRENT_PROTECTIVE_HALO =
+        NODE_PROTECTIVE_HALO *
+        Math.max(VIEWBOX.width / rect.width, VIEWBOX.height / rect.height);
+
+      setNodePositions((current) => {
+        let next = current;
+
+        for (const key of NODE_KEYS) {
+          const resolved = resolveNonOverlappingPosition(key, next[key], next);
+
+          if (resolved.x !== next[key].x || resolved.y !== next[key].y) {
+            next = { ...next, [key]: resolved };
+          }
+        }
+
+        nodePositionsRef.current = next;
+        nodeTargetPositionsRef.current = next;
+        return next;
+      });
+    };
+
+    syncResponsiveHalo();
+
+    const ro = new ResizeObserver(syncResponsiveHalo);
+    ro.observe(scene);
+    window.addEventListener("resize", syncResponsiveHalo);
+
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", syncResponsiveHalo);
+    };
+  }, []);
+
   const nodePositionsRef = useRef<Record<NodeKey, NodePosition>>(INITIAL_NODE_POSITIONS);
   const nodeTargetPositionsRef = useRef<Record<NodeKey, NodePosition>>(INITIAL_NODE_POSITIONS);
   const nodeVelocityRef = useRef<Record<NodeKey, NodePosition>>({
