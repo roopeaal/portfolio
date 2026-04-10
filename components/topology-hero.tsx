@@ -150,7 +150,7 @@ function resolveNonOverlappingPosition(
   const bounds = NODE_DRAG_BOUNDS[node];
   const current = positions[node];
   const meta = NODE_META[node];
-  const HALO = 18;
+  const HALO = NODE_PROTECTIVE_HALO;
   const GAP = HALO * 2;
 
   let candidate = {
@@ -233,6 +233,23 @@ const SWITCH_PORT_CENTERS = [79, 94, 109, 124, 139, 154] as const;
 const SWITCH_LEFT_CABLE_PORT_INDEX = 0;
 const SWITCH_RIGHT_CABLE_PORT_INDEX = 4;
 const SWITCH_STUB_Y = 90;
+
+const DEBUG_NODE_HALOS = true;
+const NODE_PROTECTIVE_HALO = 18;
+
+const DEBUG_HALO_COLORS: Record<NodeKey, string> = {
+  about: "rgba(59,130,246,0.14)",
+  projects: "rgba(245,158,11,0.14)",
+  home: "rgba(34,197,94,0.14)",
+  contact: "rgba(236,72,153,0.14)",
+};
+
+const DEBUG_HALO_BORDERS: Record<NodeKey, string> = {
+  about: "rgba(59,130,246,0.55)",
+  projects: "rgba(245,158,11,0.55)",
+  home: "rgba(34,197,94,0.55)",
+  contact: "rgba(236,72,153,0.55)",
+};
 
 function getAttachPoint(node: NodeKey, positions: Record<NodeKey, NodePosition>) {
   const { x, y } = positions[node];
@@ -1218,6 +1235,7 @@ function NodeButton({
   children: ReactNode;
 }) {
   const meta = NODE_META[node];
+  const haloSize = NODE_PROTECTIVE_HALO;
 
   return (
     <div
@@ -1254,7 +1272,23 @@ function NodeButton({
           transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
           className="pointer-events-none relative z-10 flex justify-center"
         >
-          {children}
+          
+        {DEBUG_NODE_HALOS ? (
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute rounded-[26px]"
+            style={{
+              left: `${-haloSize}px`,
+              top: `${-haloSize}px`,
+              width: `${meta.width + haloSize * 2}px`,
+              height: `${meta.height + haloSize * 2}px`,
+              background: DEBUG_HALO_COLORS[node],
+              border: `1px dashed ${DEBUG_HALO_BORDERS[node]}`,
+              boxShadow: `inset 0 0 0 1px ${DEBUG_HALO_BORDERS[node]}`,
+            }}
+          />
+        ) : null}
+        {children}
         </motion.div>
 
         <div
