@@ -146,12 +146,25 @@ function getNodeCollisionRects(
   const rects = [deviceRect];
 
   if (labelBottom > labelTop) {
-    rects.push({
+    const labelRect = {
       left: position.x + shape.label.left - halo,
       top: labelTop,
       right: position.x + meta.width - shape.label.right + halo,
       bottom: labelBottom,
-    });
+    };
+
+    const bridgeRect = {
+      left: Math.min(deviceRect.left, labelRect.left),
+      top: deviceRect.bottom,
+      right: Math.max(deviceRect.right, labelRect.right),
+      bottom: labelRect.top,
+    };
+
+    if (bridgeRect.bottom > bridgeRect.top) {
+      rects.push(bridgeRect);
+    }
+
+    rects.push(labelRect);
   }
 
   return rects;
@@ -171,15 +184,56 @@ function resolveNonOverlappingPosition(
 ) {
   const bounds = NODE_DRAG_BOUNDS[node];
   const HALO = NODE_PROTECTIVE_HALO;
+  const current = positions[node];
 
-  let candidate = {
-    x: clamp(proposed.x, bounds.minX, bounds.maxX),
-    y: clamp(proposed.y, bounds.minY, bounds.maxY),
+  const clampPos = (pos: NodePosition) => ({
+    x: clamp(pos.x, bounds.minX, bounds.maxX),
+    y: clamp(pos.y, bounds.minY, bounds.maxY),
+  });
+
+  const collidesAt = (pos: NodePosition) => {
+    const aRects = getNodeCollisionRects(node, pos, HALO);
+
+    for (const other of Object.keys(positions) as NodeKey[]) {
+      if (other === node) continue;
+      const bRects = getNodeCollisionRects(other, positions[other], HALO);
+
+      for (const a of aRects) {
+        for (const b of bRects) {
+          if (rectsOverlap(a, b)) return true;
+        }
+      }
+    }
+
+    return false;
   };
 
-  for (let i = 0; i < 12; i += 1) {
+  const desired = clampPos(proposed);
+  if (!collidesAt(desired)) return desired;
+
+  const dx = desired.x - current.x;
+  const dy = desired.y - current.y;
+  const horizontalDominant = Math.abs(dx) >= Math.abs(dy);
+
+  const slideA = clampPos({
+    x: horizontalDominant ? desired.x : current.x,
+    y: horizontalDominant ? current.y : desired.y,
+  });
+
+  if (!collidesAt(slideA)) return slideA;
+
+  const slideB = clampPos({
+    x: horizontalDominant ? current.x : desired.x,
+    y: horizontalDominant ? desired.y : current.y,
+  });
+
+  if (!collidesAt(slideB)) return slideB;
+
+  let candidate = { ...desired };
+
+  for (let i = 0; i < 14; i += 1) {
     const candidateRects = getNodeCollisionRects(node, candidate, HALO);
-    let pushed = false;
+    let adjusted = false;
 
     outer: for (const other of Object.keys(positions) as NodeKey[]) {
       if (other === node) continue;
@@ -195,30 +249,36 @@ function resolveNonOverlappingPosition(
           const pushUp = b.top - a.bottom;
           const pushDown = b.bottom - a.top;
 
-          const options = [
-            { axis: "x", delta: pushLeft, abs: Math.abs(pushLeft) },
-            { axis: "x", delta: pushRight, abs: Math.abs(pushRight) },
-            { axis: "y", delta: pushUp, abs: Math.abs(pushUp) },
-            { axis: "y", delta: pushDown, abs: Math.abs(pushDown) },
-          ].sort((m, n) => m.abs - n.abs);
+          const pushX = Math.abs(pushLeft) < Math.abs(pushRight) ? pushLeft : pushRight;
+          const pushY = Math.abs(pushUp) < Math.abs(pushDown) ? pushUp : pushDown;
 
-          const best = options[0];
+          const options = horizontalDominant
+            ? [
+                { axis: "y", delta: pushY, abs: Math.abs(pushY) },
+                { axis: "x", delta: pushX, abs: Math.abs(pushX) },
+              ]
+            : [
+                { axis: "x", delta: pushX, abs: Math.abs(pushX) },
+                { axis: "y", delta: pushY, abs: Math.abs(pushY) },
+              ];
 
-          candidate = {
-            x: clamp(candidate.x + (best.axis === "x" ? best.delta : 0), bounds.minX, bounds.maxX),
-            y: clamp(candidate.y + (best.axis === "y" ? best.delta : 0), bounds.minY, bounds.maxY),
-          };
+          const best = options.sort((m, n) => m.abs - n.abs)[0];
 
-          pushed = true;
+          candidate = clampPos({
+            x: candidate.x + (best.axis === "x" ? best.delta : 0),
+            y: candidate.y + (best.axis === "y" ? best.delta : 0),
+          });
+
+          adjusted = true;
           break outer;
         }
       }
     }
 
-    if (!pushed) break;
+    if (!adjusted) break;
   }
 
-  return candidate;
+  return collidesAt(candidate) ? current : candidate;
 }
 
 function randomFromSeed(seed: number) {
