@@ -197,8 +197,8 @@ function getNodeMagnetZone(
     bottom,
     cx: (left + right) / 2,
     cy: (top + bottom) / 2,
-    rx: Math.max((right - left) / 2, 1),
-    ry: Math.max((bottom - top) / 2, 1),
+    rx: Math.max(((right - left) / 2) * MAGNET_WIDTH_SCALE, 1),
+    ry: Math.max(((bottom - top) / 2) * MAGNET_HEIGHT_SCALE, 1),
   };
 }
 
@@ -375,6 +375,8 @@ const SWITCH_STUB_Y = 90;
 const DEBUG_NODE_HALOS = false;
 const NODE_PROTECTIVE_HALO = 10;
 let CURRENT_PROTECTIVE_HALO = NODE_PROTECTIVE_HALO;
+const MAGNET_WIDTH_SCALE = 0.88;
+const MAGNET_HEIGHT_SCALE = 1;
 const NODE_KEYS: NodeKey[] = ["about", "projects", "home", "contact"];
 
 const DEBUG_HALO_COLORS: Record<NodeKey, string> = {
@@ -1145,7 +1147,7 @@ export function TopologyHero() {
           onForward={() => setManualOffset((value) => value + 30)}
         />
 
-        <div className="absolute inset-x-0 bottom-[54px] top-[58px] mx-auto max-w-[1500px] px-2 pb-2 pt-2 sm:px-3 md:px-5">
+        <div className="absolute inset-x-0 bottom-[54px] top-[58px] px-2 pb-2 pt-2 sm:px-3 md:px-5">
           <div className="relative h-full w-full">
             <div className="relative h-full w-full">
               <div ref={sceneRef} className="relative h-full w-full overflow-hidden">
@@ -1405,23 +1407,33 @@ function BottomBlueBar({ elapsedSeconds, onReset, onForward }: { elapsedSeconds:
     <div className="absolute inset-x-0 bottom-0 z-40 flex h-[54px] items-center justify-between bg-[#062f5d] px-3 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
       <div className="flex items-center gap-2 text-[13px]">
         <span className="min-w-[112px]">Time: {formatElapsed(elapsedSeconds)}</span>
+
         <button
           type="button"
           onClick={onReset}
-          className="inline-flex h-[30px] w-[30px] items-center justify-center rounded-[4px] border border-[#8394ab] bg-[rgba(255,255,255,0.04)] text-[15px] text-white/64 transition hover:bg-[rgba(255,255,255,0.08)]"
+          className="inline-flex h-[30px] w-[30px] items-center justify-center rounded-[4px] border border-[#8394ab] bg-[rgba(255,255,255,0.04)] text-white/72 transition hover:bg-[rgba(255,255,255,0.08)]"
           aria-label="Reset timer"
         >
-          ↺
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" className="block">
+            <path
+              d="M8.2 7.2H4.4V3.4M5 6.2C6.7 4.2 9.2 3 12 3C17 3 21 7 21 12C21 17 17 21 12 21C7.7 21 4.2 18 3.3 14.1"
+              stroke="currentColor"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
         </button>
+
         <button
           type="button"
           onClick={onForward}
-          className="inline-flex h-[30px] w-[38px] items-center justify-center rounded-[4px] border border-[#8394ab] bg-[rgba(255,255,255,0.04)] text-white/72 transition hover:bg-[rgba(255,255,255,0.08)]"
+          className="inline-flex h-[30px] w-[44px] items-center justify-center rounded-[4px] border border-[#8394ab] bg-[rgba(255,255,255,0.04)] text-white/72 transition hover:bg-[rgba(255,255,255,0.08)]"
           aria-label="Add 30 seconds"
         >
-          <svg width="18" height="14" viewBox="0 0 18 14" fill="none" aria-hidden="true">
-            <path d="M1.5 1.4L7.2 7L1.5 12.6V1.4Z" fill="currentColor" />
-            <path d="M8.2 1.4L13.9 7L8.2 12.6V1.4Z" fill="currentColor" />
+          <svg width="20" height="16" viewBox="0 0 20 16" fill="none" aria-hidden="true" className="block">
+            <path d="M2 2.2L8.2 8L2 13.8V2.2Z" fill="currentColor" />
+            <path d="M9.2 2.2L15.4 8L9.2 13.8V2.2Z" fill="currentColor" />
           </svg>
         </button>
       </div>
