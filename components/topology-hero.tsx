@@ -1681,7 +1681,7 @@ function DetachedEthernetStub({ bottom }: { bottom: { x: number; y: number } }) 
   const headHeight = 28.5;
 
   const x = bottom.x - headWidth / 2;
-  const y = bottom.y - headHeight + 2.0;
+  const y = bottom.y - headHeight - 1.5;
 
   return (
     <svg
