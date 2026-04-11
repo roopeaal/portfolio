@@ -1676,16 +1676,16 @@ function EthernetHeadGraphic({ className = "" }: { className?: string }) {
 
 
 function DetachedEthernetStub({ bottom }: { bottom: { x: number; y: number } }) {
-  const color = "#2F3366";
-  const headHeight = 24.5;
-  const headWidth = (230 / 426) * headHeight;
+  const color = "#cfd7df";
+  const headWidth = 29.5;
+  const headHeight = 28.5;
 
   const x = bottom.x - headWidth / 2;
-  const y = bottom.y - headHeight + 0.8;
+  const y = bottom.y - headHeight + 2.0;
 
   return (
     <svg
-      viewBox="0 0 230 426"
+      viewBox="32 14 170 170"
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       preserveAspectRatio="xMidYMid meet"
@@ -1700,13 +1700,13 @@ function DetachedEthernetStub({ bottom }: { bottom: { x: number; y: number } }) 
     >
       <path
         fill={color}
-        stroke="#20244A"
+        stroke="#5b6470"
         strokeWidth="6"
         strokeLinejoin="round"
         d="M 83 16 L 75 20 L 72 29 L 68 34 L 49 34 L 42 38 L 38 45 L 38 153 L 32 156 L 27 163 L 27 242 L 36 291 L 42 314 L 42 320 L 46 331 L 53 339 L 64 345 L 64 355 L 57 360 L 56 368 L 60 373 L 66 377 L 59 383 L 58 393 L 68 402 L 62 406 L 59 414 L 62 421 L 66 423 L 82 423 L 84 425 L 142 425 L 144 423 L 161 423 L 167 418 L 168 412 L 165 406 L 161 404 L 159 401 L 166 397 L 169 393 L 169 385 L 161 377 L 167 373 L 171 368 L 171 362 L 163 354 L 163 345 L 175 338 L 183 327 L 200 242 L 200 163 L 195 156 L 189 153 L 189 45 L 187 41 L 178 34 L 159 34 L 156 31 L 152 20 L 144 16 Z"
       />
       <path
-        fill="#FFFFFF"
+        fill="#fbfcfd"
         d="M 51 50 L 54 47 L 58 49 L 59 83 L 69 83 L 70 48 L 72 49 L 73 83 L 83 83 L 83 49 L 85 47 L 87 49 L 87 82 L 97 83 L 97 49 L 99 47 L 101 49 L 101 82 L 111 83 L 112 48 L 114 47 L 115 80 L 116 83 L 125 83 L 126 49 L 128 47 L 130 49 L 130 83 L 139 83 L 140 49 L 142 47 L 144 49 L 144 83 L 153 83 L 155 80 L 155 49 L 157 48 L 158 82 L 167 83 L 169 81 L 169 49 L 173 47 L 176 50 L 176 152 L 174 154 L 53 154 L 51 152 Z"
       />
     </svg>
