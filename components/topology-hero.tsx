@@ -1179,16 +1179,6 @@ export function TopologyHero() {
                   {!routerGlitchActive && active === "about" ? (
                     <TrafficPulse from={aboutAttach} to={contactAttach} tick={motionTick} duration={86} delay={20} dotted color="#a8e6ff" />
                   ) : null}
-                  {topLineStatus !== "none" ? (
-                    <TrafficPulse
-                      from={aboutAttach}
-                      to={projectsAttach}
-                      tick={motionTick}
-                      duration={54}
-                      delay={0}
-                      color={topLineStatus === "green" ? "#ebfbff" : "#ffbb4b"}
-                    />
-                  ) : null}
                 </motion.svg>
 
                 <NodeButton
@@ -1686,22 +1676,67 @@ function EthernetHeadGraphic({ className = "" }: { className?: string }) {
 
 
 function DetachedEthernetStub({ bottom }: { bottom: { x: number; y: number } }) {
+  const bootWidth = 10.2;
+  const bootHeight = 5.2;
+  const plugWidth = 7.4;
+  const plugHeight = 6.2;
+  const tabWidth = 3.4;
+  const tabHeight = 1.45;
+  const x = bottom.x - bootWidth / 2;
+  const y = bottom.y - (bootHeight + plugHeight) + 0.8;
+
   return (
-    <div
-      className="pointer-events-none absolute z-[31]"
-      style={{
-        left: `${((bottom.x - 6) / VIEWBOX.width) * 100}%`,
-        top: `${(((bottom.y - 14) / VIEWBOX.height)) * 100}%`,
-      }}
+    <svg
+      className="pointer-events-none absolute z-[24] overflow-visible"
+      style={{ left: x, top: y, width: bootWidth, height: bootHeight + plugHeight + 2 }}
+      viewBox={`0 0 ${bootWidth} ${bootHeight + plugHeight + 2}`}
       aria-hidden="true"
     >
-      <span className="absolute left-0 top-0">
-        <EthernetHeadGraphic />
-      </span>
-    </div>
+      <rect
+        x={(bootWidth - plugWidth) / 2}
+        y={bootHeight - 0.1}
+        width={plugWidth}
+        height={plugHeight}
+        rx="1.1"
+        fill="#edf2f5"
+        stroke="#6b7785"
+        strokeWidth="0.62"
+      />
+      <rect
+        x={(bootWidth - plugWidth) / 2 + 0.9}
+        y={bootHeight + 1.0}
+        width={plugWidth - 1.8}
+        height="1.0"
+        rx="0.45"
+        fill="rgba(255,255,255,0.72)"
+      />
+      {Array.from({ length: 6 }).map((_, index) => (
+        <rect
+          key={index}
+          x={(bootWidth - plugWidth) / 2 + 0.95 + index * 0.9}
+          y={bootHeight + 1.85}
+          width="0.4"
+          height="2.0"
+          rx="0.08"
+          fill="#d2b24e"
+        />
+      ))}
+      <path
+        d={`M ${(bootWidth - tabWidth) / 2} ${bootHeight - 0.05} H ${(bootWidth + tabWidth) / 2} L ${(bootWidth + tabWidth) / 2 - 0.55} ${bootHeight - tabHeight} H ${(bootWidth - tabWidth) / 2 + 0.55} Z`}
+        fill="#dfe6ea"
+        stroke="#6b7785"
+        strokeWidth="0.46"
+      />
+      <path
+        d={`M ${(bootWidth - 7.4) / 2} ${bootHeight - 0.35} C ${(bootWidth - 7.4) / 2 + 1.2} ${bootHeight - 3.0}, ${(bootWidth + 7.4) / 2 - 1.2} ${bootHeight - 3.0}, ${(bootWidth + 7.4) / 2} ${bootHeight - 0.35}`}
+        fill="none"
+        stroke="#0a0a0c"
+        strokeWidth="4.7"
+        strokeLinecap="round"
+      />
+    </svg>
   );
 }
-
 
 function CableSegment({ from, to, disconnected = false, looseEnd }: { from: { x: number; y: number }; to: { x: number; y: number }; disconnected?: boolean; looseEnd?: { x: number; y: number } }) {
   const end = disconnected && looseEnd ? looseEnd : to;
