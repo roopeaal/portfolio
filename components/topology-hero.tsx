@@ -373,7 +373,7 @@ function buildTypingPattern(step: number) {
 const SWITCH_PORT_CENTERS = [79, 94, 109, 124, 139, 154] as const;
 const SWITCH_LEFT_CABLE_PORT_INDEX = 0;
 const SWITCH_RIGHT_CABLE_PORT_INDEX = 4;
-const SWITCH_STUB_Y = 90;
+const SWITCH_STUB_Y = 69.0;
 
 const DEBUG_NODE_HALOS = false;
 const NODE_PROTECTIVE_HALO = 10;
@@ -1681,7 +1681,7 @@ function DetachedEthernetStub({ bottom }: { bottom: { x: number; y: number } }) 
   const headHeight = 28.5;
 
   const x = bottom.x - headWidth / 2;
-  const y = bottom.y - headHeight - 1.5;
+  const y = bottom.y - headHeight;
 
   return (
     <svg
