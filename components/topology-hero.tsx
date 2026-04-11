@@ -1676,67 +1676,78 @@ function EthernetHeadGraphic({ className = "" }: { className?: string }) {
 
 
 function DetachedEthernetStub({ bottom }: { bottom: { x: number; y: number } }) {
-  const bodyW = 10.8;
-  const bodyH = 8.4;
-  const bootW = 13.8;
-  const bootH = 5.8;
-  const tailH = 4.2;
-  const totalH = bodyH + bootH + tailH;
+  const plugW = 14.5;
+  const plugH = 11.5;
+  const bootW = 18.5;
+  const bootH = 7.5;
+  const cableH = 8.5;
+  const totalH = plugH + bootH + cableH;
 
   const x = bottom.x - bootW / 2;
-  const y = bottom.y - totalH + 0.7;
+  const y = bottom.y - totalH + 1.2;
 
   return (
     <svg
-      className="pointer-events-none absolute z-[40] overflow-visible"
-      style={{ left: x, top: y, width: bootW, height: totalH + 1 }}
-      viewBox={`0 0 ${bootW} ${totalH + 1}`}
+      className="pointer-events-none absolute z-[90] overflow-visible"
+      style={{ left: x, top: y, width: bootW, height: totalH }}
+      viewBox={`0 0 ${bootW} ${totalH}`}
       aria-hidden="true"
     >
       <path
-        d={`M ${bootW / 2} ${bootH + bodyH - 0.2} V ${totalH + 0.3}`}
-        stroke="#0a0a0c"
-        strokeWidth="4.8"
+        d={`M ${bootW / 2} ${plugH + bootH - 0.2} V ${totalH}`}
+        stroke="#0b0b0d"
+        strokeWidth="5.8"
         strokeLinecap="round"
       />
 
-      <rect
-        x={(bootW - bodyW) / 2}
-        y={bootH}
-        width={bodyW}
-        height={bodyH}
-        rx="1.2"
-        fill="#edf2f5"
+      <path
+        d={`M ${(bootW - 6.2) / 2} ${plugH} H ${(bootW + 6.2) / 2} L ${(bootW + 6.2) / 2 - 0.9} ${plugH - 2.0} H ${(bootW - 6.2) / 2 + 0.9} Z`}
+        fill="#dfe6ea"
         stroke="#6b7785"
-        strokeWidth="0.62"
+        strokeWidth="0.55"
       />
 
       <rect
-        x={(bootW - bodyW) / 2 + 0.95}
-        y={bootH + 1.05}
-        width={bodyW - 1.9}
-        height="1.05"
-        rx="0.45"
+        x={(bootW - plugW) / 2}
+        y={0.4}
+        width={plugW}
+        height={plugH}
+        rx="1.4"
+        fill="#edf2f5"
+        stroke="#697583"
+        strokeWidth="0.75"
+      />
+
+      <rect
+        x={(bootW - plugW) / 2 + 1.1}
+        y={1.4}
+        width={plugW - 2.2}
+        height="1.35"
+        rx="0.5"
         fill="rgba(255,255,255,0.72)"
       />
 
       {Array.from({ length: 6 }).map((_, index) => (
         <rect
           key={index}
-          x={(bootW - bodyW) / 2 + 1.0 + index * 1.0}
-          y={bootH + 1.95}
-          width="0.42"
-          height="2.35"
+          x={(bootW - plugW) / 2 + 1.25 + index * 1.28}
+          y={2.55}
+          width="0.55"
+          height="3.0"
           rx="0.08"
-          fill="#d2b24e"
+          fill="#d1b14c"
         />
       ))}
 
-      <path
-        d={`M ${(bootW - 4.2) / 2} ${bootH} H ${(bootW + 4.2) / 2} L ${(bootW + 4.2) / 2 - 0.7} ${bootH - 1.65} H ${(bootW - 4.2) / 2 + 0.7} Z`}
-        fill="#dfe6ea"
-        stroke="#6b7785"
-        strokeWidth="0.46"
+      <rect
+        x={(bootW - bootW * 0.72) / 2}
+        y={plugH}
+        width={bootW * 0.72}
+        height={bootH}
+        rx="1.6"
+        fill="#cfd8de"
+        stroke="#697583"
+        strokeWidth="0.7"
       />
     </svg>
   );
