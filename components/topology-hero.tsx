@@ -1676,19 +1676,21 @@ function EthernetHeadGraphic({ className = "" }: { className?: string }) {
 
 
 function DetachedEthernetStub({ bottom }: { bottom: { x: number; y: number } }) {
-  const headHeight = 15.2;
-  const headWidth = (230 / 426) * headHeight;
+  const viewW = 165;
+  const viewH = 168;
+  const headHeight = 19.5;
+  const headWidth = (viewW / viewH) * headHeight;
   const x = bottom.x - headWidth / 2;
-  const y = bottom.y - headHeight + 0.8;
+  const y = bottom.y - headHeight + 1.1;
   const color = "#0a0a0c";
 
   return (
     <svg
-      viewBox="0 0 230 426"
+      viewBox="35 14 165 168"
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       preserveAspectRatio="xMidYMid meet"
-      className="pointer-events-none absolute z-[24] overflow-visible"
+      className="pointer-events-none absolute z-[30] overflow-visible"
       style={{ left: x, top: y, width: headWidth, height: headHeight }}
       aria-hidden="true"
     >
