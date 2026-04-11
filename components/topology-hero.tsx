@@ -1676,83 +1676,38 @@ function EthernetHeadGraphic({ className = "" }: { className?: string }) {
 
 
 function DetachedEthernetStub({ bottom }: { bottom: { x: number; y: number } }) {
-  const plugW = 14.5;
-  const plugH = 11.5;
-  const bootW = 18.5;
-  const bootH = 7.5;
-  const cableH = 8.5;
-  const totalH = plugH + bootH + cableH;
+  const color = "#2F3366";
+  const headHeight = 24.5;
+  const headWidth = (230 / 426) * headHeight;
 
-  const x = bottom.x - bootW / 2;
-  const y = bottom.y - totalH + 1.2;
+  const x = bottom.x - headWidth / 2;
+  const y = bottom.y - headHeight + 0.8;
 
   return (
     <svg
+      viewBox="0 0 230 426"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      preserveAspectRatio="xMidYMid meet"
       className="pointer-events-none absolute z-[90] overflow-visible"
       style={{
         left: `${(x / VIEWBOX.width) * 100}%`,
         top: `${(y / VIEWBOX.height) * 100}%`,
-        width: `${(bootW / VIEWBOX.width) * 100}%`,
-        height: `${(totalH / VIEWBOX.height) * 100}%`,
+        width: `${(headWidth / VIEWBOX.width) * 100}%`,
+        height: `${(headHeight / VIEWBOX.height) * 100}%`,
       }}
-      viewBox={`0 0 ${bootW} ${totalH}`}
       aria-hidden="true"
     >
       <path
-        d={`M ${bootW / 2} ${plugH + bootH - 0.2} V ${totalH}`}
-        stroke="#0b0b0d"
-        strokeWidth="5.8"
-        strokeLinecap="round"
+        fill={color}
+        stroke="#20244A"
+        strokeWidth="6"
+        strokeLinejoin="round"
+        d="M 83 16 L 75 20 L 72 29 L 68 34 L 49 34 L 42 38 L 38 45 L 38 153 L 32 156 L 27 163 L 27 242 L 36 291 L 42 314 L 42 320 L 46 331 L 53 339 L 64 345 L 64 355 L 57 360 L 56 368 L 60 373 L 66 377 L 59 383 L 58 393 L 68 402 L 62 406 L 59 414 L 62 421 L 66 423 L 82 423 L 84 425 L 142 425 L 144 423 L 161 423 L 167 418 L 168 412 L 165 406 L 161 404 L 159 401 L 166 397 L 169 393 L 169 385 L 161 377 L 167 373 L 171 368 L 171 362 L 163 354 L 163 345 L 175 338 L 183 327 L 200 242 L 200 163 L 195 156 L 189 153 L 189 45 L 187 41 L 178 34 L 159 34 L 156 31 L 152 20 L 144 16 Z"
       />
-
       <path
-        d={`M ${(bootW - 6.2) / 2} ${plugH} H ${(bootW + 6.2) / 2} L ${(bootW + 6.2) / 2 - 0.9} ${plugH - 2.0} H ${(bootW - 6.2) / 2 + 0.9} Z`}
-        fill="#dfe6ea"
-        stroke="#6b7785"
-        strokeWidth="0.55"
-      />
-
-      <rect
-        x={(bootW - plugW) / 2}
-        y={0.4}
-        width={plugW}
-        height={plugH}
-        rx="1.4"
-        fill="#edf2f5"
-        stroke="#697583"
-        strokeWidth="0.75"
-      />
-
-      <rect
-        x={(bootW - plugW) / 2 + 1.1}
-        y={1.4}
-        width={plugW - 2.2}
-        height="1.35"
-        rx="0.5"
-        fill="rgba(255,255,255,0.72)"
-      />
-
-      {Array.from({ length: 6 }).map((_, index) => (
-        <rect
-          key={index}
-          x={(bootW - plugW) / 2 + 1.25 + index * 1.28}
-          y={2.55}
-          width="0.55"
-          height="3.0"
-          rx="0.08"
-          fill="#d1b14c"
-        />
-      ))}
-
-      <rect
-        x={(bootW - bootW * 0.72) / 2}
-        y={plugH}
-        width={bootW * 0.72}
-        height={bootH}
-        rx="1.6"
-        fill="#cfd8de"
-        stroke="#697583"
-        strokeWidth="0.7"
+        fill="#FFFFFF"
+        d="M 51 50 L 54 47 L 58 49 L 59 83 L 69 83 L 70 48 L 72 49 L 73 83 L 83 83 L 83 49 L 85 47 L 87 49 L 87 82 L 97 83 L 97 49 L 99 47 L 101 49 L 101 82 L 111 83 L 112 48 L 114 47 L 115 80 L 116 83 L 125 83 L 126 49 L 128 47 L 130 49 L 130 83 L 139 83 L 140 49 L 142 47 L 144 49 L 144 83 L 153 83 L 155 80 L 155 49 L 157 48 L 158 82 L 167 83 L 169 81 L 169 49 L 173 47 L 176 50 L 176 152 L 174 154 L 53 154 L 51 152 Z"
       />
     </svg>
   );
