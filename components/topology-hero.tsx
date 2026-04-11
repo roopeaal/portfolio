@@ -1676,34 +1676,67 @@ function EthernetHeadGraphic({ className = "" }: { className?: string }) {
 
 
 function DetachedEthernetStub({ bottom }: { bottom: { x: number; y: number } }) {
-  const viewW = 165;
-  const viewH = 168;
-  const headHeight = 19.5;
-  const headWidth = (viewW / viewH) * headHeight;
-  const x = bottom.x - headWidth / 2;
-  const y = bottom.y - headHeight + 1.1;
-  const color = "#0a0a0c";
+  const bodyW = 10.8;
+  const bodyH = 8.4;
+  const bootW = 13.8;
+  const bootH = 5.8;
+  const tailH = 4.2;
+  const totalH = bodyH + bootH + tailH;
+
+  const x = bottom.x - bootW / 2;
+  const y = bottom.y - totalH + 0.7;
 
   return (
     <svg
-      viewBox="35 14 165 168"
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      preserveAspectRatio="xMidYMid meet"
-      className="pointer-events-none absolute z-[30] overflow-visible"
-      style={{ left: x, top: y, width: headWidth, height: headHeight }}
+      className="pointer-events-none absolute z-[40] overflow-visible"
+      style={{ left: x, top: y, width: bootW, height: totalH + 1 }}
+      viewBox={`0 0 ${bootW} ${totalH + 1}`}
       aria-hidden="true"
     >
       <path
-        fill={color}
-        stroke="#20244A"
-        strokeWidth="6"
-        strokeLinejoin="round"
-        d="M 83 16 L 75 20 L 72 29 L 68 34 L 49 34 L 42 38 L 38 45 L 38 153 L 32 156 L 27 163 L 27 242 L 36 291 L 42 314 L 42 320 L 46 331 L 53 339 L 64 345 L 64 355 L 57 360 L 56 368 L 60 373 L 66 377 L 59 383 L 58 393 L 68 402 L 62 406 L 59 414 L 62 421 L 66 423 L 82 423 L 84 425 L 142 425 L 144 423 L 161 423 L 167 418 L 168 412 L 165 406 L 161 404 L 159 401 L 166 397 L 169 393 L 169 385 L 161 377 L 167 373 L 171 368 L 171 362 L 163 354 L 163 345 L 175 338 L 183 327 L 200 242 L 200 163 L 195 156 L 189 153 L 189 45 L 187 41 L 178 34 L 159 34 L 156 31 L 152 20 L 144 16 Z"
+        d={`M ${bootW / 2} ${bootH + bodyH - 0.2} V ${totalH + 0.3}`}
+        stroke="#0a0a0c"
+        strokeWidth="4.8"
+        strokeLinecap="round"
       />
+
+      <rect
+        x={(bootW - bodyW) / 2}
+        y={bootH}
+        width={bodyW}
+        height={bodyH}
+        rx="1.2"
+        fill="#edf2f5"
+        stroke="#6b7785"
+        strokeWidth="0.62"
+      />
+
+      <rect
+        x={(bootW - bodyW) / 2 + 0.95}
+        y={bootH + 1.05}
+        width={bodyW - 1.9}
+        height="1.05"
+        rx="0.45"
+        fill="rgba(255,255,255,0.72)"
+      />
+
+      {Array.from({ length: 6 }).map((_, index) => (
+        <rect
+          key={index}
+          x={(bootW - bodyW) / 2 + 1.0 + index * 1.0}
+          y={bootH + 1.95}
+          width="0.42"
+          height="2.35"
+          rx="0.08"
+          fill="#d2b24e"
+        />
+      ))}
+
       <path
-        fill="#FFFFFF"
-        d="M 51 50 L 54 47 L 58 49 L 59 83 L 69 83 L 70 48 L 72 49 L 73 83 L 83 83 L 83 49 L 85 47 L 87 49 L 87 82 L 97 83 L 97 49 L 99 47 L 101 49 L 101 82 L 111 83 L 112 48 L 114 47 L 115 80 L 116 83 L 125 83 L 126 49 L 128 47 L 130 49 L 130 83 L 139 83 L 140 49 L 142 47 L 144 49 L 144 83 L 153 83 L 155 80 L 155 49 L 157 48 L 158 82 L 167 83 L 169 81 L 169 49 L 173 47 L 176 50 L 176 152 L 174 154 L 53 154 L 51 152 Z"
+        d={`M ${(bootW - 4.2) / 2} ${bootH} H ${(bootW + 4.2) / 2} L ${(bootW + 4.2) / 2 - 0.7} ${bootH - 1.65} H ${(bootW - 4.2) / 2 + 0.7} Z`}
+        fill="#dfe6ea"
+        stroke="#6b7785"
+        strokeWidth="0.46"
       />
     </svg>
   );
