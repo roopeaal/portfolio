@@ -1689,7 +1689,12 @@ function DetachedEthernetStub({ bottom }: { bottom: { x: number; y: number } }) 
   return (
     <svg
       className="pointer-events-none absolute z-[90] overflow-visible"
-      style={{ left: x, top: y, width: bootW, height: totalH }}
+      style={{
+        left: `${(x / VIEWBOX.width) * 100}%`,
+        top: `${(y / VIEWBOX.height) * 100}%`,
+        width: `${(bootW / VIEWBOX.width) * 100}%`,
+        height: `${(totalH / VIEWBOX.height) * 100}%`,
+      }}
       viewBox={`0 0 ${bootW} ${totalH}`}
       aria-hidden="true"
     >
