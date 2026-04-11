@@ -1676,63 +1676,32 @@ function EthernetHeadGraphic({ className = "" }: { className?: string }) {
 
 
 function DetachedEthernetStub({ bottom }: { bottom: { x: number; y: number } }) {
-  const bootWidth = 10.2;
-  const bootHeight = 5.2;
-  const plugWidth = 7.4;
-  const plugHeight = 6.2;
-  const tabWidth = 3.4;
-  const tabHeight = 1.45;
-  const x = bottom.x - bootWidth / 2;
-  const y = bottom.y - (bootHeight + plugHeight) + 0.8;
+  const headHeight = 15.2;
+  const headWidth = (230 / 426) * headHeight;
+  const x = bottom.x - headWidth / 2;
+  const y = bottom.y - headHeight + 0.8;
+  const color = "#0a0a0c";
 
   return (
     <svg
+      viewBox="0 0 230 426"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      preserveAspectRatio="xMidYMid meet"
       className="pointer-events-none absolute z-[24] overflow-visible"
-      style={{ left: x, top: y, width: bootWidth, height: bootHeight + plugHeight + 2 }}
-      viewBox={`0 0 ${bootWidth} ${bootHeight + plugHeight + 2}`}
+      style={{ left: x, top: y, width: headWidth, height: headHeight }}
       aria-hidden="true"
     >
-      <rect
-        x={(bootWidth - plugWidth) / 2}
-        y={bootHeight - 0.1}
-        width={plugWidth}
-        height={plugHeight}
-        rx="1.1"
-        fill="#edf2f5"
-        stroke="#6b7785"
-        strokeWidth="0.62"
-      />
-      <rect
-        x={(bootWidth - plugWidth) / 2 + 0.9}
-        y={bootHeight + 1.0}
-        width={plugWidth - 1.8}
-        height="1.0"
-        rx="0.45"
-        fill="rgba(255,255,255,0.72)"
-      />
-      {Array.from({ length: 6 }).map((_, index) => (
-        <rect
-          key={index}
-          x={(bootWidth - plugWidth) / 2 + 0.95 + index * 0.9}
-          y={bootHeight + 1.85}
-          width="0.4"
-          height="2.0"
-          rx="0.08"
-          fill="#d2b24e"
-        />
-      ))}
       <path
-        d={`M ${(bootWidth - tabWidth) / 2} ${bootHeight - 0.05} H ${(bootWidth + tabWidth) / 2} L ${(bootWidth + tabWidth) / 2 - 0.55} ${bootHeight - tabHeight} H ${(bootWidth - tabWidth) / 2 + 0.55} Z`}
-        fill="#dfe6ea"
-        stroke="#6b7785"
-        strokeWidth="0.46"
+        fill={color}
+        stroke="#20244A"
+        strokeWidth="6"
+        strokeLinejoin="round"
+        d="M 83 16 L 75 20 L 72 29 L 68 34 L 49 34 L 42 38 L 38 45 L 38 153 L 32 156 L 27 163 L 27 242 L 36 291 L 42 314 L 42 320 L 46 331 L 53 339 L 64 345 L 64 355 L 57 360 L 56 368 L 60 373 L 66 377 L 59 383 L 58 393 L 68 402 L 62 406 L 59 414 L 62 421 L 66 423 L 82 423 L 84 425 L 142 425 L 144 423 L 161 423 L 167 418 L 168 412 L 165 406 L 161 404 L 159 401 L 166 397 L 169 393 L 169 385 L 161 377 L 167 373 L 171 368 L 171 362 L 163 354 L 163 345 L 175 338 L 183 327 L 200 242 L 200 163 L 195 156 L 189 153 L 189 45 L 187 41 L 178 34 L 159 34 L 156 31 L 152 20 L 144 16 Z"
       />
       <path
-        d={`M ${(bootWidth - 7.4) / 2} ${bootHeight - 0.35} C ${(bootWidth - 7.4) / 2 + 1.2} ${bootHeight - 3.0}, ${(bootWidth + 7.4) / 2 - 1.2} ${bootHeight - 3.0}, ${(bootWidth + 7.4) / 2} ${bootHeight - 0.35}`}
-        fill="none"
-        stroke="#0a0a0c"
-        strokeWidth="4.7"
-        strokeLinecap="round"
+        fill="#FFFFFF"
+        d="M 51 50 L 54 47 L 58 49 L 59 83 L 69 83 L 70 48 L 72 49 L 73 83 L 83 83 L 83 49 L 85 47 L 87 49 L 87 82 L 97 83 L 97 49 L 99 47 L 101 49 L 101 82 L 111 83 L 112 48 L 114 47 L 115 80 L 116 83 L 125 83 L 126 49 L 128 47 L 130 49 L 130 83 L 139 83 L 140 49 L 142 47 L 144 49 L 144 83 L 153 83 L 155 80 L 155 49 L 157 48 L 158 82 L 167 83 L 169 81 L 169 49 L 173 47 L 176 50 L 176 152 L 174 154 L 53 154 L 51 152 Z"
       />
     </svg>
   );
