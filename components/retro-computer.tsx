@@ -172,7 +172,7 @@ export function RetroComputer({
 
         <filter id="screenImageCrt" x="-12%" y="-12%" width="124%" height="124%">
           <feTurbulence type="fractalNoise" baseFrequency="0.004 0.013" numOctaves="1" seed="11" result="noise" />
-          <feDisplacementMap in="SourceGraphic" in2="noise" scale="2.4" xChannelSelector="R" yChannelSelector="G" result="warp" />
+          <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.6" xChannelSelector="R" yChannelSelector="G" result="warp" />
           <feGaussianBlur in="warp" stdDeviation="0.24" result="soft" />
           <feColorMatrix in="soft" type="saturate" values="0.9" />
         </filter>
@@ -181,6 +181,16 @@ export function RetroComputer({
           <rect width="5" height="2.2" fill="rgba(10,14,17,0.2)" />
           <rect y="2.2" width="5" height="2.8" fill="rgba(255,255,255,0.03)" />
         </pattern>
+
+        <radialGradient id="crtLensMaskGrad" cx="50%" cy="50%" r="58%">
+          <stop offset="0%" stopColor="white" stopOpacity="0.92" />
+          <stop offset="58%" stopColor="white" stopOpacity="0.32" />
+          <stop offset="100%" stopColor="white" stopOpacity="0" />
+        </radialGradient>
+
+        <mask id="crtLensMask" maskUnits="userSpaceOnUse">
+          <rect x="326" y="122" width="568" height="422" fill="url(#crtLensMaskGrad)" />
+        </mask>
 
         <clipPath id="crtClip">
           <path d={CRT_PATH} />
@@ -231,19 +241,32 @@ export function RetroComputer({
         <path d={CRT_PATH} fill="url(#crtGlass)" />
 
         {screenImageSrc ? (
-          <image
-            href={screenImageSrc}
-            x="326"
-            y="122"
-            width="568"
-            height="422"
-            preserveAspectRatio="xMidYMid slice"
-            opacity="0.9"
-            filter="url(#screenImageCrt)"
-          />
+          <>
+            <image
+              href={screenImageSrc}
+              x="326"
+              y="122"
+              width="568"
+              height="422"
+              preserveAspectRatio="xMidYMid slice"
+              opacity="0.9"
+              filter="url(#screenImageCrt)"
+            />
+            <image
+              href={screenImageSrc}
+              x="316"
+              y="113"
+              width="588"
+              height="440"
+              preserveAspectRatio="xMidYMid slice"
+              opacity="0.24"
+              filter="url(#screenImageCrt)"
+              mask="url(#crtLensMask)"
+            />
+          </>
         ) : null}
 
-        <path d={CRT_PATH} fill="url(#scanLines)" opacity="0.16" />
+        <path d={CRT_PATH} fill="url(#scanLines)" opacity="0.14" />
         <path d={CRT_PATH} fill="url(#crtGlow)" opacity="0.28" />
         <path d={CRT_PATH} fill="url(#crtVignette)" />
 
