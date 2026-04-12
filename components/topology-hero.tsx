@@ -2181,23 +2181,16 @@ function SwitchIllustration({
 
 
 function PCIllustration({ compact = false, typingStep = 0, typingActive = false }: { compact?: boolean; typingStep?: number; typingActive?: boolean }) {
-  const driftX = typingActive ? Math.sin(typingStep / 2.6) * 1.6 : 0;
-  const driftY = typingActive ? Math.cos(typingStep / 3.1) * 0.75 : 0;
-
   return (
     <div className={`relative origin-top ${compact ? "scale-[0.8]" : "scale-100"}`}>
-      <motion.div
-        className="relative h-[198px] w-[226px]"
-        animate={{ x: driftX, y: driftY }}
-        transition={{ duration: 0.35, ease: "easeInOut" }}
-      >
+      <div className="relative h-[198px] w-[226px]">
         <RetroComputer
           className="h-full w-full drop-shadow-[0_14px_18px_rgba(15,23,42,0.08)]"
           screenImageSrc={`${ASSET_BASE}/linkedin-profile.png?v=20260409-1`}
           typingStep={typingStep}
           typingActive={typingActive}
         />
-      </motion.div>
+      </div>
     </div>
   );
 }
