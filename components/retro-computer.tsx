@@ -42,6 +42,8 @@ const keys: KeySpec[] = [
 ];
 
 const hiddenKeysForEnter = new Set([27, 39]);
+const CRT_PATH =
+  "M364 122 C500 98 724 98 856 122 C881 126 898 145 898 170 C898 273 897 376 889 484 C886 522 865 541 831 544 C690 550 529 550 392 544 C358 541 336 522 333 484 C325 376 324 273 324 170 C324 145 341 126 364 122 Z";
 
 export function RetroComputer({
   className,
@@ -75,6 +77,19 @@ export function RetroComputer({
           <stop offset="58%" stopColor="#94a6a9" />
           <stop offset="82%" stopColor="#58686b" />
           <stop offset="100%" stopColor="#2d383a" />
+        </radialGradient>
+
+        <radialGradient id="crtVignette" cx="50%" cy="48%" r="64%">
+          <stop offset="56%" stopColor="rgba(0,0,0,0)" />
+          <stop offset="82%" stopColor="rgba(10,14,16,0.32)" />
+          <stop offset="100%" stopColor="rgba(5,8,10,0.62)" />
+        </radialGradient>
+
+        <radialGradient id="crtGlow" cx="34%" cy="20%" r="74%">
+          <stop offset="0%" stopColor="rgba(255,255,255,0.34)" />
+          <stop offset="26%" stopColor="rgba(255,255,255,0.12)" />
+          <stop offset="62%" stopColor="rgba(255,255,255,0.02)" />
+          <stop offset="100%" stopColor="rgba(255,255,255,0)" />
         </radialGradient>
 
         <linearGradient id="crtDark" x1="0" y1="0" x2="1" y2="1">
@@ -155,12 +170,20 @@ export function RetroComputer({
           />
         </filter>
 
-        <filter id="screenImageSoften" x="-10%" y="-10%" width="120%" height="120%">
-          <feGaussianBlur stdDeviation="0.35" />
+        <filter id="screenImageCrt" x="-12%" y="-12%" width="124%" height="124%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.004 0.013" numOctaves="1" seed="11" result="noise" />
+          <feDisplacementMap in="SourceGraphic" in2="noise" scale="2.4" xChannelSelector="R" yChannelSelector="G" result="warp" />
+          <feGaussianBlur in="warp" stdDeviation="0.24" result="soft" />
+          <feColorMatrix in="soft" type="saturate" values="0.9" />
         </filter>
 
+        <pattern id="scanLines" width="5" height="5" patternUnits="userSpaceOnUse">
+          <rect width="5" height="2.2" fill="rgba(10,14,17,0.2)" />
+          <rect y="2.2" width="5" height="2.8" fill="rgba(255,255,255,0.03)" />
+        </pattern>
+
         <clipPath id="crtClip">
-          <path d="M361 116 C507 106 720 106 860 116 C886 118 900 135 900 161 L892 487 C889 524 868 542 833 544 L390 544 C355 542 335 524 332 487 L324 161 C324 135 338 118 361 116 Z" />
+          <path d={CRT_PATH} />
         </clipPath>
       </defs>
 
@@ -201,49 +224,52 @@ export function RetroComputer({
           fill="#aab0b5"
           opacity="0.85"
         />
+        <path d={CRT_PATH} fill="none" stroke="rgba(0,0,0,0.72)" strokeWidth="13" opacity="0.38" />
       </g>
 
       <g clipPath="url(#crtClip)">
-        <path
-          d="M361 116 C507 106 720 106 860 116 C886 118 900 135 900 161 L892 487 C889 524 868 542 833 544 L390 544 C355 542 335 524 332 487 L324 161 C324 135 338 118 361 116 Z"
-          fill="url(#crtGlass)"
-        />
+        <path d={CRT_PATH} fill="url(#crtGlass)" />
 
         {screenImageSrc ? (
           <image
             href={screenImageSrc}
-            x="324"
-            y="116"
-            width="576"
-            height="430"
+            x="326"
+            y="122"
+            width="568"
+            height="422"
             preserveAspectRatio="xMidYMid slice"
-            opacity="0.88"
-            filter="url(#screenImageSoften)"
+            opacity="0.9"
+            filter="url(#screenImageCrt)"
           />
         ) : null}
 
+        <path d={CRT_PATH} fill="url(#scanLines)" opacity="0.16" />
+        <path d={CRT_PATH} fill="url(#crtGlow)" opacity="0.45" />
+        <path d={CRT_PATH} fill="url(#crtVignette)" />
+
         <path
-          d="M339 120 C403 110 511 112 552 124 C570 129 570 148 560 186 C549 224 510 239 451 233 C396 228 360 205 344 173 C332 148 328 127 339 120 Z"
-          fill="rgba(255,255,255,0.16)"
+          d="M344 131 C404 111 514 112 560 127 C582 135 582 154 570 194 C558 237 518 252 454 245 C397 239 361 215 346 183 C334 157 332 137 344 131 Z"
+          fill="rgba(255,255,255,0.2)"
         />
         <path
-          d="M371 552 C503 538 689 538 841 548 L841 566 C686 553 503 553 371 567 Z"
-          fill="rgba(255,255,255,0.08)"
+          d="M378 548 C502 534 689 534 836 547 L836 565 C684 552 501 552 378 566 Z"
+          fill="rgba(255,255,255,0.07)"
         />
         <path
-          d="M324 161 C324 135 338 118 361 116 C507 106 720 106 860 116 C886 118 900 135 900 161 L892 487 C889 524 868 542 833 544 L390 544 C355 542 335 524 332 487 Z"
+          d={CRT_PATH}
           fill="url(#crtDark)"
-          opacity="0.28"
+          opacity="0.24"
         />
-        <ellipse cx="804" cy="430" rx="74" ry="116" fill="rgba(22,28,29,0.22)" />
+        <ellipse cx="804" cy="430" rx="74" ry="116" fill="rgba(22,28,29,0.26)" />
       </g>
 
       <path
-        d="M361 116 C507 106 720 106 860 116 C886 118 900 135 900 161 L892 487 C889 524 868 542 833 544 L390 544 C355 542 335 524 332 487 L324 161 C324 135 338 118 361 116 Z"
+        d={CRT_PATH}
         fill="none"
-        stroke="rgba(12,16,18,0.55)"
-        strokeWidth="4"
+        stroke="rgba(12,16,18,0.62)"
+        strokeWidth="5"
       />
+      <path d={CRT_PATH} fill="none" stroke="rgba(255,255,255,0.14)" strokeWidth="1.6" />
 
       <g>
         <rect
