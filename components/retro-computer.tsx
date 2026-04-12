@@ -244,23 +244,28 @@ export function RetroComputer({
         ) : null}
 
         <path d={CRT_PATH} fill="url(#scanLines)" opacity="0.16" />
-        <path d={CRT_PATH} fill="url(#crtGlow)" opacity="0.45" />
+        <path d={CRT_PATH} fill="url(#crtGlow)" opacity="0.28" />
         <path d={CRT_PATH} fill="url(#crtVignette)" />
 
         <path
-          d="M344 131 C404 111 514 112 560 127 C582 135 582 154 570 194 C558 237 518 252 454 245 C397 239 361 215 346 183 C334 157 332 137 344 131 Z"
-          fill="rgba(255,255,255,0.2)"
+          d="M358 149 C506 132 718 132 862 148"
+          fill="none"
+          stroke="rgba(255,255,255,0.14)"
+          strokeWidth="3.4"
+          strokeLinecap="round"
         />
         <path
-          d="M378 548 C502 534 689 534 836 547 L836 565 C684 552 501 552 378 566 Z"
-          fill="rgba(255,255,255,0.07)"
+          d="M378 548 C502 534 689 534 836 547"
+          fill="none"
+          stroke="rgba(255,255,255,0.09)"
+          strokeWidth="2.2"
+          strokeLinecap="round"
         />
         <path
           d={CRT_PATH}
           fill="url(#crtDark)"
           opacity="0.24"
         />
-        <ellipse cx="804" cy="430" rx="74" ry="116" fill="rgba(22,28,29,0.26)" />
       </g>
 
       <path
