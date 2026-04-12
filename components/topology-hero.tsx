@@ -15,6 +15,7 @@ import {
 } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { PacketWindow } from "@/components/packet-window";
+import { RetroComputer } from "@/components/retro-computer";
 import {
   AboutPanelContent,
   ContactPanelContent,
@@ -54,15 +55,6 @@ type DragBounds = {
   maxX: number;
   minY: number;
   maxY: number;
-};
-
-type KeyboardKey = {
-  id: number;
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-  kind?: "enter" | "space";
 };
 
 const NODE_META: Record<NodeKey, NodeMeta> = {
@@ -358,16 +350,6 @@ function resolveNonOverlappingPosition(
   }
 
   return current;
-}
-
-function randomFromSeed(seed: number) {
-  const value = Math.sin(seed * 999.31) * 43758.5453123;
-  return value - Math.floor(value);
-}
-
-function buildTypingPattern(step: number) {
-  const key = Math.floor(randomFromSeed(step * 6.71 + 1.9) * 26);
-  return new Set<number>([key]);
 }
 
 const SWITCH_PORT_CENTERS = [79, 94, 109, 124, 139, 154] as const;
@@ -2192,90 +2174,21 @@ function SwitchIllustration({
 
 
 function PCIllustration({ compact = false, typingStep = 0, typingActive = false }: { compact?: boolean; typingStep?: number; typingActive?: boolean }) {
-  const activeKeys = typingActive ? buildTypingPattern(typingStep) : new Set<number>();
-  const mouseDrift = Math.sin(typingStep / 2.6) * 2.2;
-  const keyboardKeys: KeyboardKey[] = [
-    { id: 0, x: 0, y: 0, w: 11, h: 5 },
-    { id: 1, x: 14, y: 0, w: 11, h: 5 },
-    { id: 2, x: 28, y: 0, w: 11, h: 5 },
-    { id: 3, x: 42, y: 0, w: 11, h: 5 },
-    { id: 4, x: 56, y: 0, w: 11, h: 5 },
-    { id: 5, x: 70, y: 0, w: 11, h: 5 },
-    { id: 6, x: 84, y: 0, w: 11, h: 5 },
-    { id: 7, x: 0, y: 7, w: 11, h: 5 },
-    { id: 8, x: 14, y: 7, w: 11, h: 5 },
-    { id: 9, x: 28, y: 7, w: 11, h: 5 },
-    { id: 10, x: 42, y: 7, w: 11, h: 5 },
-    { id: 11, x: 56, y: 7, w: 11, h: 5 },
-    { id: 12, x: 70, y: 7, w: 11, h: 5 },
-    { id: 13, x: 84, y: 7, w: 11, h: 12, kind: "enter" },
-    { id: 14, x: 0, y: 14, w: 11, h: 5 },
-    { id: 15, x: 14, y: 14, w: 11, h: 5 },
-    { id: 16, x: 28, y: 14, w: 11, h: 5 },
-    { id: 17, x: 42, y: 14, w: 11, h: 5 },
-    { id: 18, x: 56, y: 14, w: 11, h: 5 },
-    { id: 19, x: 70, y: 14, w: 11, h: 5 },
-    { id: 20, x: 0, y: 21, w: 11, h: 5 },
-    { id: 21, x: 14, y: 21, w: 11, h: 5 },
-    { id: 22, x: 28, y: 21, w: 39, h: 5, kind: "space" },
-    { id: 23, x: 70, y: 21, w: 11, h: 5 },
-    { id: 24, x: 84, y: 21, w: 11, h: 5 },
-  ];
+  const driftX = typingActive ? Math.sin(typingStep / 2.6) * 1.6 : 0;
+  const driftY = typingActive ? Math.cos(typingStep / 3.1) * 0.75 : 0;
 
   return (
-    <div className={`relative ${compact ? "scale-[0.8]" : "scale-100"}`}>
-      <div className="relative h-[198px] w-[218px]">
-        <div className="absolute left-[26px] top-[176px] h-[15px] w-[132px] rounded-full bg-[#0b7894]/13 blur-[10px]" />
-        <div className="absolute left-[16px] top-[6px] h-[120px] w-[146px] rounded-[20px] border border-[#89bfd0]/75 bg-[linear-gradient(180deg,#f7fdff_0%,#dff1f6_34%,#8ccddd_100%)] shadow-[inset_0_12px_16px_rgba(255,255,255,0.56),0_12px_18px_rgba(15,23,42,0.06)]" />
-        <div className="absolute left-[10px] top-[18px] h-[106px] w-[142px] rounded-[16px] border border-[#188eaa]/80 bg-[linear-gradient(180deg,#65c1d7_0%,#2f9fb9_100%)] shadow-[inset_0_2px_0_rgba(255,255,255,0.24)]" />
-        <div className="absolute left-[16px] top-[24px] h-[94px] w-[130px] rounded-[11px] border border-[#93aeb8] bg-[#edf4f6] p-[4px] shadow-[inset_0_1px_4px_rgba(255,255,255,0.72)]">
-          <div className="relative h-full w-full overflow-hidden rounded-[8px] border border-[#93acb6] bg-[#eef3f6]">
-            <LinkedInMonitorView />
-            <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.18)_0%,transparent_18%,transparent_80%,rgba(0,0,0,0.04)_100%)]" />
-          </div>
-        </div>
-        <div className="absolute left-[66px] top-[125px] h-[22px] w-[46px] rounded-b-[8px] bg-[linear-gradient(180deg,#4eb6cf_0%,#128ca5_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.22)]" />
-        <div className="absolute left-[40px] top-[144px] h-[11px] w-[98px] rounded-[999px] border border-white/22 bg-[linear-gradient(180deg,#e2f4f8_0%,#86cad9_100%)] shadow-[0_4px_8px_rgba(15,23,42,0.04)]" />
-        <div className="absolute left-[10px] top-[152px] h-[35px] w-[130px] skew-x-[-16deg] rounded-[10px] border border-[#7eb9ca] bg-[linear-gradient(180deg,#f7fdff_0%,#d3eaf1_36%,#97d0de_100%)] px-[7px] py-[5px] shadow-[0_4px_10px_rgba(15,23,42,0.06),inset_0_1px_0_rgba(255,255,255,0.76)]">
-          <div className="relative h-full w-full">
-            {keyboardKeys.map((key) => {
-              const active = activeKeys.has(key.id);
-              const isEnterKey = key.kind === "enter";
-              const isSpaceKey = key.kind === "space";
-              return (
-                <span
-                  key={key.id}
-                  className={`absolute border border-[#8ea7b1] transition-transform duration-75 ${active ? "translate-y-[1px] bg-[#7c939c] shadow-[inset_0_1px_2px_rgba(0,0,0,0.3)]" : "bg-[#e7f0f3] shadow-[0_1px_0_rgba(255,255,255,0.95),inset_0_-1px_0_rgba(0,0,0,0.06)]"} ${isEnterKey ? "rounded-[3px]" : "rounded-[2px]"}`}
-                  style={isEnterKey
-                    ? {
-                        left: key.x,
-                        top: key.y,
-                        width: key.w + 4,
-                        height: key.h,
-                        clipPath: "polygon(0 0, 78% 0, 100% 20%, 100% 100%, 0 100%, 0 68%, 8% 68%, 8% 31%, 0 31%)",
-                      }
-                    : isSpaceKey
-                      ? {
-                          left: key.x,
-                          top: key.y,
-                          width: key.w,
-                          height: key.h,
-                          borderRadius: 5,
-                        }
-                      : { left: key.x, top: key.y, width: key.w, height: key.h }}
-                />
-              );
-            })}
-          </div>
-        </div>
-        <motion.div
-          className="absolute left-[148px] top-[155px] h-[24px] w-[14px] rounded-[9px] border border-[#8bc0d1] bg-[linear-gradient(180deg,#f8feff_0%,#dceff4_100%)] shadow-[0_4px_8px_rgba(15,23,42,0.05)]"
-          animate={{ x: mouseDrift, y: Math.abs(mouseDrift) * 0.14, rotate: 0 }}
-          transition={{ duration: 0.35, ease: "easeInOut" }}
-        >
-          <div className="absolute inset-x-[3px] top-[2px] h-[7px] rounded-full bg-[#d5edf4]" />
-        </motion.div>
-      </div>
+    <div className={`relative origin-top ${compact ? "scale-[0.8]" : "scale-100"}`}>
+      <motion.div
+        className="relative h-[198px] w-[226px]"
+        animate={{ x: driftX, y: driftY }}
+        transition={{ duration: 0.35, ease: "easeInOut" }}
+      >
+        <RetroComputer
+          className="h-full w-full drop-shadow-[0_14px_18px_rgba(15,23,42,0.08)]"
+          screenImageSrc={`${ASSET_BASE}/linkedin-profile.png?v=20260409-1`}
+        />
+      </motion.div>
     </div>
   );
 }
