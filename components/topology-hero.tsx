@@ -1804,6 +1804,16 @@ function RouterIllustration({
 }) {
   const wifiSearchFrame = Math.floor((tick % 18) / 6);
   const showWifiPulse = glitchActive || networkMode !== "stable";
+  const wifiStroke = showWifiPulse ? "#2f7fad" : "#25394c";
+  const wifiDot = showWifiPulse ? "#2b6f98" : "#25394c";
+  const ledPalette = ["#67dd73", "#6cb8ff", "#67dd73", "#6cb8ff", "#67dd73"];
+  const ledActive = [
+    powerOn,
+    signalLevel >= 1,
+    signalLevel >= 2,
+    networkMode === "stable" && powerOn,
+    networkMode === "stable" && powerOn && !glitchActive,
+  ];
 
   return (
     <motion.div
@@ -1812,44 +1822,41 @@ function RouterIllustration({
       transition={glitchActive ? { duration: 0.9, repeat: 2, ease: "easeInOut" } : { duration: 0.2 }}
     >
       <div className="relative h-[140px] w-[200px]">
-        <div className="absolute left-[34px] top-[112px] h-[18px] w-[132px] rounded-full bg-[#0d6d8a]/16 blur-[11px]" />
-        <div className="absolute left-[50px] top-[8px] h-[56px] w-[6px] rounded-full border border-[#a8dce7]/55 bg-[linear-gradient(180deg,#f6fcff_0%,#d9eff5_24%,#8bd2e0_70%,#3ba6bc_100%)]" />
-        <div className="absolute right-[50px] top-[8px] h-[56px] w-[6px] rounded-full border border-[#a8dce7]/55 bg-[linear-gradient(180deg,#f6fcff_0%,#d9eff5_24%,#8bd2e0_70%,#3ba6bc_100%)]" />
+        <div className="absolute left-[38px] top-[118px] h-[14px] w-[126px] rounded-full bg-black/22 blur-[9px]" />
+        <div className="absolute left-[56px] top-[14px] h-[54px] w-[8px] rounded-[6px] border border-[#c5ccd6] bg-[linear-gradient(180deg,#f8fafc_0%,#e2e7ef_58%,#c2cad6_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.75),0_2px_3px_rgba(0,0,0,0.12)]" />
+        <div className="absolute right-[56px] top-[14px] h-[54px] w-[8px] rounded-[6px] border border-[#c5ccd6] bg-[linear-gradient(180deg,#f8fafc_0%,#e2e7ef_58%,#c2cad6_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.75),0_2px_3px_rgba(0,0,0,0.12)]" />
 
-        <div className="absolute left-[17px] top-[44px] h-[60px] w-[166px] rounded-[28px] border border-[#7fc2d6] bg-[linear-gradient(180deg,#f7fdff_0%,#dff1f6_18%,#78cadb_54%,#1690aa_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.78),inset_0_-10px_14px_rgba(5,55,69,0.18),0_14px_24px_rgba(15,23,42,0.08)]" />
-        <div className="absolute left-[27px] top-[51px] h-[44px] w-[146px] rounded-[22px] bg-[linear-gradient(90deg,#0e9db8_0%,#dff6fa_16%,#fcfeff_40%,#c2ebf3_68%,#1398b3_100%)] opacity-95" />
-        <div className="absolute left-[32px] top-[58px] h-[30px] w-[22px] rounded-full bg-white/26 blur-[1px]" />
-        <div className="absolute left-[66px] top-[58px] h-[7px] w-[44px] rounded-full bg-white/28" />
-        <div className="absolute left-[62px] top-[82px] h-[2px] w-[76px] rounded-full bg-[#69bfd4]/42" />
-        <div className="absolute left-[27px] top-[93px] h-[7px] w-[146px] rounded-full bg-[linear-gradient(180deg,rgba(8,71,87,0.14)_0%,rgba(255,255,255,0.02)_100%)]" />
-
-        <div className="absolute left-[31px] top-[84px] flex items-center gap-[8px] opacity-95">
-          <span className="relative inline-flex h-[22px] w-[22px] items-center justify-center">
-            <span className={`absolute inset-0 rounded-full border-[2.4px] ${powerOn ? "border-[#53d76a]" : "border-[#e55b5b]"}`} />
-            <span className={`absolute left-1/2 top-[-1px] h-[8px] w-[2.4px] -translate-x-1/2 rounded-full ${powerOn ? "bg-[#53d76a]" : "bg-[#e55b5b]"}`} />
-          </span>
-          {[0, 1, 2].map((index) => (
-            <span key={index} className={`relative h-[5px] w-[18px] rounded-full border border-white/16 ${signalLevel > index ? "bg-[#dcfcff] shadow-[0_0_8px_rgba(213,248,255,0.5)]" : "bg-white/14"}`}>
-              <span className="absolute inset-x-[2px] top-0 h-[1px] rounded-full bg-white/42" />
-            </span>
-          ))}
+        <div className="absolute left-1/2 top-[8px] h-[52px] w-[84px] -translate-x-1/2">
+          <svg width="84" height="52" viewBox="0 0 84 52" fill="none" aria-hidden="true">
+            <path d="M34 39C38 35 46 35 50 39" stroke={wifiStroke} strokeWidth="4.6" strokeLinecap="round" opacity={showWifiPulse ? (wifiSearchFrame === 0 ? 0.95 : 0.32) : 0.95} />
+            <path d="M25 30C33 23 51 23 59 30" stroke={wifiStroke} strokeWidth="4.8" strokeLinecap="round" opacity={showWifiPulse ? (wifiSearchFrame >= 1 ? 0.95 : 0.32) : 0.95} />
+            <path d="M15 20C27 10 57 10 69 20" stroke={wifiStroke} strokeWidth="5" strokeLinecap="round" opacity={showWifiPulse ? (wifiSearchFrame === 2 ? 0.98 : 0.32) : 0.95} />
+            <circle cx="42" cy="44.5" r="4.4" fill={wifiDot} opacity={showWifiPulse ? (wifiSearchFrame === 0 ? 0.98 : 0.34) : 0.95} />
+          </svg>
         </div>
 
-        <div className="absolute left-[52px] top-[98px] flex gap-[5px] opacity-55">
-          {Array.from({ length: 8 }).map((_, index) => (
-            <span key={index} className="h-[2px] w-[9px] rounded-full bg-[#56bdd2]" />
-          ))}
-        </div>
+        <div className="absolute left-[20px] top-[64px] h-[52px] w-[160px]">
+          <div className="absolute inset-0 rounded-[11px] border border-[#d4dae1] bg-[linear-gradient(180deg,#ffffff_0%,#eef1f5_54%,#d6dbe2_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.92),0_10px_14px_rgba(15,23,42,0.16)]" />
+          <div className="absolute inset-x-[8px] top-[3px] h-[16px] rounded-t-[9px] bg-[linear-gradient(180deg,rgba(255,255,255,0.95)_0%,rgba(234,239,245,0.75)_100%)]" />
+          <div className="absolute inset-x-0 bottom-[6px] h-[17px] rounded-b-[10px] border-t border-[#c8cfd8] bg-[linear-gradient(180deg,#d3d9e1_0%,#c4ccd6_100%)]" />
+          <div className="absolute inset-x-[1px] bottom-[1px] h-[6px] rounded-b-[9px] bg-[linear-gradient(180deg,#1b638f_0%,#0f3f62_100%)] opacity-[0.88]" />
 
-        <div className="absolute left-1/2 top-[-36px] flex h-[66px] w-[110px] -translate-x-1/2 items-end justify-center">
-          {showWifiPulse ? (
-            <svg width="110" height="66" viewBox="0 0 110 66" fill="none" aria-hidden="true">
-              <circle cx="55" cy="53" r="4.2" fill="#18c9ff" opacity={wifiSearchFrame === 0 ? 1 : 0.18} />
-              <path d="M47.5 45.2C51.5 41.1 58.5 41.1 62.5 45.2" stroke="#17c9ff" strokeWidth="4" strokeLinecap="round" opacity={wifiSearchFrame >= 0 ? (wifiSearchFrame === 0 ? 1 : 0.18) : 0.12} />
-              <path d="M37 34.2C46 26.7 64 26.7 73 34.2" stroke="#6de8ff" strokeWidth="4.4" strokeLinecap="round" opacity={wifiSearchFrame >= 1 ? (wifiSearchFrame === 1 ? 1 : 0.2) : 0.12} />
-              <path d="M25 21.8C37.4 11.6 72.6 11.6 85 21.8" stroke="#8eff89" strokeWidth="4.8" strokeLinecap="round" opacity={wifiSearchFrame === 2 ? 1 : 0.18} />
-            </svg>
-          ) : null}
+          <div className="absolute left-[29px] top-[31px] flex items-center gap-[9px]">
+            {ledPalette.map((color, index) => {
+              const on = ledActive[index];
+              return (
+                <span
+                  key={index}
+                  className="relative block h-[4px] w-[4px] rounded-full"
+                  style={{
+                    backgroundColor: on ? color : "rgba(108,119,132,0.35)",
+                    boxShadow: on ? `0 0 6px ${color}` : "none",
+                    opacity: on ? 0.95 : 0.6,
+                  }}
+                />
+              );
+            })}
+          </div>
         </div>
       </div>
     </motion.div>
