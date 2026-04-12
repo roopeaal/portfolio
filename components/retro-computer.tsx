@@ -1,6 +1,8 @@
 type RetroComputerProps = {
   className?: string;
   screenImageSrc?: string;
+  typingStep?: number;
+  typingActive?: boolean;
 };
 
 type KeySpec = {
@@ -42,13 +44,37 @@ const keys: KeySpec[] = [
 ];
 
 const hiddenKeysForEnter = new Set([27, 39]);
+const visibleKeyIndices = keys
+  .map((_, index) => index)
+  .filter((index) => !hiddenKeysForEnter.has(index));
+
+function getTypingKeys(step: number) {
+  const keyA = visibleKeyIndices[(step * 3) % visibleKeyIndices.length];
+  const keyB = visibleKeyIndices[(step * 5 + 11) % visibleKeyIndices.length];
+  const keyC = visibleKeyIndices[(step * 7 + 19) % visibleKeyIndices.length];
+  return new Set<number>([keyA, keyB, step % 3 === 0 ? keyC : keyB]);
+}
+
 const CRT_PATH =
-  "M364 122 C500 98 724 98 856 122 C881 126 898 145 898 170 C898 273 897 376 889 484 C886 522 865 541 831 544 C690 550 529 550 392 544 C358 541 336 522 333 484 C325 376 324 273 324 170 C324 145 341 126 364 122 Z";
+  "M352 126 H872 C893 126 907 140 907 161 V509 C907 530 893 544 872 544 H352 C331 544 317 530 317 509 V161 C317 140 331 126 352 126 Z";
+const SCREEN_X = 317;
+const SCREEN_Y = 126;
+const SCREEN_WIDTH = 590;
+const SCREEN_HEIGHT = 418;
 
 export function RetroComputer({
   className,
   screenImageSrc,
+  typingStep = 0,
+  typingActive = false,
 }: RetroComputerProps) {
+  const typingFrame = Math.floor(typingStep);
+  const activeKeys = typingActive ? getTypingKeys(typingFrame) : new Set<number>();
+  const upperLeftKeyPressed = typingActive && typingFrame % 12 === 3;
+  const lowerLeftKeyPressed = typingActive && typingFrame % 14 === 8;
+  const extraLowerKeyPressed = typingActive && typingFrame % 10 === 5;
+  const enterPressed = typingActive && typingFrame % 16 === 11;
+
   return (
     <svg
       viewBox="0 0 1174 1024"
@@ -189,7 +215,7 @@ export function RetroComputer({
         </radialGradient>
 
         <mask id="crtLensMask" maskUnits="userSpaceOnUse">
-          <rect x="326" y="122" width="568" height="422" fill="url(#crtLensMaskGrad)" />
+          <rect x={SCREEN_X} y={SCREEN_Y} width={SCREEN_WIDTH} height={SCREEN_HEIGHT} fill="url(#crtLensMaskGrad)" />
         </mask>
 
         <clipPath id="crtClip">
@@ -244,20 +270,20 @@ export function RetroComputer({
           <>
             <image
               href={screenImageSrc}
-              x="326"
-              y="122"
-              width="568"
-              height="422"
+              x={SCREEN_X}
+              y={SCREEN_Y}
+              width={SCREEN_WIDTH}
+              height={SCREEN_HEIGHT}
               preserveAspectRatio="xMidYMid slice"
               opacity="0.9"
               filter="url(#screenImageCrt)"
             />
             <image
               href={screenImageSrc}
-              x="316"
-              y="113"
-              width="588"
-              height="440"
+              x={SCREEN_X - 10}
+              y={SCREEN_Y - 9}
+              width={SCREEN_WIDTH + 20}
+              height={SCREEN_HEIGHT + 18}
               preserveAspectRatio="xMidYMid slice"
               opacity="0.24"
               filter="url(#screenImageCrt)"
@@ -401,30 +427,32 @@ export function RetroComputer({
         <g transform="translate(280 806)">
           {keys.map((key, index) => {
             if (hiddenKeysForEnter.has(index)) return null;
+            const active = activeKeys.has(index);
+            const pressOffset = active ? 1.2 : 0;
 
             return (
               <g key={index} filter="url(#keyShadow)">
                 <rect
                   x={key.x}
-                  y={key.y}
+                  y={key.y + pressOffset}
                   width={key.w}
                   height={key.h ?? 24}
                   rx="3.5"
-                  fill={key.dark ? "url(#keyDark)" : "url(#keyLight)"}
+                  fill={active ? "url(#keyDark)" : key.dark ? "url(#keyDark)" : "url(#keyLight)"}
                 />
                 <rect
                   x={key.x + 1.5}
-                  y={key.y + 1.5}
+                  y={key.y + 1.5 + pressOffset}
                   width={Math.max(2, key.w - 3)}
                   height={Math.max(2, (key.h ?? 24) - 7)}
                   rx="2.5"
-                  fill="rgba(255,255,255,0.16)"
+                  fill={active ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.16)"}
                 />
                 {key.w <= 52 ? (
                   <>
                     <rect
                       x={key.x + key.w / 2 - 6}
-                      y={key.y + 7}
+                      y={key.y + 7 + pressOffset}
                       width="12"
                       height="2"
                       rx="1"
@@ -432,7 +460,7 @@ export function RetroComputer({
                     />
                     <rect
                       x={key.x + key.w / 2 - 3}
-                      y={key.y + 12}
+                      y={key.y + 12 + pressOffset}
                       width="6"
                       height="2"
                       rx="1"
@@ -444,15 +472,15 @@ export function RetroComputer({
             );
           })}
 
-          <g filter="url(#keyShadow)">
-            <rect x="576" y="38" width="38" height="24" rx="3.5" fill="url(#keyLight)" />
+          <g filter="url(#keyShadow)" transform={upperLeftKeyPressed ? "translate(0 1.2)" : undefined}>
+            <rect x="576" y="38" width="38" height="24" rx="3.5" fill={upperLeftKeyPressed ? "url(#keyDark)" : "url(#keyLight)"} />
             <rect
               x="577.5"
               y="39.5"
               width="35"
               height="17"
               rx="2.5"
-              fill="rgba(255,255,255,0.16)"
+              fill={upperLeftKeyPressed ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.16)"}
             />
             <rect
               x="585"
@@ -472,15 +500,15 @@ export function RetroComputer({
             />
           </g>
 
-          <g filter="url(#keyShadow)">
-            <rect x="558" y="68" width="38" height="24" rx="3.5" fill="url(#keyLight)" />
+          <g filter="url(#keyShadow)" transform={lowerLeftKeyPressed ? "translate(0 1.2)" : undefined}>
+            <rect x="558" y="68" width="38" height="24" rx="3.5" fill={lowerLeftKeyPressed ? "url(#keyDark)" : "url(#keyLight)"} />
             <rect
               x="559.5"
               y="69.5"
               width="35"
               height="17"
               rx="2.5"
-              fill="rgba(255,255,255,0.16)"
+              fill={lowerLeftKeyPressed ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.16)"}
             />
             <rect
               x="567"
@@ -500,15 +528,15 @@ export function RetroComputer({
             />
           </g>
 
-          <g filter="url(#keyShadow)">
-            <rect x="602" y="68" width="38" height="24" rx="3.5" fill="url(#keyLight)" />
+          <g filter="url(#keyShadow)" transform={extraLowerKeyPressed ? "translate(0 1.2)" : undefined}>
+            <rect x="602" y="68" width="38" height="24" rx="3.5" fill={extraLowerKeyPressed ? "url(#keyDark)" : "url(#keyLight)"} />
             <rect
               x="603.5"
               y="69.5"
               width="35"
               height="17"
               rx="2.5"
-              fill="rgba(255,255,255,0.16)"
+              fill={extraLowerKeyPressed ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.16)"}
             />
             <rect
               x="611"
@@ -528,7 +556,7 @@ export function RetroComputer({
             />
           </g>
 
-          <g filter="url(#keyShadow)">
+          <g filter="url(#keyShadow)" transform={enterPressed ? "translate(0 1.2)" : undefined}>
             <path
               d="M636 38
                  H679
@@ -560,7 +588,7 @@ export function RetroComputer({
                  Q633.5 64.5 633.5 60.5
                  V43.5
                  Q633.5 39.5 637.5 39.5 Z"
-              fill="rgba(255,255,255,0.13)"
+              fill={enterPressed ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.13)"}
             />
 
             <path

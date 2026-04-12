@@ -2194,6 +2194,8 @@ function PCIllustration({ compact = false, typingStep = 0, typingActive = false 
         <RetroComputer
           className="h-full w-full drop-shadow-[0_14px_18px_rgba(15,23,42,0.08)]"
           screenImageSrc={`${ASSET_BASE}/linkedin-profile.png?v=20260409-1`}
+          typingStep={typingStep}
+          typingActive={typingActive}
         />
       </motion.div>
     </div>
