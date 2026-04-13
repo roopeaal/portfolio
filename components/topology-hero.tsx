@@ -2002,7 +2002,7 @@ function RouterIllustration({
 
             <ellipse cx="122" cy="210" rx="27" ry="27" fill={`url(#${ids.powerOuter})`} stroke="#b44c61" strokeWidth="2.2" />
             <path
-              d="M117 200.8 A10.7 10.7 0 1 0 127 200.8"
+              d="M117.3 200.8 A10.7 10.7 0 1 0 126.7 200.8"
               fill="none"
               stroke="rgba(118,44,63,0.34)"
               strokeWidth="5.2"
@@ -2010,7 +2010,7 @@ function RouterIllustration({
             />
             <path d="M122 198.9V209.7" stroke="rgba(118,44,63,0.34)" strokeWidth="5.2" strokeLinecap="round" />
             <path
-              d="M117.4 201 A10.3 10.3 0 1 0 126.6 201"
+              d="M117.7 201 A10.3 10.3 0 1 0 126.3 201"
               fill="none"
               stroke="#f4f7f8"
               strokeWidth="4.2"
