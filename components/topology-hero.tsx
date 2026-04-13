@@ -40,6 +40,9 @@ const PREVIEW_GAP = 42;
 const PREVIEW_MARGIN = 18;
 const DEVICE_FLOAT_FILTER = "drop-shadow(0 16px 22px rgba(10,18,31,0.18)) drop-shadow(0 5px 12px rgba(24,79,113,0.10))";
 const DEVICE_FLOAT_FILTER_SOFT = "drop-shadow(0 12px 18px rgba(10,18,31,0.14)) drop-shadow(0 4px 10px rgba(24,79,113,0.08))";
+const UNIFIED_DEVICE_WIDTH = 226;
+const UNIFIED_DEVICE_HEIGHT = 194;
+const UNIFIED_NODE_HEIGHT = 262;
 
 type NodePosition = { x: number; y: number };
 type NodeMeta = {
@@ -60,10 +63,35 @@ type DragBounds = {
 };
 
 const NODE_META: Record<NodeKey, NodeMeta> = {
-  about: { label: "About Me", deviceName: "Wireless Router1", width: 220, height: 204, deviceHeight: 136 },
-  projects: { label: "Projects", deviceName: "Switch0", width: 242, height: 210, deviceHeight: 138 },
-  home: { label: "LinkedIn", deviceName: "PC1", width: 226, height: 262, deviceHeight: 194, previewWidth: 378 },
-  contact: { label: "Contact Me", deviceName: "Smartphone0", width: 156, height: 226, deviceHeight: 168 },
+  about: {
+    label: "About Me",
+    deviceName: "Wireless Router1",
+    width: UNIFIED_DEVICE_WIDTH,
+    height: UNIFIED_NODE_HEIGHT,
+    deviceHeight: UNIFIED_DEVICE_HEIGHT,
+  },
+  projects: {
+    label: "Projects",
+    deviceName: "Switch0",
+    width: UNIFIED_DEVICE_WIDTH,
+    height: UNIFIED_NODE_HEIGHT,
+    deviceHeight: UNIFIED_DEVICE_HEIGHT,
+  },
+  home: {
+    label: "LinkedIn",
+    deviceName: "PC1",
+    width: UNIFIED_DEVICE_WIDTH,
+    height: UNIFIED_NODE_HEIGHT,
+    deviceHeight: UNIFIED_DEVICE_HEIGHT,
+    previewWidth: 378,
+  },
+  contact: {
+    label: "Contact Me",
+    deviceName: "Smartphone0",
+    width: UNIFIED_DEVICE_WIDTH,
+    height: UNIFIED_NODE_HEIGHT,
+    deviceHeight: UNIFIED_DEVICE_HEIGHT,
+  },
 };
 
 const INITIAL_NODE_POSITIONS: Record<NodeKey, NodePosition> = {
@@ -73,7 +101,7 @@ const INITIAL_NODE_POSITIONS: Record<NodeKey, NodePosition> = {
   contact: { x: 958, y: 454 },
 };
 
-const NODE_POSITIONS_STORAGE_KEY = "portfolio-node-positions-v1";
+const NODE_POSITIONS_STORAGE_KEY = "portfolio-node-positions-v2";
 
 function getInitialNodePositions(): Record<NodeKey, NodePosition> {
   if (typeof window === "undefined") return INITIAL_NODE_POSITIONS;
@@ -354,13 +382,13 @@ function resolveNonOverlappingPosition(
   return current;
 }
 
-const SWITCH_PORT_CENTERS = [79, 94, 109, 124, 139, 154] as const;
+const SWITCH_PORT_CENTERS = [73, 90, 108, 125, 143, 160] as const;
 const SWITCH_LEFT_CABLE_PORT_INDEX = 0;
 const SWITCH_RIGHT_CABLE_PORT_INDEX = 4;
-const SWITCH_STUB_Y = 79.0;
+const SWITCH_STUB_Y = 109.0;
 
 const DEBUG_NODE_HALOS = false;
-const NODE_PROTECTIVE_HALO = 10;
+const NODE_PROTECTIVE_HALO = 14;
 let CURRENT_PROTECTIVE_HALO = NODE_PROTECTIVE_HALO;
 const MAGNET_WIDTH_SCALE = 0.88;
 const MAGNET_HEIGHT_SCALE = 1;
@@ -388,20 +416,20 @@ const NODE_COLLISION_SHAPES: Record<
   }
 > = {
   about: {
-    device: { left: 34, top: 16, right: 34, bottom: 54 },
-    label: { left: 56, top: 4, right: 56, bottom: 10 },
+    device: { left: 18, top: 10, right: 18, bottom: 18 },
+    label: { left: 44, top: 8, right: 44, bottom: 10 },
   },
   projects: {
-    device: { left: 26, top: 18, right: 24, bottom: 62 },
-    label: { left: 58, top: 6, right: 58, bottom: 12 },
+    device: { left: 18, top: 10, right: 18, bottom: 18 },
+    label: { left: 44, top: 8, right: 44, bottom: 10 },
   },
   home: {
-    device: { left: 30, top: 10, right: 30, bottom: 34 },
-    label: { left: 52, top: 6, right: 52, bottom: 12 },
+    device: { left: 18, top: 10, right: 18, bottom: 18 },
+    label: { left: 44, top: 8, right: 44, bottom: 10 },
   },
   contact: {
-    device: { left: 40, top: 4, right: 38, bottom: 18 },
-    label: { left: 26, top: 8, right: 26, bottom: 10 },
+    device: { left: 18, top: 10, right: 18, bottom: 18 },
+    label: { left: 44, top: 8, right: 44, bottom: 10 },
   },
 };
 
@@ -1515,11 +1543,11 @@ function NodeButton({
         </motion.div>
 
         <div
-          className="mt-[8px] flex flex-col items-center justify-center text-center leading-tight"
+          className="mt-[12px] flex flex-col items-center justify-center text-center leading-tight"
           style={{ transform: NODE_META[node].labelOffsetX ? `translateX(${NODE_META[node].labelOffsetX}px)` : undefined }}
         >
-          <p className="text-[12px] font-medium uppercase tracking-[0.18em] text-[#7f8b9d]">{deviceName}</p>
-          <p className="mt-1 text-[18px] font-semibold tracking-[-0.02em] text-[#050505]">{label}</p>
+          <p className="text-[12px] font-medium uppercase tracking-[0.18em] text-[#7f8b9d] drop-shadow-none [text-shadow:none]">{deviceName}</p>
+          <p className="mt-1 text-[18px] font-semibold tracking-[-0.02em] text-[#050505] drop-shadow-none [text-shadow:none]">{label}</p>
         </div>
       </button>
     </div>
@@ -1840,17 +1868,18 @@ function RouterIllustration({
       animate={glitchActive ? { rotate: [0, -0.6, 0.8, 0], y: [0, 0.4, -0.4, 0] } : { rotate: 0, y: 0 }}
       transition={glitchActive ? { duration: 0.9, repeat: 2, ease: "easeInOut" } : { duration: 0.2 }}
     >
-      <div className="relative h-[136px] w-[200px]">
-        <div className="pointer-events-none absolute left-[28px] top-[98px] h-[22px] w-[146px] rounded-full bg-[#0b1a30]/16 blur-[9px]" />
-        <svg
-          viewBox="0 0 520 340"
-          xmlns="http://www.w3.org/2000/svg"
-          role="img"
-          aria-label="White wireless router with two antennas"
-          className="absolute inset-0 h-full w-full"
-          style={{ display: "block", shapeRendering: "geometricPrecision", filter: DEVICE_FLOAT_FILTER }}
-          preserveAspectRatio="xMidYMid meet"
-        >
+      <div className="relative h-[194px] w-[226px]">
+        <div className="absolute left-1/2 top-[29px] h-[136px] w-[200px] -translate-x-1/2">
+          <div className="pointer-events-none absolute left-[28px] top-[98px] h-[22px] w-[146px] rounded-full bg-[#0b1a30]/16 blur-[9px]" />
+          <svg
+            viewBox="0 0 520 340"
+            xmlns="http://www.w3.org/2000/svg"
+            role="img"
+            aria-label="White wireless router with two antennas"
+            className="absolute inset-0 h-full w-full"
+            style={{ display: "block", shapeRendering: "geometricPrecision", filter: DEVICE_FLOAT_FILTER }}
+            preserveAspectRatio="xMidYMid meet"
+          >
           <defs>
             <linearGradient id={ids.antenna} x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor="#ffffff" />
@@ -2008,7 +2037,8 @@ function RouterIllustration({
               );
             })}
           </g>
-        </svg>
+          </svg>
+        </div>
       </div>
     </motion.div>
   );
@@ -2054,18 +2084,19 @@ function SwitchIllustration({
       animate={active ? { y: [0, -1, 0] } : { y: 0 }}
       transition={active ? { duration: 0.55, repeat: 1, ease: "easeInOut" } : { duration: 0.2 }}
     >
-      <div className="relative h-[86px] w-[176px]">
-        <div className="pointer-events-none absolute left-[32px] top-[93px] h-[18px] w-[154px] rounded-full bg-[#0b1a30]/16 blur-[10px]" />
+      <div className="relative h-[194px] w-[226px]">
+        <div className="absolute left-1/2 top-[23px] h-[86px] w-[176px] origin-top -translate-x-1/2 scale-[1.08]">
+          <div className="pointer-events-none absolute left-[32px] top-[93px] h-[18px] w-[154px] rounded-full bg-[#0b1a30]/16 blur-[10px]" />
 
-        <svg
-          viewBox="0 0 1018 482"
-          xmlns="http://www.w3.org/2000/svg"
-          role="img"
-          aria-label="Blue network switch"
-          className="absolute inset-0 h-full w-full"
-          style={{ display: "block", shapeRendering: "geometricPrecision", filter: DEVICE_FLOAT_FILTER }}
-          preserveAspectRatio="none"
-        >
+          <svg
+            viewBox="0 0 1018 482"
+            xmlns="http://www.w3.org/2000/svg"
+            role="img"
+            aria-label="Blue network switch"
+            className="absolute inset-0 h-full w-full"
+            style={{ display: "block", shapeRendering: "geometricPrecision", filter: DEVICE_FLOAT_FILTER }}
+            preserveAspectRatio="none"
+          >
           <defs>
             <linearGradient id={ids.left} x1="50" y1="22" x2="553" y2="289" gradientUnits="userSpaceOnUse">
               <stop offset="0%" stopColor="#5c739b" />
@@ -2324,7 +2355,8 @@ function SwitchIllustration({
             <line x1="191" y1="318" x2="892" y2="318" stroke="#faf8f3" strokeWidth="1.2" opacity="0.65" />
             <line x1="191" y1="425" x2="892" y2="425" stroke="#888987" strokeWidth="1.1" opacity="0.55" />
           </g>
-        </svg>
+          </svg>
+        </div>
       </div>
     </motion.div>
   );
@@ -2334,8 +2366,8 @@ function SwitchIllustration({
 function PCIllustration({ compact = false, typingStep = 0, typingActive = false }: { compact?: boolean; typingStep?: number; typingActive?: boolean }) {
   return (
     <div className={`relative origin-top ${compact ? "scale-[0.8]" : "scale-100"}`}>
-      <div className="relative h-[198px] w-[226px]">
-        <div className="pointer-events-none absolute left-[27px] top-[176px] h-[18px] w-[172px] rounded-full bg-[#0b1a30]/16 blur-[9px]" />
+      <div className="relative h-[194px] w-[226px]">
+        <div className="pointer-events-none absolute left-[27px] top-[170px] h-[18px] w-[172px] rounded-full bg-[#0b1a30]/16 blur-[9px]" />
         <div className="relative h-full w-full" style={{ filter: DEVICE_FLOAT_FILTER_SOFT }}>
           <RetroComputer
             className="h-full w-full"
@@ -2400,13 +2432,14 @@ function SmartphoneIllustration({
       animate={ringing ? { x: [0, -3, 3, -3, 3, 0], rotate: [2.3, 0.5, 4.2, 0.5, 4.2, 2.3] } : { x: 0, rotate: 2.3 }}
       transition={ringing ? { duration: 0.44, repeat: Infinity, ease: "linear" } : { duration: 0.24 }}
     >
-      <div className="relative h-[194px] w-[160px]">
-        <div className="pointer-events-none absolute left-[44px] top-[160px] h-[18px] w-[78px] rounded-full bg-[#0b1a30]/16 blur-[10px]" />
-        <div className="pointer-events-none absolute left-[38px] top-[12px] z-[11] h-[24px] w-[88px] rotate-[1.7deg] rounded-full bg-white/10 blur-[7px]" />
-        <div
-          className="absolute left-[39px] top-[10px] z-10 h-[166px] w-[82px] rotate-[1.7deg] rounded-[24px] border border-[#1f3346]/78 bg-[linear-gradient(180deg,#435a70_0%,#1b2d40_34%,#101925_100%)] p-[4px] shadow-[0_0_0_1px_rgba(127,212,241,0.05)]"
-          style={{ filter: DEVICE_FLOAT_FILTER_SOFT }}
-        >
+      <div className="relative h-[194px] w-[226px]">
+        <div className="absolute left-1/2 top-0 h-[194px] w-[160px] -translate-x-1/2">
+          <div className="pointer-events-none absolute left-[44px] top-[160px] h-[18px] w-[78px] rounded-full bg-[#0b1a30]/16 blur-[10px]" />
+          <div className="pointer-events-none absolute left-[38px] top-[12px] z-[11] h-[24px] w-[88px] rotate-[1.7deg] rounded-full bg-white/10 blur-[7px]" />
+          <div
+            className="absolute left-[39px] top-[10px] z-10 h-[166px] w-[82px] rotate-[1.7deg] rounded-[24px] border border-[#1f3346]/78 bg-[linear-gradient(180deg,#435a70_0%,#1b2d40_34%,#101925_100%)] p-[4px] shadow-[0_0_0_1px_rgba(127,212,241,0.05)]"
+            style={{ filter: DEVICE_FLOAT_FILTER_SOFT }}
+          >
           <div className="absolute inset-[1px] rounded-[22px] border border-white/10" />
           <div className="absolute inset-[4px] rounded-[19px] border border-[#466078]/60 shadow-[inset_0_0_0_0.6px_rgba(255,255,255,0.03)]" />
           <div className="absolute inset-[5px] rounded-[18px] bg-[linear-gradient(180deg,rgba(255,255,255,0.08)_0%,rgba(255,255,255,0)_22%,rgba(255,255,255,0)_80%,rgba(255,255,255,0.03)_100%)]" />
@@ -2460,7 +2493,7 @@ function SmartphoneIllustration({
                       <rect x="1.35" y="4.35" width="5.3" height="4.2" rx="1.1" stroke="currentColor" strokeWidth="0.9" />
                     </svg>
                   </div>
-                  <div className="text-[27px] font-medium tracking-[-0.06em] text-white drop-shadow-[0_1px_6px_rgba(0,0,0,0.24)]">{lockscreenTime}</div>
+                  <div className="text-[27px] font-medium tracking-[-0.06em] text-white">{lockscreenTime}</div>
                   <div className="mt-[1px] text-[6px] font-medium tracking-[0.03em] text-white/88">{lockscreenDate}</div>
                 </div>
                 <div className="absolute inset-x-0 bottom-[11px] flex justify-center">
@@ -2470,14 +2503,15 @@ function SmartphoneIllustration({
             ) : null}
           </div>
         </div>
-        <div className="absolute left-[119px] top-[35px] z-0 h-[34px] w-[5px] rotate-[1.7deg] rounded-r-full bg-[linear-gradient(180deg,#728398_0%,#334456_100%)] shadow-[-1px_0_0_rgba(17,27,40,0.22)]" />
-        <div className="absolute left-[118px] top-[74px] z-0 h-[15px] w-[5px] rotate-[1.7deg] rounded-r-full bg-[linear-gradient(180deg,#728398_0%,#334456_100%)] shadow-[-1px_0_0_rgba(17,27,40,0.22)]" />
-        {ringing && !noWifi ? (
-          <>
-            <div className="absolute bottom-[9px] right-[44px] h-[25px] w-[25px] rounded-full border border-[#0d96b2]/24" />
-            <div className="absolute bottom-[3px] right-[36px] h-[39px] w-[39px] rounded-full border border-[#0d96b2]/18" />
-          </>
-        ) : null}
+          <div className="absolute left-[119px] top-[35px] z-0 h-[34px] w-[5px] rotate-[1.7deg] rounded-r-full bg-[linear-gradient(180deg,#728398_0%,#334456_100%)] shadow-[-1px_0_0_rgba(17,27,40,0.22)]" />
+          <div className="absolute left-[118px] top-[74px] z-0 h-[15px] w-[5px] rotate-[1.7deg] rounded-r-full bg-[linear-gradient(180deg,#728398_0%,#334456_100%)] shadow-[-1px_0_0_rgba(17,27,40,0.22)]" />
+          {ringing && !noWifi ? (
+            <>
+              <div className="absolute bottom-[9px] right-[44px] h-[25px] w-[25px] rounded-full border border-[#0d96b2]/24" />
+              <div className="absolute bottom-[3px] right-[36px] h-[39px] w-[39px] rounded-full border border-[#0d96b2]/18" />
+            </>
+          ) : null}
+        </div>
       </div>
     </motion.div>
   );
