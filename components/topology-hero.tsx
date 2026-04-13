@@ -2001,10 +2001,22 @@ function RouterIllustration({
             <path d="M80 236H440" stroke="#c3c7cd" strokeWidth="1.8" opacity={frontLineOpacity} />
 
             <ellipse cx="122" cy="210" rx="27" ry="27" fill={`url(#${ids.powerOuter})`} stroke="#b44c61" strokeWidth="2.2" />
-            <path d="M113 202 A10.5 10.5 0 1 0 131 202" fill="none" stroke="rgba(118,44,63,0.34)" strokeWidth="5.4" strokeLinecap="round" />
-            <path d="M122 198.4V209.2" stroke="rgba(118,44,63,0.34)" strokeWidth="5.4" strokeLinecap="round" />
-            <path d="M113.4 202 A10.1 10.1 0 1 0 130.6 202" fill="none" stroke="#f4f7f8" strokeWidth="4.4" strokeLinecap="round" />
-            <path d="M122 198.6V209.2" stroke="#f4f7f8" strokeWidth="4.4" strokeLinecap="round" />
+            <path
+              d="M117 200.8 A10.7 10.7 0 1 0 127 200.8"
+              fill="none"
+              stroke="rgba(118,44,63,0.34)"
+              strokeWidth="5.2"
+              strokeLinecap="round"
+            />
+            <path d="M122 198.9V209.7" stroke="rgba(118,44,63,0.34)" strokeWidth="5.2" strokeLinecap="round" />
+            <path
+              d="M117.4 201 A10.3 10.3 0 1 0 126.6 201"
+              fill="none"
+              stroke="#f4f7f8"
+              strokeWidth="4.2"
+              strokeLinecap="round"
+            />
+            <path d="M122 199V209.6" stroke="#f4f7f8" strokeWidth="4.2" strokeLinecap="round" />
 
             {ledXs.map((x, index) => {
               const isOn = ledStates[index];
