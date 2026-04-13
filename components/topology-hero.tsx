@@ -78,7 +78,7 @@ const NODE_META: Record<NodeKey, NodeMeta> = {
     width: UNIFIED_DEVICE_WIDTH,
     height: UNIFIED_NODE_HEIGHT,
     deviceHeight: UNIFIED_DEVICE_HEIGHT,
-    labelOffsetY: -76,
+    labelOffsetY: -90,
   },
   home: {
     label: "LinkedIn",
@@ -1508,7 +1508,7 @@ function NodeButton({
         onDragStart={(event) => event.preventDefault()}
         onPointerDown={(event) => onPointerDown(node, event)}
         onContextMenu={(event) => event.preventDefault()}
-        className="group relative h-full w-full overflow-visible select-none text-left focus:outline-none"
+        className="group relative isolate h-full w-full overflow-visible select-none text-left focus:outline-none"
         style={{ touchAction: "none", cursor: dragging ? "grabbing" : "grab", userSelect: "none", zIndex: active ? 18 : 12 }}
       >
         <motion.div
@@ -1851,7 +1851,6 @@ function RouterIllustration({
     powerOuter: `${uid}-router-power-outer`,
     led: `${uid}-router-led`,
     ledGlow: `${uid}-router-led-glow`,
-    bodyShadow: `${uid}-router-body-shadow`,
   };
 
   const ledStates = [
@@ -1939,13 +1938,9 @@ function RouterIllustration({
               <stop offset="100%" stopColor="rgba(146,255,128,0)" />
             </radialGradient>
 
-            <filter id={ids.bodyShadow} x="-24%" y="-30%" width="148%" height="190%">
-              <feDropShadow dx="0" dy="18" stdDeviation="14" floodColor="#000000" floodOpacity="0.22" />
-            </filter>
-
           </defs>
 
-          <g filter={`url(#${ids.bodyShadow})`}>
+          <g>
             <rect
               x="165"
               y="-36"
