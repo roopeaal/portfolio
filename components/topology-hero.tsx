@@ -1842,7 +1842,6 @@ function RouterIllustration({
     frontBand: `${uid}-router-front-band`,
     frontBottom: `${uid}-router-front-bottom`,
     powerOuter: `${uid}-router-power-outer`,
-    powerInner: `${uid}-router-power-inner`,
     led: `${uid}-router-led`,
     ledGlow: `${uid}-router-led-glow`,
     bodyShadow: `${uid}-router-body-shadow`,
@@ -1918,14 +1917,9 @@ function RouterIllustration({
             </linearGradient>
 
             <radialGradient id={ids.powerOuter} cx="36%" cy="30%" r="78%">
-              <stop offset="0%" stopColor="#ff9ba8" />
-              <stop offset="65%" stopColor="#d8687f" />
-              <stop offset="100%" stopColor="#c64f6b" />
-            </radialGradient>
-
-            <radialGradient id={ids.powerInner} cx="34%" cy="28%" r="70%">
-              <stop offset="0%" stopColor="#fff4f6" />
-              <stop offset="100%" stopColor="#f0d4da" />
+              <stop offset="0%" stopColor="#cf5673" />
+              <stop offset="65%" stopColor="#cc5471" />
+              <stop offset="100%" stopColor="#c8516d" />
             </radialGradient>
 
             <radialGradient id={ids.led} cx="38%" cy="34%" r="70%">
@@ -2007,31 +2001,10 @@ function RouterIllustration({
             <path d="M80 236H440" stroke="#c3c7cd" strokeWidth="1.8" opacity={frontLineOpacity} />
 
             <ellipse cx="122" cy="210" rx="27" ry="27" fill={`url(#${ids.powerOuter})`} stroke="#b44c61" strokeWidth="2.2" />
-            <ellipse cx="122" cy="210" rx="18" ry="18" fill={`url(#${ids.powerInner})`} />
-            <circle
-              cx="122"
-              cy="210"
-              r="11.2"
-              fill="none"
-              stroke="rgba(118,44,63,0.34)"
-              strokeWidth="5.4"
-              strokeLinecap="round"
-              strokeDasharray="60 16"
-              transform="rotate(-90 122 210)"
-            />
-            <path d="M122 197.8V209.8" stroke="rgba(118,44,63,0.34)" strokeWidth="5.4" strokeLinecap="round" />
-            <circle
-              cx="122"
-              cy="210"
-              r="10.9"
-              fill="none"
-              stroke="#f4f7f8"
-              strokeWidth="4.4"
-              strokeLinecap="round"
-              strokeDasharray="58 18"
-              transform="rotate(-90 122 210)"
-            />
-            <path d="M122 198.2V209.4" stroke="#f4f7f8" strokeWidth="4.4" strokeLinecap="round" />
+            <path d="M113 202 A10.5 10.5 0 1 0 131 202" fill="none" stroke="rgba(118,44,63,0.34)" strokeWidth="5.4" strokeLinecap="round" />
+            <path d="M122 198.4V209.2" stroke="rgba(118,44,63,0.34)" strokeWidth="5.4" strokeLinecap="round" />
+            <path d="M113.4 202 A10.1 10.1 0 1 0 130.6 202" fill="none" stroke="#f4f7f8" strokeWidth="4.4" strokeLinecap="round" />
+            <path d="M122 198.6V209.2" stroke="#f4f7f8" strokeWidth="4.4" strokeLinecap="round" />
 
             {ledXs.map((x, index) => {
               const isOn = ledStates[index];
