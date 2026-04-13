@@ -40,9 +40,9 @@ const PREVIEW_GAP = 42;
 const PREVIEW_MARGIN = 18;
 const DEVICE_FLOAT_FILTER = "drop-shadow(0 16px 22px rgba(10,18,31,0.18)) drop-shadow(0 5px 12px rgba(24,79,113,0.10))";
 const DEVICE_FLOAT_FILTER_SOFT = "drop-shadow(0 12px 18px rgba(10,18,31,0.14)) drop-shadow(0 4px 10px rgba(24,79,113,0.08))";
-const UNIFIED_DEVICE_WIDTH = 226;
-const UNIFIED_DEVICE_HEIGHT = 194;
-const UNIFIED_NODE_HEIGHT = 262;
+const UNIFIED_DEVICE_WIDTH = 242;
+const UNIFIED_DEVICE_HEIGHT = 208;
+const UNIFIED_NODE_HEIGHT = 278;
 
 type NodePosition = { x: number; y: number };
 type NodeMeta = {
@@ -101,7 +101,7 @@ const INITIAL_NODE_POSITIONS: Record<NodeKey, NodePosition> = {
   contact: { x: 958, y: 454 },
 };
 
-const NODE_POSITIONS_STORAGE_KEY = "portfolio-node-positions-v2";
+const NODE_POSITIONS_STORAGE_KEY = "portfolio-node-positions-v3";
 
 function getInitialNodePositions(): Record<NodeKey, NodePosition> {
   if (typeof window === "undefined") return INITIAL_NODE_POSITIONS;
@@ -1867,16 +1867,16 @@ function RouterIllustration({
       animate={glitchActive ? { rotate: [0, -0.6, 0.8, 0], y: [0, 0.4, -0.4, 0] } : { rotate: 0, y: 0 }}
       transition={glitchActive ? { duration: 0.9, repeat: 2, ease: "easeInOut" } : { duration: 0.2 }}
     >
-      <div className="relative h-[194px] w-[226px]">
-        <div className="absolute left-1/2 top-[27px] h-[136px] w-[200px] -translate-x-1/2 origin-top scale-[1.22]">
-          <div className="pointer-events-none absolute left-[28px] top-[98px] h-[22px] w-[146px] rounded-full bg-[#0b1a30]/16 blur-[9px]" />
+      <div className="relative" style={{ width: UNIFIED_DEVICE_WIDTH, height: UNIFIED_DEVICE_HEIGHT }}>
+        <div className="absolute left-1/2 top-[27px] h-[136px] w-[200px] -translate-x-1/2 origin-top scale-[1.28]">
+          <div className="pointer-events-none absolute left-[24px] top-[97px] h-[24px] w-[154px] rounded-full bg-[#0b1a30]/18 blur-[10px]" />
           <svg
             viewBox="0 0 520 340"
             xmlns="http://www.w3.org/2000/svg"
             role="img"
             aria-label="White wireless router with two antennas"
             className="absolute inset-0 h-full w-full"
-            style={{ display: "block", shapeRendering: "geometricPrecision", filter: DEVICE_FLOAT_FILTER }}
+            style={{ display: "block", shapeRendering: "geometricPrecision", filter: DEVICE_FLOAT_FILTER, overflow: "visible" }}
             preserveAspectRatio="xMidYMid meet"
           >
           <defs>
@@ -2083,9 +2083,9 @@ function SwitchIllustration({
       animate={active ? { y: [0, -1, 0] } : { y: 0 }}
       transition={active ? { duration: 0.55, repeat: 1, ease: "easeInOut" } : { duration: 0.2 }}
     >
-      <div className="relative h-[194px] w-[226px]">
-        <div className="absolute left-1/2 top-[23px] h-[86px] w-[176px] origin-top -translate-x-1/2 scale-[1.08]">
-          <div className="pointer-events-none absolute left-[32px] top-[93px] h-[18px] w-[154px] rounded-full bg-[#0b1a30]/16 blur-[10px]" />
+      <div className="relative" style={{ width: UNIFIED_DEVICE_WIDTH, height: UNIFIED_DEVICE_HEIGHT }}>
+        <div className="absolute left-1/2 top-[23px] h-[86px] w-[176px] origin-top -translate-x-1/2 scale-[1.14]">
+          <div className="pointer-events-none absolute left-[25px] top-[92px] h-[24px] w-[168px] rounded-full bg-[#0b1a30]/18 blur-[10px]" />
 
           <svg
             viewBox="0 0 1018 482"
@@ -2365,9 +2365,9 @@ function SwitchIllustration({
 function PCIllustration({ compact = false, typingStep = 0, typingActive = false }: { compact?: boolean; typingStep?: number; typingActive?: boolean }) {
   return (
     <div className={`relative origin-top ${compact ? "scale-[0.8]" : "scale-100"}`}>
-      <div className="relative h-[194px] w-[226px]">
-        <div className="pointer-events-none absolute left-[27px] top-[170px] h-[18px] w-[172px] rounded-full bg-[#0b1a30]/16 blur-[9px]" />
-        <div className="relative h-full w-full" style={{ filter: DEVICE_FLOAT_FILTER_SOFT }}>
+      <div className="relative" style={{ width: UNIFIED_DEVICE_WIDTH, height: UNIFIED_DEVICE_HEIGHT }}>
+        <div className="pointer-events-none absolute left-1/2 top-[182px] h-[24px] w-[184px] -translate-x-1/2 rounded-full bg-[#0b1a30]/18 blur-[10px]" />
+        <div className="relative h-full w-full" style={{ filter: DEVICE_FLOAT_FILTER }}>
           <RetroComputer
             className="h-full w-full"
             screenImageSrc={`${ASSET_BASE}/linkedin-profile.png?v=20260409-1`}
@@ -2431,13 +2431,13 @@ function SmartphoneIllustration({
       animate={ringing ? { x: [0, -3, 3, -3, 3, 0], rotate: [2.3, 0.5, 4.2, 0.5, 4.2, 2.3] } : { x: 0, rotate: 2.3 }}
       transition={ringing ? { duration: 0.44, repeat: Infinity, ease: "linear" } : { duration: 0.24 }}
     >
-      <div className="relative h-[194px] w-[226px]">
-        <div className="absolute left-1/2 top-0 h-[194px] w-[160px] -translate-x-1/2">
-          <div className="pointer-events-none absolute left-[44px] top-[160px] h-[18px] w-[78px] rounded-full bg-[#0b1a30]/16 blur-[10px]" />
+      <div className="relative" style={{ width: UNIFIED_DEVICE_WIDTH, height: UNIFIED_DEVICE_HEIGHT }}>
+        <div className="absolute left-1/2 top-0 h-[194px] w-[160px] -translate-x-1/2 origin-top scale-[1.07]">
+          <div className="pointer-events-none absolute left-[31px] top-[160px] h-[22px] w-[104px] rounded-full bg-[#0b1a30]/18 blur-[10px]" />
           <div className="pointer-events-none absolute left-[38px] top-[12px] z-[11] h-[24px] w-[88px] rotate-[1.7deg] rounded-full bg-white/10 blur-[7px]" />
           <div
             className="absolute left-[39px] top-[10px] z-10 h-[166px] w-[82px] rotate-[1.7deg] rounded-[24px] border border-[#1f3346]/78 bg-[linear-gradient(180deg,#435a70_0%,#1b2d40_34%,#101925_100%)] p-[4px] shadow-[0_0_0_1px_rgba(127,212,241,0.05)]"
-            style={{ filter: DEVICE_FLOAT_FILTER_SOFT }}
+            style={{ filter: DEVICE_FLOAT_FILTER }}
           >
           <div className="absolute inset-[1px] rounded-[22px] border border-white/10" />
           <div className="absolute inset-[4px] rounded-[19px] border border-[#466078]/60 shadow-[inset_0_0_0_0.6px_rgba(255,255,255,0.03)]" />
