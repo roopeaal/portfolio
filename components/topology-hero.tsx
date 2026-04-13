@@ -1297,7 +1297,7 @@ export function TopologyHero() {
                         animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
                         exit={{ opacity: 0, scale: 0.86, y: 12, filter: "blur(6px)" }}
                         transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-                        className="pointer-events-none absolute z-[20]"
+                        className="pointer-events-none absolute z-[220]"
                         style={previewStyle}
                       >
                         {activePreview}
@@ -1309,7 +1309,7 @@ export function TopologyHero() {
                         exit={{ opacity: 0, scale: 0.85, y: 6 }}
                         transition={{ duration: 0.16, ease: [0.22, 1, 0.36, 1] }}
                         style={{ left: `${Math.min(mousePosition.x + 18, 1160)}px`, top: `${Math.max(mousePosition.y - 18, 82)}px` }}
-                        className="pointer-events-none fixed z-[120] whitespace-nowrap rounded-full border border-[#d7dee8] bg-white/96 px-3 py-1 text-[11px] font-medium text-[#7a7a7a] shadow-[0_8px_18px_rgba(15,23,42,0.14)]"
+                        className="pointer-events-none fixed z-[240] whitespace-nowrap rounded-full border border-[#d7dee8] bg-white/96 px-3 py-1 text-[11px] font-medium text-[#7a7a7a] shadow-[0_8px_18px_rgba(15,23,42,0.14)]"
                       >
                         Click to open
                       </motion.div>
