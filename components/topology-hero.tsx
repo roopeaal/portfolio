@@ -1954,9 +1954,9 @@ function RouterIllustration({
           <g filter={`url(#${ids.bodyShadow})`}>
             <rect
               x="165"
-              y="16"
+              y="-12"
               width="24"
-              height="124"
+              height="152"
               rx="12"
               fill={`url(#${ids.antenna})`}
               stroke="#d0d3d8"
@@ -1965,9 +1965,9 @@ function RouterIllustration({
             />
             <rect
               x="330"
-              y="16"
+              y="-12"
               width="24"
-              height="124"
+              height="152"
               rx="12"
               fill={`url(#${ids.antenna})`}
               stroke="#d0d3d8"
