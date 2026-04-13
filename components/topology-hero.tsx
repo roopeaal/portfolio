@@ -54,6 +54,7 @@ type NodeMeta = {
   deviceHeight: number;
   previewWidth?: number;
   labelOffsetX?: number;
+  labelOffsetY?: number;
 };
 
 type DragBounds = {
@@ -77,6 +78,7 @@ const NODE_META: Record<NodeKey, NodeMeta> = {
     width: UNIFIED_DEVICE_WIDTH,
     height: UNIFIED_NODE_HEIGHT,
     deviceHeight: UNIFIED_DEVICE_HEIGHT,
+    labelOffsetY: -76,
   },
   home: {
     label: "LinkedIn",
@@ -1545,9 +1547,9 @@ function NodeButton({
         </motion.div>
 
         <div
-          className="absolute inset-x-0 flex flex-col items-center justify-center text-center leading-tight"
+          className="absolute inset-x-0 z-[30] flex flex-col items-center justify-center text-center leading-tight"
           style={{
-            top: meta.deviceHeight + NODE_LABEL_GAP,
+            top: meta.deviceHeight + NODE_LABEL_GAP + (meta.labelOffsetY ?? 0),
             transform: NODE_META[node].labelOffsetX ? `translateX(${NODE_META[node].labelOffsetX}px)` : undefined,
           }}
         >
@@ -1850,7 +1852,6 @@ function RouterIllustration({
     led: `${uid}-router-led`,
     ledGlow: `${uid}-router-led-glow`,
     bodyShadow: `${uid}-router-body-shadow`,
-    softBlur: `${uid}-router-soft-blur`,
   };
 
   const ledStates = [
@@ -1942,12 +1943,7 @@ function RouterIllustration({
               <feDropShadow dx="0" dy="18" stdDeviation="14" floodColor="#000000" floodOpacity="0.22" />
             </filter>
 
-            <filter id={ids.softBlur} x="-20%" y="-20%" width="140%" height="140%">
-              <feGaussianBlur stdDeviation="2.1" />
-            </filter>
           </defs>
-
-          <ellipse cx="262" cy="286" rx="188" ry="20" fill="rgba(0,0,0,0.14)" filter={`url(#${ids.softBlur})`} />
 
           <g filter={`url(#${ids.bodyShadow})`}>
             <rect
