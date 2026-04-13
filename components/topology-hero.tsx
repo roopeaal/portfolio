@@ -38,6 +38,8 @@ const PREVIEW_WIDTH = 362;
 const PREVIEW_HEIGHT = 266;
 const PREVIEW_GAP = 42;
 const PREVIEW_MARGIN = 18;
+const DEVICE_FLOAT_FILTER = "drop-shadow(0 16px 22px rgba(10,18,31,0.18)) drop-shadow(0 5px 12px rgba(24,79,113,0.10))";
+const DEVICE_FLOAT_FILTER_SOFT = "drop-shadow(0 12px 18px rgba(10,18,31,0.14)) drop-shadow(0 4px 10px rgba(24,79,113,0.08))";
 
 type NodePosition = { x: number; y: number };
 type NodeMeta = {
@@ -1839,13 +1841,14 @@ function RouterIllustration({
       transition={glitchActive ? { duration: 0.9, repeat: 2, ease: "easeInOut" } : { duration: 0.2 }}
     >
       <div className="relative h-[136px] w-[200px]">
+        <div className="pointer-events-none absolute left-[28px] top-[98px] h-[22px] w-[146px] rounded-full bg-[#0b1a30]/16 blur-[9px]" />
         <svg
           viewBox="0 0 520 340"
           xmlns="http://www.w3.org/2000/svg"
           role="img"
           aria-label="White wireless router with two antennas"
           className="absolute inset-0 h-full w-full"
-          style={{ display: "block", shapeRendering: "geometricPrecision" }}
+          style={{ display: "block", shapeRendering: "geometricPrecision", filter: DEVICE_FLOAT_FILTER }}
           preserveAspectRatio="xMidYMid meet"
         >
           <defs>
@@ -1917,7 +1920,7 @@ function RouterIllustration({
             </filter>
           </defs>
 
-          <ellipse cx="262" cy="286" rx="188" ry="22" fill="rgba(0,0,0,0.2)" filter={`url(#${ids.softBlur})`} />
+          <ellipse cx="262" cy="286" rx="188" ry="20" fill="rgba(0,0,0,0.14)" filter={`url(#${ids.softBlur})`} />
 
           <g filter={`url(#${ids.bodyShadow})`}>
             <rect
@@ -2052,7 +2055,7 @@ function SwitchIllustration({
       transition={active ? { duration: 0.55, repeat: 1, ease: "easeInOut" } : { duration: 0.2 }}
     >
       <div className="relative h-[86px] w-[176px]">
-        <div className="absolute left-[36px] top-[93px] h-[16px] w-[176px] rounded-full bg-[#12233f]/12 blur-[10px]" />
+        <div className="pointer-events-none absolute left-[32px] top-[93px] h-[18px] w-[154px] rounded-full bg-[#0b1a30]/16 blur-[10px]" />
 
         <svg
           viewBox="0 0 1018 482"
@@ -2060,7 +2063,7 @@ function SwitchIllustration({
           role="img"
           aria-label="Blue network switch"
           className="absolute inset-0 h-full w-full"
-          style={{ display: "block", shapeRendering: "geometricPrecision" }}
+          style={{ display: "block", shapeRendering: "geometricPrecision", filter: DEVICE_FLOAT_FILTER }}
           preserveAspectRatio="none"
         >
           <defs>
@@ -2332,12 +2335,15 @@ function PCIllustration({ compact = false, typingStep = 0, typingActive = false 
   return (
     <div className={`relative origin-top ${compact ? "scale-[0.8]" : "scale-100"}`}>
       <div className="relative h-[198px] w-[226px]">
-        <RetroComputer
-          className="h-full w-full drop-shadow-[0_14px_18px_rgba(15,23,42,0.08)]"
-          screenImageSrc={`${ASSET_BASE}/linkedin-profile.png?v=20260409-1`}
-          typingStep={typingStep}
-          typingActive={typingActive}
-        />
+        <div className="pointer-events-none absolute left-[27px] top-[176px] h-[18px] w-[172px] rounded-full bg-[#0b1a30]/16 blur-[9px]" />
+        <div className="relative h-full w-full" style={{ filter: DEVICE_FLOAT_FILTER_SOFT }}>
+          <RetroComputer
+            className="h-full w-full"
+            screenImageSrc={`${ASSET_BASE}/linkedin-profile.png?v=20260409-1`}
+            typingStep={typingStep}
+            typingActive={typingActive}
+          />
+        </div>
       </div>
     </div>
   );
@@ -2395,8 +2401,12 @@ function SmartphoneIllustration({
       transition={ringing ? { duration: 0.44, repeat: Infinity, ease: "linear" } : { duration: 0.24 }}
     >
       <div className="relative h-[194px] w-[160px]">
-        <div className="absolute left-[46px] top-[160px] h-[18px] w-[74px] rounded-full bg-[#0d6f8f]/12 blur-[10px]" />
-        <div className="absolute left-[39px] top-[10px] z-10 h-[166px] w-[82px] rotate-[1.7deg] rounded-[24px] border border-[#1f3346]/78 bg-[linear-gradient(180deg,#435a70_0%,#1b2d40_34%,#101925_100%)] p-[4px] shadow-[0_15px_28px_rgba(0,0,0,0.20),0_0_0_1px_rgba(127,212,241,0.05)]">
+        <div className="pointer-events-none absolute left-[44px] top-[160px] h-[18px] w-[78px] rounded-full bg-[#0b1a30]/16 blur-[10px]" />
+        <div className="pointer-events-none absolute left-[38px] top-[12px] z-[11] h-[24px] w-[88px] rotate-[1.7deg] rounded-full bg-white/10 blur-[7px]" />
+        <div
+          className="absolute left-[39px] top-[10px] z-10 h-[166px] w-[82px] rotate-[1.7deg] rounded-[24px] border border-[#1f3346]/78 bg-[linear-gradient(180deg,#435a70_0%,#1b2d40_34%,#101925_100%)] p-[4px] shadow-[0_0_0_1px_rgba(127,212,241,0.05)]"
+          style={{ filter: DEVICE_FLOAT_FILTER_SOFT }}
+        >
           <div className="absolute inset-[1px] rounded-[22px] border border-white/10" />
           <div className="absolute inset-[4px] rounded-[19px] border border-[#466078]/60 shadow-[inset_0_0_0_0.6px_rgba(255,255,255,0.03)]" />
           <div className="absolute inset-[5px] rounded-[18px] bg-[linear-gradient(180deg,rgba(255,255,255,0.08)_0%,rgba(255,255,255,0)_22%,rgba(255,255,255,0)_80%,rgba(255,255,255,0.03)_100%)]" />
