@@ -1868,7 +1868,7 @@ function RouterIllustration({
       transition={glitchActive ? { duration: 0.9, repeat: 2, ease: "easeInOut" } : { duration: 0.2 }}
     >
       <div className="relative h-[194px] w-[226px]">
-        <div className="absolute left-1/2 top-[29px] h-[136px] w-[200px] -translate-x-1/2 origin-top scale-[0.95]">
+        <div className="absolute left-1/2 top-[27px] h-[136px] w-[200px] -translate-x-1/2 origin-top scale-[1.22]">
           <div className="pointer-events-none absolute left-[28px] top-[98px] h-[22px] w-[146px] rounded-full bg-[#0b1a30]/16 blur-[9px]" />
           <svg
             viewBox="0 0 520 340"
@@ -1953,9 +1953,9 @@ function RouterIllustration({
           <g filter={`url(#${ids.bodyShadow})`}>
             <rect
               x="165"
-              y="-12"
+              y="-36"
               width="24"
-              height="152"
+              height="176"
               rx="12"
               fill={`url(#${ids.antenna})`}
               stroke="#d0d3d8"
@@ -1964,9 +1964,9 @@ function RouterIllustration({
             />
             <rect
               x="330"
-              y="-12"
+              y="-36"
               width="24"
-              height="152"
+              height="176"
               rx="12"
               fill={`url(#${ids.antenna})`}
               stroke="#d0d3d8"
