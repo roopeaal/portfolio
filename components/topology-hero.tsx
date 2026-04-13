@@ -40,9 +40,9 @@ const PREVIEW_GAP = 42;
 const PREVIEW_MARGIN = 18;
 const DEVICE_FLOAT_FILTER = "drop-shadow(0 16px 22px rgba(10,18,31,0.18)) drop-shadow(0 5px 12px rgba(24,79,113,0.10))";
 const DEVICE_FLOAT_FILTER_SOFT = "drop-shadow(0 12px 18px rgba(10,18,31,0.14)) drop-shadow(0 4px 10px rgba(24,79,113,0.08))";
-const UNIFIED_DEVICE_WIDTH = 242;
-const UNIFIED_DEVICE_HEIGHT = 208;
-const UNIFIED_NODE_HEIGHT = 278;
+const UNIFIED_DEVICE_WIDTH = 232;
+const UNIFIED_DEVICE_HEIGHT = 198;
+const UNIFIED_NODE_HEIGHT = 268;
 
 type NodePosition = { x: number; y: number };
 type NodeMeta = {
@@ -101,7 +101,7 @@ const INITIAL_NODE_POSITIONS: Record<NodeKey, NodePosition> = {
   contact: { x: 958, y: 454 },
 };
 
-const NODE_POSITIONS_STORAGE_KEY = "portfolio-node-positions-v3";
+const NODE_POSITIONS_STORAGE_KEY = "portfolio-node-positions-v4";
 
 function getInitialNodePositions(): Record<NodeKey, NodePosition> {
   if (typeof window === "undefined") return INITIAL_NODE_POSITIONS;
