@@ -43,6 +43,7 @@ const DEVICE_FLOAT_FILTER_SOFT = "drop-shadow(0 12px 18px rgba(10,18,31,0.14)) d
 const UNIFIED_DEVICE_WIDTH = 232;
 const UNIFIED_DEVICE_HEIGHT = 198;
 const UNIFIED_NODE_HEIGHT = 268;
+const NODE_LABEL_GAP = 12;
 
 type NodePosition = { x: number; y: number };
 type NodeMeta = {
@@ -1505,7 +1506,7 @@ function NodeButton({
         onDragStart={(event) => event.preventDefault()}
         onPointerDown={(event) => onPointerDown(node, event)}
         onContextMenu={(event) => event.preventDefault()}
-        className="group relative flex h-full w-full flex-col overflow-visible select-none text-left focus:outline-none"
+        className="group relative h-full w-full overflow-visible select-none text-left focus:outline-none"
         style={{ touchAction: "none", cursor: dragging ? "grabbing" : "grab", userSelect: "none", zIndex: active ? 18 : 12 }}
       >
         <motion.div
@@ -1518,6 +1519,7 @@ function NodeButton({
           }}
           transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
           className="pointer-events-none relative z-10 flex justify-center"
+          style={{ height: meta.deviceHeight }}
         >
           
         {DEBUG_NODE_HALOS
@@ -1543,8 +1545,11 @@ function NodeButton({
         </motion.div>
 
         <div
-          className="mt-[12px] flex flex-col items-center justify-center text-center leading-tight"
-          style={{ transform: NODE_META[node].labelOffsetX ? `translateX(${NODE_META[node].labelOffsetX}px)` : undefined }}
+          className="absolute inset-x-0 flex flex-col items-center justify-center text-center leading-tight"
+          style={{
+            top: meta.deviceHeight + NODE_LABEL_GAP,
+            transform: NODE_META[node].labelOffsetX ? `translateX(${NODE_META[node].labelOffsetX}px)` : undefined,
+          }}
         >
           <p className="text-[12px] font-medium uppercase tracking-[0.18em] text-[#7f8b9d] drop-shadow-none [text-shadow:none]">{deviceName}</p>
           <p className="mt-1 text-[18px] font-semibold tracking-[-0.02em] text-[#050505] drop-shadow-none [text-shadow:none]">{label}</p>
