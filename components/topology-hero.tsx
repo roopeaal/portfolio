@@ -1855,10 +1855,9 @@ function RouterIllustration({
     powerOn && signalLevel >= 1 && networkMode !== "dropping",
     powerOn && signalLevel >= 2,
     powerOn && networkMode !== "repairing",
-    powerOn && networkMode === "stable" && !glitchActive,
   ];
 
-  const ledXs = [250, 286, 322, 358, 394, 430];
+  const ledXs = [250, 286, 322, 358, 394];
   const ledPulse = 0.85 + Math.sin(tick / 4) * 0.12;
   const frontLineOpacity = glitchActive ? 0.58 : 0.86;
 
