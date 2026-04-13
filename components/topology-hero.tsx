@@ -1802,18 +1802,35 @@ function RouterIllustration({
   signalLevel?: 0 | 1 | 2;
   tick?: number;
 }) {
-  const wifiSearchFrame = Math.floor((tick % 18) / 6);
-  const showWifiPulse = glitchActive || networkMode !== "stable";
-  const wifiStroke = showWifiPulse ? "#2f7fad" : "#25394c";
-  const wifiDot = showWifiPulse ? "#2b6f98" : "#25394c";
-  const ledPalette = ["#67dd73", "#6cb8ff", "#67dd73", "#6cb8ff", "#67dd73"];
-  const ledActive = [
+  const uid = useId().replace(/:/g, "");
+  const ids = {
+    antenna: `${uid}-router-antenna`,
+    top: `${uid}-router-top`,
+    topHighlight: `${uid}-router-top-highlight`,
+    shell: `${uid}-router-shell`,
+    frontTop: `${uid}-router-front-top`,
+    frontBand: `${uid}-router-front-band`,
+    frontBottom: `${uid}-router-front-bottom`,
+    powerOuter: `${uid}-router-power-outer`,
+    powerInner: `${uid}-router-power-inner`,
+    led: `${uid}-router-led`,
+    ledGlow: `${uid}-router-led-glow`,
+    bodyShadow: `${uid}-router-body-shadow`,
+    softBlur: `${uid}-router-soft-blur`,
+  };
+
+  const ledStates = [
     powerOn,
-    signalLevel >= 1,
-    signalLevel >= 2,
-    networkMode === "stable" && powerOn,
-    networkMode === "stable" && powerOn && !glitchActive,
+    powerOn && signalLevel >= 1,
+    powerOn && signalLevel >= 1 && networkMode !== "dropping",
+    powerOn && signalLevel >= 2,
+    powerOn && networkMode !== "repairing",
+    powerOn && networkMode === "stable" && !glitchActive,
   ];
+
+  const ledXs = [250, 286, 322, 358, 394, 430];
+  const ledPulse = 0.85 + Math.sin(tick / 4) * 0.12;
+  const frontLineOpacity = glitchActive ? 0.58 : 0.86;
 
   return (
     <motion.div
@@ -1821,43 +1838,174 @@ function RouterIllustration({
       animate={glitchActive ? { rotate: [0, -0.6, 0.8, 0], y: [0, 0.4, -0.4, 0] } : { rotate: 0, y: 0 }}
       transition={glitchActive ? { duration: 0.9, repeat: 2, ease: "easeInOut" } : { duration: 0.2 }}
     >
-      <div className="relative h-[140px] w-[200px]">
-        <div className="absolute left-[38px] top-[118px] h-[14px] w-[126px] rounded-full bg-black/22 blur-[9px]" />
-        <div className="absolute left-[56px] top-[14px] h-[54px] w-[8px] rounded-[6px] border border-[#c5ccd6] bg-[linear-gradient(180deg,#f8fafc_0%,#e2e7ef_58%,#c2cad6_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.75),0_2px_3px_rgba(0,0,0,0.12)]" />
-        <div className="absolute right-[56px] top-[14px] h-[54px] w-[8px] rounded-[6px] border border-[#c5ccd6] bg-[linear-gradient(180deg,#f8fafc_0%,#e2e7ef_58%,#c2cad6_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.75),0_2px_3px_rgba(0,0,0,0.12)]" />
+      <div className="relative h-[136px] w-[200px]">
+        <svg
+          viewBox="0 0 520 340"
+          xmlns="http://www.w3.org/2000/svg"
+          role="img"
+          aria-label="White wireless router with two antennas"
+          className="absolute inset-0 h-full w-full"
+          style={{ display: "block", shapeRendering: "geometricPrecision" }}
+          preserveAspectRatio="xMidYMid meet"
+        >
+          <defs>
+            <linearGradient id={ids.antenna} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#ffffff" />
+              <stop offset="58%" stopColor="#f2f3f5" />
+              <stop offset="100%" stopColor="#ced1d5" />
+            </linearGradient>
 
-        <div className="absolute left-1/2 top-[8px] h-[52px] w-[84px] -translate-x-1/2">
-          <svg width="84" height="52" viewBox="0 0 84 52" fill="none" aria-hidden="true">
-            <path d="M34 39C38 35 46 35 50 39" stroke={wifiStroke} strokeWidth="4.6" strokeLinecap="round" opacity={showWifiPulse ? (wifiSearchFrame === 0 ? 0.95 : 0.32) : 0.95} />
-            <path d="M25 30C33 23 51 23 59 30" stroke={wifiStroke} strokeWidth="4.8" strokeLinecap="round" opacity={showWifiPulse ? (wifiSearchFrame >= 1 ? 0.95 : 0.32) : 0.95} />
-            <path d="M15 20C27 10 57 10 69 20" stroke={wifiStroke} strokeWidth="5" strokeLinecap="round" opacity={showWifiPulse ? (wifiSearchFrame === 2 ? 0.98 : 0.32) : 0.95} />
-            <circle cx="42" cy="44.5" r="4.4" fill={wifiDot} opacity={showWifiPulse ? (wifiSearchFrame === 0 ? 0.98 : 0.34) : 0.95} />
-          </svg>
-        </div>
+            <linearGradient id={ids.top} x1="120" y1="92" x2="408" y2="172" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stopColor="#f6f6f7" />
+              <stop offset="46%" stopColor="#ececee" />
+              <stop offset="100%" stopColor="#dedfe2" />
+            </linearGradient>
 
-        <div className="absolute left-[20px] top-[64px] h-[52px] w-[160px]">
-          <div className="absolute inset-0 rounded-[11px] border border-[#d4dae1] bg-[linear-gradient(180deg,#ffffff_0%,#eef1f5_54%,#d6dbe2_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.92),0_10px_14px_rgba(15,23,42,0.16)]" />
-          <div className="absolute inset-x-[8px] top-[3px] h-[16px] rounded-t-[9px] bg-[linear-gradient(180deg,rgba(255,255,255,0.95)_0%,rgba(234,239,245,0.75)_100%)]" />
-          <div className="absolute inset-x-0 bottom-[6px] h-[17px] rounded-b-[10px] border-t border-[#c8cfd8] bg-[linear-gradient(180deg,#d3d9e1_0%,#c4ccd6_100%)]" />
-          <div className="absolute inset-x-[1px] bottom-[1px] h-[6px] rounded-b-[9px] bg-[linear-gradient(180deg,#1b638f_0%,#0f3f62_100%)] opacity-[0.88]" />
+            <linearGradient id={ids.topHighlight} x1="260" y1="120" x2="260" y2="168" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stopColor="#ffffff" stopOpacity="0.8" />
+              <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
+            </linearGradient>
 
-          <div className="absolute left-[29px] top-[31px] flex items-center gap-[9px]">
-            {ledPalette.map((color, index) => {
-              const on = ledActive[index];
+            <linearGradient id={ids.shell} x1="78" y1="150" x2="442" y2="270" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stopColor="#f7f7f8" />
+              <stop offset="100%" stopColor="#d7d9dc" />
+            </linearGradient>
+
+            <linearGradient id={ids.frontTop} x1="260" y1="150" x2="260" y2="186" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stopColor="#fefefe" />
+              <stop offset="100%" stopColor="#eceef0" />
+            </linearGradient>
+
+            <linearGradient id={ids.frontBand} x1="260" y1="186" x2="260" y2="236" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stopColor="#d8c5b5" />
+              <stop offset="100%" stopColor="#d1bead" />
+            </linearGradient>
+
+            <linearGradient id={ids.frontBottom} x1="260" y1="236" x2="260" y2="271" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stopColor="#f0f1f3" />
+              <stop offset="100%" stopColor="#d9dbde" />
+            </linearGradient>
+
+            <radialGradient id={ids.powerOuter} cx="36%" cy="30%" r="78%">
+              <stop offset="0%" stopColor="#ff9ba8" />
+              <stop offset="65%" stopColor="#d8687f" />
+              <stop offset="100%" stopColor="#c64f6b" />
+            </radialGradient>
+
+            <radialGradient id={ids.powerInner} cx="34%" cy="28%" r="70%">
+              <stop offset="0%" stopColor="#fff4f6" />
+              <stop offset="100%" stopColor="#f0d4da" />
+            </radialGradient>
+
+            <radialGradient id={ids.led} cx="38%" cy="34%" r="70%">
+              <stop offset="0%" stopColor="#b2f89e" />
+              <stop offset="68%" stopColor="#58d66a" />
+              <stop offset="100%" stopColor="#2ca24f" />
+            </radialGradient>
+
+            <radialGradient id={ids.ledGlow} cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="rgba(146,255,128,0.7)" />
+              <stop offset="100%" stopColor="rgba(146,255,128,0)" />
+            </radialGradient>
+
+            <filter id={ids.bodyShadow} x="-24%" y="-30%" width="148%" height="190%">
+              <feDropShadow dx="0" dy="18" stdDeviation="14" floodColor="#000000" floodOpacity="0.22" />
+            </filter>
+
+            <filter id={ids.softBlur} x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="2.1" />
+            </filter>
+          </defs>
+
+          <ellipse cx="262" cy="286" rx="188" ry="22" fill="rgba(0,0,0,0.2)" filter={`url(#${ids.softBlur})`} />
+
+          <g filter={`url(#${ids.bodyShadow})`}>
+            <rect
+              x="165"
+              y="16"
+              width="24"
+              height="124"
+              rx="12"
+              fill={`url(#${ids.antenna})`}
+              stroke="#d0d3d8"
+              strokeWidth="2"
+              transform="rotate(-11 177 140)"
+            />
+            <rect
+              x="330"
+              y="16"
+              width="24"
+              height="124"
+              rx="12"
+              fill={`url(#${ids.antenna})`}
+              stroke="#d0d3d8"
+              strokeWidth="2"
+              transform="rotate(11 342 140)"
+            />
+
+            <path
+              d="M140 98H380L442 150H78L140 98Z"
+              fill={`url(#${ids.top})`}
+              stroke="#bfc2c7"
+              strokeWidth="2.2"
+              strokeLinejoin="round"
+            />
+
+            <path
+              d="M160 110H360L405 145H115L160 110Z"
+              fill={`url(#${ids.topHighlight})`}
+              opacity="0.8"
+            />
+
+            <rect
+              x="78"
+              y="150"
+              width="364"
+              height="121"
+              rx="13"
+              fill={`url(#${ids.shell})`}
+              stroke="#b7bbc1"
+              strokeWidth="2.2"
+            />
+
+            <rect x="80" y="152" width="360" height="34" rx="10" fill={`url(#${ids.frontTop})`} />
+            <rect x="80" y="186" width="360" height="50" fill={`url(#${ids.frontBand})`} />
+            <rect x="80" y="236" width="360" height="33" rx="0" fill={`url(#${ids.frontBottom})`} />
+
+            <path d="M80 186H440" stroke="#c8b3a1" strokeWidth="1.8" opacity={frontLineOpacity} />
+            <path d="M80 236H440" stroke="#c3c7cd" strokeWidth="1.8" opacity={frontLineOpacity} />
+
+            <ellipse cx="122" cy="210" rx="27" ry="27" fill={`url(#${ids.powerOuter})`} stroke="#b44c61" strokeWidth="2.2" />
+            <ellipse cx="122" cy="210" rx="18" ry="18" fill={`url(#${ids.powerInner})`} />
+            <path d="M122 200V214" stroke="#cb5a73" strokeWidth="4.1" strokeLinecap="round" />
+            <path d="M112 208C112 201.9 116.9 197 123 197C129.1 197 134 201.9 134 208" fill="none" stroke="#cb5a73" strokeWidth="4.1" strokeLinecap="round" />
+
+            {ledXs.map((x, index) => {
+              const isOn = ledStates[index];
+              const ledOpacity = isOn ? Math.max(0.64, ledPulse) : 0.24;
               return (
-                <span
-                  key={index}
-                  className="relative block h-[4px] w-[4px] rounded-full"
-                  style={{
-                    backgroundColor: on ? color : "rgba(108,119,132,0.35)",
-                    boxShadow: on ? `0 0 6px ${color}` : "none",
-                    opacity: on ? 0.95 : 0.6,
-                  }}
-                />
+                <g key={x}>
+                  <circle
+                    cx={x}
+                    cy="210"
+                    r="12"
+                    fill={`url(#${ids.ledGlow})`}
+                    opacity={isOn ? 0.56 : 0}
+                  />
+                  <circle
+                    cx={x}
+                    cy="210"
+                    r="7.6"
+                    fill={isOn ? `url(#${ids.led})` : "#8f9297"}
+                    stroke={isOn ? "#3ca753" : "#777b81"}
+                    strokeWidth="1.25"
+                    opacity={ledOpacity}
+                  />
+                </g>
               );
             })}
-          </div>
-        </div>
+          </g>
+        </svg>
       </div>
     </motion.div>
   );
