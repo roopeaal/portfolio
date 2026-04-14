@@ -273,7 +273,26 @@ function resolveNonOverlappingPosition(
   node: NodeKey,
   proposed: NodePosition,
   positions: Record<NodeKey, NodePosition>,
+  options?: {
+    halo?: number;
+    pushGain?: number;
+    centerFallbackPush?: number;
+    maxIterations?: number;
+    searchRadiusMax?: number;
+    searchRadiusStep?: number;
+    searchAngles?: number;
+    allowOverlap?: boolean;
+  },
 ) {
+  const halo = options?.halo ?? CURRENT_PROTECTIVE_HALO;
+  const pushGain = options?.pushGain ?? 1.06;
+  const centerFallbackPush = options?.centerFallbackPush ?? 12;
+  const maxIterations = options?.maxIterations ?? 24;
+  const searchRadiusMax = options?.searchRadiusMax ?? 220;
+  const searchRadiusStep = options?.searchRadiusStep ?? 6;
+  const searchAngles = options?.searchAngles ?? 24;
+  const allowOverlap = options?.allowOverlap ?? false;
+
   const bounds = NODE_DRAG_BOUNDS[node];
   const current = positions[node];
 
@@ -296,11 +315,11 @@ function resolveNonOverlappingPosition(
   };
 
   const overlapsAny = (pos: NodePosition) => {
-    const selfZone = getNodeMagnetZone(node, pos, CURRENT_PROTECTIVE_HALO);
+    const selfZone = getNodeMagnetZone(node, pos, halo);
 
     for (const other of Object.keys(positions) as NodeKey[]) {
       if (other === node) continue;
-      const otherZone = getNodeMagnetZone(other, positions[other], CURRENT_PROTECTIVE_HALO);
+      const otherZone = getNodeMagnetZone(other, positions[other], halo);
       if (zonesOverlap(selfZone, otherZone)) return true;
     }
 
@@ -309,8 +328,8 @@ function resolveNonOverlappingPosition(
 
   let candidate = clampPos(proposed);
 
-  for (let i = 0; i < 24; i += 1) {
-    const selfZone = getNodeMagnetZone(node, candidate, CURRENT_PROTECTIVE_HALO);
+  for (let i = 0; i < maxIterations; i += 1) {
+    const selfZone = getNodeMagnetZone(node, candidate, halo);
     let totalPushX = 0;
     let totalPushY = 0;
     let hitCount = 0;
@@ -318,7 +337,7 @@ function resolveNonOverlappingPosition(
     for (const other of Object.keys(positions) as NodeKey[]) {
       if (other === node) continue;
 
-      const otherZone = getNodeMagnetZone(other, positions[other], CURRENT_PROTECTIVE_HALO);
+      const otherZone = getNodeMagnetZone(other, positions[other], halo);
 
       const dx = selfZone.cx - otherZone.cx;
       const dy = selfZone.cy - otherZone.cy;
@@ -341,12 +360,12 @@ function resolveNonOverlappingPosition(
         const fallbackDy = candidate.y - positions[other].y;
 
         if (Math.abs(fallbackDx) >= Math.abs(fallbackDy)) {
-          pushX = fallbackDx >= 0 ? 12 : -12;
+          pushX = fallbackDx >= 0 ? centerFallbackPush : -centerFallbackPush;
         } else {
-          pushY = fallbackDy >= 0 ? 12 : -12;
+          pushY = fallbackDy >= 0 ? centerFallbackPush : -centerFallbackPush;
         }
       } else {
-        const factor = (1.06 / Math.max(dist, 0.0001)) - 1;
+        const factor = (pushGain / Math.max(dist, 0.0001)) - 1;
         pushX = dx * factor;
         pushY = dy * factor;
       }
@@ -371,9 +390,13 @@ function resolveNonOverlappingPosition(
 
   const origin = clampPos(proposed);
 
-  for (let radius = 6; radius <= 220; radius += 6) {
-    for (let i = 0; i < 24; i += 1) {
-      const angle = (Math.PI * 2 * i) / 24;
+  if (allowOverlap) {
+    return origin;
+  }
+
+  for (let radius = searchRadiusStep; radius <= searchRadiusMax; radius += searchRadiusStep) {
+    for (let i = 0; i < searchAngles; i += 1) {
+      const angle = (Math.PI * 2 * i) / searchAngles;
       const test = clampPos({
         x: origin.x + Math.cos(angle) * radius,
         y: origin.y + Math.sin(angle) * radius,
@@ -398,7 +421,6 @@ const NODE_PROTECTIVE_HALO = 14;
 let CURRENT_PROTECTIVE_HALO = NODE_PROTECTIVE_HALO;
 const MAGNET_WIDTH_SCALE = 0.88;
 const MAGNET_HEIGHT_SCALE = 1;
-const NODE_KEYS: NodeKey[] = ["about", "projects", "home", "contact"];
 
 const DEBUG_HALO_COLORS: Record<NodeKey, string> = {
   about: "rgba(59,130,246,0.14)",
@@ -657,28 +679,8 @@ export function TopologyHero() {
     if (!scene) return;
 
     const syncResponsiveHalo = () => {
-      const rect = scene.getBoundingClientRect();
-      if (!rect.width || !rect.height) return;
-
-      CURRENT_PROTECTIVE_HALO =
-        NODE_PROTECTIVE_HALO *
-        Math.max(VIEWBOX.width / rect.width, VIEWBOX.height / rect.height);
-
-      setNodePositions((current) => {
-        let next = current;
-
-        for (const key of NODE_KEYS) {
-          const resolved = resolveNonOverlappingPosition(key, next[key], next);
-
-          if (resolved.x !== next[key].x || resolved.y !== next[key].y) {
-            next = { ...next, [key]: resolved };
-          }
-        }
-
-        nodePositionsRef.current = next;
-        nodeTargetPositionsRef.current = next;
-        return next;
-      });
+      // Keep magnet size and collision behavior fixed across viewport changes.
+      CURRENT_PROTECTIVE_HALO = NODE_PROTECTIVE_HALO;
     };
 
     syncResponsiveHalo();
@@ -1011,6 +1013,14 @@ export function TopologyHero() {
           state.node,
           { x: nextX, y: nextY },
           nodePositionsRef.current,
+          {
+            // During drag: weaken repulsion and allow temporary overlap.
+            halo: CURRENT_PROTECTIVE_HALO * 0.22,
+            pushGain: 1.02,
+            centerFallbackPush: 4,
+            maxIterations: 10,
+            allowOverlap: true,
+          },
         ),
       };
     };
@@ -1876,13 +1886,14 @@ function RouterIllustration({
   const ledXs = [250, 286, 322, 358, 394];
   const ledPulse = 0.85 + Math.sin(tick / 4) * 0.12;
   const frontLineOpacity = glitchActive ? 0.58 : 0.86;
+  const scanningSignalActive = powerOn && networkMode !== "stable";
+  const antennaSignalPulse = (phase: number) => {
+    const wave = (Math.sin(tick / 2.6 - phase) + 1) / 2;
+    return scanningSignalActive ? 0.14 + wave * 0.58 : 0;
+  };
 
   return (
-    <motion.div
-      className={`relative ${compact ? "scale-[0.72]" : "scale-100"}`}
-      animate={glitchActive ? { rotate: [0, -0.6, 0.8, 0], y: [0, 0.4, -0.4, 0] } : { rotate: 0, y: 0 }}
-      transition={glitchActive ? { duration: 0.9, repeat: 2, ease: "easeInOut" } : { duration: 0.2 }}
-    >
+    <div className={`relative ${compact ? "scale-[0.72]" : "scale-100"}`}>
       <div className="relative" style={{ width: UNIFIED_DEVICE_WIDTH, height: UNIFIED_DEVICE_HEIGHT }}>
         <div className="absolute left-1/2 top-[27px] h-[136px] w-[200px] -translate-x-1/2 origin-top scale-[1.28]">
           <div className="pointer-events-none absolute left-[24px] top-[97px] h-[24px] w-[154px] rounded-full bg-[#0b1a30]/18 blur-[10px]" />
@@ -1953,6 +1964,38 @@ function RouterIllustration({
           </defs>
 
           <g>
+            {/* Antenna connection-search signal */}
+            <g fill="none" strokeLinecap="round" strokeLinejoin="round">
+              {[0, 1, 2].map((index) => {
+                const radius = 12 + index * 8;
+                return (
+                  <g key={`left-wave-${index}`} opacity={antennaSignalPulse(index * 0.95)}>
+                    <path
+                      d={`M ${152 - radius} 22 Q 152 ${22 - radius} ${152 + radius} 22`}
+                      stroke="#43c7ff"
+                      strokeWidth={2.4 - index * 0.42}
+                    />
+                  </g>
+                );
+              })}
+
+              {[0, 1, 2].map((index) => {
+                const radius = 12 + index * 8;
+                return (
+                  <g key={`right-wave-${index}`} opacity={antennaSignalPulse(index * 0.95 + 0.55)}>
+                    <path
+                      d={`M ${368 - radius} 22 Q 368 ${22 - radius} ${368 + radius} 22`}
+                      stroke="#43c7ff"
+                      strokeWidth={2.4 - index * 0.42}
+                    />
+                  </g>
+                );
+              })}
+
+              <circle cx="152" cy="22" r="2.1" fill="#7ad8ff" opacity={scanningSignalActive ? 0.82 : 0} />
+              <circle cx="368" cy="22" r="2.1" fill="#7ad8ff" opacity={scanningSignalActive ? 0.82 : 0} />
+            </g>
+
             <rect
               x="165"
               y="-36"
@@ -2054,7 +2097,7 @@ function RouterIllustration({
           </svg>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
 
