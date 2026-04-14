@@ -71,7 +71,7 @@ const NODE_META: Record<NodeKey, NodeMeta> = {
     width: UNIFIED_DEVICE_WIDTH,
     height: UNIFIED_NODE_HEIGHT,
     deviceHeight: UNIFIED_DEVICE_HEIGHT,
-    labelOffsetY: -34,
+    labelOffsetY: 10,
   },
   projects: {
     label: "Projects",
@@ -79,7 +79,7 @@ const NODE_META: Record<NodeKey, NodeMeta> = {
     width: UNIFIED_DEVICE_WIDTH,
     height: UNIFIED_NODE_HEIGHT,
     deviceHeight: UNIFIED_DEVICE_HEIGHT,
-    labelOffsetY: -84,
+    labelOffsetY: -56,
   },
   home: {
     label: "LinkedIn",
@@ -88,7 +88,7 @@ const NODE_META: Record<NodeKey, NodeMeta> = {
     height: UNIFIED_NODE_HEIGHT,
     deviceHeight: UNIFIED_DEVICE_HEIGHT,
     previewWidth: 378,
-    labelOffsetY: -12,
+    labelOffsetY: 10,
   },
   contact: {
     label: "Contact Me",
@@ -96,7 +96,7 @@ const NODE_META: Record<NodeKey, NodeMeta> = {
     width: UNIFIED_DEVICE_WIDTH,
     height: UNIFIED_NODE_HEIGHT,
     deviceHeight: UNIFIED_DEVICE_HEIGHT,
-    labelOffsetY: -22,
+    labelOffsetY: 10,
   },
 };
 
@@ -2387,7 +2387,7 @@ function PCIllustration({ compact = false, typingStep = 0, typingActive = false 
       <div className="relative" style={{ width: UNIFIED_DEVICE_WIDTH, height: UNIFIED_DEVICE_HEIGHT }}>
         <div className="pointer-events-none absolute left-1/2 top-[182px] h-[24px] w-[184px] -translate-x-1/2 rounded-full bg-[#0b1a30]/18 blur-[10px]" />
         <div
-          className="pointer-events-none absolute left-1/2 top-[4px] z-[6] h-[12px] w-[146px] -translate-x-1/2 rounded-[7px] border border-[#9f906f]/70 bg-[linear-gradient(180deg,rgba(225,216,193,0.94)_0%,rgba(205,192,165,0.88)_52%,rgba(188,173,143,0.86)_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.55),0_1px_0_rgba(112,98,74,0.38)]"
+          className="pointer-events-none absolute left-1/2 top-[-4px] z-[6] h-[12px] w-[146px] -translate-x-1/2 rounded-[7px] border border-[#9f906f]/70 bg-[linear-gradient(180deg,rgba(225,216,193,0.94)_0%,rgba(205,192,165,0.88)_52%,rgba(188,173,143,0.86)_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.55),0_1px_0_rgba(112,98,74,0.38)]"
           style={{ clipPath: "polygon(11% 0%,89% 0%,100% 100%,0% 100%)" }}
         />
         <div className="relative z-[2] h-full w-full" style={{ filter: DEVICE_FLOAT_FILTER }}>
