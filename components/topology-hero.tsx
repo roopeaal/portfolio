@@ -71,6 +71,7 @@ const NODE_META: Record<NodeKey, NodeMeta> = {
     width: UNIFIED_DEVICE_WIDTH,
     height: UNIFIED_NODE_HEIGHT,
     deviceHeight: UNIFIED_DEVICE_HEIGHT,
+    labelOffsetY: -34,
   },
   projects: {
     label: "Projects",
@@ -78,7 +79,7 @@ const NODE_META: Record<NodeKey, NodeMeta> = {
     width: UNIFIED_DEVICE_WIDTH,
     height: UNIFIED_NODE_HEIGHT,
     deviceHeight: UNIFIED_DEVICE_HEIGHT,
-    labelOffsetY: -90,
+    labelOffsetY: -84,
   },
   home: {
     label: "LinkedIn",
@@ -87,6 +88,7 @@ const NODE_META: Record<NodeKey, NodeMeta> = {
     height: UNIFIED_NODE_HEIGHT,
     deviceHeight: UNIFIED_DEVICE_HEIGHT,
     previewWidth: 378,
+    labelOffsetY: -12,
   },
   contact: {
     label: "Contact Me",
@@ -94,6 +96,7 @@ const NODE_META: Record<NodeKey, NodeMeta> = {
     width: UNIFIED_DEVICE_WIDTH,
     height: UNIFIED_NODE_HEIGHT,
     deviceHeight: UNIFIED_DEVICE_HEIGHT,
+    labelOffsetY: -22,
   },
 };
 
@@ -446,6 +449,16 @@ function getAttachPoint(node: NodeKey, positions: Record<NodeKey, NodePosition>)
   };
 }
 
+function getRouterCableAttachPoint(positions: Record<NodeKey, NodePosition>) {
+  const { x, y } = positions.about;
+  const { width } = NODE_META.about;
+
+  return {
+    x: x + width * 0.74,
+    y: y + 126,
+  };
+}
+
 function getVisibleBounds(node: NodeKey, positions: Record<NodeKey, NodePosition>) {
   const meta = NODE_META[node];
 
@@ -742,6 +755,7 @@ export function TopologyHero() {
   );
 
   const aboutAttach = getAnimatedDevicePoint("about", getAttachPoint("about", nodePositions), nodePositions, active, draggingNode);
+  const aboutCableAttach = getAnimatedDevicePoint("about", getRouterCableAttachPoint(nodePositions), nodePositions, active, draggingNode);
   const projectsAttach = getAnimatedDevicePoint("projects", getAttachPoint("projects", nodePositions), nodePositions, active, draggingNode);
   const homeAttach = getAnimatedDevicePoint("home", getAttachPoint("home", nodePositions), nodePositions, active, draggingNode);
   const contactAttach = getAnimatedDevicePoint("contact", getAttachPoint("contact", nodePositions), nodePositions, active, draggingNode);
@@ -1062,7 +1076,7 @@ export function TopologyHero() {
     : networkMode === "recovering"
       ? "orange"
       : "none";
-  const topIndicators = [0.32, 0.7].map((value) => pointOnLine(aboutAttach, projectsAttach, value));
+  const topIndicators = [0.32, 0.7].map((value) => pointOnLine(aboutCableAttach, projectsAttach, value));
   const diagIndicators = [0.4, 0.78].map((value) => pointOnLine(homeAttach, projectsAttach, value));
   const activePreview = active && !draggingNode ? getPreviewByNode(active) : null;
   const previewStyle = active && !draggingNode ? getPreviewStyle(active, nodePositions) : undefined;
@@ -1279,7 +1293,7 @@ export function TopologyHero() {
                   aria-hidden="true"
                   preserveAspectRatio="none"
                 >
-                  <CableSegment from={aboutAttach} to={switchLeftCableEnd} disconnected={networkMode !== "stable" && networkMode !== "recovering"} looseEnd={looseEnd} />
+                  <CableSegment from={aboutCableAttach} to={switchLeftCableEnd} disconnected={networkMode !== "stable" && networkMode !== "recovering"} looseEnd={looseEnd} />
                   <CableSegment from={homeAttach} to={switchRightCableEnd} />
                 </motion.svg>
 
@@ -2373,7 +2387,7 @@ function PCIllustration({ compact = false, typingStep = 0, typingActive = false 
       <div className="relative" style={{ width: UNIFIED_DEVICE_WIDTH, height: UNIFIED_DEVICE_HEIGHT }}>
         <div className="pointer-events-none absolute left-1/2 top-[182px] h-[24px] w-[184px] -translate-x-1/2 rounded-full bg-[#0b1a30]/18 blur-[10px]" />
         <div
-          className="pointer-events-none absolute left-1/2 top-[14px] z-[6] h-[12px] w-[146px] -translate-x-1/2 rounded-[7px] border border-[#9f906f]/70 bg-[linear-gradient(180deg,rgba(225,216,193,0.94)_0%,rgba(205,192,165,0.88)_52%,rgba(188,173,143,0.86)_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.55),0_1px_0_rgba(112,98,74,0.38)]"
+          className="pointer-events-none absolute left-1/2 top-[4px] z-[6] h-[12px] w-[146px] -translate-x-1/2 rounded-[7px] border border-[#9f906f]/70 bg-[linear-gradient(180deg,rgba(225,216,193,0.94)_0%,rgba(205,192,165,0.88)_52%,rgba(188,173,143,0.86)_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.55),0_1px_0_rgba(112,98,74,0.38)]"
           style={{ clipPath: "polygon(11% 0%,89% 0%,100% 100%,0% 100%)" }}
         />
         <div className="relative z-[2] h-full w-full" style={{ filter: DEVICE_FLOAT_FILTER }}>
