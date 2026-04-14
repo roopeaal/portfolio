@@ -79,7 +79,7 @@ const NODE_META: Record<NodeKey, NodeMeta> = {
     width: UNIFIED_DEVICE_WIDTH,
     height: UNIFIED_NODE_HEIGHT,
     deviceHeight: UNIFIED_DEVICE_HEIGHT,
-    labelOffsetY: 8,
+    labelOffsetY: -44,
   },
   home: {
     label: "LinkedIn",
@@ -754,9 +754,7 @@ export function TopologyHero() {
     [contactSection],
   );
 
-  const aboutAttach = getAnimatedDevicePoint("about", getAttachPoint("about", nodePositions), nodePositions, active, draggingNode);
   const aboutCableAttach = getAnimatedDevicePoint("about", getRouterCableAttachPoint(nodePositions), nodePositions, active, draggingNode);
-  const projectsAttach = getAnimatedDevicePoint("projects", getAttachPoint("projects", nodePositions), nodePositions, active, draggingNode);
   const homeAttach = getAnimatedDevicePoint("home", getAttachPoint("home", nodePositions), nodePositions, active, draggingNode);
   const contactAttach = getAnimatedDevicePoint("contact", getAttachPoint("contact", nodePositions), nodePositions, active, draggingNode);
   const switchLeftCableEnd = getAnimatedDevicePoint("projects", getSwitchCableStubEnd("left", nodePositions), nodePositions, active, draggingNode);
@@ -1076,8 +1074,8 @@ export function TopologyHero() {
     : networkMode === "recovering"
       ? "orange"
       : "none";
-  const topIndicators = [0.32, 0.7].map((value) => pointOnLine(aboutCableAttach, projectsAttach, value));
-  const diagIndicators = [0.4, 0.78].map((value) => pointOnLine(homeAttach, projectsAttach, value));
+  const topIndicators = [0.32, 0.7].map((value) => pointOnLine(aboutCableAttach, switchLeftCableEnd, value));
+  const diagIndicators = [0.4, 0.78].map((value) => pointOnLine(homeAttach, switchRightCableEnd, value));
   const activePreview = active && !draggingNode ? getPreviewByNode(active) : null;
   const previewStyle = active && !draggingNode ? getPreviewStyle(active, nodePositions) : undefined;
   const nodeStyle = useMemo(() => {
@@ -1192,22 +1190,7 @@ export function TopologyHero() {
                   aria-hidden="true"
                   preserveAspectRatio="none"
                 >
-                  <WirelessCable from={aboutAttach} to={contactAttach} tick={motionTick} online={routerWifiReady} />
-
-                  {topLineStatus === "green"
-                    ? topIndicators.map((point, index) => <StatusTriangle key={`top-${index}`} {...point} />)
-                    : topLineStatus === "orange"
-                      ? topIndicators.map((point, index) => <StatusOrb key={`top-${index}`} {...point} tick={motionTick + index * 2} />)
-                      : null}
-
-                  {diagIndicators.map((point, index) => (
-                    <StatusTriangle key={`diag-${index}`} {...point} />
-                  ))}
-
-                  {typingActive ? <TrafficPulse from={homeAttach} to={projectsAttach} tick={motionTick} duration={64} delay={14} /> : null}
-                  {!routerGlitchActive && active === "about" ? (
-                    <TrafficPulse from={aboutAttach} to={contactAttach} tick={motionTick} duration={86} delay={20} dotted color="#a8e6ff" />
-                  ) : null}
+                  <WirelessCable from={aboutCableAttach} to={contactAttach} tick={motionTick} online={routerWifiReady} />
                 </motion.svg>
 
                 <NodeButton
@@ -1295,6 +1278,21 @@ export function TopologyHero() {
                 >
                   <CableSegment from={aboutCableAttach} to={switchLeftCableEnd} disconnected={networkMode !== "stable" && networkMode !== "recovering"} looseEnd={looseEnd} />
                   <CableSegment from={homeAttach} to={switchRightCableEnd} />
+
+                  {topLineStatus === "green"
+                    ? topIndicators.map((point, index) => <StatusTriangle key={`top-${index}`} {...point} />)
+                    : topLineStatus === "orange"
+                      ? topIndicators.map((point, index) => <StatusOrb key={`top-${index}`} {...point} tick={motionTick + index * 2} />)
+                      : null}
+
+                  {diagIndicators.map((point, index) => (
+                    <StatusTriangle key={`diag-${index}`} {...point} />
+                  ))}
+
+                  {typingActive ? <TrafficPulse from={homeAttach} to={switchRightCableEnd} tick={motionTick} duration={64} delay={14} /> : null}
+                  {!routerGlitchActive && active === "about" ? (
+                    <TrafficPulse from={aboutCableAttach} to={contactAttach} tick={motionTick} duration={86} delay={20} dotted color="#a8e6ff" />
+                  ) : null}
                 </motion.svg>
 
                 {networkMode === "stable" || networkMode === "recovering" ? <DetachedEthernetStub bottom={switchLeftCableEnd} /> : null}
@@ -2383,11 +2381,11 @@ function SwitchIllustration({
 
 function PCIllustration({ compact = false, typingStep = 0, typingActive = false }: { compact?: boolean; typingStep?: number; typingActive?: boolean }) {
   return (
-    <div className={`relative origin-top -translate-x-[6px] ${compact ? "scale-[0.8]" : "scale-100"}`}>
+    <div className={`relative origin-top -translate-x-[12px] ${compact ? "scale-[0.8]" : "scale-100"}`}>
       <div className="relative" style={{ width: UNIFIED_DEVICE_WIDTH, height: UNIFIED_DEVICE_HEIGHT }}>
         <div className="pointer-events-none absolute left-1/2 top-[182px] h-[24px] w-[184px] -translate-x-1/2 rounded-full bg-[#0b1a30]/18 blur-[10px]" />
         <div
-          className="pointer-events-none absolute left-1/2 top-[-10px] z-[6] h-[12px] w-[138px] -translate-x-1/2 rounded-[7px] border border-[#9f906f]/70 bg-[linear-gradient(180deg,rgba(225,216,193,0.94)_0%,rgba(205,192,165,0.88)_52%,rgba(188,173,143,0.86)_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.55),0_1px_0_rgba(112,98,74,0.38)]"
+          className="pointer-events-none absolute left-1/2 top-[-2px] z-[6] h-[12px] w-[132px] -translate-x-1/2 rounded-[7px] border border-[#9f906f]/70 bg-[linear-gradient(180deg,rgba(225,216,193,0.94)_0%,rgba(205,192,165,0.88)_52%,rgba(188,173,143,0.86)_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.55),0_1px_0_rgba(112,98,74,0.38)]"
           style={{ clipPath: "polygon(11% 0%,89% 0%,100% 100%,0% 100%)" }}
         />
         <div className="relative z-[2] h-full w-full" style={{ filter: DEVICE_FLOAT_FILTER }}>
