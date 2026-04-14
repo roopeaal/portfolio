@@ -2373,10 +2373,10 @@ function PCIllustration({ compact = false, typingStep = 0, typingActive = false 
       <div className="relative" style={{ width: UNIFIED_DEVICE_WIDTH, height: UNIFIED_DEVICE_HEIGHT }}>
         <div className="pointer-events-none absolute left-1/2 top-[182px] h-[24px] w-[184px] -translate-x-1/2 rounded-full bg-[#0b1a30]/18 blur-[10px]" />
         <div
-          className="pointer-events-none absolute left-1/2 top-[18px] h-[10px] w-[132px] -translate-x-1/2 rounded-[6px] border border-[#a99b7c]/45 bg-[linear-gradient(180deg,rgba(223,214,191,0.78)_0%,rgba(200,187,159,0.62)_100%)]"
-          style={{ clipPath: "polygon(12% 0%,88% 0%,100% 100%,0% 100%)" }}
+          className="pointer-events-none absolute left-1/2 top-[14px] z-[6] h-[12px] w-[146px] -translate-x-1/2 rounded-[7px] border border-[#9f906f]/70 bg-[linear-gradient(180deg,rgba(225,216,193,0.94)_0%,rgba(205,192,165,0.88)_52%,rgba(188,173,143,0.86)_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.55),0_1px_0_rgba(112,98,74,0.38)]"
+          style={{ clipPath: "polygon(11% 0%,89% 0%,100% 100%,0% 100%)" }}
         />
-        <div className="relative h-full w-full" style={{ filter: DEVICE_FLOAT_FILTER }}>
+        <div className="relative z-[2] h-full w-full" style={{ filter: DEVICE_FLOAT_FILTER }}>
           <RetroComputer
             className="h-full w-full"
             screenImageSrc={`${ASSET_BASE}/linkedin-profile.png?v=20260409-1`}
