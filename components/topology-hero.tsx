@@ -2156,67 +2156,69 @@ function SwitchIllustration({
           </defs>
 
           <g>
-            <path
-              d="M50 289L228 22H306L553 289H50Z"
-              fill={`url(#${ids.left})`}
-              stroke="#324b75"
-              strokeWidth="3"
-            />
+            <g transform="translate(0 78) scale(1 0.73)">
+              <path
+                d="M50 289L228 22H306L553 289H50Z"
+                fill={`url(#${ids.left})`}
+                stroke="#324b75"
+                strokeWidth="3"
+              />
 
-            <path
-              d="M306 22H812L967 289H553L306 22Z"
-              fill={`url(#${ids.top})`}
-              stroke="#22355a"
-              strokeWidth="3"
-            />
+              <path
+                d="M306 22H812L967 289H553L306 22Z"
+                fill={`url(#${ids.top})`}
+                stroke="#22355a"
+                strokeWidth="3"
+              />
 
-            <polygon points="247,22 288,22 585,289 544,289" fill="#eef6f6" />
+              <polygon points="247,22 288,22 585,289 544,289" fill="#eef6f6" />
 
-            <polygon
-              points="620,22 812,22 889,154 767,154"
-              fill="#b9d2e6"
-              opacity="0.97"
-            />
+              <polygon
+                points="620,22 812,22 889,154 767,154"
+                fill="#b9d2e6"
+                opacity="0.97"
+              />
 
-            <g clipPath={`url(#${ids.topClip})`}>
-              <path
-                d="M338 48C398 34 488 36 569 55C629 70 671 93 686 116C697 133 690 147 664 154C621 166 550 162 475 145C401 128 345 102 325 77C314 63 318 53 338 48Z"
-                fill="#2a426b"
-                opacity="0.34"
-              />
-              <path
-                d="M449 78C500 70 566 74 615 92C648 104 668 121 670 135C671 147 660 156 634 160C585 167 520 162 471 145C437 133 416 116 412 102C409 90 421 82 449 78Z"
-                fill="#1d3458"
-                opacity="0.22"
-              />
-              <path
-                d="M602 149C660 143 737 151 798 170C850 186 890 211 906 235C917 251 911 263 886 269C833 281 752 275 678 255C609 236 560 210 547 187C538 171 553 155 602 149Z"
-                fill="#183052"
-                opacity="0.28"
-              />
-              <path
-                d="M539 244C558 240 587 241 605 248C617 253 619 262 609 267C593 274 565 275 547 270C534 266 529 257 539 244Z"
-                fill="#7f9fc4"
-                opacity="0.24"
-              />
-              <path
-                d="M705 40C752 37 805 45 839 63C860 74 871 89 869 101C867 113 851 120 822 121C775 124 721 116 687 99C666 88 655 74 658 62C661 50 676 42 705 40Z"
-                fill="#aac8df"
-                opacity="0.18"
-              />
-            </g>
+              <g clipPath={`url(#${ids.topClip})`}>
+                <path
+                  d="M338 48C398 34 488 36 569 55C629 70 671 93 686 116C697 133 690 147 664 154C621 166 550 162 475 145C401 128 345 102 325 77C314 63 318 53 338 48Z"
+                  fill="#2a426b"
+                  opacity="0.34"
+                />
+                <path
+                  d="M449 78C500 70 566 74 615 92C648 104 668 121 670 135C671 147 660 156 634 160C585 167 520 162 471 145C437 133 416 116 412 102C409 90 421 82 449 78Z"
+                  fill="#1d3458"
+                  opacity="0.22"
+                />
+                <path
+                  d="M602 149C660 143 737 151 798 170C850 186 890 211 906 235C917 251 911 263 886 269C833 281 752 275 678 255C609 236 560 210 547 187C538 171 553 155 602 149Z"
+                  fill="#183052"
+                  opacity="0.28"
+                />
+                <path
+                  d="M539 244C558 240 587 241 605 248C617 253 619 262 609 267C593 274 565 275 547 270C534 266 529 257 539 244Z"
+                  fill="#7f9fc4"
+                  opacity="0.24"
+                />
+                <path
+                  d="M705 40C752 37 805 45 839 63C860 74 871 89 869 101C867 113 851 120 822 121C775 124 721 116 687 99C666 88 655 74 658 62C661 50 676 42 705 40Z"
+                  fill="#aac8df"
+                  opacity="0.18"
+                />
+              </g>
 
-            <g clipPath={`url(#${ids.leftClip})`}>
-              <path
-                d="M86 245C138 238 213 239 273 248C316 255 344 267 347 277C349 287 325 293 279 294C220 295 152 286 103 274C72 266 58 257 60 250C63 248 72 247 86 245Z"
-                fill="#6f89b1"
-                opacity="0.16"
-              />
-              <path
-                d="M74 282C126 276 211 278 294 289H50L74 282Z"
-                fill="#3f5884"
-                opacity="0.12"
-              />
+              <g clipPath={`url(#${ids.leftClip})`}>
+                <path
+                  d="M86 245C138 238 213 239 273 248C316 255 344 267 347 277C349 287 325 293 279 294C220 295 152 286 103 274C72 266 58 257 60 250C63 248 72 247 86 245Z"
+                  fill="#6f89b1"
+                  opacity="0.16"
+                />
+                <path
+                  d="M74 282C126 276 211 278 294 289H50L74 282Z"
+                  fill="#3f5884"
+                  opacity="0.12"
+                />
+              </g>
             </g>
 
             <rect
@@ -2370,6 +2372,10 @@ function PCIllustration({ compact = false, typingStep = 0, typingActive = false 
     <div className={`relative origin-top ${compact ? "scale-[0.8]" : "scale-100"}`}>
       <div className="relative" style={{ width: UNIFIED_DEVICE_WIDTH, height: UNIFIED_DEVICE_HEIGHT }}>
         <div className="pointer-events-none absolute left-1/2 top-[182px] h-[24px] w-[184px] -translate-x-1/2 rounded-full bg-[#0b1a30]/18 blur-[10px]" />
+        <div
+          className="pointer-events-none absolute left-1/2 top-[18px] h-[10px] w-[132px] -translate-x-1/2 rounded-[6px] border border-[#a99b7c]/45 bg-[linear-gradient(180deg,rgba(223,214,191,0.78)_0%,rgba(200,187,159,0.62)_100%)]"
+          style={{ clipPath: "polygon(12% 0%,88% 0%,100% 100%,0% 100%)" }}
+        />
         <div className="relative h-full w-full" style={{ filter: DEVICE_FLOAT_FILTER }}>
           <RetroComputer
             className="h-full w-full"
