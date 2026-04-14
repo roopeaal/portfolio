@@ -79,7 +79,7 @@ const NODE_META: Record<NodeKey, NodeMeta> = {
     width: UNIFIED_DEVICE_WIDTH,
     height: UNIFIED_NODE_HEIGHT,
     deviceHeight: UNIFIED_DEVICE_HEIGHT,
-    labelOffsetY: -56,
+    labelOffsetY: 8,
   },
   home: {
     label: "LinkedIn",
@@ -88,7 +88,7 @@ const NODE_META: Record<NodeKey, NodeMeta> = {
     height: UNIFIED_NODE_HEIGHT,
     deviceHeight: UNIFIED_DEVICE_HEIGHT,
     previewWidth: 378,
-    labelOffsetY: 10,
+    labelOffsetY: 30,
   },
   contact: {
     label: "Contact Me",
@@ -96,7 +96,7 @@ const NODE_META: Record<NodeKey, NodeMeta> = {
     width: UNIFIED_DEVICE_WIDTH,
     height: UNIFIED_NODE_HEIGHT,
     deviceHeight: UNIFIED_DEVICE_HEIGHT,
-    labelOffsetY: 10,
+    labelOffsetY: 26,
   },
 };
 
@@ -2383,11 +2383,11 @@ function SwitchIllustration({
 
 function PCIllustration({ compact = false, typingStep = 0, typingActive = false }: { compact?: boolean; typingStep?: number; typingActive?: boolean }) {
   return (
-    <div className={`relative origin-top ${compact ? "scale-[0.8]" : "scale-100"}`}>
+    <div className={`relative origin-top -translate-x-[6px] ${compact ? "scale-[0.8]" : "scale-100"}`}>
       <div className="relative" style={{ width: UNIFIED_DEVICE_WIDTH, height: UNIFIED_DEVICE_HEIGHT }}>
         <div className="pointer-events-none absolute left-1/2 top-[182px] h-[24px] w-[184px] -translate-x-1/2 rounded-full bg-[#0b1a30]/18 blur-[10px]" />
         <div
-          className="pointer-events-none absolute left-1/2 top-[-4px] z-[6] h-[12px] w-[146px] -translate-x-1/2 rounded-[7px] border border-[#9f906f]/70 bg-[linear-gradient(180deg,rgba(225,216,193,0.94)_0%,rgba(205,192,165,0.88)_52%,rgba(188,173,143,0.86)_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.55),0_1px_0_rgba(112,98,74,0.38)]"
+          className="pointer-events-none absolute left-1/2 top-[-10px] z-[6] h-[12px] w-[138px] -translate-x-1/2 rounded-[7px] border border-[#9f906f]/70 bg-[linear-gradient(180deg,rgba(225,216,193,0.94)_0%,rgba(205,192,165,0.88)_52%,rgba(188,173,143,0.86)_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.55),0_1px_0_rgba(112,98,74,0.38)]"
           style={{ clipPath: "polygon(11% 0%,89% 0%,100% 100%,0% 100%)" }}
         />
         <div className="relative z-[2] h-full w-full" style={{ filter: DEVICE_FLOAT_FILTER }}>
