@@ -31,14 +31,6 @@ type NodeKey = Exclude<ActiveNode, null>;
 type WindowType = ActiveNode;
 type NetworkMode = "stable" | "dropping" | "grabbing" | "repairing" | "recovering";
 type CursorState = "pointer" | "open" | "closed";
-type LinkState = "stable" | "degraded" | "down";
-
-type NetworkEvent = {
-  id: number;
-  level: "ok" | "info" | "warn" | "error";
-  ts: string;
-  message: string;
-};
 
 const VIEWBOX = { width: 1280, height: 760 };
 const ASSET_BASE = process.env.NODE_ENV === "production" ? "/portfolio" : "";
@@ -46,53 +38,8 @@ const PREVIEW_WIDTH = 362;
 const PREVIEW_HEIGHT = 266;
 const PREVIEW_GAP = 42;
 const PREVIEW_MARGIN = 18;
-
-const DESIGN_TOKENS = {
-  color: {
-    canvas: "#fbfbfb",
-    gridMinor: "rgba(20,48,82,0.045)",
-    gridMajor: "rgba(20,48,82,0.075)",
-    gridNode: "rgba(20,48,82,0.12)",
-    labelMuted: "#7f8b9d",
-    labelStrong: "#050505",
-    panelBg: "rgba(255,255,255,0.88)",
-    panelBorder: "rgba(24,55,92,0.24)",
-    panelTitle: "#1d3352",
-    panelSubtle: "#5f6f85",
-    panelText: "#13233a",
-    statusGood: "#43c729",
-    statusWarn: "#e38b1a",
-    statusDown: "#ef4444",
-    statusInfo: "#4aa8ff",
-    linkUp: "#111111",
-    linkDegraded: "#9b5c16",
-    linkDown: "#5c626d",
-    wireless: "#111111",
-    flowStable: "#bdf7ff",
-    flowDegraded: "#ffd9a8",
-    flowDown: "#ff9ca6",
-    eventOk: "#35b86b",
-    eventInfo: "#4aa8ff",
-    eventWarn: "#f59e0b",
-    eventError: "#ef4444",
-  },
-  shadow: {
-    device: "drop-shadow(0 16px 22px rgba(10,18,31,0.18)) drop-shadow(0 5px 12px rgba(24,79,113,0.10))",
-    deviceSoft: "drop-shadow(0 12px 18px rgba(10,18,31,0.14)) drop-shadow(0 4px 10px rgba(24,79,113,0.08))",
-    panel: "0 10px 24px rgba(12,30,54,0.18)",
-  },
-  radius: {
-    panel: 12,
-    pill: 999,
-  },
-  stroke: {
-    link: 5.1,
-    wireless: 2.8,
-  },
-} as const;
-
-const DEVICE_FLOAT_FILTER = DESIGN_TOKENS.shadow.device;
-const DEVICE_FLOAT_FILTER_SOFT = DESIGN_TOKENS.shadow.deviceSoft;
+const DEVICE_FLOAT_FILTER = "drop-shadow(0 16px 22px rgba(10,18,31,0.18)) drop-shadow(0 5px 12px rgba(24,79,113,0.10))";
+const DEVICE_FLOAT_FILTER_SOFT = "drop-shadow(0 12px 18px rgba(10,18,31,0.14)) drop-shadow(0 4px 10px rgba(24,79,113,0.08))";
 const UNIFIED_DEVICE_WIDTH = 232;
 const UNIFIED_DEVICE_HEIGHT = 198;
 const UNIFIED_NODE_HEIGHT = 268;
@@ -221,21 +168,6 @@ function createNodeDragBounds(node: NodeKey): DragBounds {
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);
-}
-
-function getLinkState(mode: NetworkMode): LinkState {
-  if (mode === "stable") return "stable";
-  if (mode === "dropping" || mode === "recovering") return "degraded";
-  return "down";
-}
-
-function formatEventTimestamp(ms: number) {
-  return new Date(ms).toLocaleTimeString("fi-FI", {
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: false,
-  });
 }
 
 function lerp(start: number, end: number, t: number) {
@@ -700,184 +632,6 @@ function getServiceCursor(
   return null;
 }
 
-function TopologyGridBackdrop() {
-  const vertical = Array.from({ length: 17 }, (_, index) => index * 80);
-  const horizontal = Array.from({ length: 11 }, (_, index) => index * 76);
-
-  return (
-    <svg
-      viewBox={`0 0 ${VIEWBOX.width} ${VIEWBOX.height}`}
-      className="pointer-events-none absolute inset-0 z-[2] h-full w-full"
-      aria-hidden="true"
-      preserveAspectRatio="none"
-    >
-      {vertical.map((x, index) => (
-        <line
-          key={`grid-v-${x}`}
-          x1={x}
-          y1={0}
-          x2={x}
-          y2={VIEWBOX.height}
-          stroke={index % 4 === 0 ? DESIGN_TOKENS.color.gridMajor : DESIGN_TOKENS.color.gridMinor}
-          strokeWidth={index % 4 === 0 ? 1.15 : 0.8}
-        />
-      ))}
-      {horizontal.map((y, index) => (
-        <line
-          key={`grid-h-${y}`}
-          x1={0}
-          y1={y}
-          x2={VIEWBOX.width}
-          y2={y}
-          stroke={index % 3 === 0 ? DESIGN_TOKENS.color.gridMajor : DESIGN_TOKENS.color.gridMinor}
-          strokeWidth={index % 3 === 0 ? 1.1 : 0.75}
-        />
-      ))}
-
-      {vertical.filter((_, index) => index % 4 === 0).map((x) =>
-        horizontal.filter((_, index) => index % 3 === 0).map((y) => (
-          <circle key={`grid-node-${x}-${y}`} cx={x} cy={y} r="2" fill={DESIGN_TOKENS.color.gridNode} />
-        )),
-      )}
-    </svg>
-  );
-}
-
-function PortNameTag({ x, y, name }: { x: number; y: number; name: string }) {
-  return (
-    <g transform={`translate(${x} ${y})`}>
-      <rect
-        x="-20"
-        y="-8"
-        width="40"
-        height="14"
-        rx="7"
-        fill={DESIGN_TOKENS.color.panelBg}
-        stroke={DESIGN_TOKENS.color.panelBorder}
-        strokeWidth="0.7"
-      />
-      <text
-        x="0"
-        y="2.2"
-        textAnchor="middle"
-        fontSize="8.2"
-        fontWeight="600"
-        fill={DESIGN_TOKENS.color.panelSubtle}
-        style={{ letterSpacing: "0.08em" }}
-      >
-        {name}
-      </text>
-    </g>
-  );
-}
-
-function LinkHealthLegend({
-  linkState,
-  latencyMs,
-  packetLossPct,
-}: {
-  linkState: LinkState;
-  latencyMs: string;
-  packetLossPct: string;
-}) {
-  const statusText = linkState === "stable" ? "UP" : linkState === "degraded" ? "DEGRADED" : "DOWN";
-  const statusColor = linkState === "stable"
-    ? DESIGN_TOKENS.color.statusGood
-    : linkState === "degraded"
-      ? DESIGN_TOKENS.color.statusWarn
-      : DESIGN_TOKENS.color.statusDown;
-
-  return (
-    <div
-      className="pointer-events-none absolute right-3 top-3 z-[80] w-[220px] rounded-[12px] border px-3 py-2"
-      style={{
-        borderColor: DESIGN_TOKENS.color.panelBorder,
-        background: DESIGN_TOKENS.color.panelBg,
-        boxShadow: DESIGN_TOKENS.shadow.panel,
-      }}
-    >
-      <div className="mb-2 flex items-center justify-between">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.14em]" style={{ color: DESIGN_TOKENS.color.panelTitle }}>
-          Link Health
-        </p>
-        <span
-          className="rounded-full px-2 py-[2px] text-[10px] font-semibold tracking-[0.08em]"
-          style={{ color: statusColor, background: "rgba(15,23,42,0.04)" }}
-        >
-          {statusText}
-        </span>
-      </div>
-
-      <div className="space-y-1.5 text-[11px]" style={{ color: DESIGN_TOKENS.color.panelText }}>
-        <div className="flex items-center justify-between">
-          <span style={{ color: DESIGN_TOKENS.color.panelSubtle }}>Latency</span>
-          <span className="font-medium">{latencyMs}</span>
-        </div>
-        <div className="flex items-center justify-between">
-          <span style={{ color: DESIGN_TOKENS.color.panelSubtle }}>Packet Loss</span>
-          <span className="font-medium">{packetLossPct}</span>
-        </div>
-        <div className="flex items-center justify-between">
-          <span style={{ color: DESIGN_TOKENS.color.panelSubtle }}>Status</span>
-          <span className="font-medium" style={{ color: statusColor }}>{statusText}</span>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function EventLogPanel({ events }: { events: NetworkEvent[] }) {
-  const levelColor = (level: NetworkEvent["level"]) => {
-    if (level === "ok") return DESIGN_TOKENS.color.eventOk;
-    if (level === "warn") return DESIGN_TOKENS.color.eventWarn;
-    if (level === "error") return DESIGN_TOKENS.color.eventError;
-    return DESIGN_TOKENS.color.eventInfo;
-  };
-
-  return (
-    <div
-      className="pointer-events-none absolute bottom-[66px] right-3 z-[80] w-[320px] rounded-[12px] border px-3 py-2"
-      style={{
-        borderColor: DESIGN_TOKENS.color.panelBorder,
-        background: DESIGN_TOKENS.color.panelBg,
-        boxShadow: DESIGN_TOKENS.shadow.panel,
-      }}
-    >
-      <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.14em]" style={{ color: DESIGN_TOKENS.color.panelTitle }}>
-        Event Log
-      </p>
-      <div className="space-y-1">
-        <AnimatePresence initial={false}>
-          {events.map((event) => (
-            <motion.div
-              key={event.id}
-              initial={{ opacity: 0, x: 16 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -14 }}
-              transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-              className="flex items-start gap-2 rounded-[8px] border px-2 py-1.5"
-              style={{
-                borderColor: "rgba(22,54,90,0.14)",
-                background: "rgba(255,255,255,0.56)",
-              }}
-            >
-              <span className="mt-[4px] inline-block h-[6px] w-[6px] rounded-full" style={{ background: levelColor(event.level) }} />
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-[11px] leading-[1.35]" style={{ color: DESIGN_TOKENS.color.panelText }}>
-                  {event.message}
-                </p>
-                <p className="text-[10px]" style={{ color: DESIGN_TOKENS.color.panelSubtle }}>
-                  {event.ts}
-                </p>
-              </div>
-            </motion.div>
-          ))}
-        </AnimatePresence>
-      </div>
-    </div>
-  );
-}
-
 export function TopologyHero() {
   const [active, setActive] = useState<ActiveNode>(null);
   const {
@@ -917,15 +671,8 @@ export function TopologyHero() {
   const [routerWifiReady, setRouterWifiReady] = useState(true);
   const [aboutSection, setAboutSection] = useState<"profile" | "direction" | "studies" | "reliability">("profile");
   const [contactSection, setContactSection] = useState<"channels" | "roles" | "cv" | "status">("channels");
-  const [eventLog, setEventLog] = useState<NetworkEvent[]>([
-    { id: 1, level: "info", ts: "--:--:--", message: "Topology monitor initialized" },
-    { id: 2, level: "ok", ts: "--:--:--", message: "Core links operational" },
-  ]);
 
   const sceneRef = useRef<HTMLDivElement | null>(null);
-  const eventCounterRef = useRef(3);
-  const previousModeRef = useRef<NetworkMode | null>(null);
-  const previousWifiRef = useRef<boolean | null>(null);
 
   useEffect(() => {
     const scene = sceneRef.current;
@@ -973,16 +720,6 @@ export function TopologyHero() {
     home: false,
     contact: false,
   });
-
-  const pushNetworkEvent = useCallback((level: NetworkEvent["level"], message: string) => {
-    const entry: NetworkEvent = {
-      id: eventCounterRef.current++,
-      level,
-      ts: formatEventTimestamp(Date.now()),
-      message,
-    };
-    setEventLog((current) => [entry, ...current].slice(0, 8));
-  }, []);
 
   const selectedProject = useMemo(() => projects.find((project) => project.slug === selectedProjectSlug) ?? null, [selectedProjectSlug]);
 
@@ -1188,46 +925,6 @@ export function TopologyHero() {
     }
   }, [networkMode]);
 
-  useEffect(() => {
-    const previous = previousModeRef.current;
-    if (previous === null) {
-      previousModeRef.current = networkMode;
-      return;
-    }
-    if (previous === networkMode) return;
-
-    if (networkMode === "dropping") {
-      pushNetworkEvent("warn", "Packet loss spike detected on Gi0/1");
-    } else if (networkMode === "grabbing") {
-      pushNetworkEvent("error", "Core link down, reconnect started");
-    } else if (networkMode === "repairing") {
-      pushNetworkEvent("info", "Cable repair workflow running");
-    } else if (networkMode === "recovering") {
-      pushNetworkEvent("warn", "Reconnect in progress, latency elevated");
-    } else if (networkMode === "stable") {
-      pushNetworkEvent("ok", "Core link recovered and stable");
-    }
-
-    previousModeRef.current = networkMode;
-  }, [networkMode, pushNetworkEvent]);
-
-  useEffect(() => {
-    const previous = previousWifiRef.current;
-    if (previous === null) {
-      previousWifiRef.current = routerWifiReady;
-      return;
-    }
-    if (previous === routerWifiReady) return;
-
-    if (!routerWifiReady) {
-      pushNetworkEvent("warn", "WiFi temporarily unavailable");
-    } else {
-      pushNetworkEvent("ok", "WiFi recover complete");
-    }
-
-    previousWifiRef.current = routerWifiReady;
-  }, [routerWifiReady, pushNetworkEvent]);
-
 
   const triggerNodeAnimation = (node: NodeKey) => {
     if (animationLocks.current[node]) return;
@@ -1283,20 +980,6 @@ export function TopologyHero() {
     const repair = window.setTimeout(() => setMode("repairing"), 3600);
     timeoutIds.push(grab, repair);
   };
-
-  const playPhoneTapSound = useCallback(() => {
-    const audio = phoneTapAudioRef.current;
-    if (!audio) return;
-    try {
-      audio.pause();
-      audio.currentTime = 0;
-      audio.volume = 0.7;
-      const promise = audio.play();
-      if (promise && typeof promise.catch === "function") {
-        promise.catch(() => {});
-      }
-    } catch {}
-  }, []);
 
   useEffect(() => {
     const handlePointerMove = (event: PointerEvent) => {
@@ -1380,7 +1063,7 @@ export function TopologyHero() {
       window.removeEventListener("pointerup", finishPointer);
       window.removeEventListener("pointercancel", finishPointer);
     };
-  }, [openWindowState, playPhoneTapSound]);
+  }, [openWindowState]);
 
   const elapsedSeconds = baseStart && currentTime
     ? Math.max(0, Math.floor((currentTime - baseStart) / 1000) + manualOffset)
@@ -1401,28 +1084,6 @@ export function TopologyHero() {
     : networkMode === "recovering"
       ? "orange"
       : "none";
-  const wiredLinkState = getLinkState(networkMode);
-  const wifiLinkState: LinkState = !routerWifiReady
-    ? "down"
-    : networkMode === "recovering"
-      ? "degraded"
-      : "stable";
-  const healthLinkState: LinkState = wiredLinkState === "down" || wifiLinkState === "down"
-    ? "down"
-    : wiredLinkState === "degraded" || wifiLinkState === "degraded"
-      ? "degraded"
-      : "stable";
-  const latencyMs = healthLinkState === "stable"
-    ? `${Math.max(6, Math.round(8 + Math.sin(motionTick / 8) * 2 + Math.cos(motionTick / 11) * 1))} ms`
-    : healthLinkState === "degraded"
-      ? `${Math.max(24, Math.round(42 + Math.sin(motionTick / 6) * 9 + Math.cos(motionTick / 10) * 6))} ms`
-      : "--";
-  const packetLossPct = healthLinkState === "stable"
-    ? `${(0.1 + ((Math.sin(motionTick / 9) + 1) * 0.08)).toFixed(2)}%`
-    : healthLinkState === "degraded"
-      ? `${(2.1 + ((Math.sin(motionTick / 7) + 1) * 1.5)).toFixed(1)}%`
-      : "100%";
-
   const topIndicators = [0.32, 0.7].map((value) => pointOnLine(aboutCableAttach, switchLeftCableEnd, value));
   const diagIndicators = [0.4, 0.78].map((value) => pointOnLine(homeAttach, switchRightCableEnd, value));
   const activePreview = active && !draggingNode ? getPreviewByNode(active) : null;
@@ -1439,6 +1100,22 @@ export function TopologyHero() {
       contact: active === "contact" ? 1 : 0.98,
     };
   }, [active, draggingNode]);
+
+  
+
+  const playPhoneTapSound = useCallback(() => {
+    const audio = phoneTapAudioRef.current;
+    if (!audio) return;
+    try {
+      audio.pause();
+      audio.currentTime = 0;
+      audio.volume = 0.7;
+      const promise = audio.play();
+      if (promise && typeof promise.catch === "function") {
+        promise.catch(() => {});
+      }
+    } catch {}
+  }, []);
 
   const handlePointerDown = (node: NodeKey, event: ReactPointerEvent<HTMLButtonElement>) => {
     const scene = sceneRef.current;
@@ -1494,8 +1171,7 @@ export function TopologyHero() {
     <>
       <audio ref={phoneTapAudioRef} src="/phone-click.m4a?v=20260409-9" preload="auto" />
       <section
-        className="pt-ui relative h-[100dvh] overflow-hidden"
-        style={{ backgroundColor: DESIGN_TOKENS.color.canvas }}
+        className="pt-ui relative h-[100dvh] overflow-hidden bg-[#fbfbfb]"
         onMouseMove={(event) => setMousePosition({ x: Math.round(event.clientX), y: Math.round(event.clientY) })}
       >
         <TopTitleBar />
@@ -1515,10 +1191,6 @@ export function TopologyHero() {
           <div className="relative h-full w-full">
             <div className="relative h-full w-full">
               <div ref={sceneRef} className="relative h-full w-full overflow-hidden">
-                <TopologyGridBackdrop />
-                <LinkHealthLegend linkState={healthLinkState} latencyMs={latencyMs} packetLossPct={packetLossPct} />
-                <EventLogPanel events={eventLog} />
-
                 <motion.svg
                   viewBox={`0 0 ${VIEWBOX.width} ${VIEWBOX.height}`}
                   className="pointer-events-none absolute inset-0 z-[20] h-full w-full"
@@ -1528,7 +1200,7 @@ export function TopologyHero() {
                   aria-hidden="true"
                   preserveAspectRatio="none"
                 >
-                  <WirelessCable from={aboutCableAttach} to={contactAttach} tick={motionTick} online={routerWifiReady} state={wifiLinkState} />
+                  <WirelessCable from={aboutCableAttach} to={contactAttach} tick={motionTick} online={routerWifiReady} />
                 </motion.svg>
 
                 <NodeButton
@@ -1614,23 +1286,8 @@ export function TopologyHero() {
                   aria-hidden="true"
                   preserveAspectRatio="none"
                 >
-                  <CableSegment
-                    from={aboutCableAttach}
-                    to={switchLeftCableEnd}
-                    disconnected={networkMode !== "stable" && networkMode !== "recovering"}
-                    looseEnd={looseEnd}
-                    state={wiredLinkState}
-                  />
-                  <CableSegment
-                    from={homeAttach}
-                    to={switchRightCableEnd}
-                    state={wiredLinkState === "degraded" ? "degraded" : "stable"}
-                  />
-
-                  <PortNameTag x={aboutCableAttach.x + 20} y={aboutCableAttach.y - 12} name="Fa0/1" />
-                  <PortNameTag x={switchLeftCableEnd.x + 20} y={switchLeftCableEnd.y - 12} name="Gi0/1" />
-                  <PortNameTag x={switchRightCableEnd.x + 20} y={switchRightCableEnd.y - 12} name="Gi0/2" />
-                  <PortNameTag x={contactAttach.x + 20} y={contactAttach.y - 12} name="WLAN0" />
+                  <CableSegment from={aboutCableAttach} to={switchLeftCableEnd} disconnected={networkMode !== "stable" && networkMode !== "recovering"} looseEnd={looseEnd} />
+                  <CableSegment from={homeAttach} to={switchRightCableEnd} />
 
                   {topLineStatus === "green"
                     ? topIndicators.map((point, index) => <StatusTriangle key={`top-${index}`} {...point} />)
@@ -1642,31 +1299,10 @@ export function TopologyHero() {
                     <StatusTriangle key={`diag-${index}`} {...point} />
                   ))}
 
-                  {wiredLinkState === "stable" ? (
-                    <>
-                      <TrafficPulse from={aboutCableAttach} to={switchLeftCableEnd} tick={motionTick} duration={66} delay={8} color={DESIGN_TOKENS.color.flowStable} />
-                      <TrafficPulse from={aboutCableAttach} to={switchLeftCableEnd} tick={motionTick} duration={66} delay={34} color={DESIGN_TOKENS.color.flowStable} />
-                      <TrafficPulse from={homeAttach} to={switchRightCableEnd} tick={motionTick} duration={60} delay={16} color={DESIGN_TOKENS.color.flowStable} />
-                    </>
-                  ) : wiredLinkState === "degraded" ? (
-                    <>
-                      <TrafficPulse from={aboutCableAttach} to={switchLeftCableEnd} tick={motionTick} duration={108} delay={10} color={DESIGN_TOKENS.color.flowDegraded} />
-                      <TrafficPulse from={homeAttach} to={switchRightCableEnd} tick={motionTick} duration={120} delay={40} color={DESIGN_TOKENS.color.flowDegraded} />
-                    </>
-                  ) : (
-                    <>
-                      <TrafficPulse from={aboutCableAttach} to={looseEnd} tick={motionTick} duration={92} delay={12} dotted color={DESIGN_TOKENS.color.flowDown} />
-                      <TrafficPulse from={aboutCableAttach} to={looseEnd} tick={motionTick} duration={92} delay={44} dotted color={DESIGN_TOKENS.color.flowDown} />
-                    </>
-                  )}
-
-                  {wifiLinkState === "stable" ? (
-                    <TrafficPulse from={aboutCableAttach} to={contactAttach} tick={motionTick} duration={96} delay={24} dotted color={DESIGN_TOKENS.color.flowStable} />
-                  ) : wifiLinkState === "degraded" ? (
-                    <TrafficPulse from={aboutCableAttach} to={contactAttach} tick={motionTick} duration={118} delay={30} dotted color={DESIGN_TOKENS.color.flowDegraded} />
-                  ) : (
-                    <TrafficPulse from={aboutCableAttach} to={contactAttach} tick={motionTick} duration={126} delay={36} dotted color={DESIGN_TOKENS.color.flowDown} />
-                  )}
+                  {typingActive ? <TrafficPulse from={homeAttach} to={switchRightCableEnd} tick={motionTick} duration={64} delay={14} /> : null}
+                  {!routerGlitchActive && active === "about" ? (
+                    <TrafficPulse from={aboutCableAttach} to={contactAttach} tick={motionTick} duration={86} delay={20} dotted color="#a8e6ff" />
+                  ) : null}
                 </motion.svg>
 
                 {networkMode === "stable" || networkMode === "recovering" ? <DetachedEthernetStub bottom={switchLeftCableEnd} /> : null}
@@ -1939,8 +1575,8 @@ function NodeButton({
             transform: NODE_META[node].labelOffsetX ? `translateX(${NODE_META[node].labelOffsetX}px)` : undefined,
           }}
         >
-          <p className="text-[12px] font-medium uppercase tracking-[0.18em] drop-shadow-none [text-shadow:none]" style={{ color: DESIGN_TOKENS.color.labelMuted }}>{deviceName}</p>
-          <p className="mt-1 text-[18px] font-semibold tracking-[-0.02em] drop-shadow-none [text-shadow:none]" style={{ color: DESIGN_TOKENS.color.labelStrong }}>{label}</p>
+          <p className="text-[12px] font-medium uppercase tracking-[0.18em] text-[#7f8b9d] drop-shadow-none [text-shadow:none]">{deviceName}</p>
+          <p className="mt-1 text-[18px] font-semibold tracking-[-0.02em] text-[#050505] drop-shadow-none [text-shadow:none]">{label}</p>
         </div>
       </button>
     </div>
@@ -2118,28 +1754,8 @@ function DetachedEthernetStub({ bottom }: { bottom: { x: number; y: number } }) 
   );
 }
 
-function getCableStrokeColor(state: LinkState) {
-  if (state === "down") return DESIGN_TOKENS.color.linkDown;
-  if (state === "degraded") return DESIGN_TOKENS.color.linkDegraded;
-  return DESIGN_TOKENS.color.linkUp;
-}
-
-function CableSegment({
-  from,
-  to,
-  disconnected = false,
-  looseEnd,
-  state = "stable",
-}: {
-  from: { x: number; y: number };
-  to: { x: number; y: number };
-  disconnected?: boolean;
-  looseEnd?: { x: number; y: number };
-  state?: LinkState;
-}) {
+function CableSegment({ from, to, disconnected = false, looseEnd }: { from: { x: number; y: number }; to: { x: number; y: number }; disconnected?: boolean; looseEnd?: { x: number; y: number } }) {
   const end = disconnected && looseEnd ? looseEnd : to;
-  const effectiveState: LinkState = disconnected ? "down" : state;
-  const stroke = getCableStrokeColor(effectiveState);
   const direction = Math.sign(end.x - from.x) || 1;
   const elbowBaseY = end.y + 9;
   const cornerRadius = Math.min(9, Math.max(6, Math.abs(end.x - from.x) * 0.03));
@@ -2150,65 +1766,37 @@ function CableSegment({
     <path
       d={`M ${from.x} ${from.y} L ${bendStartX} ${elbowBaseY} Q ${end.x} ${elbowBaseY} ${end.x} ${bendEndY} L ${end.x} ${end.y}`}
       fill="none"
-      stroke={stroke}
-      strokeWidth={DESIGN_TOKENS.stroke.link}
+      stroke={disconnected ? "#101010" : "#111111"}
+      strokeWidth={5.1}
       strokeLinecap="round"
       strokeLinejoin="round"
-      strokeDasharray={effectiveState === "degraded" ? "6 6" : undefined}
-      opacity={effectiveState === "down" ? 0.92 : 1}
     />
   );
 }
 
-function WirelessCable({
-  from,
-  to,
-  tick,
-  online,
-  state = "stable",
-}: {
-  from: { x: number; y: number };
-  to: { x: number; y: number };
-  tick: number;
-  online: boolean;
-  state?: LinkState;
-}) {
-  const effectiveState: LinkState = online ? state : "down";
+function WirelessCable({ from, to, tick, online }: { from: { x: number; y: number }; to: { x: number; y: number }; tick: number; online: boolean }) {
+  if (!online) return null;
+  void tick;
+
   const wirelessPath = `M ${from.x} ${from.y} L ${to.x} ${to.y}`;
-  const downPulse = 0.58 + (Math.sin(tick / 5) + 1) * 0.08;
-  const stroke = effectiveState === "stable"
-    ? DESIGN_TOKENS.color.wireless
-    : effectiveState === "degraded"
-      ? DESIGN_TOKENS.color.linkDegraded
-      : DESIGN_TOKENS.color.linkDown;
-  const dashArray = effectiveState === "stable"
-    ? "2.4 7.4"
-    : effectiveState === "degraded"
-      ? "3.1 9.8"
-      : "2.1 11";
-  const opacity = effectiveState === "stable"
-    ? 0.98
-    : effectiveState === "degraded"
-      ? 0.86
-      : downPulse;
 
   return (
     <>
       <path
         d={wirelessPath}
         fill="none"
-        stroke={stroke}
-        strokeWidth={DESIGN_TOKENS.stroke.wireless}
+        stroke="#111111"
+        strokeWidth={2.8}
         strokeLinecap="round"
         strokeLinejoin="round"
-        strokeDasharray={dashArray}
-        opacity={opacity}
+        strokeDasharray="2.4 7.4"
+        opacity={0.98}
       />
     </>
   );
 }
 
-function TrafficPulse({ from, to, tick, duration, delay, dotted = false, color = DESIGN_TOKENS.color.flowStable }: { from: { x: number; y: number }; to: { x: number; y: number }; tick: number; duration: number; delay: number; dotted?: boolean; color?: string }) {
+function TrafficPulse({ from, to, tick, duration, delay, dotted = false, color = "#e7f9ff" }: { from: { x: number; y: number }; to: { x: number; y: number }; tick: number; duration: number; delay: number; dotted?: boolean; color?: string }) {
   const progress = ((tick + delay) % duration) / duration;
   const x = lerp(from.x, to.x, progress);
   const y = lerp(from.y, to.y, progress);
@@ -2216,12 +1804,12 @@ function TrafficPulse({ from, to, tick, duration, delay, dotted = false, color =
 }
 
 function StatusTriangle({ x, y }: { x: number; y: number }) {
-  return <polygon points={`${x},${y - 16} ${x - 14},${y + 12} ${x + 14},${y + 12}`} fill={DESIGN_TOKENS.color.statusGood} opacity={1} />;
+  return <polygon points={`${x},${y - 16} ${x - 14},${y + 12} ${x + 14},${y + 12}`} fill="#43c729" opacity={1} />;
 }
 
 function StatusOrb({ x, y, tick }: { x: number; y: number; tick: number }) {
   const scale = 1 + Math.sin(tick / 2) * 0.06;
-  return <circle cx={x} cy={y} r={11.5 * scale} fill={DESIGN_TOKENS.color.statusWarn} opacity={0.98} />;
+  return <circle cx={x} cy={y} r={11.5 * scale} fill="#e38b1a" opacity={0.98} />;
 }
 
 function ServiceMouse({ cursor }: { cursor: { x: number; y: number; state: CursorState } }) {
