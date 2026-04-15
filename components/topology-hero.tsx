@@ -130,10 +130,10 @@ function getInitialNodePositions(): Record<NodeKey, NodePosition> {
     }
 
     return {
-      about: { x: parsed.about.x, y: parsed.about.y },
-      projects: { x: parsed.projects.x, y: parsed.projects.y },
-      home: { x: parsed.home.x, y: parsed.home.y },
-      contact: { x: parsed.contact.x, y: parsed.contact.y },
+      about: clampNodePosition("about", { x: parsed.about.x, y: parsed.about.y }),
+      projects: clampNodePosition("projects", { x: parsed.projects.x, y: parsed.projects.y }),
+      home: clampNodePosition("home", { x: parsed.home.x, y: parsed.home.y }),
+      contact: clampNodePosition("contact", { x: parsed.contact.x, y: parsed.contact.y }),
     };
   } catch {
     return INITIAL_NODE_POSITIONS;
@@ -157,12 +157,23 @@ const NODE_DRAG_BOUNDS: Record<NodeKey, DragBounds> = {
 function createNodeDragBounds(node: NodeKey): DragBounds {
   const meta = NODE_META[node];
   const BOTTOM_SAFE_MARGIN = 32;
+  const LABEL_BLOCK_ESTIMATE = 52;
+  const labelTop = meta.deviceHeight + NODE_LABEL_GAP + (meta.labelOffsetY ?? 0);
+  const effectiveNodeHeight = Math.max(meta.height, labelTop + LABEL_BLOCK_ESTIMATE);
 
   return {
     minX: 0,
     maxX: VIEWBOX.width - meta.width,
     minY: 0,
-    maxY: VIEWBOX.height - meta.height - BOTTOM_SAFE_MARGIN,
+    maxY: VIEWBOX.height - effectiveNodeHeight - BOTTOM_SAFE_MARGIN,
+  };
+}
+
+function clampNodePosition(node: NodeKey, position: NodePosition): NodePosition {
+  const bounds = createNodeDragBounds(node);
+  return {
+    x: clamp(position.x, bounds.minX, bounds.maxX),
+    y: clamp(position.y, bounds.minY, bounds.maxY),
   };
 }
 
@@ -981,6 +992,20 @@ export function TopologyHero() {
     timeoutIds.push(grab, repair);
   };
 
+  const playPhoneTapSound = useCallback(() => {
+    const audio = phoneTapAudioRef.current;
+    if (!audio) return;
+    try {
+      audio.pause();
+      audio.currentTime = 0;
+      audio.volume = 0.7;
+      const promise = audio.play();
+      if (promise && typeof promise.catch === "function") {
+        promise.catch(() => {});
+      }
+    } catch {}
+  }, []);
+
   useEffect(() => {
     const handlePointerMove = (event: PointerEvent) => {
       const state = dragRef.current;
@@ -1063,7 +1088,7 @@ export function TopologyHero() {
       window.removeEventListener("pointerup", finishPointer);
       window.removeEventListener("pointercancel", finishPointer);
     };
-  }, [openWindowState]);
+  }, [openWindowState, playPhoneTapSound]);
 
   const elapsedSeconds = baseStart && currentTime
     ? Math.max(0, Math.floor((currentTime - baseStart) / 1000) + manualOffset)
@@ -1100,22 +1125,6 @@ export function TopologyHero() {
       contact: active === "contact" ? 1 : 0.98,
     };
   }, [active, draggingNode]);
-
-  
-
-  const playPhoneTapSound = useCallback(() => {
-    const audio = phoneTapAudioRef.current;
-    if (!audio) return;
-    try {
-      audio.pause();
-      audio.currentTime = 0;
-      audio.volume = 0.7;
-      const promise = audio.play();
-      if (promise && typeof promise.catch === "function") {
-        promise.catch(() => {});
-      }
-    } catch {}
-  }, []);
 
   const handlePointerDown = (node: NodeKey, event: ReactPointerEvent<HTMLButtonElement>) => {
     const scene = sceneRef.current;
