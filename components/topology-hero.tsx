@@ -207,6 +207,7 @@ function getNodeMagnetZone(
 ) {
   const meta = NODE_META[node];
   const shape = NODE_COLLISION_SHAPES[node];
+  const labelOffsetY = meta.labelOffsetY ?? 0;
 
   const deviceRect = {
     left: position.x + shape.device.left - halo,
@@ -215,8 +216,8 @@ function getNodeMagnetZone(
     bottom: position.y + meta.deviceHeight - shape.device.bottom + halo,
   };
 
-  const labelTop = position.y + meta.deviceHeight + shape.label.top - halo;
-  const labelBottom = position.y + meta.height - shape.label.bottom + halo;
+  const labelTop = position.y + meta.deviceHeight + shape.label.top + labelOffsetY - halo;
+  const labelBottom = position.y + meta.height - shape.label.bottom + labelOffsetY + halo;
 
   const labelRect = labelBottom > labelTop
     ? {
@@ -432,6 +433,23 @@ const NODE_PROTECTIVE_HALO = 14;
 let CURRENT_PROTECTIVE_HALO = NODE_PROTECTIVE_HALO;
 const MAGNET_WIDTH_SCALE = 0.88;
 const MAGNET_HEIGHT_SCALE = 1;
+const DRAG_WEAK_MAGNET_OPTIONS = {
+  halo: NODE_PROTECTIVE_HALO * 0.04,
+  pushGain: 1.0008,
+  centerFallbackPush: 0.7,
+  maxIterations: 2,
+  allowOverlap: true,
+} as const;
+const RELEASE_STRONG_MAGNET_OPTIONS = {
+  halo: NODE_PROTECTIVE_HALO * 1.8,
+  pushGain: 1.42,
+  centerFallbackPush: 22,
+  maxIterations: 120,
+  searchRadiusMax: 420,
+  searchRadiusStep: 4,
+  searchAngles: 80,
+  allowOverlap: false,
+} as const;
 
 const DEBUG_HALO_COLORS: Record<NodeKey, string> = {
   about: "rgba(59,130,246,0.14)",
@@ -1038,14 +1056,7 @@ export function TopologyHero() {
           state.node,
           { x: nextX, y: nextY },
           nodePositionsRef.current,
-          {
-            // During drag: weaken repulsion and allow temporary overlap.
-            halo: CURRENT_PROTECTIVE_HALO * 0.22,
-            pushGain: 1.02,
-            centerFallbackPush: 4,
-            maxIterations: 10,
-            allowOverlap: true,
-          },
+          DRAG_WEAK_MAGNET_OPTIONS,
         ),
       };
     };
@@ -1064,6 +1075,7 @@ export function TopologyHero() {
             node,
             nodeTargetPositionsRef.current[node] ?? nodePositionsRef.current[node],
             nodePositionsRef.current,
+            RELEASE_STRONG_MAGNET_OPTIONS,
           ),
         };
       }
