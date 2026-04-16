@@ -436,23 +436,25 @@ const MAGNET_HEIGHT_SCALE = 1;
 
 function getDragWeakMagnetOptions() {
   return {
-    halo: CURRENT_PROTECTIVE_HALO * 0.04,
-    pushGain: 1.0008,
-    centerFallbackPush: 0.7,
-    maxIterations: 2,
+    // Dragging phase: almost no repulsion so nodes can overlap temporarily.
+    halo: 0,
+    pushGain: 1,
+    centerFallbackPush: 0,
+    maxIterations: 0,
     allowOverlap: true,
   } as const;
 }
 
 function getReleaseStrongMagnetOptions() {
   return {
-    halo: CURRENT_PROTECTIVE_HALO * 1.8,
-    pushGain: 1.42,
-    centerFallbackPush: 22,
-    maxIterations: 120,
-    searchRadiusMax: 420,
+    // Release phase: strong separation so overlap can never remain.
+    halo: CURRENT_PROTECTIVE_HALO * 0.78,
+    pushGain: 1.22,
+    centerFallbackPush: 14,
+    maxIterations: 110,
+    searchRadiusMax: 520,
     searchRadiusStep: 4,
-    searchAngles: 80,
+    searchAngles: 96,
     allowOverlap: false,
   } as const;
 }
@@ -714,11 +716,13 @@ export function TopologyHero() {
     if (!scene) return;
 
     const syncResponsiveHalo = () => {
-      // Keep magnet strength visually consistent in pixels even if the scene is scaled.
+      // Keep magnet size visually stable across viewport changes without overshooting.
       const scaleX = scene.clientWidth / VIEWBOX.width;
       const scaleY = scene.clientHeight / VIEWBOX.height;
-      const dominantScale = Math.max(0.32, Math.min(scaleX, scaleY));
-      CURRENT_PROTECTIVE_HALO = NODE_PROTECTIVE_HALO / dominantScale;
+      const meanScale = Math.max(0.45, (scaleX + scaleY) / 2);
+      const compensation = 1 / Math.sqrt(meanScale);
+      const clampedCompensation = clamp(compensation, 0.9, 1.25);
+      CURRENT_PROTECTIVE_HALO = NODE_PROTECTIVE_HALO * clampedCompensation;
     };
 
     syncResponsiveHalo();
