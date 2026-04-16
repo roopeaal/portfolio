@@ -433,23 +433,29 @@ const NODE_PROTECTIVE_HALO = 14;
 let CURRENT_PROTECTIVE_HALO = NODE_PROTECTIVE_HALO;
 const MAGNET_WIDTH_SCALE = 0.88;
 const MAGNET_HEIGHT_SCALE = 1;
-const DRAG_WEAK_MAGNET_OPTIONS = {
-  halo: NODE_PROTECTIVE_HALO * 0.04,
-  pushGain: 1.0008,
-  centerFallbackPush: 0.7,
-  maxIterations: 2,
-  allowOverlap: true,
-} as const;
-const RELEASE_STRONG_MAGNET_OPTIONS = {
-  halo: NODE_PROTECTIVE_HALO * 1.8,
-  pushGain: 1.42,
-  centerFallbackPush: 22,
-  maxIterations: 120,
-  searchRadiusMax: 420,
-  searchRadiusStep: 4,
-  searchAngles: 80,
-  allowOverlap: false,
-} as const;
+
+function getDragWeakMagnetOptions() {
+  return {
+    halo: CURRENT_PROTECTIVE_HALO * 0.04,
+    pushGain: 1.0008,
+    centerFallbackPush: 0.7,
+    maxIterations: 2,
+    allowOverlap: true,
+  } as const;
+}
+
+function getReleaseStrongMagnetOptions() {
+  return {
+    halo: CURRENT_PROTECTIVE_HALO * 1.8,
+    pushGain: 1.42,
+    centerFallbackPush: 22,
+    maxIterations: 120,
+    searchRadiusMax: 420,
+    searchRadiusStep: 4,
+    searchAngles: 80,
+    allowOverlap: false,
+  } as const;
+}
 
 const DEBUG_HALO_COLORS: Record<NodeKey, string> = {
   about: "rgba(59,130,246,0.14)",
@@ -708,8 +714,11 @@ export function TopologyHero() {
     if (!scene) return;
 
     const syncResponsiveHalo = () => {
-      // Keep magnet size and collision behavior fixed across viewport changes.
-      CURRENT_PROTECTIVE_HALO = NODE_PROTECTIVE_HALO;
+      // Keep magnet strength visually consistent in pixels even if the scene is scaled.
+      const scaleX = scene.clientWidth / VIEWBOX.width;
+      const scaleY = scene.clientHeight / VIEWBOX.height;
+      const dominantScale = Math.max(0.32, Math.min(scaleX, scaleY));
+      CURRENT_PROTECTIVE_HALO = NODE_PROTECTIVE_HALO / dominantScale;
     };
 
     syncResponsiveHalo();
@@ -1056,7 +1065,7 @@ export function TopologyHero() {
           state.node,
           { x: nextX, y: nextY },
           nodePositionsRef.current,
-          DRAG_WEAK_MAGNET_OPTIONS,
+          getDragWeakMagnetOptions(),
         ),
       };
     };
@@ -1075,7 +1084,7 @@ export function TopologyHero() {
             node,
             nodeTargetPositionsRef.current[node] ?? nodePositionsRef.current[node],
             nodePositionsRef.current,
-            RELEASE_STRONG_MAGNET_OPTIONS,
+            getReleaseStrongMagnetOptions(),
           ),
         };
       }
