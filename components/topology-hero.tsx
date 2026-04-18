@@ -1941,6 +1941,9 @@ function RouterIllustration({
   const ledPulse = 0.85 + Math.sin(tick / 4) * 0.12;
   const frontLineOpacity = glitchActive ? 0.58 : 0.86;
   const scanningSignalActive = glitchActive || !powerOn || signalLevel < 2;
+  const leftSignalX = 143;
+  const rightSignalX = 377;
+  const signalBaseY = -40;
   const antennaSignalPulse = (phase: number) => {
     const wave = (Math.sin(tick / 2.6 - phase) + 1) / 2;
     return scanningSignalActive ? 0.14 + wave * 0.58 : 0;
@@ -2045,11 +2048,10 @@ function RouterIllustration({
             <g fill="none" strokeLinecap="round" strokeLinejoin="round">
               {[0, 1, 2].map((index) => {
                 const radius = 10 + index * 7;
-                const y = -34;
                 return (
                   <g key={`left-wave-${index}`} opacity={antennaSignalPulse(index * 0.95)}>
                     <path
-                      d={`M ${152 - radius} ${y} Q 152 ${y - radius} ${152 + radius} ${y}`}
+                      d={`M ${leftSignalX - radius} ${signalBaseY} Q ${leftSignalX} ${signalBaseY - radius} ${leftSignalX + radius} ${signalBaseY}`}
                       stroke="#43c7ff"
                       strokeWidth={2.25 - index * 0.36}
                     />
@@ -2059,11 +2061,10 @@ function RouterIllustration({
 
               {[0, 1, 2].map((index) => {
                 const radius = 10 + index * 7;
-                const y = -34;
                 return (
                   <g key={`right-wave-${index}`} opacity={antennaSignalPulse(index * 0.95 + 0.55)}>
                     <path
-                      d={`M ${368 - radius} ${y} Q 368 ${y - radius} ${368 + radius} ${y}`}
+                      d={`M ${rightSignalX - radius} ${signalBaseY} Q ${rightSignalX} ${signalBaseY - radius} ${rightSignalX + radius} ${signalBaseY}`}
                       stroke="#43c7ff"
                       strokeWidth={2.25 - index * 0.36}
                     />
@@ -2071,8 +2072,8 @@ function RouterIllustration({
                 );
               })}
 
-              <circle cx="152" cy="-34" r="2" fill="#7ad8ff" opacity={scanningSignalActive ? 0.86 : 0} />
-              <circle cx="368" cy="-34" r="2" fill="#7ad8ff" opacity={scanningSignalActive ? 0.86 : 0} />
+              <circle cx={leftSignalX} cy={signalBaseY} r="2" fill="#7ad8ff" opacity={scanningSignalActive ? 0.86 : 0} />
+              <circle cx={rightSignalX} cy={signalBaseY} r="2" fill="#7ad8ff" opacity={scanningSignalActive ? 0.86 : 0} />
             </g>
 
             <path
