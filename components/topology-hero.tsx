@@ -2045,7 +2045,7 @@ function RouterIllustration({
             <g fill="none" strokeLinecap="round" strokeLinejoin="round">
               {[0, 1, 2].map((index) => {
                 const radius = 10 + index * 7;
-                const y = -16;
+                const y = -34;
                 return (
                   <g key={`left-wave-${index}`} opacity={antennaSignalPulse(index * 0.95)}>
                     <path
@@ -2059,7 +2059,7 @@ function RouterIllustration({
 
               {[0, 1, 2].map((index) => {
                 const radius = 10 + index * 7;
-                const y = -16;
+                const y = -34;
                 return (
                   <g key={`right-wave-${index}`} opacity={antennaSignalPulse(index * 0.95 + 0.55)}>
                     <path
@@ -2071,8 +2071,8 @@ function RouterIllustration({
                 );
               })}
 
-              <circle cx="152" cy="-16" r="2" fill="#7ad8ff" opacity={scanningSignalActive ? 0.86 : 0} />
-              <circle cx="368" cy="-16" r="2" fill="#7ad8ff" opacity={scanningSignalActive ? 0.86 : 0} />
+              <circle cx="152" cy="-34" r="2" fill="#7ad8ff" opacity={scanningSignalActive ? 0.86 : 0} />
+              <circle cx="368" cy="-34" r="2" fill="#7ad8ff" opacity={scanningSignalActive ? 0.86 : 0} />
             </g>
 
             <path
