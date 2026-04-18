@@ -424,7 +424,7 @@ function resolveNonOverlappingPosition(
 }
 
 const SWITCH_PORT_CENTERS = [73, 90, 108, 125, 143, 160] as const;
-const SWITCH_LEFT_CABLE_PORT_INDEX = 0;
+const SWITCH_LEFT_CABLE_PORT_INDEX = 1;
 const SWITCH_RIGHT_CABLE_PORT_INDEX = 4;
 const SWITCH_STUB_Y = 109.0;
 
@@ -1771,11 +1771,11 @@ function DetachedEthernetStub({
   zIndex?: number;
 }) {
   const color = "#111111";
-  const headWidth = 18.5;
-  const headHeight = 18.0;
-
-  const x = bottom.x - headWidth / 2;
-  const y = bottom.y - headHeight;
+  const headWidth = 16.6;
+  const headHeight = 16.0;
+  const lowerNudge = 3.2;
+  const leftPercent = (bottom.x / VIEWBOX.width) * 100;
+  const topPercent = (bottom.y / VIEWBOX.height) * 100;
 
   return (
     <svg
@@ -1786,10 +1786,10 @@ function DetachedEthernetStub({
       className="pointer-events-none absolute overflow-visible"
       style={{
         zIndex,
-        left: `${(x / VIEWBOX.width) * 100}%`,
-        top: `${(y / VIEWBOX.height) * 100}%`,
-        width: `${(headWidth / VIEWBOX.width) * 100}%`,
-        height: `${(headHeight / VIEWBOX.height) * 100}%`,
+        left: `calc(${leftPercent}% - ${headWidth / 2}px)`,
+        top: `calc(${topPercent}% - ${headHeight - lowerNudge}px)`,
+        width: `${headWidth}px`,
+        height: `${headHeight}px`,
       }}
       aria-hidden="true"
     >
