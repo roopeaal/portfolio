@@ -1542,11 +1542,12 @@ function NodeButton({
   const meta = NODE_META[node];
   const haloSize = NODE_PROTECTIVE_HALO;
   const debugRects = DEBUG_NODE_HALOS ? getNodeCollisionRects(node, { x: 0, y: 0 }, haloSize) : [];
+  const stackZIndex = dragging ? 180 : active ? layer + 12 : layer;
 
   return (
     <div
       className="absolute overflow-visible"
-      style={{ zIndex: layer, 
+      style={{ zIndex: stackZIndex,
         left: `${(position.x / VIEWBOX.width) * 100}%`,
         top: `${(position.y / VIEWBOX.height) * 100}%`,
         width: `${(meta.width / VIEWBOX.width) * 100}%`,
@@ -1565,7 +1566,7 @@ function NodeButton({
         onPointerDown={(event) => onPointerDown(node, event)}
         onContextMenu={(event) => event.preventDefault()}
         className="group relative isolate h-full w-full overflow-visible select-none text-left focus:outline-none"
-        style={{ touchAction: "none", cursor: dragging ? "grabbing" : "grab", userSelect: "none", zIndex: active ? 18 : 12 }}
+        style={{ touchAction: "none", cursor: dragging ? "grabbing" : "grab", userSelect: "none", zIndex: dragging ? 26 : active ? 18 : 12 }}
       >
         <motion.div
           animate={{
