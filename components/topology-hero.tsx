@@ -101,13 +101,13 @@ const NODE_META: Record<NodeKey, NodeMeta> = {
 };
 
 const INITIAL_NODE_POSITIONS: Record<NodeKey, NodePosition> = {
-  about: { x: 128, y: 96 },
-  projects: { x: 930, y: 102 },
-  home: { x: 232, y: 414 },
-  contact: { x: 958, y: 426 },
+  about: { x: 128, y: 72 },
+  projects: { x: 930, y: 78 },
+  home: { x: 232, y: 388 },
+  contact: { x: 958, y: 400 },
 };
 
-const NODE_POSITIONS_STORAGE_KEY = "portfolio-node-positions-v5";
+const NODE_POSITIONS_STORAGE_KEY = "portfolio-node-positions-v6";
 
 function getInitialNodePositions(): Record<NodeKey, NodePosition> {
   if (typeof window === "undefined") return INITIAL_NODE_POSITIONS;
@@ -2470,8 +2470,8 @@ function PCIllustration({ compact = false, typingStep = 0, typingActive = false 
       <div className="relative" style={{ width: UNIFIED_DEVICE_WIDTH, height: UNIFIED_DEVICE_HEIGHT }}>
         <div className="pointer-events-none absolute left-1/2 top-[182px] h-[24px] w-[184px] -translate-x-1/2 rounded-full bg-[#0b1a30]/18 blur-[10px]" />
         <div
-          className="pointer-events-none absolute left-1/2 top-[10px] z-[6] h-[10px] w-[168px] -translate-x-1/2 rounded-[6px] border border-[#9f906f]/68 bg-[linear-gradient(180deg,rgba(225,216,193,0.94)_0%,rgba(205,192,165,0.88)_52%,rgba(188,173,143,0.86)_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.55),0_1px_0_rgba(112,98,74,0.38)]"
-          style={{ clipPath: "polygon(7% 0%,93% 0%,100% 100%,0% 100%)" }}
+          className="pointer-events-none absolute left-[54%] top-[3px] z-[6] h-[9px] w-[156px] -translate-x-1/2 rounded-[6px] border border-[#9f906f]/68 bg-[linear-gradient(180deg,rgba(225,216,193,0.94)_0%,rgba(205,192,165,0.88)_52%,rgba(188,173,143,0.86)_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.55),0_1px_0_rgba(112,98,74,0.38)]"
+          style={{ clipPath: "polygon(8% 0%,92% 0%,100% 100%,0% 100%)" }}
         />
         <div className="relative z-[2] h-full w-full" style={{ filter: DEVICE_FLOAT_FILTER }}>
           <RetroComputer
