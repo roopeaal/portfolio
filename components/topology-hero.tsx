@@ -1944,6 +1944,9 @@ function RouterIllustration({
   const leftSignalX = 143;
   const rightSignalX = 377;
   const signalBaseY = -40;
+  const signalCurveLift = 1.14;
+  const leftSignalTilt = -9;
+  const rightSignalTilt = 9;
   const antennaSignalPulse = (phase: number) => {
     const wave = (Math.sin(tick / 2.6 - phase) + 1) / 2;
     return scanningSignalActive ? 0.14 + wave * 0.58 : 0;
@@ -2048,10 +2051,15 @@ function RouterIllustration({
             <g fill="none" strokeLinecap="round" strokeLinejoin="round">
               {[0, 1, 2].map((index) => {
                 const radius = 10 + index * 7;
+                const arcTopY = signalBaseY - radius * signalCurveLift;
                 return (
-                  <g key={`left-wave-${index}`} opacity={antennaSignalPulse(index * 0.95)}>
+                  <g
+                    key={`left-wave-${index}`}
+                    opacity={antennaSignalPulse(index * 0.95)}
+                    transform={`rotate(${leftSignalTilt} ${leftSignalX} ${signalBaseY})`}
+                  >
                     <path
-                      d={`M ${leftSignalX - radius} ${signalBaseY} Q ${leftSignalX} ${signalBaseY - radius} ${leftSignalX + radius} ${signalBaseY}`}
+                      d={`M ${leftSignalX - radius} ${signalBaseY} Q ${leftSignalX} ${arcTopY} ${leftSignalX + radius} ${signalBaseY}`}
                       stroke="#43c7ff"
                       strokeWidth={2.25 - index * 0.36}
                     />
@@ -2061,10 +2069,15 @@ function RouterIllustration({
 
               {[0, 1, 2].map((index) => {
                 const radius = 10 + index * 7;
+                const arcTopY = signalBaseY - radius * signalCurveLift;
                 return (
-                  <g key={`right-wave-${index}`} opacity={antennaSignalPulse(index * 0.95 + 0.55)}>
+                  <g
+                    key={`right-wave-${index}`}
+                    opacity={antennaSignalPulse(index * 0.95 + 0.55)}
+                    transform={`rotate(${rightSignalTilt} ${rightSignalX} ${signalBaseY})`}
+                  >
                     <path
-                      d={`M ${rightSignalX - radius} ${signalBaseY} Q ${rightSignalX} ${signalBaseY - radius} ${rightSignalX + radius} ${signalBaseY}`}
+                      d={`M ${rightSignalX - radius} ${signalBaseY} Q ${rightSignalX} ${arcTopY} ${rightSignalX + radius} ${signalBaseY}`}
                       stroke="#43c7ff"
                       strokeWidth={2.25 - index * 0.36}
                     />
