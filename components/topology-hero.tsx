@@ -1940,7 +1940,7 @@ function RouterIllustration({
   const ledXs = [250, 286, 322, 358, 394];
   const ledPulse = 0.85 + Math.sin(tick / 4) * 0.12;
   const frontLineOpacity = glitchActive ? 0.58 : 0.86;
-  const scanningSignalActive = powerOn && networkMode !== "stable";
+  const scanningSignalActive = glitchActive || !powerOn || signalLevel < 2;
   const antennaSignalPulse = (phase: number) => {
     const wave = (Math.sin(tick / 2.6 - phase) + 1) / 2;
     return scanningSignalActive ? 0.14 + wave * 0.58 : 0;
@@ -2018,38 +2018,6 @@ function RouterIllustration({
           </defs>
 
           <g>
-            {/* Antenna connection-search signal */}
-            <g fill="none" strokeLinecap="round" strokeLinejoin="round">
-              {[0, 1, 2].map((index) => {
-                const radius = 12 + index * 8;
-                return (
-                  <g key={`left-wave-${index}`} opacity={antennaSignalPulse(index * 0.95)}>
-                    <path
-                      d={`M ${152 - radius} 22 Q 152 ${22 - radius} ${152 + radius} 22`}
-                      stroke="#43c7ff"
-                      strokeWidth={2.4 - index * 0.42}
-                    />
-                  </g>
-                );
-              })}
-
-              {[0, 1, 2].map((index) => {
-                const radius = 12 + index * 8;
-                return (
-                  <g key={`right-wave-${index}`} opacity={antennaSignalPulse(index * 0.95 + 0.55)}>
-                    <path
-                      d={`M ${368 - radius} 22 Q 368 ${22 - radius} ${368 + radius} 22`}
-                      stroke="#43c7ff"
-                      strokeWidth={2.4 - index * 0.42}
-                    />
-                  </g>
-                );
-              })}
-
-              <circle cx="152" cy="22" r="2.1" fill="#7ad8ff" opacity={scanningSignalActive ? 0.82 : 0} />
-              <circle cx="368" cy="22" r="2.1" fill="#7ad8ff" opacity={scanningSignalActive ? 0.82 : 0} />
-            </g>
-
             <rect
               x="165"
               y="-36"
@@ -2072,6 +2040,40 @@ function RouterIllustration({
               strokeWidth="2"
               transform="rotate(11 342 140)"
             />
+
+            {/* Antenna connection-search signal (rendered above antennas) */}
+            <g fill="none" strokeLinecap="round" strokeLinejoin="round">
+              {[0, 1, 2].map((index) => {
+                const radius = 10 + index * 7;
+                const y = -16;
+                return (
+                  <g key={`left-wave-${index}`} opacity={antennaSignalPulse(index * 0.95)}>
+                    <path
+                      d={`M ${152 - radius} ${y} Q 152 ${y - radius} ${152 + radius} ${y}`}
+                      stroke="#43c7ff"
+                      strokeWidth={2.25 - index * 0.36}
+                    />
+                  </g>
+                );
+              })}
+
+              {[0, 1, 2].map((index) => {
+                const radius = 10 + index * 7;
+                const y = -16;
+                return (
+                  <g key={`right-wave-${index}`} opacity={antennaSignalPulse(index * 0.95 + 0.55)}>
+                    <path
+                      d={`M ${368 - radius} ${y} Q 368 ${y - radius} ${368 + radius} ${y}`}
+                      stroke="#43c7ff"
+                      strokeWidth={2.25 - index * 0.36}
+                    />
+                  </g>
+                );
+              })}
+
+              <circle cx="152" cy="-16" r="2" fill="#7ad8ff" opacity={scanningSignalActive ? 0.86 : 0} />
+              <circle cx="368" cy="-16" r="2" fill="#7ad8ff" opacity={scanningSignalActive ? 0.86 : 0} />
+            </g>
 
             <path
               d="M140 98H380L442 150H78L140 98Z"
