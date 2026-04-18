@@ -426,7 +426,7 @@ function resolveNonOverlappingPosition(
 const SWITCH_PORT_CENTERS = [73, 90, 108, 125, 143, 160] as const;
 const SWITCH_LEFT_CABLE_PORT_INDEX = 1;
 const SWITCH_RIGHT_CABLE_PORT_INDEX = 4;
-const SWITCH_STUB_Y = 109.0;
+const SWITCH_STUB_Y = 112.0;
 
 const DEBUG_NODE_HALOS = false;
 const NODE_PROTECTIVE_HALO = 14;
@@ -1239,7 +1239,7 @@ export function TopologyHero() {
               <div ref={sceneRef} className="relative h-full w-full overflow-hidden">
                 <motion.svg
                   viewBox={`0 0 ${VIEWBOX.width} ${VIEWBOX.height}`}
-                  className="pointer-events-none absolute inset-0 z-[20] h-full w-full"
+                  className="pointer-events-none absolute inset-0 z-[24] h-full w-full"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.24 }}
@@ -1773,7 +1773,7 @@ function DetachedEthernetStub({
   const color = "#111111";
   const headWidth = 16.6;
   const headHeight = 16.0;
-  const lowerNudge = 3.2;
+  const lowerNudge = 4.4;
   const leftPercent = (bottom.x / VIEWBOX.width) * 100;
   const topPercent = (bottom.y / VIEWBOX.height) * 100;
 
@@ -2499,7 +2499,7 @@ function PCIllustration({ compact = false, typingStep = 0, typingActive = false 
         <div className="pointer-events-none absolute left-1/2 top-[182px] h-[24px] w-[184px] -translate-x-1/2 rounded-full bg-[#0b1a30]/18 blur-[10px]" />
         <div
           className="pointer-events-none absolute left-[calc(53%+2px)] top-[-1px] z-[6] h-[8px] w-[144px] -translate-x-1/2 rounded-[6px] border border-[#9f906f]/68 bg-[linear-gradient(180deg,rgba(225,216,193,0.94)_0%,rgba(205,192,165,0.88)_52%,rgba(188,173,143,0.86)_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.55),0_1px_0_rgba(112,98,74,0.38)]"
-          style={{ clipPath: "polygon(10% 0%,90% 0%,100% 100%,0% 100%)" }}
+          style={{ clipPath: "polygon(10% 0%,89.2% 0%,100% 100%,0% 100%)" }}
         />
         <div className="relative z-[2] h-full w-full" style={{ filter: DEVICE_FLOAT_FILTER }}>
           <RetroComputer
