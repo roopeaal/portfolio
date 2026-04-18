@@ -101,13 +101,13 @@ const NODE_META: Record<NodeKey, NodeMeta> = {
 };
 
 const INITIAL_NODE_POSITIONS: Record<NodeKey, NodePosition> = {
-  about: { x: 128, y: 120 },
-  projects: { x: 930, y: 126 },
-  home: { x: 232, y: 442 },
-  contact: { x: 958, y: 454 },
+  about: { x: 128, y: 96 },
+  projects: { x: 930, y: 102 },
+  home: { x: 232, y: 414 },
+  contact: { x: 958, y: 426 },
 };
 
-const NODE_POSITIONS_STORAGE_KEY = "portfolio-node-positions-v4";
+const NODE_POSITIONS_STORAGE_KEY = "portfolio-node-positions-v5";
 
 function getInitialNodePositions(): Record<NodeKey, NodePosition> {
   if (typeof window === "undefined") return INITIAL_NODE_POSITIONS;
@@ -1339,9 +1339,9 @@ export function TopologyHero() {
                   ) : null}
                 </motion.svg>
 
-                {networkMode === "stable" || networkMode === "recovering" ? <DetachedEthernetStub bottom={switchLeftCableEnd} /> : null}
-                {networkMode !== "stable" && networkMode !== "recovering" ? <DetachedEthernetStub bottom={looseEnd} /> : null}
-                <DetachedEthernetStub bottom={switchRightCableEnd} />
+                {networkMode === "stable" || networkMode === "recovering" ? <DetachedEthernetStub bottom={switchLeftCableEnd} zIndex={draggingNode === "projects" ? 186 : 90} /> : null}
+                {networkMode !== "stable" && networkMode !== "recovering" ? <DetachedEthernetStub bottom={looseEnd} zIndex={draggingNode === "projects" ? 186 : 90} /> : null}
+                <DetachedEthernetStub bottom={switchRightCableEnd} zIndex={draggingNode === "projects" ? 186 : 90} />
                 {serviceCursor ? <ServiceMouse cursor={serviceCursor} /> : null}
 
                 <AnimatePresence>
@@ -1751,7 +1751,13 @@ function EthernetHeadGraphic({ className = "" }: { className?: string }) {
 }
 
 
-function DetachedEthernetStub({ bottom }: { bottom: { x: number; y: number } }) {
+function DetachedEthernetStub({
+  bottom,
+  zIndex = 90,
+}: {
+  bottom: { x: number; y: number };
+  zIndex?: number;
+}) {
   const color = "#111111";
   const headWidth = 18.5;
   const headHeight = 18.0;
@@ -1765,8 +1771,9 @@ function DetachedEthernetStub({ bottom }: { bottom: { x: number; y: number } }) 
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       preserveAspectRatio="xMidYMid meet"
-      className="pointer-events-none absolute z-[90] overflow-visible"
+      className="pointer-events-none absolute overflow-visible"
       style={{
+        zIndex,
         left: `${(x / VIEWBOX.width) * 100}%`,
         top: `${(y / VIEWBOX.height) * 100}%`,
         width: `${(headWidth / VIEWBOX.width) * 100}%`,
@@ -2463,8 +2470,8 @@ function PCIllustration({ compact = false, typingStep = 0, typingActive = false 
       <div className="relative" style={{ width: UNIFIED_DEVICE_WIDTH, height: UNIFIED_DEVICE_HEIGHT }}>
         <div className="pointer-events-none absolute left-1/2 top-[182px] h-[24px] w-[184px] -translate-x-1/2 rounded-full bg-[#0b1a30]/18 blur-[10px]" />
         <div
-          className="pointer-events-none absolute left-1/2 top-[-2px] z-[6] h-[12px] w-[132px] -translate-x-1/2 rounded-[7px] border border-[#9f906f]/70 bg-[linear-gradient(180deg,rgba(225,216,193,0.94)_0%,rgba(205,192,165,0.88)_52%,rgba(188,173,143,0.86)_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.55),0_1px_0_rgba(112,98,74,0.38)]"
-          style={{ clipPath: "polygon(11% 0%,89% 0%,100% 100%,0% 100%)" }}
+          className="pointer-events-none absolute left-1/2 top-[10px] z-[6] h-[10px] w-[168px] -translate-x-1/2 rounded-[6px] border border-[#9f906f]/68 bg-[linear-gradient(180deg,rgba(225,216,193,0.94)_0%,rgba(205,192,165,0.88)_52%,rgba(188,173,143,0.86)_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.55),0_1px_0_rgba(112,98,74,0.38)]"
+          style={{ clipPath: "polygon(7% 0%,93% 0%,100% 100%,0% 100%)" }}
         />
         <div className="relative z-[2] h-full w-full" style={{ filter: DEVICE_FLOAT_FILTER }}>
           <RetroComputer
