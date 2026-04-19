@@ -426,7 +426,7 @@ function resolveNonOverlappingPosition(
 const SWITCH_PORT_CENTERS = [73, 90, 108, 125, 143, 160] as const;
 const SWITCH_LEFT_CABLE_PORT_INDEX = 1;
 const SWITCH_RIGHT_CABLE_PORT_INDEX = 4;
-const SWITCH_STUB_Y = 112.0;
+const SWITCH_STUB_Y = 121.0;
 
 const DEBUG_NODE_HALOS = false;
 const NODE_PROTECTIVE_HALO = 14;
@@ -1325,7 +1325,7 @@ export function TopologyHero() {
 
                 <motion.svg
                   viewBox={`0 0 ${VIEWBOX.width} ${VIEWBOX.height}`}
-                  className="pointer-events-none absolute inset-0 z-[20] h-full w-full"
+                  className="pointer-events-none absolute inset-0 z-[30] h-full w-full"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.24 }}
@@ -1773,7 +1773,7 @@ function DetachedEthernetStub({
   const color = "#111111";
   const headWidth = 16.6;
   const headHeight = 16.0;
-  const lowerNudge = 4.4;
+  const lowerNudge = 0.4;
   const leftPercent = (bottom.x / VIEWBOX.width) * 100;
   const topPercent = (bottom.y / VIEWBOX.height) * 100;
 
