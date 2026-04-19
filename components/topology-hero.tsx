@@ -426,7 +426,7 @@ function resolveNonOverlappingPosition(
 const SWITCH_PORT_CENTERS = [73, 90, 108, 125, 143, 160] as const;
 const SWITCH_LEFT_CABLE_PORT_INDEX = 0;
 const SWITCH_RIGHT_CABLE_PORT_INDEX = 5;
-const SWITCH_STUB_Y = 153.0;
+const SWITCH_STUB_Y = 155.0;
 const SWITCH_LEFT_STUB_X_OFFSET = -22.0;
 const SWITCH_RIGHT_STUB_X_OFFSET = 8.0;
 
@@ -1776,7 +1776,7 @@ function DetachedEthernetStub({
   const color = "#111111";
   const headWidth = 16.6;
   const headHeight = 16.0;
-  const lowerNudge = -13.5;
+  const lowerNudge = -20.5;
   const leftPercent = (bottom.x / VIEWBOX.width) * 100;
   const topPercent = (bottom.y / VIEWBOX.height) * 100;
 
