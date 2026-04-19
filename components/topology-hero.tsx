@@ -426,7 +426,9 @@ function resolveNonOverlappingPosition(
 const SWITCH_PORT_CENTERS = [73, 90, 108, 125, 143, 160] as const;
 const SWITCH_LEFT_CABLE_PORT_INDEX = 0;
 const SWITCH_RIGHT_CABLE_PORT_INDEX = 5;
-const SWITCH_STUB_Y = 151.0;
+const SWITCH_STUB_Y = 153.0;
+const SWITCH_LEFT_STUB_X_OFFSET = -22.0;
+const SWITCH_RIGHT_STUB_X_OFFSET = 8.0;
 
 const DEBUG_NODE_HALOS = false;
 const NODE_PROTECTIVE_HALO = 14;
@@ -555,9 +557,10 @@ function getSwitchCableStubEnd(port: "left" | "right", positions: Record<NodeKey
   const { x, y } = positions.projects;
   const portIndex = port === "left" ? SWITCH_LEFT_CABLE_PORT_INDEX : SWITCH_RIGHT_CABLE_PORT_INDEX;
   const portOffset = SWITCH_PORT_CENTERS[portIndex];
+  const horizontalOffset = port === "left" ? SWITCH_LEFT_STUB_X_OFFSET : SWITCH_RIGHT_STUB_X_OFFSET;
 
   return {
-    x: x + portOffset,
+    x: x + portOffset + horizontalOffset,
     y: y + SWITCH_STUB_Y,
   };
 }
@@ -1773,7 +1776,7 @@ function DetachedEthernetStub({
   const color = "#111111";
   const headWidth = 16.6;
   const headHeight = 16.0;
-  const lowerNudge = -7.1;
+  const lowerNudge = -13.5;
   const leftPercent = (bottom.x / VIEWBOX.width) * 100;
   const topPercent = (bottom.y / VIEWBOX.height) * 100;
 
