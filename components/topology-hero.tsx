@@ -426,7 +426,7 @@ function resolveNonOverlappingPosition(
 const SWITCH_PORT_CENTERS = [73, 90, 108, 125, 143, 160] as const;
 const SWITCH_LEFT_CABLE_PORT_INDEX = 1;
 const SWITCH_RIGHT_CABLE_PORT_INDEX = 4;
-const SWITCH_STUB_Y = 130.0;
+const SWITCH_STUB_Y = 142.0;
 
 const DEBUG_NODE_HALOS = false;
 const NODE_PROTECTIVE_HALO = 14;
