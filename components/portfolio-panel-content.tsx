@@ -129,7 +129,7 @@ export function AboutPanelContent({
         <div className="grid h-full min-h-0 grid-cols-[1fr_120px_1fr] items-center gap-2">
           <p className="text-[9px] leading-4 text-[#c8d2df]">{leftCopy}</p>
           <div className="relative mx-auto h-[150px] w-[110px] overflow-hidden rounded-[4px] border border-[#6f7f97] bg-[#0f141e] shadow-[0_8px_16px_rgba(0,0,0,0.45)]">
-            <Image src="/about-vintage-roope.png" alt={profile.name} fill sizes="110px" className="object-cover" />
+            <Image src="/portfolio/about-vintage-roope.png" alt={profile.name} fill sizes="110px" className="object-cover" />
           </div>
           <p className="text-[9px] leading-4 text-[#c8d2df]">{rightCopy}</p>
         </div>
@@ -164,7 +164,7 @@ export function AboutPanelContent({
           <figure className="flex flex-col items-center">
             <div className="relative w-full max-w-[320px] overflow-hidden rounded-[8px] border border-[#d2c08a]/45 bg-[#0d1018] shadow-[0_14px_34px_rgba(0,0,0,0.48)]">
               <Image
-                src="/about-vintage-roope.png"
+                src="/portfolio/about-vintage-roope.png"
                 alt={`${profile.name} vintage portrait`}
                 width={512}
                 height={768}
