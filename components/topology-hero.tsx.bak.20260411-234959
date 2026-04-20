@@ -15,7 +15,6 @@ import {
 } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { PacketWindow } from "@/components/packet-window";
-import { RetroComputer } from "@/components/retro-computer";
 import {
   AboutPanelContent,
   ContactPanelContent,
@@ -38,12 +37,6 @@ const PREVIEW_WIDTH = 362;
 const PREVIEW_HEIGHT = 266;
 const PREVIEW_GAP = 42;
 const PREVIEW_MARGIN = 18;
-const DEVICE_FLOAT_FILTER = "drop-shadow(0 16px 22px rgba(10,18,31,0.18)) drop-shadow(0 5px 12px rgba(24,79,113,0.10))";
-const DEVICE_FLOAT_FILTER_SOFT = "drop-shadow(0 12px 18px rgba(10,18,31,0.14)) drop-shadow(0 4px 10px rgba(24,79,113,0.08))";
-const UNIFIED_DEVICE_WIDTH = 232;
-const UNIFIED_DEVICE_HEIGHT = 198;
-const UNIFIED_NODE_HEIGHT = 268;
-const NODE_LABEL_GAP = 12;
 
 type NodePosition = { x: number; y: number };
 type NodeMeta = {
@@ -54,7 +47,6 @@ type NodeMeta = {
   deviceHeight: number;
   previewWidth?: number;
   labelOffsetX?: number;
-  labelOffsetY?: number;
 };
 
 type DragBounds = {
@@ -64,50 +56,30 @@ type DragBounds = {
   maxY: number;
 };
 
+type KeyboardKey = {
+  id: number;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  kind?: "enter" | "space";
+};
+
 const NODE_META: Record<NodeKey, NodeMeta> = {
-  about: {
-    label: "About Me",
-    deviceName: "Wireless Router1",
-    width: UNIFIED_DEVICE_WIDTH,
-    height: UNIFIED_NODE_HEIGHT,
-    deviceHeight: UNIFIED_DEVICE_HEIGHT,
-    labelOffsetY: 10,
-  },
-  projects: {
-    label: "Projects",
-    deviceName: "Switch0",
-    width: UNIFIED_DEVICE_WIDTH,
-    height: UNIFIED_NODE_HEIGHT,
-    deviceHeight: UNIFIED_DEVICE_HEIGHT,
-    labelOffsetY: -44,
-  },
-  home: {
-    label: "LinkedIn",
-    deviceName: "PC1",
-    width: UNIFIED_DEVICE_WIDTH,
-    height: UNIFIED_NODE_HEIGHT,
-    deviceHeight: UNIFIED_DEVICE_HEIGHT,
-    previewWidth: 378,
-    labelOffsetY: 30,
-  },
-  contact: {
-    label: "Contact Me",
-    deviceName: "Smartphone0",
-    width: UNIFIED_DEVICE_WIDTH,
-    height: UNIFIED_NODE_HEIGHT,
-    deviceHeight: UNIFIED_DEVICE_HEIGHT,
-    labelOffsetY: 26,
-  },
+  about: { label: "About Me", deviceName: "Wireless Router1", width: 220, height: 204, deviceHeight: 136 },
+  projects: { label: "Projects", deviceName: "Switch0", width: 242, height: 210, deviceHeight: 138 },
+  home: { label: "LinkedIn", deviceName: "PC1", width: 226, height: 262, deviceHeight: 194, previewWidth: 378 },
+  contact: { label: "Contact Me", deviceName: "Smartphone0", width: 156, height: 226, deviceHeight: 168 },
 };
 
 const INITIAL_NODE_POSITIONS: Record<NodeKey, NodePosition> = {
-  about: { x: 128, y: 48 },
-  projects: { x: 930, y: 54 },
-  home: { x: 232, y: 364 },
-  contact: { x: 958, y: 376 },
+  about: { x: 128, y: 120 },
+  projects: { x: 930, y: 126 },
+  home: { x: 232, y: 442 },
+  contact: { x: 958, y: 454 },
 };
 
-const NODE_POSITIONS_STORAGE_KEY = "portfolio-node-positions-v7";
+const NODE_POSITIONS_STORAGE_KEY = "portfolio-node-positions-v1";
 
 function getInitialNodePositions(): Record<NodeKey, NodePosition> {
   if (typeof window === "undefined") return INITIAL_NODE_POSITIONS;
@@ -130,10 +102,10 @@ function getInitialNodePositions(): Record<NodeKey, NodePosition> {
     }
 
     return {
-      about: clampNodePosition("about", { x: parsed.about.x, y: parsed.about.y }),
-      projects: clampNodePosition("projects", { x: parsed.projects.x, y: parsed.projects.y }),
-      home: clampNodePosition("home", { x: parsed.home.x, y: parsed.home.y }),
-      contact: clampNodePosition("contact", { x: parsed.contact.x, y: parsed.contact.y }),
+      about: { x: parsed.about.x, y: parsed.about.y },
+      projects: { x: parsed.projects.x, y: parsed.projects.y },
+      home: { x: parsed.home.x, y: parsed.home.y },
+      contact: { x: parsed.contact.x, y: parsed.contact.y },
     };
   } catch {
     return INITIAL_NODE_POSITIONS;
@@ -157,23 +129,12 @@ const NODE_DRAG_BOUNDS: Record<NodeKey, DragBounds> = {
 function createNodeDragBounds(node: NodeKey): DragBounds {
   const meta = NODE_META[node];
   const BOTTOM_SAFE_MARGIN = 32;
-  const LABEL_BLOCK_ESTIMATE = 52;
-  const labelTop = meta.deviceHeight + NODE_LABEL_GAP + (meta.labelOffsetY ?? 0);
-  const effectiveNodeHeight = Math.max(meta.height, labelTop + LABEL_BLOCK_ESTIMATE);
 
   return {
     minX: 0,
     maxX: VIEWBOX.width - meta.width,
     minY: 0,
-    maxY: VIEWBOX.height - effectiveNodeHeight - BOTTOM_SAFE_MARGIN,
-  };
-}
-
-function clampNodePosition(node: NodeKey, position: NodePosition): NodePosition {
-  const bounds = createNodeDragBounds(node);
-  return {
-    x: clamp(position.x, bounds.minX, bounds.maxX),
-    y: clamp(position.y, bounds.minY, bounds.maxY),
+    maxY: VIEWBOX.height - meta.height - BOTTOM_SAFE_MARGIN,
   };
 }
 
@@ -207,7 +168,6 @@ function getNodeMagnetZone(
 ) {
   const meta = NODE_META[node];
   const shape = NODE_COLLISION_SHAPES[node];
-  const labelOffsetY = meta.labelOffsetY ?? 0;
 
   const deviceRect = {
     left: position.x + shape.device.left - halo,
@@ -216,8 +176,8 @@ function getNodeMagnetZone(
     bottom: position.y + meta.deviceHeight - shape.device.bottom + halo,
   };
 
-  const labelTop = position.y + meta.deviceHeight + shape.label.top + labelOffsetY - halo;
-  const labelBottom = position.y + meta.height - shape.label.bottom + labelOffsetY + halo;
+  const labelTop = position.y + meta.deviceHeight + shape.label.top - halo;
+  const labelBottom = position.y + meta.height - shape.label.bottom + halo;
 
   const labelRect = labelBottom > labelTop
     ? {
@@ -285,26 +245,7 @@ function resolveNonOverlappingPosition(
   node: NodeKey,
   proposed: NodePosition,
   positions: Record<NodeKey, NodePosition>,
-  options?: {
-    halo?: number;
-    pushGain?: number;
-    centerFallbackPush?: number;
-    maxIterations?: number;
-    searchRadiusMax?: number;
-    searchRadiusStep?: number;
-    searchAngles?: number;
-    allowOverlap?: boolean;
-  },
 ) {
-  const halo = options?.halo ?? CURRENT_PROTECTIVE_HALO;
-  const pushGain = options?.pushGain ?? 1.06;
-  const centerFallbackPush = options?.centerFallbackPush ?? 12;
-  const maxIterations = options?.maxIterations ?? 24;
-  const searchRadiusMax = options?.searchRadiusMax ?? 220;
-  const searchRadiusStep = options?.searchRadiusStep ?? 6;
-  const searchAngles = options?.searchAngles ?? 24;
-  const allowOverlap = options?.allowOverlap ?? false;
-
   const bounds = NODE_DRAG_BOUNDS[node];
   const current = positions[node];
 
@@ -327,11 +268,11 @@ function resolveNonOverlappingPosition(
   };
 
   const overlapsAny = (pos: NodePosition) => {
-    const selfZone = getNodeMagnetZone(node, pos, halo);
+    const selfZone = getNodeMagnetZone(node, pos, CURRENT_PROTECTIVE_HALO);
 
     for (const other of Object.keys(positions) as NodeKey[]) {
       if (other === node) continue;
-      const otherZone = getNodeMagnetZone(other, positions[other], halo);
+      const otherZone = getNodeMagnetZone(other, positions[other], CURRENT_PROTECTIVE_HALO);
       if (zonesOverlap(selfZone, otherZone)) return true;
     }
 
@@ -340,8 +281,8 @@ function resolveNonOverlappingPosition(
 
   let candidate = clampPos(proposed);
 
-  for (let i = 0; i < maxIterations; i += 1) {
-    const selfZone = getNodeMagnetZone(node, candidate, halo);
+  for (let i = 0; i < 24; i += 1) {
+    const selfZone = getNodeMagnetZone(node, candidate, CURRENT_PROTECTIVE_HALO);
     let totalPushX = 0;
     let totalPushY = 0;
     let hitCount = 0;
@@ -349,7 +290,7 @@ function resolveNonOverlappingPosition(
     for (const other of Object.keys(positions) as NodeKey[]) {
       if (other === node) continue;
 
-      const otherZone = getNodeMagnetZone(other, positions[other], halo);
+      const otherZone = getNodeMagnetZone(other, positions[other], CURRENT_PROTECTIVE_HALO);
 
       const dx = selfZone.cx - otherZone.cx;
       const dy = selfZone.cy - otherZone.cy;
@@ -372,12 +313,12 @@ function resolveNonOverlappingPosition(
         const fallbackDy = candidate.y - positions[other].y;
 
         if (Math.abs(fallbackDx) >= Math.abs(fallbackDy)) {
-          pushX = fallbackDx >= 0 ? centerFallbackPush : -centerFallbackPush;
+          pushX = fallbackDx >= 0 ? 12 : -12;
         } else {
-          pushY = fallbackDy >= 0 ? centerFallbackPush : -centerFallbackPush;
+          pushY = fallbackDy >= 0 ? 12 : -12;
         }
       } else {
-        const factor = (pushGain / Math.max(dist, 0.0001)) - 1;
+        const factor = (1.06 / Math.max(dist, 0.0001)) - 1;
         pushX = dx * factor;
         pushY = dy * factor;
       }
@@ -402,13 +343,9 @@ function resolveNonOverlappingPosition(
 
   const origin = clampPos(proposed);
 
-  if (allowOverlap) {
-    return origin;
-  }
-
-  for (let radius = searchRadiusStep; radius <= searchRadiusMax; radius += searchRadiusStep) {
-    for (let i = 0; i < searchAngles; i += 1) {
-      const angle = (Math.PI * 2 * i) / searchAngles;
+  for (let radius = 6; radius <= 220; radius += 6) {
+    for (let i = 0; i < 24; i += 1) {
+      const angle = (Math.PI * 2 * i) / 24;
       const test = clampPos({
         x: origin.x + Math.cos(angle) * radius,
         y: origin.y + Math.sin(angle) * radius,
@@ -423,43 +360,27 @@ function resolveNonOverlappingPosition(
   return current;
 }
 
-const SWITCH_PORT_CENTERS = [73, 90, 108, 125, 143, 160] as const;
+function randomFromSeed(seed: number) {
+  const value = Math.sin(seed * 999.31) * 43758.5453123;
+  return value - Math.floor(value);
+}
+
+function buildTypingPattern(step: number) {
+  const key = Math.floor(randomFromSeed(step * 6.71 + 1.9) * 26);
+  return new Set<number>([key]);
+}
+
+const SWITCH_PORT_CENTERS = [79, 94, 109, 124, 139, 154] as const;
 const SWITCH_LEFT_CABLE_PORT_INDEX = 0;
-const SWITCH_RIGHT_CABLE_PORT_INDEX = 5;
-const SWITCH_STUB_Y = 200.0;
-const SWITCH_LEFT_STUB_X_OFFSET = -22.0;
-const SWITCH_RIGHT_STUB_X_OFFSET = 8.0;
+const SWITCH_RIGHT_CABLE_PORT_INDEX = 4;
+const SWITCH_STUB_Y = 90;
 
 const DEBUG_NODE_HALOS = false;
-const NODE_PROTECTIVE_HALO = 14;
+const NODE_PROTECTIVE_HALO = 10;
 let CURRENT_PROTECTIVE_HALO = NODE_PROTECTIVE_HALO;
 const MAGNET_WIDTH_SCALE = 0.88;
 const MAGNET_HEIGHT_SCALE = 1;
-
-function getDragWeakMagnetOptions() {
-  return {
-    // Dragging phase: almost no repulsion so nodes can overlap temporarily.
-    halo: 0,
-    pushGain: 1,
-    centerFallbackPush: 0,
-    maxIterations: 0,
-    allowOverlap: true,
-  } as const;
-}
-
-function getReleaseStrongMagnetOptions() {
-  return {
-    // Release phase: strong separation so overlap can never remain.
-    halo: CURRENT_PROTECTIVE_HALO * 1.25,
-    pushGain: 1.34,
-    centerFallbackPush: 18,
-    maxIterations: 140,
-    searchRadiusMax: 680,
-    searchRadiusStep: 3,
-    searchAngles: 120,
-    allowOverlap: false,
-  } as const;
-}
+const NODE_KEYS: NodeKey[] = ["about", "projects", "home", "contact"];
 
 const DEBUG_HALO_COLORS: Record<NodeKey, string> = {
   about: "rgba(59,130,246,0.14)",
@@ -483,20 +404,20 @@ const NODE_COLLISION_SHAPES: Record<
   }
 > = {
   about: {
-    device: { left: 18, top: 10, right: 18, bottom: 18 },
-    label: { left: 44, top: 8, right: 44, bottom: 10 },
+    device: { left: 34, top: 16, right: 34, bottom: 54 },
+    label: { left: 56, top: 4, right: 56, bottom: 10 },
   },
   projects: {
-    device: { left: 18, top: 10, right: 18, bottom: 18 },
-    label: { left: 44, top: 8, right: 44, bottom: 10 },
+    device: { left: 26, top: 18, right: 24, bottom: 62 },
+    label: { left: 58, top: 6, right: 58, bottom: 12 },
   },
   home: {
-    device: { left: 18, top: 10, right: 18, bottom: 18 },
-    label: { left: 44, top: 8, right: 44, bottom: 10 },
+    device: { left: 30, top: 10, right: 30, bottom: 34 },
+    label: { left: 52, top: 6, right: 52, bottom: 12 },
   },
   contact: {
-    device: { left: 18, top: 10, right: 18, bottom: 18 },
-    label: { left: 44, top: 8, right: 44, bottom: 10 },
+    device: { left: 40, top: 4, right: 38, bottom: 18 },
+    label: { left: 26, top: 8, right: 26, bottom: 10 },
   },
 };
 
@@ -507,16 +428,6 @@ function getAttachPoint(node: NodeKey, positions: Record<NodeKey, NodePosition>)
   return {
     x: x + width / 2,
     y: y + deviceHeight / 2,
-  };
-}
-
-function getRouterCableAttachPoint(positions: Record<NodeKey, NodePosition>) {
-  const { x, y } = positions.about;
-  const { width } = NODE_META.about;
-
-  return {
-    x: x + width * 0.74,
-    y: y + 126,
   };
 }
 
@@ -557,10 +468,9 @@ function getSwitchCableStubEnd(port: "left" | "right", positions: Record<NodeKey
   const { x, y } = positions.projects;
   const portIndex = port === "left" ? SWITCH_LEFT_CABLE_PORT_INDEX : SWITCH_RIGHT_CABLE_PORT_INDEX;
   const portOffset = SWITCH_PORT_CENTERS[portIndex];
-  const horizontalOffset = port === "left" ? SWITCH_LEFT_STUB_X_OFFSET : SWITCH_RIGHT_STUB_X_OFFSET;
 
   return {
-    x: x + portOffset + horizontalOffset,
+    x: x + portOffset,
     y: y + SWITCH_STUB_Y,
   };
 }
@@ -709,9 +619,51 @@ export function TopologyHero() {
   const [routerPowerOn, setRouterPowerOn] = useState(true);
   const [routerSignalLevel, setRouterSignalLevel] = useState<0 | 1 | 2>(2);
   const [routerWifiReady, setRouterWifiReady] = useState(true);
+  const [aboutSection, setAboutSection] = useState<"profile" | "direction" | "studies" | "reliability">("profile");
   const [contactSection, setContactSection] = useState<"channels" | "roles" | "cv" | "status">("channels");
 
   const sceneRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const scene = sceneRef.current;
+    if (!scene) return;
+
+    const syncResponsiveHalo = () => {
+      const rect = scene.getBoundingClientRect();
+      if (!rect.width || !rect.height) return;
+
+      CURRENT_PROTECTIVE_HALO =
+        NODE_PROTECTIVE_HALO *
+        Math.max(VIEWBOX.width / rect.width, VIEWBOX.height / rect.height);
+
+      setNodePositions((current) => {
+        let next = current;
+
+        for (const key of NODE_KEYS) {
+          const resolved = resolveNonOverlappingPosition(key, next[key], next);
+
+          if (resolved.x !== next[key].x || resolved.y !== next[key].y) {
+            next = { ...next, [key]: resolved };
+          }
+        }
+
+        nodePositionsRef.current = next;
+        nodeTargetPositionsRef.current = next;
+        return next;
+      });
+    };
+
+    syncResponsiveHalo();
+
+    const ro = new ResizeObserver(syncResponsiveHalo);
+    ro.observe(scene);
+    window.addEventListener("resize", syncResponsiveHalo);
+
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", syncResponsiveHalo);
+    };
+  }, []);
 
   const nodePositionsRef = useRef<Record<NodeKey, NodePosition>>(INITIAL_NODE_POSITIONS);
   const nodeTargetPositionsRef = useRef<Record<NodeKey, NodePosition>>(INITIAL_NODE_POSITIONS);
@@ -732,44 +684,6 @@ export function TopologyHero() {
     dragStarted: boolean;
   } | null>(null);
 
-  useEffect(() => {
-    const scene = sceneRef.current;
-    if (!scene) return;
-
-    const syncResponsiveHalo = () => {
-      // Keep non-drag magnet area consistent on narrow screens by compensating
-      // mostly for horizontal compression of the scene.
-      const widthScale = scene.clientWidth / VIEWBOX.width;
-      const widthCompensation = clamp(1 / Math.max(widthScale, 0.35), 1, 2.4);
-      CURRENT_PROTECTIVE_HALO = NODE_PROTECTIVE_HALO * widthCompensation;
-
-      if (!dragRef.current) {
-        const nodes: NodeKey[] = ["about", "projects", "home", "contact"];
-        const resolved = { ...nodePositionsRef.current };
-        for (const node of nodes) {
-          resolved[node] = resolveNonOverlappingPosition(
-            node,
-            resolved[node],
-            resolved,
-            getReleaseStrongMagnetOptions(),
-          );
-        }
-        nodeTargetPositionsRef.current = resolved;
-      }
-    };
-
-    syncResponsiveHalo();
-
-    const ro = new ResizeObserver(syncResponsiveHalo);
-    ro.observe(scene);
-    window.addEventListener("resize", syncResponsiveHalo);
-
-    return () => {
-      ro.disconnect();
-      window.removeEventListener("resize", syncResponsiveHalo);
-    };
-  }, []);
-
   const animationLocks = useRef<Record<NodeKey, boolean>>({
     about: false,
     projects: false,
@@ -780,8 +694,13 @@ export function TopologyHero() {
   const selectedProject = useMemo(() => projects.find((project) => project.slug === selectedProjectSlug) ?? null, [selectedProjectSlug]);
 
   const aboutSidebarItems = useMemo<PanelSidebarItem[]>(
-    () => [{ id: "summary", label: "Summary", active: true }],
-    [],
+    () => [
+      { id: "profile", label: "Profile", active: aboutSection === "profile", onSelect: () => setAboutSection("profile") },
+      { id: "direction", label: "Direction", active: aboutSection === "direction", onSelect: () => setAboutSection("direction") },
+      { id: "studies", label: "Studies", active: aboutSection === "studies", onSelect: () => setAboutSection("studies") },
+      { id: "reliability", label: "Reliability", active: aboutSection === "reliability", onSelect: () => setAboutSection("reliability") },
+    ],
+    [aboutSection],
   );
 
   const projectsSidebarItems = useMemo<PanelSidebarItem[]>(
@@ -807,7 +726,8 @@ export function TopologyHero() {
     [contactSection],
   );
 
-  const aboutCableAttach = getAnimatedDevicePoint("about", getRouterCableAttachPoint(nodePositions), nodePositions, active, draggingNode);
+  const aboutAttach = getAnimatedDevicePoint("about", getAttachPoint("about", nodePositions), nodePositions, active, draggingNode);
+  const projectsAttach = getAnimatedDevicePoint("projects", getAttachPoint("projects", nodePositions), nodePositions, active, draggingNode);
   const homeAttach = getAnimatedDevicePoint("home", getAttachPoint("home", nodePositions), nodePositions, active, draggingNode);
   const contactAttach = getAnimatedDevicePoint("contact", getAttachPoint("contact", nodePositions), nodePositions, active, draggingNode);
   const switchLeftCableEnd = getAnimatedDevicePoint("projects", getSwitchCableStubEnd("left", nodePositions), nodePositions, active, draggingNode);
@@ -907,6 +827,7 @@ export function TopologyHero() {
       return;
     }
 
+    if (panel === "about") setAboutSection("profile");
     if (panel === "contact") setContactSection("channels");
 
     if (panel === "projects" && projectSlug) {
@@ -1031,20 +952,6 @@ export function TopologyHero() {
     timeoutIds.push(grab, repair);
   };
 
-  const playPhoneTapSound = useCallback(() => {
-    const audio = phoneTapAudioRef.current;
-    if (!audio) return;
-    try {
-      audio.pause();
-      audio.currentTime = 0;
-      audio.volume = 0.7;
-      const promise = audio.play();
-      if (promise && typeof promise.catch === "function") {
-        promise.catch(() => {});
-      }
-    } catch {}
-  }, []);
-
   useEffect(() => {
     const handlePointerMove = (event: PointerEvent) => {
       const state = dragRef.current;
@@ -1077,7 +984,6 @@ export function TopologyHero() {
           state.node,
           { x: nextX, y: nextY },
           nodePositionsRef.current,
-          getDragWeakMagnetOptions(),
         ),
       };
     };
@@ -1096,7 +1002,6 @@ export function TopologyHero() {
             node,
             nodeTargetPositionsRef.current[node] ?? nodePositionsRef.current[node],
             nodePositionsRef.current,
-            getReleaseStrongMagnetOptions(),
           ),
         };
       }
@@ -1121,7 +1026,7 @@ export function TopologyHero() {
       window.removeEventListener("pointerup", finishPointer);
       window.removeEventListener("pointercancel", finishPointer);
     };
-  }, [openWindowState, playPhoneTapSound]);
+  }, [openWindowState]);
 
   const elapsedSeconds = baseStart && currentTime
     ? Math.max(0, Math.floor((currentTime - baseStart) / 1000) + manualOffset)
@@ -1142,8 +1047,8 @@ export function TopologyHero() {
     : networkMode === "recovering"
       ? "orange"
       : "none";
-  const topIndicators = [0.32, 0.7].map((value) => pointOnLine(aboutCableAttach, switchLeftCableEnd, value));
-  const diagIndicators = [0.4, 0.78].map((value) => pointOnLine(homeAttach, switchRightCableEnd, value));
+  const topIndicators = [0.32, 0.7].map((value) => pointOnLine(aboutAttach, projectsAttach, value));
+  const diagIndicators = [0.4, 0.78].map((value) => pointOnLine(homeAttach, projectsAttach, value));
   const activePreview = active && !draggingNode ? getPreviewByNode(active) : null;
   const previewStyle = active && !draggingNode ? getPreviewStyle(active, nodePositions) : undefined;
   const nodeStyle = useMemo(() => {
@@ -1158,6 +1063,22 @@ export function TopologyHero() {
       contact: active === "contact" ? 1 : 0.98,
     };
   }, [active, draggingNode]);
+
+  
+
+  const playPhoneTapSound = useCallback(() => {
+    const audio = phoneTapAudioRef.current;
+    if (!audio) return;
+    try {
+      audio.pause();
+      audio.currentTime = 0;
+      audio.volume = 0.7;
+      const promise = audio.play();
+      if (promise && typeof promise.catch === "function") {
+        promise.catch(() => {});
+      }
+    } catch {}
+  }, []);
 
   const handlePointerDown = (node: NodeKey, event: ReactPointerEvent<HTMLButtonElement>) => {
     const scene = sceneRef.current;
@@ -1235,14 +1156,29 @@ export function TopologyHero() {
               <div ref={sceneRef} className="relative h-full w-full overflow-hidden">
                 <motion.svg
                   viewBox={`0 0 ${VIEWBOX.width} ${VIEWBOX.height}`}
-                  className="pointer-events-none absolute inset-0 z-[24] h-full w-full"
+                  className="pointer-events-none absolute inset-0 z-[20] h-full w-full"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.24 }}
                   aria-hidden="true"
                   preserveAspectRatio="none"
                 >
-                  <WirelessCable from={aboutCableAttach} to={contactAttach} tick={motionTick} online={routerWifiReady} />
+                  <WirelessCable from={aboutAttach} to={contactAttach} tick={motionTick} online={routerWifiReady} />
+
+                  {topLineStatus === "green"
+                    ? topIndicators.map((point, index) => <StatusTriangle key={`top-${index}`} {...point} />)
+                    : topLineStatus === "orange"
+                      ? topIndicators.map((point, index) => <StatusOrb key={`top-${index}`} {...point} tick={motionTick + index * 2} />)
+                      : null}
+
+                  {diagIndicators.map((point, index) => (
+                    <StatusTriangle key={`diag-${index}`} {...point} />
+                  ))}
+
+                  {typingActive ? <TrafficPulse from={homeAttach} to={projectsAttach} tick={motionTick} duration={64} delay={14} /> : null}
+                  {!routerGlitchActive && active === "about" ? (
+                    <TrafficPulse from={aboutAttach} to={contactAttach} tick={motionTick} duration={86} delay={20} dotted color="#a8e6ff" />
+                  ) : null}
                 </motion.svg>
 
                 <NodeButton
@@ -1321,35 +1257,20 @@ export function TopologyHero() {
 
                 <motion.svg
                   viewBox={`0 0 ${VIEWBOX.width} ${VIEWBOX.height}`}
-                  className="pointer-events-none absolute inset-0 z-[30] h-full w-full"
+                  className="pointer-events-none absolute inset-0 z-[20] h-full w-full"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.24 }}
                   aria-hidden="true"
                   preserveAspectRatio="none"
                 >
-                  <CableSegment from={aboutCableAttach} to={switchLeftCableEnd} disconnected={networkMode !== "stable" && networkMode !== "recovering"} looseEnd={looseEnd} />
+                  <CableSegment from={aboutAttach} to={switchLeftCableEnd} disconnected={networkMode !== "stable" && networkMode !== "recovering"} looseEnd={looseEnd} />
                   <CableSegment from={homeAttach} to={switchRightCableEnd} />
-
-                  {topLineStatus === "green"
-                    ? topIndicators.map((point, index) => <StatusTriangle key={`top-${index}`} {...point} />)
-                    : topLineStatus === "orange"
-                      ? topIndicators.map((point, index) => <StatusOrb key={`top-${index}`} {...point} tick={motionTick + index * 2} />)
-                      : null}
-
-                  {diagIndicators.map((point, index) => (
-                    <StatusTriangle key={`diag-${index}`} {...point} />
-                  ))}
-
-                  {typingActive ? <TrafficPulse from={homeAttach} to={switchRightCableEnd} tick={motionTick} duration={64} delay={14} /> : null}
-                  {!routerGlitchActive && active === "about" ? (
-                    <TrafficPulse from={aboutCableAttach} to={contactAttach} tick={motionTick} duration={86} delay={20} dotted color="#a8e6ff" />
-                  ) : null}
                 </motion.svg>
 
-                {networkMode === "stable" || networkMode === "recovering" ? <DetachedEthernetStub bottom={switchLeftCableEnd} zIndex={draggingNode === "projects" ? 186 : 90} /> : null}
-                {networkMode !== "stable" && networkMode !== "recovering" ? <DetachedEthernetStub bottom={looseEnd} zIndex={draggingNode === "projects" ? 186 : 90} /> : null}
-                <DetachedEthernetStub bottom={switchRightCableEnd} zIndex={draggingNode === "projects" ? 186 : 90} />
+                {networkMode === "stable" || networkMode === "recovering" ? <DetachedEthernetStub bottom={switchLeftCableEnd} /> : null}
+                {networkMode !== "stable" && networkMode !== "recovering" ? <DetachedEthernetStub bottom={looseEnd} /> : null}
+                <DetachedEthernetStub bottom={switchRightCableEnd} />
                 {serviceCursor ? <ServiceMouse cursor={serviceCursor} /> : null}
 
                 <AnimatePresence>
@@ -1361,7 +1282,7 @@ export function TopologyHero() {
                         animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
                         exit={{ opacity: 0, scale: 0.86, y: 12, filter: "blur(6px)" }}
                         transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-                        className="pointer-events-none absolute z-[220]"
+                        className="pointer-events-none absolute z-[20]"
                         style={previewStyle}
                       >
                         {activePreview}
@@ -1373,7 +1294,7 @@ export function TopologyHero() {
                         exit={{ opacity: 0, scale: 0.85, y: 6 }}
                         transition={{ duration: 0.16, ease: [0.22, 1, 0.36, 1] }}
                         style={{ left: `${Math.min(mousePosition.x + 18, 1160)}px`, top: `${Math.max(mousePosition.y - 18, 82)}px` }}
-                        className="pointer-events-none fixed z-[240] whitespace-nowrap rounded-full border border-[#d7dee8] bg-white/96 px-3 py-1 text-[11px] font-medium text-[#7a7a7a] shadow-[0_8px_18px_rgba(15,23,42,0.14)]"
+                        className="pointer-events-none fixed z-[120] whitespace-nowrap rounded-full border border-[#d7dee8] bg-white/96 px-3 py-1 text-[11px] font-medium text-[#7a7a7a] shadow-[0_8px_18px_rgba(15,23,42,0.14)]"
                       >
                         Click to open
                       </motion.div>
@@ -1408,7 +1329,7 @@ export function TopologyHero() {
         sidebarItems={aboutSidebarItems}
         shellTitle="Global Settings"
       >
-        <AboutPanelContent />
+        <AboutPanelContent section={aboutSection} />
       </PacketWindow>
 
       <PacketWindow
@@ -1550,12 +1471,11 @@ function NodeButton({
   const meta = NODE_META[node];
   const haloSize = NODE_PROTECTIVE_HALO;
   const debugRects = DEBUG_NODE_HALOS ? getNodeCollisionRects(node, { x: 0, y: 0 }, haloSize) : [];
-  const stackZIndex = dragging ? 180 : active ? layer + 12 : layer;
 
   return (
     <div
       className="absolute overflow-visible"
-      style={{ zIndex: stackZIndex,
+      style={{ zIndex: layer, 
         left: `${(position.x / VIEWBOX.width) * 100}%`,
         top: `${(position.y / VIEWBOX.height) * 100}%`,
         width: `${(meta.width / VIEWBOX.width) * 100}%`,
@@ -1573,8 +1493,8 @@ function NodeButton({
         onDragStart={(event) => event.preventDefault()}
         onPointerDown={(event) => onPointerDown(node, event)}
         onContextMenu={(event) => event.preventDefault()}
-        className="group relative isolate h-full w-full overflow-visible select-none text-left focus:outline-none"
-        style={{ touchAction: "none", cursor: dragging ? "grabbing" : "grab", userSelect: "none", zIndex: dragging ? 26 : active ? 18 : 12 }}
+        className="group relative flex h-full w-full flex-col overflow-visible select-none text-left focus:outline-none"
+        style={{ touchAction: "none", cursor: dragging ? "grabbing" : "grab", userSelect: "none", zIndex: active ? 18 : 12 }}
       >
         <motion.div
           animate={{
@@ -1586,7 +1506,6 @@ function NodeButton({
           }}
           transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
           className="pointer-events-none relative z-10 flex justify-center"
-          style={{ height: meta.deviceHeight }}
         >
           
         {DEBUG_NODE_HALOS
@@ -1612,14 +1531,11 @@ function NodeButton({
         </motion.div>
 
         <div
-          className="absolute inset-x-0 z-[30] flex flex-col items-center justify-center text-center leading-tight"
-          style={{
-            top: meta.deviceHeight + NODE_LABEL_GAP + (meta.labelOffsetY ?? 0),
-            transform: NODE_META[node].labelOffsetX ? `translateX(${NODE_META[node].labelOffsetX}px)` : undefined,
-          }}
+          className="mt-[8px] flex flex-col items-center justify-center text-center leading-tight"
+          style={{ transform: NODE_META[node].labelOffsetX ? `translateX(${NODE_META[node].labelOffsetX}px)` : undefined }}
         >
-          <p className="text-[12px] font-medium uppercase tracking-[0.18em] text-[#7f8b9d] drop-shadow-none [text-shadow:none]">{deviceName}</p>
-          <p className="mt-1 text-[18px] font-semibold tracking-[-0.02em] text-[#050505] drop-shadow-none [text-shadow:none]">{label}</p>
+          <p className="text-[12px] font-medium uppercase tracking-[0.18em] text-[#7f8b9d]">{deviceName}</p>
+          <p className="mt-1 text-[18px] font-semibold tracking-[-0.02em] text-[#050505]">{label}</p>
         </div>
       </button>
     </div>
@@ -1723,7 +1639,7 @@ function getPreviewByNode(node: NodeKey) {
   switch (node) {
     case "about":
       return (
-        <PreviewWindow title="About Me · Wireless Router1" tab="Config" sidebarTitle={SIDEBAR_TITLE.about} sidebarItems={["Summary"]} hideSidebar>
+        <PreviewWindow title="About Me · Wireless Router1" tab="Config" sidebarTitle={SIDEBAR_TITLE.about} sidebarItems={["Profile", "Direction", "Studies", "Reliability"]} hideSidebar>
           <AboutPanelContent preview />
         </PreviewWindow>
       );
@@ -1759,19 +1675,13 @@ function EthernetHeadGraphic({ className = "" }: { className?: string }) {
 }
 
 
-function DetachedEthernetStub({
-  bottom,
-  zIndex = 90,
-}: {
-  bottom: { x: number; y: number };
-  zIndex?: number;
-}) {
-  const color = "#111111";
-  const headWidth = 16.6;
-  const headHeight = 16.0;
-  const lowerNudge = 8.0;
-  const leftPercent = (bottom.x / VIEWBOX.width) * 100;
-  const topPercent = (bottom.y / VIEWBOX.height) * 100;
+function DetachedEthernetStub({ bottom }: { bottom: { x: number; y: number } }) {
+  const color = "#cfd7df";
+  const headWidth = 29.5;
+  const headHeight = 28.5;
+
+  const x = bottom.x - headWidth / 2;
+  const y = bottom.y - headHeight + 2.0;
 
   return (
     <svg
@@ -1779,25 +1689,24 @@ function DetachedEthernetStub({
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       preserveAspectRatio="xMidYMid meet"
-      className="pointer-events-none absolute overflow-visible"
+      className="pointer-events-none absolute z-[90] overflow-visible"
       style={{
-        zIndex,
-        left: `calc(${leftPercent}% - ${headWidth / 2}px)`,
-        top: `calc(${topPercent}% - ${headHeight - lowerNudge}px)`,
-        width: `${headWidth}px`,
-        height: `${headHeight}px`,
+        left: `${(x / VIEWBOX.width) * 100}%`,
+        top: `${(y / VIEWBOX.height) * 100}%`,
+        width: `${(headWidth / VIEWBOX.width) * 100}%`,
+        height: `${(headHeight / VIEWBOX.height) * 100}%`,
       }}
       aria-hidden="true"
     >
       <path
         fill={color}
-        stroke="#0a0a0c"
+        stroke="#5b6470"
         strokeWidth="6"
         strokeLinejoin="round"
         d="M 83 16 L 75 20 L 72 29 L 68 34 L 49 34 L 42 38 L 38 45 L 38 153 L 32 156 L 27 163 L 27 242 L 36 291 L 42 314 L 42 320 L 46 331 L 53 339 L 64 345 L 64 355 L 57 360 L 56 368 L 60 373 L 66 377 L 59 383 L 58 393 L 68 402 L 62 406 L 59 414 L 62 421 L 66 423 L 82 423 L 84 425 L 142 425 L 144 423 L 161 423 L 167 418 L 168 412 L 165 406 L 161 404 L 159 401 L 166 397 L 169 393 L 169 385 L 161 377 L 167 373 L 171 368 L 171 362 L 163 354 L 163 345 L 175 338 L 183 327 L 200 242 L 200 163 L 195 156 L 189 153 L 189 45 L 187 41 L 178 34 L 159 34 L 156 31 L 152 20 L 144 16 Z"
       />
       <path
-        fill="#d9d9d9"
+        fill="#fbfcfd"
         d="M 51 50 L 54 47 L 58 49 L 59 83 L 69 83 L 70 48 L 72 49 L 73 83 L 83 83 L 83 49 L 85 47 L 87 49 L 87 82 L 97 83 L 97 49 L 99 47 L 101 49 L 101 82 L 111 83 L 112 48 L 114 47 L 115 80 L 116 83 L 125 83 L 126 49 L 128 47 L 130 49 L 130 83 L 139 83 L 140 49 L 142 47 L 144 49 L 144 83 L 153 83 L 155 80 L 155 49 L 157 48 L 158 82 L 167 83 L 169 81 L 169 49 L 173 47 L 176 50 L 176 152 L 174 154 L 53 154 L 51 152 Z"
       />
     </svg>
@@ -1806,40 +1715,15 @@ function DetachedEthernetStub({
 
 function CableSegment({ from, to, disconnected = false, looseEnd }: { from: { x: number; y: number }; to: { x: number; y: number }; disconnected?: boolean; looseEnd?: { x: number; y: number } }) {
   const end = disconnected && looseEnd ? looseEnd : to;
-  const deltaX = end.x - from.x;
-  const deltaY = end.y - from.y;
-  const absX = Math.abs(deltaX);
-  const absY = Math.abs(deltaY);
-  const needsJoinCorner = !disconnected && absX > 14 && absY > 10;
-
-  let path = `M ${from.x} ${from.y} L ${end.x} ${end.y}`;
-
-  if (needsJoinCorner) {
-    const joinTail = Math.min(44, Math.max(24, absY * 0.34));
-    const cornerX = end.x;
-    const cornerY = end.y + joinTail;
-
-    const leg1X = cornerX - from.x;
-    const leg1Y = cornerY - from.y;
-    const leg1Len = Math.max(0.0001, Math.hypot(leg1X, leg1Y));
-    const leg2Len = Math.max(0.0001, Math.abs(end.y - cornerY));
-    const verticalDir = end.y >= cornerY ? 1 : -1;
-
-    const rounding = Math.min(62, Math.max(32, Math.min(absX, absY) * 0.8));
-    const inDist = Math.min(rounding, leg1Len * 0.82);
-    const outDist = Math.min(rounding * 0.95, leg2Len * 0.98);
-
-    const curveStartX = cornerX - (leg1X / leg1Len) * inDist;
-    const curveStartY = cornerY - (leg1Y / leg1Len) * inDist;
-    const curveEndX = cornerX;
-    const curveEndY = cornerY + verticalDir * outDist;
-
-    path = `M ${from.x} ${from.y} L ${curveStartX} ${curveStartY} Q ${cornerX} ${cornerY} ${curveEndX} ${curveEndY} L ${end.x} ${end.y}`;
-  }
+  const direction = Math.sign(end.x - from.x) || 1;
+  const elbowBaseY = end.y + 9;
+  const cornerRadius = Math.min(9, Math.max(6, Math.abs(end.x - from.x) * 0.03));
+  const bendStartX = end.x - direction * (cornerRadius + 2);
+  const bendEndY = elbowBaseY - cornerRadius;
 
   return (
     <path
-      d={path}
+      d={`M ${from.x} ${from.y} L ${bendStartX} ${elbowBaseY} Q ${end.x} ${elbowBaseY} ${end.x} ${bendEndY} L ${end.x} ${end.y}`}
       fill="none"
       stroke={disconnected ? "#101010" : "#111111"}
       strokeWidth={5.1}
@@ -1936,259 +1820,57 @@ function RouterIllustration({
   signalLevel?: 0 | 1 | 2;
   tick?: number;
 }) {
-  const uid = useId().replace(/:/g, "");
-  const ids = {
-    antenna: `${uid}-router-antenna`,
-    top: `${uid}-router-top`,
-    topHighlight: `${uid}-router-top-highlight`,
-    shell: `${uid}-router-shell`,
-    frontTop: `${uid}-router-front-top`,
-    frontBand: `${uid}-router-front-band`,
-    frontBottom: `${uid}-router-front-bottom`,
-    powerOuter: `${uid}-router-power-outer`,
-    led: `${uid}-router-led`,
-    ledGlow: `${uid}-router-led-glow`,
-  };
-
-  const ledStates = [
-    powerOn,
-    powerOn && signalLevel >= 1,
-    powerOn && signalLevel >= 1 && networkMode !== "dropping",
-    powerOn && signalLevel >= 2,
-    powerOn && networkMode !== "repairing",
-  ];
-
-  const ledXs = [250, 286, 322, 358, 394];
-  const ledPulse = 0.85 + Math.sin(tick / 4) * 0.12;
-  const frontLineOpacity = glitchActive ? 0.58 : 0.86;
-  const scanningSignalActive = glitchActive || !powerOn || signalLevel < 2;
-  const leftSignalX = 143;
-  const rightSignalX = 377;
-  const signalBaseY = -40;
-  const signalCurveLift = 1.14;
-  const leftSignalTilt = -9;
-  const rightSignalTilt = 9;
-  const antennaSignalPulse = (phase: number) => {
-    const wave = (Math.sin(tick / 2.6 - phase) + 1) / 2;
-    return scanningSignalActive ? 0.14 + wave * 0.58 : 0;
-  };
+  const wifiSearchFrame = Math.floor((tick % 18) / 6);
+  const showWifiPulse = glitchActive || networkMode !== "stable";
 
   return (
-    <div className={`relative ${compact ? "scale-[0.72]" : "scale-100"}`}>
-      <div className="relative" style={{ width: UNIFIED_DEVICE_WIDTH, height: UNIFIED_DEVICE_HEIGHT }}>
-        <div className="absolute left-1/2 top-[27px] h-[136px] w-[200px] -translate-x-1/2 origin-top scale-[1.28]">
-          <div className="pointer-events-none absolute left-[24px] top-[97px] h-[24px] w-[154px] rounded-full bg-[#0b1a30]/18 blur-[10px]" />
-          <svg
-            viewBox="0 0 520 340"
-            xmlns="http://www.w3.org/2000/svg"
-            role="img"
-            aria-label="White wireless router with two antennas"
-            className="absolute inset-0 h-full w-full"
-            style={{ display: "block", shapeRendering: "geometricPrecision", filter: DEVICE_FLOAT_FILTER, overflow: "visible" }}
-            preserveAspectRatio="xMidYMid meet"
-          >
-          <defs>
-            <linearGradient id={ids.antenna} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#ffffff" />
-              <stop offset="58%" stopColor="#f2f3f5" />
-              <stop offset="100%" stopColor="#ced1d5" />
-            </linearGradient>
+    <motion.div
+      className={`relative ${compact ? "scale-[0.72]" : "scale-100"}`}
+      animate={glitchActive ? { rotate: [0, -0.6, 0.8, 0], y: [0, 0.4, -0.4, 0] } : { rotate: 0, y: 0 }}
+      transition={glitchActive ? { duration: 0.9, repeat: 2, ease: "easeInOut" } : { duration: 0.2 }}
+    >
+      <div className="relative h-[140px] w-[200px]">
+        <div className="absolute left-[34px] top-[112px] h-[18px] w-[132px] rounded-full bg-[#0d6d8a]/16 blur-[11px]" />
+        <div className="absolute left-[50px] top-[8px] h-[56px] w-[6px] rounded-full border border-[#a8dce7]/55 bg-[linear-gradient(180deg,#f6fcff_0%,#d9eff5_24%,#8bd2e0_70%,#3ba6bc_100%)]" />
+        <div className="absolute right-[50px] top-[8px] h-[56px] w-[6px] rounded-full border border-[#a8dce7]/55 bg-[linear-gradient(180deg,#f6fcff_0%,#d9eff5_24%,#8bd2e0_70%,#3ba6bc_100%)]" />
 
-            <linearGradient id={ids.top} x1="120" y1="92" x2="408" y2="172" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stopColor="#f6f6f7" />
-              <stop offset="46%" stopColor="#ececee" />
-              <stop offset="100%" stopColor="#dedfe2" />
-            </linearGradient>
+        <div className="absolute left-[17px] top-[44px] h-[60px] w-[166px] rounded-[28px] border border-[#7fc2d6] bg-[linear-gradient(180deg,#f7fdff_0%,#dff1f6_18%,#78cadb_54%,#1690aa_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.78),inset_0_-10px_14px_rgba(5,55,69,0.18),0_14px_24px_rgba(15,23,42,0.08)]" />
+        <div className="absolute left-[27px] top-[51px] h-[44px] w-[146px] rounded-[22px] bg-[linear-gradient(90deg,#0e9db8_0%,#dff6fa_16%,#fcfeff_40%,#c2ebf3_68%,#1398b3_100%)] opacity-95" />
+        <div className="absolute left-[32px] top-[58px] h-[30px] w-[22px] rounded-full bg-white/26 blur-[1px]" />
+        <div className="absolute left-[66px] top-[58px] h-[7px] w-[44px] rounded-full bg-white/28" />
+        <div className="absolute left-[62px] top-[82px] h-[2px] w-[76px] rounded-full bg-[#69bfd4]/42" />
+        <div className="absolute left-[27px] top-[93px] h-[7px] w-[146px] rounded-full bg-[linear-gradient(180deg,rgba(8,71,87,0.14)_0%,rgba(255,255,255,0.02)_100%)]" />
 
-            <linearGradient id={ids.topHighlight} x1="260" y1="120" x2="260" y2="168" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stopColor="#ffffff" stopOpacity="0.8" />
-              <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
-            </linearGradient>
+        <div className="absolute left-[31px] top-[84px] flex items-center gap-[8px] opacity-95">
+          <span className="relative inline-flex h-[22px] w-[22px] items-center justify-center">
+            <span className={`absolute inset-0 rounded-full border-[2.4px] ${powerOn ? "border-[#53d76a]" : "border-[#e55b5b]"}`} />
+            <span className={`absolute left-1/2 top-[-1px] h-[8px] w-[2.4px] -translate-x-1/2 rounded-full ${powerOn ? "bg-[#53d76a]" : "bg-[#e55b5b]"}`} />
+          </span>
+          {[0, 1, 2].map((index) => (
+            <span key={index} className={`relative h-[5px] w-[18px] rounded-full border border-white/16 ${signalLevel > index ? "bg-[#dcfcff] shadow-[0_0_8px_rgba(213,248,255,0.5)]" : "bg-white/14"}`}>
+              <span className="absolute inset-x-[2px] top-0 h-[1px] rounded-full bg-white/42" />
+            </span>
+          ))}
+        </div>
 
-            <linearGradient id={ids.shell} x1="78" y1="150" x2="442" y2="270" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stopColor="#f7f7f8" />
-              <stop offset="100%" stopColor="#d7d9dc" />
-            </linearGradient>
+        <div className="absolute left-[52px] top-[98px] flex gap-[5px] opacity-55">
+          {Array.from({ length: 8 }).map((_, index) => (
+            <span key={index} className="h-[2px] w-[9px] rounded-full bg-[#56bdd2]" />
+          ))}
+        </div>
 
-            <linearGradient id={ids.frontTop} x1="260" y1="150" x2="260" y2="186" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stopColor="#fefefe" />
-              <stop offset="100%" stopColor="#eceef0" />
-            </linearGradient>
-
-            <linearGradient id={ids.frontBand} x1="260" y1="186" x2="260" y2="236" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stopColor="#d8c5b5" />
-              <stop offset="100%" stopColor="#d1bead" />
-            </linearGradient>
-
-            <linearGradient id={ids.frontBottom} x1="260" y1="236" x2="260" y2="271" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stopColor="#f0f1f3" />
-              <stop offset="100%" stopColor="#d9dbde" />
-            </linearGradient>
-
-            <radialGradient id={ids.powerOuter} cx="36%" cy="30%" r="78%">
-              <stop offset="0%" stopColor="#cf5673" />
-              <stop offset="65%" stopColor="#cc5471" />
-              <stop offset="100%" stopColor="#c8516d" />
-            </radialGradient>
-
-            <radialGradient id={ids.led} cx="38%" cy="34%" r="70%">
-              <stop offset="0%" stopColor="#b2f89e" />
-              <stop offset="68%" stopColor="#58d66a" />
-              <stop offset="100%" stopColor="#2ca24f" />
-            </radialGradient>
-
-            <radialGradient id={ids.ledGlow} cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stopColor="rgba(146,255,128,0.7)" />
-              <stop offset="100%" stopColor="rgba(146,255,128,0)" />
-            </radialGradient>
-
-          </defs>
-
-          <g>
-            <rect
-              x="165"
-              y="-36"
-              width="24"
-              height="176"
-              rx="12"
-              fill={`url(#${ids.antenna})`}
-              stroke="#d0d3d8"
-              strokeWidth="2"
-              transform="rotate(-11 177 140)"
-            />
-            <rect
-              x="330"
-              y="-36"
-              width="24"
-              height="176"
-              rx="12"
-              fill={`url(#${ids.antenna})`}
-              stroke="#d0d3d8"
-              strokeWidth="2"
-              transform="rotate(11 342 140)"
-            />
-
-            {/* Antenna connection-search signal (rendered above antennas) */}
-            <g fill="none" strokeLinecap="round" strokeLinejoin="round">
-              {[0, 1, 2].map((index) => {
-                const radius = 10 + index * 7;
-                const arcTopY = signalBaseY - radius * signalCurveLift;
-                return (
-                  <g
-                    key={`left-wave-${index}`}
-                    opacity={antennaSignalPulse(index * 0.95)}
-                    transform={`rotate(${leftSignalTilt} ${leftSignalX} ${signalBaseY})`}
-                  >
-                    <path
-                      d={`M ${leftSignalX - radius} ${signalBaseY} Q ${leftSignalX} ${arcTopY} ${leftSignalX + radius} ${signalBaseY}`}
-                      stroke="#43c7ff"
-                      strokeWidth={2.25 - index * 0.36}
-                    />
-                  </g>
-                );
-              })}
-
-              {[0, 1, 2].map((index) => {
-                const radius = 10 + index * 7;
-                const arcTopY = signalBaseY - radius * signalCurveLift;
-                return (
-                  <g
-                    key={`right-wave-${index}`}
-                    opacity={antennaSignalPulse(index * 0.95 + 0.55)}
-                    transform={`rotate(${rightSignalTilt} ${rightSignalX} ${signalBaseY})`}
-                  >
-                    <path
-                      d={`M ${rightSignalX - radius} ${signalBaseY} Q ${rightSignalX} ${arcTopY} ${rightSignalX + radius} ${signalBaseY}`}
-                      stroke="#43c7ff"
-                      strokeWidth={2.25 - index * 0.36}
-                    />
-                  </g>
-                );
-              })}
-
-              <circle cx={leftSignalX} cy={signalBaseY} r="2" fill="#7ad8ff" opacity={scanningSignalActive ? 0.86 : 0} />
-              <circle cx={rightSignalX} cy={signalBaseY} r="2" fill="#7ad8ff" opacity={scanningSignalActive ? 0.86 : 0} />
-            </g>
-
-            <path
-              d="M140 98H380L442 150H78L140 98Z"
-              fill={`url(#${ids.top})`}
-              stroke="#bfc2c7"
-              strokeWidth="2.2"
-              strokeLinejoin="round"
-            />
-
-            <path
-              d="M160 110H360L405 145H115L160 110Z"
-              fill={`url(#${ids.topHighlight})`}
-              opacity="0.8"
-            />
-
-            <rect
-              x="78"
-              y="150"
-              width="364"
-              height="121"
-              rx="13"
-              fill={`url(#${ids.shell})`}
-              stroke="#b7bbc1"
-              strokeWidth="2.2"
-            />
-
-            <rect x="80" y="152" width="360" height="34" rx="10" fill={`url(#${ids.frontTop})`} />
-            <rect x="80" y="186" width="360" height="50" fill={`url(#${ids.frontBand})`} />
-            <rect x="80" y="236" width="360" height="33" rx="0" fill={`url(#${ids.frontBottom})`} />
-
-            <path d="M80 186H440" stroke="#c8b3a1" strokeWidth="1.8" opacity={frontLineOpacity} />
-            <path d="M80 236H440" stroke="#c3c7cd" strokeWidth="1.8" opacity={frontLineOpacity} />
-
-            <ellipse cx="122" cy="210" rx="27" ry="27" fill={`url(#${ids.powerOuter})`} stroke="#b44c61" strokeWidth="2.2" />
-            <path
-              d="M116.9 200.8 A10.7 10.7 0 1 0 127.1 200.8"
-              fill="none"
-              stroke="rgba(118,44,63,0.34)"
-              strokeWidth="5.2"
-              strokeLinecap="round"
-            />
-            <path d="M122 198.9V209.7" stroke="rgba(118,44,63,0.34)" strokeWidth="5.2" strokeLinecap="round" />
-            <path
-              d="M117.3 201 A10.3 10.3 0 1 0 126.7 201"
-              fill="none"
-              stroke="#f4f7f8"
-              strokeWidth="4.2"
-              strokeLinecap="round"
-            />
-            <path d="M122 199V209.6" stroke="#f4f7f8" strokeWidth="4.2" strokeLinecap="round" />
-
-            {ledXs.map((x, index) => {
-              const isOn = ledStates[index];
-              const ledOpacity = isOn ? Math.max(0.64, ledPulse) : 0.24;
-              return (
-                <g key={x}>
-                  <circle
-                    cx={x}
-                    cy="210"
-                    r="12"
-                    fill={`url(#${ids.ledGlow})`}
-                    opacity={isOn ? 0.56 : 0}
-                  />
-                  <circle
-                    cx={x}
-                    cy="210"
-                    r="7.6"
-                    fill={isOn ? `url(#${ids.led})` : "#8f9297"}
-                    stroke={isOn ? "#3ca753" : "#777b81"}
-                    strokeWidth="1.25"
-                    opacity={ledOpacity}
-                  />
-                </g>
-              );
-            })}
-          </g>
-          </svg>
+        <div className="absolute left-1/2 top-[-36px] flex h-[66px] w-[110px] -translate-x-1/2 items-end justify-center">
+          {showWifiPulse ? (
+            <svg width="110" height="66" viewBox="0 0 110 66" fill="none" aria-hidden="true">
+              <circle cx="55" cy="53" r="4.2" fill="#18c9ff" opacity={wifiSearchFrame === 0 ? 1 : 0.18} />
+              <path d="M47.5 45.2C51.5 41.1 58.5 41.1 62.5 45.2" stroke="#17c9ff" strokeWidth="4" strokeLinecap="round" opacity={wifiSearchFrame >= 0 ? (wifiSearchFrame === 0 ? 1 : 0.18) : 0.12} />
+              <path d="M37 34.2C46 26.7 64 26.7 73 34.2" stroke="#6de8ff" strokeWidth="4.4" strokeLinecap="round" opacity={wifiSearchFrame >= 1 ? (wifiSearchFrame === 1 ? 1 : 0.2) : 0.12} />
+              <path d="M25 21.8C37.4 11.6 72.6 11.6 85 21.8" stroke="#8eff89" strokeWidth="4.8" strokeLinecap="round" opacity={wifiSearchFrame === 2 ? 1 : 0.18} />
+            </svg>
+          ) : null}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -2232,19 +1914,18 @@ function SwitchIllustration({
       animate={active ? { y: [0, -1, 0] } : { y: 0 }}
       transition={active ? { duration: 0.55, repeat: 1, ease: "easeInOut" } : { duration: 0.2 }}
     >
-      <div className="relative" style={{ width: UNIFIED_DEVICE_WIDTH, height: UNIFIED_DEVICE_HEIGHT }}>
-        <div className="absolute left-1/2 top-[23px] h-[86px] w-[176px] origin-top -translate-x-1/2 scale-[1.14]">
-          <div className="pointer-events-none absolute left-[25px] top-[92px] h-[24px] w-[168px] rounded-full bg-[#0b1a30]/18 blur-[10px]" />
+      <div className="relative h-[86px] w-[176px]">
+        <div className="absolute left-[36px] top-[93px] h-[16px] w-[176px] rounded-full bg-[#12233f]/12 blur-[10px]" />
 
-          <svg
-            viewBox="0 0 1018 482"
-            xmlns="http://www.w3.org/2000/svg"
-            role="img"
-            aria-label="Blue network switch"
-            className="absolute inset-0 h-full w-full"
-            style={{ display: "block", shapeRendering: "geometricPrecision", filter: DEVICE_FLOAT_FILTER }}
-            preserveAspectRatio="none"
-          >
+        <svg
+          viewBox="0 0 1018 482"
+          xmlns="http://www.w3.org/2000/svg"
+          role="img"
+          aria-label="Blue network switch"
+          className="absolute inset-0 h-full w-full"
+          style={{ display: "block", shapeRendering: "geometricPrecision" }}
+          preserveAspectRatio="none"
+        >
           <defs>
             <linearGradient id={ids.left} x1="50" y1="22" x2="553" y2="289" gradientUnits="userSpaceOnUse">
               <stop offset="0%" stopColor="#5c739b" />
@@ -2302,69 +1983,67 @@ function SwitchIllustration({
           </defs>
 
           <g>
-            <g transform="translate(0 78) scale(1 0.73)">
+            <path
+              d="M50 289L228 22H306L553 289H50Z"
+              fill={`url(#${ids.left})`}
+              stroke="#324b75"
+              strokeWidth="3"
+            />
+
+            <path
+              d="M306 22H812L967 289H553L306 22Z"
+              fill={`url(#${ids.top})`}
+              stroke="#22355a"
+              strokeWidth="3"
+            />
+
+            <polygon points="247,22 288,22 585,289 544,289" fill="#eef6f6" />
+
+            <polygon
+              points="620,22 812,22 889,154 767,154"
+              fill="#b9d2e6"
+              opacity="0.97"
+            />
+
+            <g clipPath={`url(#${ids.topClip})`}>
               <path
-                d="M50 289L228 22H306L553 289H50Z"
-                fill={`url(#${ids.left})`}
-                stroke="#324b75"
-                strokeWidth="3"
+                d="M338 48C398 34 488 36 569 55C629 70 671 93 686 116C697 133 690 147 664 154C621 166 550 162 475 145C401 128 345 102 325 77C314 63 318 53 338 48Z"
+                fill="#2a426b"
+                opacity="0.34"
               />
-
               <path
-                d="M306 22H812L967 289H553L306 22Z"
-                fill={`url(#${ids.top})`}
-                stroke="#22355a"
-                strokeWidth="3"
+                d="M449 78C500 70 566 74 615 92C648 104 668 121 670 135C671 147 660 156 634 160C585 167 520 162 471 145C437 133 416 116 412 102C409 90 421 82 449 78Z"
+                fill="#1d3458"
+                opacity="0.22"
               />
-
-              <polygon points="247,22 288,22 585,289 544,289" fill="#eef6f6" />
-
-              <polygon
-                points="620,22 812,22 889,154 767,154"
-                fill="#b9d2e6"
-                opacity="0.97"
+              <path
+                d="M602 149C660 143 737 151 798 170C850 186 890 211 906 235C917 251 911 263 886 269C833 281 752 275 678 255C609 236 560 210 547 187C538 171 553 155 602 149Z"
+                fill="#183052"
+                opacity="0.28"
               />
+              <path
+                d="M539 244C558 240 587 241 605 248C617 253 619 262 609 267C593 274 565 275 547 270C534 266 529 257 539 244Z"
+                fill="#7f9fc4"
+                opacity="0.24"
+              />
+              <path
+                d="M705 40C752 37 805 45 839 63C860 74 871 89 869 101C867 113 851 120 822 121C775 124 721 116 687 99C666 88 655 74 658 62C661 50 676 42 705 40Z"
+                fill="#aac8df"
+                opacity="0.18"
+              />
+            </g>
 
-              <g clipPath={`url(#${ids.topClip})`}>
-                <path
-                  d="M338 48C398 34 488 36 569 55C629 70 671 93 686 116C697 133 690 147 664 154C621 166 550 162 475 145C401 128 345 102 325 77C314 63 318 53 338 48Z"
-                  fill="#2a426b"
-                  opacity="0.34"
-                />
-                <path
-                  d="M449 78C500 70 566 74 615 92C648 104 668 121 670 135C671 147 660 156 634 160C585 167 520 162 471 145C437 133 416 116 412 102C409 90 421 82 449 78Z"
-                  fill="#1d3458"
-                  opacity="0.22"
-                />
-                <path
-                  d="M602 149C660 143 737 151 798 170C850 186 890 211 906 235C917 251 911 263 886 269C833 281 752 275 678 255C609 236 560 210 547 187C538 171 553 155 602 149Z"
-                  fill="#183052"
-                  opacity="0.28"
-                />
-                <path
-                  d="M539 244C558 240 587 241 605 248C617 253 619 262 609 267C593 274 565 275 547 270C534 266 529 257 539 244Z"
-                  fill="#7f9fc4"
-                  opacity="0.24"
-                />
-                <path
-                  d="M705 40C752 37 805 45 839 63C860 74 871 89 869 101C867 113 851 120 822 121C775 124 721 116 687 99C666 88 655 74 658 62C661 50 676 42 705 40Z"
-                  fill="#aac8df"
-                  opacity="0.18"
-                />
-              </g>
-
-              <g clipPath={`url(#${ids.leftClip})`}>
-                <path
-                  d="M86 245C138 238 213 239 273 248C316 255 344 267 347 277C349 287 325 293 279 294C220 295 152 286 103 274C72 266 58 257 60 250C63 248 72 247 86 245Z"
-                  fill="#6f89b1"
-                  opacity="0.16"
-                />
-                <path
-                  d="M74 282C126 276 211 278 294 289H50L74 282Z"
-                  fill="#3f5884"
-                  opacity="0.12"
-                />
-              </g>
+            <g clipPath={`url(#${ids.leftClip})`}>
+              <path
+                d="M86 245C138 238 213 239 273 248C316 255 344 267 347 277C349 287 325 293 279 294C220 295 152 286 103 274C72 266 58 257 60 250C63 248 72 247 86 245Z"
+                fill="#6f89b1"
+                opacity="0.16"
+              />
+              <path
+                d="M74 282C126 276 211 278 294 289H50L74 282Z"
+                fill="#3f5884"
+                opacity="0.12"
+              />
             </g>
 
             <rect
@@ -2505,8 +2184,7 @@ function SwitchIllustration({
             <line x1="191" y1="318" x2="892" y2="318" stroke="#faf8f3" strokeWidth="1.2" opacity="0.65" />
             <line x1="191" y1="425" x2="892" y2="425" stroke="#888987" strokeWidth="1.1" opacity="0.55" />
           </g>
-          </svg>
-        </div>
+        </svg>
       </div>
     </motion.div>
   );
@@ -2514,22 +2192,89 @@ function SwitchIllustration({
 
 
 function PCIllustration({ compact = false, typingStep = 0, typingActive = false }: { compact?: boolean; typingStep?: number; typingActive?: boolean }) {
+  const activeKeys = typingActive ? buildTypingPattern(typingStep) : new Set<number>();
+  const mouseDrift = Math.sin(typingStep / 2.6) * 2.2;
+  const keyboardKeys: KeyboardKey[] = [
+    { id: 0, x: 0, y: 0, w: 11, h: 5 },
+    { id: 1, x: 14, y: 0, w: 11, h: 5 },
+    { id: 2, x: 28, y: 0, w: 11, h: 5 },
+    { id: 3, x: 42, y: 0, w: 11, h: 5 },
+    { id: 4, x: 56, y: 0, w: 11, h: 5 },
+    { id: 5, x: 70, y: 0, w: 11, h: 5 },
+    { id: 6, x: 84, y: 0, w: 11, h: 5 },
+    { id: 7, x: 0, y: 7, w: 11, h: 5 },
+    { id: 8, x: 14, y: 7, w: 11, h: 5 },
+    { id: 9, x: 28, y: 7, w: 11, h: 5 },
+    { id: 10, x: 42, y: 7, w: 11, h: 5 },
+    { id: 11, x: 56, y: 7, w: 11, h: 5 },
+    { id: 12, x: 70, y: 7, w: 11, h: 5 },
+    { id: 13, x: 84, y: 7, w: 11, h: 12, kind: "enter" },
+    { id: 14, x: 0, y: 14, w: 11, h: 5 },
+    { id: 15, x: 14, y: 14, w: 11, h: 5 },
+    { id: 16, x: 28, y: 14, w: 11, h: 5 },
+    { id: 17, x: 42, y: 14, w: 11, h: 5 },
+    { id: 18, x: 56, y: 14, w: 11, h: 5 },
+    { id: 19, x: 70, y: 14, w: 11, h: 5 },
+    { id: 20, x: 0, y: 21, w: 11, h: 5 },
+    { id: 21, x: 14, y: 21, w: 11, h: 5 },
+    { id: 22, x: 28, y: 21, w: 39, h: 5, kind: "space" },
+    { id: 23, x: 70, y: 21, w: 11, h: 5 },
+    { id: 24, x: 84, y: 21, w: 11, h: 5 },
+  ];
+
   return (
-    <div className={`relative origin-top -translate-x-[12px] ${compact ? "scale-[0.8]" : "scale-100"}`}>
-      <div className="relative" style={{ width: UNIFIED_DEVICE_WIDTH, height: UNIFIED_DEVICE_HEIGHT }}>
-        <div className="pointer-events-none absolute left-1/2 top-[182px] h-[24px] w-[184px] -translate-x-1/2 rounded-full bg-[#0b1a30]/18 blur-[10px]" />
-        <div
-          className="pointer-events-none absolute left-[calc(53%+2px)] top-[-1px] z-[6] h-[8px] w-[144px] -translate-x-1/2 rounded-[6px] border border-[#9f906f]/68 bg-[linear-gradient(180deg,rgba(225,216,193,0.94)_0%,rgba(205,192,165,0.88)_52%,rgba(188,173,143,0.86)_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.55),0_1px_0_rgba(112,98,74,0.38)]"
-          style={{ clipPath: "polygon(10% 0%,89.2% 0%,100% 100%,0% 100%)" }}
-        />
-        <div className="relative z-[2] h-full w-full" style={{ filter: DEVICE_FLOAT_FILTER }}>
-          <RetroComputer
-            className="h-full w-full"
-            screenImageSrc={`${ASSET_BASE}/linkedin-profile.png?v=20260409-1`}
-            typingStep={typingStep}
-            typingActive={typingActive}
-          />
+    <div className={`relative ${compact ? "scale-[0.8]" : "scale-100"}`}>
+      <div className="relative h-[198px] w-[218px]">
+        <div className="absolute left-[26px] top-[176px] h-[15px] w-[132px] rounded-full bg-[#0b7894]/13 blur-[10px]" />
+        <div className="absolute left-[16px] top-[6px] h-[120px] w-[146px] rounded-[20px] border border-[#89bfd0]/75 bg-[linear-gradient(180deg,#f7fdff_0%,#dff1f6_34%,#8ccddd_100%)] shadow-[inset_0_12px_16px_rgba(255,255,255,0.56),0_12px_18px_rgba(15,23,42,0.06)]" />
+        <div className="absolute left-[10px] top-[18px] h-[106px] w-[142px] rounded-[16px] border border-[#188eaa]/80 bg-[linear-gradient(180deg,#65c1d7_0%,#2f9fb9_100%)] shadow-[inset_0_2px_0_rgba(255,255,255,0.24)]" />
+        <div className="absolute left-[16px] top-[24px] h-[94px] w-[130px] rounded-[11px] border border-[#93aeb8] bg-[#edf4f6] p-[4px] shadow-[inset_0_1px_4px_rgba(255,255,255,0.72)]">
+          <div className="relative h-full w-full overflow-hidden rounded-[8px] border border-[#93acb6] bg-[#eef3f6]">
+            <LinkedInMonitorView />
+            <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.18)_0%,transparent_18%,transparent_80%,rgba(0,0,0,0.04)_100%)]" />
+          </div>
         </div>
+        <div className="absolute left-[66px] top-[125px] h-[22px] w-[46px] rounded-b-[8px] bg-[linear-gradient(180deg,#4eb6cf_0%,#128ca5_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.22)]" />
+        <div className="absolute left-[40px] top-[144px] h-[11px] w-[98px] rounded-[999px] border border-white/22 bg-[linear-gradient(180deg,#e2f4f8_0%,#86cad9_100%)] shadow-[0_4px_8px_rgba(15,23,42,0.04)]" />
+        <div className="absolute left-[10px] top-[152px] h-[35px] w-[130px] skew-x-[-16deg] rounded-[10px] border border-[#7eb9ca] bg-[linear-gradient(180deg,#f7fdff_0%,#d3eaf1_36%,#97d0de_100%)] px-[7px] py-[5px] shadow-[0_4px_10px_rgba(15,23,42,0.06),inset_0_1px_0_rgba(255,255,255,0.76)]">
+          <div className="relative h-full w-full">
+            {keyboardKeys.map((key) => {
+              const active = activeKeys.has(key.id);
+              const isEnterKey = key.kind === "enter";
+              const isSpaceKey = key.kind === "space";
+              return (
+                <span
+                  key={key.id}
+                  className={`absolute border border-[#8ea7b1] transition-transform duration-75 ${active ? "translate-y-[1px] bg-[#7c939c] shadow-[inset_0_1px_2px_rgba(0,0,0,0.3)]" : "bg-[#e7f0f3] shadow-[0_1px_0_rgba(255,255,255,0.95),inset_0_-1px_0_rgba(0,0,0,0.06)]"} ${isEnterKey ? "rounded-[3px]" : "rounded-[2px]"}`}
+                  style={isEnterKey
+                    ? {
+                        left: key.x,
+                        top: key.y,
+                        width: key.w + 4,
+                        height: key.h,
+                        clipPath: "polygon(0 0, 78% 0, 100% 20%, 100% 100%, 0 100%, 0 68%, 8% 68%, 8% 31%, 0 31%)",
+                      }
+                    : isSpaceKey
+                      ? {
+                          left: key.x,
+                          top: key.y,
+                          width: key.w,
+                          height: key.h,
+                          borderRadius: 5,
+                        }
+                      : { left: key.x, top: key.y, width: key.w, height: key.h }}
+                />
+              );
+            })}
+          </div>
+        </div>
+        <motion.div
+          className="absolute left-[148px] top-[155px] h-[24px] w-[14px] rounded-[9px] border border-[#8bc0d1] bg-[linear-gradient(180deg,#f8feff_0%,#dceff4_100%)] shadow-[0_4px_8px_rgba(15,23,42,0.05)]"
+          animate={{ x: mouseDrift, y: Math.abs(mouseDrift) * 0.14, rotate: 0 }}
+          transition={{ duration: 0.35, ease: "easeInOut" }}
+        >
+          <div className="absolute inset-x-[3px] top-[2px] h-[7px] rounded-full bg-[#d5edf4]" />
+        </motion.div>
       </div>
     </div>
   );
@@ -2586,14 +2331,9 @@ function SmartphoneIllustration({
       animate={ringing ? { x: [0, -3, 3, -3, 3, 0], rotate: [2.3, 0.5, 4.2, 0.5, 4.2, 2.3] } : { x: 0, rotate: 2.3 }}
       transition={ringing ? { duration: 0.44, repeat: Infinity, ease: "linear" } : { duration: 0.24 }}
     >
-      <div className="relative" style={{ width: UNIFIED_DEVICE_WIDTH, height: UNIFIED_DEVICE_HEIGHT }}>
-        <div className="absolute left-1/2 top-0 h-[194px] w-[160px] -translate-x-1/2 origin-top scale-[1.07]">
-          <div className="pointer-events-none absolute left-[31px] top-[160px] h-[22px] w-[104px] rounded-full bg-[#0b1a30]/18 blur-[10px]" />
-          <div className="pointer-events-none absolute left-[38px] top-[12px] z-[11] h-[24px] w-[88px] rotate-[1.7deg] rounded-full bg-white/10 blur-[7px]" />
-          <div
-            className="absolute left-[39px] top-[10px] z-10 h-[166px] w-[82px] rotate-[1.7deg] rounded-[24px] border border-[#1f3346]/78 bg-[linear-gradient(180deg,#435a70_0%,#1b2d40_34%,#101925_100%)] p-[4px] shadow-[0_0_0_1px_rgba(127,212,241,0.05)]"
-            style={{ filter: DEVICE_FLOAT_FILTER }}
-          >
+      <div className="relative h-[194px] w-[160px]">
+        <div className="absolute left-[46px] top-[160px] h-[18px] w-[74px] rounded-full bg-[#0d6f8f]/12 blur-[10px]" />
+        <div className="absolute left-[39px] top-[10px] z-10 h-[166px] w-[82px] rotate-[1.7deg] rounded-[24px] border border-[#1f3346]/78 bg-[linear-gradient(180deg,#435a70_0%,#1b2d40_34%,#101925_100%)] p-[4px] shadow-[0_15px_28px_rgba(0,0,0,0.20),0_0_0_1px_rgba(127,212,241,0.05)]">
           <div className="absolute inset-[1px] rounded-[22px] border border-white/10" />
           <div className="absolute inset-[4px] rounded-[19px] border border-[#466078]/60 shadow-[inset_0_0_0_0.6px_rgba(255,255,255,0.03)]" />
           <div className="absolute inset-[5px] rounded-[18px] bg-[linear-gradient(180deg,rgba(255,255,255,0.08)_0%,rgba(255,255,255,0)_22%,rgba(255,255,255,0)_80%,rgba(255,255,255,0.03)_100%)]" />
@@ -2647,7 +2387,7 @@ function SmartphoneIllustration({
                       <rect x="1.35" y="4.35" width="5.3" height="4.2" rx="1.1" stroke="currentColor" strokeWidth="0.9" />
                     </svg>
                   </div>
-                  <div className="text-[27px] font-medium tracking-[-0.06em] text-white">{lockscreenTime}</div>
+                  <div className="text-[27px] font-medium tracking-[-0.06em] text-white drop-shadow-[0_1px_6px_rgba(0,0,0,0.24)]">{lockscreenTime}</div>
                   <div className="mt-[1px] text-[6px] font-medium tracking-[0.03em] text-white/88">{lockscreenDate}</div>
                 </div>
                 <div className="absolute inset-x-0 bottom-[11px] flex justify-center">
@@ -2657,15 +2397,14 @@ function SmartphoneIllustration({
             ) : null}
           </div>
         </div>
-          <div className="absolute left-[119px] top-[35px] z-0 h-[34px] w-[5px] rotate-[1.7deg] rounded-r-full bg-[linear-gradient(180deg,#728398_0%,#334456_100%)] shadow-[-1px_0_0_rgba(17,27,40,0.22)]" />
-          <div className="absolute left-[118px] top-[74px] z-0 h-[15px] w-[5px] rotate-[1.7deg] rounded-r-full bg-[linear-gradient(180deg,#728398_0%,#334456_100%)] shadow-[-1px_0_0_rgba(17,27,40,0.22)]" />
-          {ringing && !noWifi ? (
-            <>
-              <div className="absolute bottom-[9px] right-[44px] h-[25px] w-[25px] rounded-full border border-[#0d96b2]/24" />
-              <div className="absolute bottom-[3px] right-[36px] h-[39px] w-[39px] rounded-full border border-[#0d96b2]/18" />
-            </>
-          ) : null}
-        </div>
+        <div className="absolute left-[119px] top-[35px] z-0 h-[34px] w-[5px] rotate-[1.7deg] rounded-r-full bg-[linear-gradient(180deg,#728398_0%,#334456_100%)] shadow-[-1px_0_0_rgba(17,27,40,0.22)]" />
+        <div className="absolute left-[118px] top-[74px] z-0 h-[15px] w-[5px] rotate-[1.7deg] rounded-r-full bg-[linear-gradient(180deg,#728398_0%,#334456_100%)] shadow-[-1px_0_0_rgba(17,27,40,0.22)]" />
+        {ringing && !noWifi ? (
+          <>
+            <div className="absolute bottom-[9px] right-[44px] h-[25px] w-[25px] rounded-full border border-[#0d96b2]/24" />
+            <div className="absolute bottom-[3px] right-[36px] h-[39px] w-[39px] rounded-full border border-[#0d96b2]/18" />
+          </>
+        ) : null}
       </div>
     </motion.div>
   );
