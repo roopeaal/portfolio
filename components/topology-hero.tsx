@@ -426,7 +426,7 @@ function resolveNonOverlappingPosition(
 const SWITCH_PORT_CENTERS = [73, 90, 108, 125, 143, 160] as const;
 const SWITCH_LEFT_CABLE_PORT_INDEX = 0;
 const SWITCH_RIGHT_CABLE_PORT_INDEX = 5;
-const SWITCH_STUB_Y = 155.0;
+const SWITCH_STUB_Y = 157.0;
 const SWITCH_LEFT_STUB_X_OFFSET = -22.0;
 const SWITCH_RIGHT_STUB_X_OFFSET = 8.0;
 
@@ -1769,7 +1769,7 @@ function DetachedEthernetStub({
   const color = "#111111";
   const headWidth = 16.6;
   const headHeight = 16.0;
-  const lowerNudge = -20.5;
+  const lowerNudge = -22.0;
   const leftPercent = (bottom.x / VIEWBOX.width) * 100;
   const topPercent = (bottom.y / VIEWBOX.height) * 100;
 
@@ -1810,19 +1810,15 @@ function CableSegment({ from, to, disconnected = false, looseEnd }: { from: { x:
   const deltaY = end.y - from.y;
   const absX = Math.abs(deltaX);
   const absY = Math.abs(deltaY);
-  const needsCorner = absX > 18 && absY > 14;
+  const needsJoinCorner = !disconnected && absX > 14 && absY > 10;
 
   let path = `M ${from.x} ${from.y} L ${end.x} ${end.y}`;
 
-  if (needsCorner) {
-    const direction = Math.sign(deltaX) || 1;
-    const elbowDepth = Math.min(12, Math.max(7, absY * 0.08));
-    const elbowBaseY = end.y + elbowDepth;
-    const cornerRadius = Math.min(10, Math.max(3.4, Math.min(absX * 0.18, elbowDepth - 1)));
-    const bendStartX = end.x - direction * (cornerRadius + 1.2);
-    const bendEndY = elbowBaseY - cornerRadius;
-
-    path = `M ${from.x} ${from.y} L ${bendStartX} ${elbowBaseY} Q ${end.x} ${elbowBaseY} ${end.x} ${bendEndY} L ${end.x} ${end.y}`;
+  if (needsJoinCorner) {
+    // No arc path: keep straight segments and only soften the single join corner via round stroke join.
+    const joinTail = Math.min(14, Math.max(8, absY * 0.1));
+    const cornerY = end.y + joinTail;
+    path = `M ${from.x} ${from.y} L ${end.x} ${cornerY} L ${end.x} ${end.y}`;
   }
 
   return (
