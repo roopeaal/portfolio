@@ -108,97 +108,78 @@ export function AboutPanelContent({
   section?: "profile" | "direction" | "studies" | "reliability";
   preview?: boolean;
 }) {
+  void section;
+
+  const focusItems = [
+    "Networking",
+    "Linux",
+    "Cloud",
+    "IoT",
+    "Practical troubleshooting",
+  ];
+
   if (preview) {
     return (
-      <div className="space-y-3 text-[11px] leading-5 text-[#202020]">
-        <FieldCard label="Section" value="About" />
-        <section className="rounded border border-[#dfdfdf] bg-white p-3">
-          <p>{profile.aboutIntro}</p>
-        </section>
-        <div className="grid gap-3 sm:grid-cols-2">
-          {profile.strengths.slice(0, 4).map((item) => (
-            <SimpleTile key={item}>{item}</SimpleTile>
-          ))}
+      <div className="h-full overflow-hidden rounded-[12px] border border-[#c4d4e8] bg-[linear-gradient(180deg,#f7faff_0%,#edf3fb_100%)] p-3 text-[#17355d]">
+        <div className="rounded-[10px] border border-[#cfdded] bg-white px-3 py-2 shadow-[0_10px_22px_rgba(23,53,91,0.08)]">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#5f7ea4]">About Me</p>
+          <h3 className="mt-1.5 text-[18px] font-semibold leading-tight text-[#123e70]">Practical ICT profile</h3>
+          <p className="mt-2 text-[11px] leading-5 text-[#4d678a]">{profile.aboutIntro}</p>
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            {focusItems.slice(0, 4).map((item) => (
+              <Tag key={item}>{item}</Tag>
+            ))}
+          </div>
         </div>
       </div>
     );
   }
 
-  const activeSection = section ?? "profile";
-
   return (
-    <div className="space-y-4 text-[13px] leading-6 text-[#1f2937]">
-      {activeSection === "profile" ? (
-        <>
-          <FieldCard label="Section" value="About" />
-          <FieldCard label="Role direction" value={profile.contactNotes.roleFocus} />
-          <section className="rounded border border-[#dcdcdc] bg-white p-4">
-            <h2 className="text-base font-semibold text-[#111827]">Grounded junior profile with a clear technical direction</h2>
-            <p className="mt-3">{profile.aboutIntro}</p>
-            <div className="mt-4 space-y-3">
-              {profile.aboutBody.map((item) => (
-                <p key={item}>{item}</p>
-              ))}
-            </div>
-          </section>
-        </>
-      ) : null}
+    <div className="h-full overflow-hidden rounded-[14px] border border-[#c4d4e8] bg-[linear-gradient(180deg,#f7faff_0%,#edf3fb_100%)] p-3 text-[#1d2f46]">
+      <div className="grid h-full min-h-0 grid-rows-[auto_auto_1fr] gap-3">
+        <section className="rounded-[12px] border border-[#bfd2e8] bg-[linear-gradient(120deg,#fafdff_0%,#eef4fd_52%,#e4eefb_100%)] p-4 shadow-[0_14px_26px_rgba(23,53,91,0.08)]">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#5f7ea4]">About Me</p>
+          <h2 className="mt-2 text-[clamp(1.8rem,3.4vw,2.8rem)] leading-[0.95] tracking-[-0.02em] text-[#123e70]">
+            Hands-on
+            <span className="block text-[#3d6da5]">ICT builder.</span>
+          </h2>
+          <p className="mt-2 text-[13px] leading-6 text-[#4f6a8d]">{profile.aboutIntro}</p>
+        </section>
 
-      {activeSection === "direction" ? (
-        <>
-          <FieldCard label="Working style" value="Practical, implementation-oriented and documentation-driven" />
-          <FieldCard label="What I want to build on" value="Infrastructure, networking, Linux, cloud foundations and cybersecurity" />
-          <section className="rounded border border-[#dcdcdc] bg-white p-4">
-            <h2 className="text-base font-semibold text-[#111827]">What I bring into a junior role</h2>
-            <div className="mt-4 grid gap-3 md:grid-cols-2">
-              {profile.strengths.map((item) => (
-                <SimpleTile key={item}>{item}</SimpleTile>
-              ))}
-            </div>
-          </section>
-        </>
-      ) : null}
+        <div className="flex flex-wrap gap-1.5">
+          {focusItems.map((item) => (
+            <Tag key={item}>{item}</Tag>
+          ))}
+        </div>
 
-      {activeSection === "studies" ? (
-        <>
-          <FieldCard label="Degree" value={`${profile.headline} · ${profile.completedEcts}`} />
-          <FieldCard label="Major" value="Smart IoT Systems: IoT and Networks" />
-          <section className="rounded border border-[#dcdcdc] bg-white p-4">
-            <h2 className="text-base font-semibold text-[#111827]">Study signals relevant to infrastructure and systems work</h2>
-            <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-              {profile.studyHighlights.map((item) => (
-                <SimpleTile key={item}>{item}</SimpleTile>
-              ))}
-            </div>
-            <div className="mt-4 flex flex-wrap gap-2">
-              {profile.trustSignals.map((item) => (
-                <Tag key={item}>{item}</Tag>
-              ))}
-            </div>
+        <div className="grid min-h-0 gap-3 lg:grid-cols-[1.05fr_0.95fr]">
+          <section className="rounded-[12px] border border-[#cfddeb] bg-white p-3 shadow-[0_10px_20px_rgba(23,53,91,0.06)]">
+            <h3 className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#5f7ea4]">Tausta lyhyesti</h3>
+            <p className="mt-2 text-[13px] leading-6 text-[#355171]">{profile.aboutBody[0]}</p>
+            <p className="mt-2 text-[13px] leading-6 text-[#355171]">{profile.aboutBody[1]}</p>
           </section>
-        </>
-      ) : null}
 
-      {activeSection === "reliability" ? (
-        <>
-          <FieldCard label="Work background signal" value="Operational reliability and follow-through" />
-          <FieldCard label="Transfer value" value="Process discipline, ERP usage, accuracy, responsibility and teamwork" />
-          <section className="rounded border border-[#dcdcdc] bg-white p-4">
-            <h2 className="text-base font-semibold text-[#111827]">Why the non-IT work still matters</h2>
-            <p className="mt-3">{profile.workCredibility.body}</p>
-            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+          <section className="rounded-[12px] border border-[#cfddeb] bg-white p-3 shadow-[0_10px_20px_rgba(23,53,91,0.06)]">
+            <h3 className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#5f7ea4]">Työtapa</h3>
+            <div className="mt-2 space-y-2">
               {[
-                "Finishes operational work carefully instead of casually",
-                "Used to repeatable process steps and accuracy requirements",
-                "Comfortable taking responsibility for practical day-to-day execution",
-                "Useful foundation for trainee and junior environments where reliability matters",
+                "Opin nopeasti ja vien asiat käytännön tasolle.",
+                "Rakennan, testaan ja korjaan järjestelmällisesti.",
+                "Dokumentoin niin, että työn tulos on toistettavissa.",
+                "Otan vastuuta toteutuksen laadusta alusta loppuun.",
               ].map((item) => (
-                <SimpleTile key={item}>{item}</SimpleTile>
+                <div key={item} className="rounded-[9px] border border-[#d8e4f1] bg-[#f7fafe] px-3 py-2 text-[12px] leading-5 text-[#31506f]">
+                  {item}
+                </div>
               ))}
             </div>
+            <p className="mt-3 rounded-[9px] border border-[#d8e4f1] bg-[#f4f8fd] px-3 py-2 text-[12px] leading-5 text-[#365577]">
+              {profile.aboutBody[2]}
+            </p>
           </section>
-        </>
-      ) : null}
+        </div>
+      </div>
     </div>
   );
 }

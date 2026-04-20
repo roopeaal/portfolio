@@ -51,9 +51,9 @@ export const profile = {
   aboutIntro:
     "Olen ICT-insinööriopiskelija Metropolia Ammattikorkeakoulusta, ja kiinnostukseni painottuvat erityisesti tietoverkkoihin, Linuxiin, pilvipalveluihin, IoT:hen ja käytännön tekniseen ongelmanratkaisuun.",
   aboutBody: [
-    "Ennen opintojani työskentelin useita vuosia varastotyössä trukkikuskina. Työssä korostui ERP-järjestelmän käyttö, saldojen hallinta, palautusten käsittely, vastaanotto sekä keräilyprosessien tarkkuus. Osaamisen karttuessa pystyin selvittämään poikkeamia järjestelmästä tarkasti, korjaamaan saldoja itsenäisesti ja varmistamaan, että tuotteet olivat seuraavan työntekijän käytettävissä myös järjestelmän näkökulmasta.",
-    "Nämä kokemukset saivat minut hakemaan tietotekniikan opintoihin. Opintojen aikana olen halunnut rakentaa osaamista konkreettisina toteutuksina. Kun huomasin työnhaussa, ettei pelkkä hakemus riitä erottautumaan, rakensin portfolion käytännössä tyhjästä ja tein siitä sekä teknisesti että visuaalisesti omannäköiseni. Koska opintoni painottuvat vahvasti verkkoihin ja topology-ympäristöihin, rakensin portfolion niiden inspiroimaksi kokonaisuudeksi.",
-    "Tämä portfolio on minulle enemmän kuin kokoelma projekteja. Se on tapa osoittaa, miten lähestyn teknistä tekemistä: opin nopeasti, vien asioita käytännön tasolle, etsin ratkaisuja itsenäisesti ja haluan ymmärtää kokonaisuudet kunnolla. Minua motivoi erityisesti se, että pääsen rakentamaan, testaamaan, korjaamaan ja kehittämään ratkaisuja, joilla on oikea käyttötarkoitus.",
+    "Työskentelin ennen opintojani useita vuosia varastossa trukkikuskina. ERP-järjestelmien käyttö, saldot, vastaanotto ja palautukset opettivat minulle tarkkuutta, vastuullisuutta ja prosessikuria.",
+    "Siirryin ICT-opintoihin, koska halusin tehdä enemmän järjestelmien ja teknisen ongelmanratkaisun parissa. Rakensin tämän portfolion tyhjästä näyttämään osaamisen käytännössä, ei vain tekstinä.",
+    "Minulle tärkeintä on käytännön tekeminen: rakentaminen, testaaminen, korjaaminen ja dokumentointi. Opin nopeasti ja haluan ymmärtää kokonaisuudet kunnolla.",
   ],
   workCredibility: {
     title: "Operational reliability",

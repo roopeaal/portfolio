@@ -709,7 +709,6 @@ export function TopologyHero() {
   const [routerPowerOn, setRouterPowerOn] = useState(true);
   const [routerSignalLevel, setRouterSignalLevel] = useState<0 | 1 | 2>(2);
   const [routerWifiReady, setRouterWifiReady] = useState(true);
-  const [aboutSection, setAboutSection] = useState<"profile" | "direction" | "studies" | "reliability">("profile");
   const [contactSection, setContactSection] = useState<"channels" | "roles" | "cv" | "status">("channels");
 
   const sceneRef = useRef<HTMLDivElement | null>(null);
@@ -781,13 +780,8 @@ export function TopologyHero() {
   const selectedProject = useMemo(() => projects.find((project) => project.slug === selectedProjectSlug) ?? null, [selectedProjectSlug]);
 
   const aboutSidebarItems = useMemo<PanelSidebarItem[]>(
-    () => [
-      { id: "profile", label: "Profile", active: aboutSection === "profile", onSelect: () => setAboutSection("profile") },
-      { id: "direction", label: "Direction", active: aboutSection === "direction", onSelect: () => setAboutSection("direction") },
-      { id: "studies", label: "Studies", active: aboutSection === "studies", onSelect: () => setAboutSection("studies") },
-      { id: "reliability", label: "Reliability", active: aboutSection === "reliability", onSelect: () => setAboutSection("reliability") },
-    ],
-    [aboutSection],
+    () => [{ id: "summary", label: "Summary", active: true }],
+    [],
   );
 
   const projectsSidebarItems = useMemo<PanelSidebarItem[]>(
@@ -913,7 +907,6 @@ export function TopologyHero() {
       return;
     }
 
-    if (panel === "about") setAboutSection("profile");
     if (panel === "contact") setContactSection("channels");
 
     if (panel === "projects" && projectSlug) {
@@ -1415,7 +1408,7 @@ export function TopologyHero() {
         sidebarItems={aboutSidebarItems}
         shellTitle="Global Settings"
       >
-        <AboutPanelContent section={aboutSection} />
+        <AboutPanelContent />
       </PacketWindow>
 
       <PacketWindow
@@ -1730,7 +1723,7 @@ function getPreviewByNode(node: NodeKey) {
   switch (node) {
     case "about":
       return (
-        <PreviewWindow title="About Me · Wireless Router1" tab="Config" sidebarTitle={SIDEBAR_TITLE.about} sidebarItems={["Profile", "Direction", "Studies", "Reliability"]} hideSidebar>
+        <PreviewWindow title="About Me · Wireless Router1" tab="Config" sidebarTitle={SIDEBAR_TITLE.about} sidebarItems={["Summary"]} hideSidebar>
           <AboutPanelContent preview />
         </PreviewWindow>
       );
