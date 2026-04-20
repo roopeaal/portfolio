@@ -76,7 +76,7 @@ export const projects: Project[] = [
     technicalScope:
       "Familiar login UI recreation, responsive interaction flow, lightweight backend event tracking, username masking, no password storage and immediate post-interaction reveal.",
     environment:
-      "Built as an authorized Practical Hacking course exercise with a frontend login simulation and a lightweight backend for safe demo tracking.",
+      "Built as an authorized Practical Hacking course exercise with a frontend login simulation and a lightweight backend for safe demo tracking. Deployed on Render (free tier).",
     implementation:
       "Recreated a familiar university-style login flow, connected it to a lightweight backend, and implemented safety controls so usernames are masked and passwords are never stored.",
     validation:
@@ -87,6 +87,8 @@ export const projects: Project[] = [
       "Stronger hands-on understanding of ethical security demo design, safe scope control, and how convincing interface familiarity can influence user trust.",
     stack: ["React", "TypeScript", "HTML", "CSS", "Node.js", "Express", "Security awareness"],
     evidence: [
+      "Live demo: https://idp-metropolia-profile-cas-login.onrender.com",
+      "Deployment note: hosted on Render free tier. First load may take around 30–90 seconds because of cold start.",
       "Authorized course scope: Practical Hacking exercise.",
       "Usernames are masked and passwords are never stored.",
       "Immediate post-interaction disclosure explains the lesson clearly.",
