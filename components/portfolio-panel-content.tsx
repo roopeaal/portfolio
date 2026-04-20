@@ -451,19 +451,13 @@ export function ContactPanelContent({
               className="min-h-0 flex-1 rounded-[12px] border border-[#c0d2e7] bg-[#f4f8fe] px-3 py-2.5 text-[14px] leading-6 text-[#173861] placeholder:text-[#7f97b8] outline-none transition focus:border-[#6d96c6] focus:bg-white"
             />
 
-            <div className="flex flex-wrap gap-2 pt-0.5">
+            <div className="pt-0.5">
               <button
                 type="submit"
-                className="inline-flex items-center justify-center rounded-[11px] border border-[#1c4f88] bg-[#1c4f88] px-4 py-2 text-[13px] font-semibold text-white transition hover:bg-[#2666ac]"
+                className="inline-flex items-center justify-center rounded-[10px] border border-[#8eaed1] bg-white px-4 py-1.5 text-[12px] font-medium text-[#214a7c] transition hover:bg-[#f0f6ff]"
               >
-                Open Email Draft
+                Send
               </button>
-              <a
-                href="mailto:roope.aa@hotmail.com"
-                className="inline-flex items-center justify-center rounded-[11px] border border-[#9eb8d8] bg-white px-4 py-2 text-[13px] font-medium text-[#214a7c] transition hover:bg-[#f0f6ff]"
-              >
-                Direct Email
-              </a>
             </div>
           </form>
         </div>
