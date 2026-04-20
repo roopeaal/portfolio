@@ -110,64 +110,76 @@ export function AboutPanelContent({
 }) {
   void section;
 
-  const focusItems = ["Networking", "Linux", "Cloud", "IoT"];
+  const heroLine = `${profile.name.toUpperCase()} IS AN ICT ENGINEERING STUDENT FOCUSED ON NETWORKING, LINUX, CLOUD AND PRACTICAL SYSTEM BUILDING`;
+  const leftCopy =
+    "Hi, I am Roope Aaltonen. I work in a practical, build-first way and I enjoy turning technical ideas into working systems. My strongest interest areas are networking, Linux environments and connected infrastructure where reliability matters.";
+  const rightCopy =
+    "I built this portfolio to show implementation skills in a visible way, not just in text. I learn quickly, troubleshoot methodically, and document clearly so the result is repeatable, maintainable and useful in real team workflows.";
 
   if (preview) {
     return (
-      <div className="h-full overflow-hidden rounded-[12px] border border-[#c4d4e8] bg-[linear-gradient(180deg,#f7faff_0%,#edf3fb_100%)] p-3 text-[#17355d]">
-        <div className="rounded-[10px] border border-[#cfdded] bg-white px-3 py-2 shadow-[0_10px_22px_rgba(23,53,91,0.08)]">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#5f7ea4]">About Me</p>
-          <h3 className="mt-1.5 text-[18px] font-semibold leading-tight text-[#123e70]">Practical ICT profile</h3>
-          <p className="mt-2 text-[11px] leading-5 text-[#4d678a]">{profile.aboutIntro}</p>
-          <div className="mt-2 flex flex-wrap gap-1.5">
-            {focusItems.slice(0, 4).map((item) => (
-              <Tag key={item}>{item}</Tag>
-            ))}
+      <div
+        className="h-full overflow-hidden rounded-[12px] border border-[#2f394a] p-3 text-[#d5deea]"
+        style={{
+          backgroundColor: "#1c2432",
+          backgroundImage:
+            "radial-gradient(circle at 22% 18%, rgba(255,255,255,0.08) 0, rgba(255,255,255,0) 42%), radial-gradient(circle at 78% 22%, rgba(135,154,186,0.22) 0, rgba(135,154,186,0) 44%), repeating-linear-gradient(135deg, rgba(255,255,255,0.035) 0px, rgba(255,255,255,0.035) 2px, rgba(255,255,255,0.015) 2px, rgba(255,255,255,0.015) 8px)",
+        }}
+      >
+        <div className="grid h-full min-h-0 grid-cols-[1fr_120px_1fr] items-center gap-2">
+          <p className="text-[9px] leading-4 text-[#c8d2df]">{leftCopy}</p>
+          <div className="relative mx-auto h-[150px] w-[110px] overflow-hidden rounded-[4px] border border-[#6f7f97] bg-[#0f141e] shadow-[0_8px_16px_rgba(0,0,0,0.45)]">
+            <Image src="/about-vintage-roope.png" alt={profile.name} fill sizes="110px" className="object-cover" />
           </div>
+          <p className="text-[9px] leading-4 text-[#c8d2df]">{rightCopy}</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="h-full overflow-hidden rounded-[14px] border border-[#c4d4e8] bg-[linear-gradient(180deg,#f7faff_0%,#edf3fb_100%)] p-2 text-[#1d2f46]">
-      <div className="grid h-full min-h-0 grid-rows-[auto_1fr] gap-2">
-        <section className="rounded-[12px] border border-[#bfd2e8] bg-[linear-gradient(120deg,#fafdff_0%,#eef4fd_52%,#e4eefb_100%)] p-2.5 shadow-[0_10px_22px_rgba(23,53,91,0.08)]">
-          <h2 className="text-[clamp(1.35rem,2.2vw,1.95rem)] leading-[0.96] tracking-[-0.02em] text-[#123e70]">
-            Hands-on
-            <span className="block text-[#3d6da5]">ICT builder.</span>
-          </h2>
-          <p className="mt-1 text-[11px] leading-4.5 text-[#4f6a8d]">{profile.aboutIntro}</p>
-          <div className="mt-1.5 flex flex-wrap gap-1.5">
-            {focusItems.map((item) => (
-              <Tag key={item}>{item}</Tag>
-            ))}
+    <div
+      className="h-full overflow-hidden rounded-[14px] border border-[#2f394a] p-4 text-[#d5deea]"
+      style={{
+        backgroundColor: "#1a2230",
+        backgroundImage:
+          "radial-gradient(circle at 18% 14%, rgba(255,255,255,0.1) 0, rgba(255,255,255,0) 40%), radial-gradient(circle at 82% 18%, rgba(143,165,193,0.2) 0, rgba(143,165,193,0) 45%), radial-gradient(circle at 50% 84%, rgba(255,255,255,0.06) 0, rgba(255,255,255,0) 55%), repeating-linear-gradient(130deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 2px, rgba(255,255,255,0.015) 2px, rgba(255,255,255,0.015) 10px)",
+      }}
+    >
+      <div className="flex h-full min-h-0 flex-col">
+        <header className="text-center">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.38em] text-[#c6d1df]">{heroLine}</p>
+          <div className="mt-3 flex items-center gap-3">
+            <div className="h-px flex-1 bg-[#72829b]/40" />
+            <span className="text-[16px] text-[#b7c4d7]">❦</span>
+            <div className="h-px flex-1 bg-[#72829b]/40" />
           </div>
-        </section>
+        </header>
 
-        <div className="grid min-h-0 gap-2 lg:grid-cols-[1fr_1fr]">
-          <section className="rounded-[12px] border border-[#cfddeb] bg-white p-2 shadow-[0_10px_20px_rgba(23,53,91,0.06)]">
-            <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#5f7ea4]">Background</h3>
-            <p className="mt-1 text-[11px] leading-4.5 text-[#355171]">{profile.aboutBody[0]}</p>
-            <p className="mt-1 text-[11px] leading-4.5 text-[#355171]">{profile.aboutBody[1]}</p>
+        <div className="mt-4 grid min-h-0 flex-1 items-center gap-4 lg:grid-cols-[1fr_320px_1fr]">
+          <section className="rounded-[12px] border border-[#5a6981]/45 bg-[#101722]/40 p-3 text-[13px] leading-7 text-[#d7e0eb] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.05)]">
+            {leftCopy}
           </section>
 
-          <section className="rounded-[12px] border border-[#cfddeb] bg-white p-2 shadow-[0_10px_20px_rgba(23,53,91,0.06)]">
-            <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#5f7ea4]">Work style</h3>
-            <div className="mt-1 space-y-1">
-              {[
-                "I learn quickly and move from idea to implementation fast.",
-                "I build, test and fix systematically.",
-                "I document clearly so work stays repeatable.",
-              ].map((item) => (
-                <div key={item} className="rounded-[9px] border border-[#d8e4f1] bg-[#f7fafe] px-2.5 py-1 text-[10.5px] leading-4 text-[#31506f]">
-                  {item}
-                </div>
-              ))}
+          <figure className="flex flex-col items-center">
+            <div className="relative w-full max-w-[320px] overflow-hidden rounded-[8px] border border-[#d2c08a]/45 bg-[#0d1018] shadow-[0_14px_34px_rgba(0,0,0,0.48)]">
+              <Image
+                src="/about-vintage-roope.png"
+                alt={`${profile.name} vintage portrait`}
+                width={512}
+                height={768}
+                className="h-auto w-full object-cover"
+                priority={false}
+              />
             </div>
-            <p className="mt-1 rounded-[9px] border border-[#d8e4f1] bg-[#f4f8fd] px-2.5 py-1 text-[10.5px] leading-4 text-[#365577]">
-              {profile.aboutBody[2]}
-            </p>
+            <figcaption className="mt-3 text-center text-[13px] italic leading-6 text-[#c7d3e4]">
+              {profile.name}
+              <span className="block text-[11px] tracking-[0.2em] text-[#99aac4]">ICT Engineer in Progress</span>
+            </figcaption>
+          </figure>
+
+          <section className="rounded-[12px] border border-[#5a6981]/45 bg-[#101722]/40 p-3 text-[13px] leading-7 text-[#d7e0eb] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.05)]">
+            {rightCopy}
           </section>
         </div>
       </div>
