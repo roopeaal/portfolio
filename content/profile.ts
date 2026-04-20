@@ -49,23 +49,23 @@ export const profile = {
     "Red Hat Academy studies",
   ],
   aboutIntro:
-    "Olen ICT-insinööriopiskelija Metropolia Ammattikorkeakoulusta, ja kiinnostukseni painottuvat erityisesti tietoverkkoihin, Linuxiin, pilvipalveluihin, IoT:hen ja käytännön tekniseen ongelmanratkaisuun.",
+    "I am an ICT Engineering student at Metropolia, focused on networking, Linux, cloud, IoT and practical troubleshooting.",
   aboutBody: [
-    "Työskentelin ennen opintojani useita vuosia varastossa trukkikuskina. ERP-järjestelmien käyttö, saldot, vastaanotto ja palautukset opettivat minulle tarkkuutta, vastuullisuutta ja prosessikuria.",
-    "Siirryin ICT-opintoihin, koska halusin tehdä enemmän järjestelmien ja teknisen ongelmanratkaisun parissa. Rakensin tämän portfolion tyhjästä näyttämään osaamisen käytännössä, ei vain tekstinä.",
-    "Minulle tärkeintä on käytännön tekeminen: rakentaminen, testaaminen, korjaaminen ja dokumentointi. Opin nopeasti ja haluan ymmärtää kokonaisuudet kunnolla.",
+    "Before ICT studies, I worked for years in warehouse operations where ERP workflows, inventory accuracy, receiving and returns built strong process discipline.",
+    "I moved into ICT to work deeper with systems and hands-on technical problem-solving. I built this portfolio from scratch to show practical execution.",
+    "I work end-to-end: build, test, fix and document with clear ownership.",
   ],
   workCredibility: {
     title: "Operational reliability",
     body:
-      "Varastotyötausta toi minulle vahvan perustan huolelliseen, itsenäiseen ja vastuulliseen tekemiseen. ERP-käyttö, prosessikuri, saldotarkkuus, palautukset, vastaanotto ja työn loppuunvieminen ovat edelleen ydinosaamista, jota hyödynnän nyt teknisissä rooleissa.",
+      "My warehouse background built a strong foundation for careful, independent and accountable execution. ERP usage, process discipline, inventory accuracy, returns handling, receiving and strong follow-through are core strengths I now apply in technical roles.",
   },
   contactNotes: {
     availability:
-      "Avoin trainee-, internship-, opinnäyte- ja junior-mahdollisuuksille infrastruktuurin, verkkojen, Linuxin, pilven, kyberturvan ja connected systems -teemoissa.",
+      "Open to trainee, internship, thesis and junior opportunities in infrastructure, networking, Linux, cloud, cybersecurity and connected systems.",
     preference:
-      "Paras match: käytännön tekninen tekeminen, jossa toteutuksen laatu, dokumentointi ja loppuunvieminen ovat keskiössä.",
+      "Best match: hands-on technical work where implementation quality, documentation and end-to-end delivery matter.",
     roleFocus:
-      "Pääsuuntani on verkot, Linux/servers, pilven perusteet, IoT ja kyberturvallisuus sekä niihin liittyvä systems specialist -polku.",
+      "My main direction is networks, Linux/servers, cloud fundamentals, IoT and cybersecurity, with a systems specialist growth path.",
   },
 };

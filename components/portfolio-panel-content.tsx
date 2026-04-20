@@ -110,13 +110,7 @@ export function AboutPanelContent({
 }) {
   void section;
 
-  const focusItems = [
-    "Networking",
-    "Linux",
-    "Cloud",
-    "IoT",
-    "Practical troubleshooting",
-  ];
+  const focusItems = ["Networking", "Linux", "Cloud", "IoT"];
 
   if (preview) {
     return (
@@ -136,45 +130,42 @@ export function AboutPanelContent({
   }
 
   return (
-    <div className="h-full overflow-hidden rounded-[14px] border border-[#c4d4e8] bg-[linear-gradient(180deg,#f7faff_0%,#edf3fb_100%)] p-3 text-[#1d2f46]">
-      <div className="grid h-full min-h-0 grid-rows-[auto_auto_1fr] gap-3">
-        <section className="rounded-[12px] border border-[#bfd2e8] bg-[linear-gradient(120deg,#fafdff_0%,#eef4fd_52%,#e4eefb_100%)] p-4 shadow-[0_14px_26px_rgba(23,53,91,0.08)]">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#5f7ea4]">About Me</p>
-          <h2 className="mt-2 text-[clamp(1.8rem,3.4vw,2.8rem)] leading-[0.95] tracking-[-0.02em] text-[#123e70]">
+    <div className="h-full overflow-hidden rounded-[14px] border border-[#c4d4e8] bg-[linear-gradient(180deg,#f7faff_0%,#edf3fb_100%)] p-2 text-[#1d2f46]">
+      <div className="grid h-full min-h-0 grid-rows-[auto_1fr] gap-2">
+        <section className="rounded-[12px] border border-[#bfd2e8] bg-[linear-gradient(120deg,#fafdff_0%,#eef4fd_52%,#e4eefb_100%)] p-2.5 shadow-[0_10px_22px_rgba(23,53,91,0.08)]">
+          <h2 className="text-[clamp(1.35rem,2.2vw,1.95rem)] leading-[0.96] tracking-[-0.02em] text-[#123e70]">
             Hands-on
             <span className="block text-[#3d6da5]">ICT builder.</span>
           </h2>
-          <p className="mt-2 text-[13px] leading-6 text-[#4f6a8d]">{profile.aboutIntro}</p>
+          <p className="mt-1 text-[11px] leading-4.5 text-[#4f6a8d]">{profile.aboutIntro}</p>
+          <div className="mt-1.5 flex flex-wrap gap-1.5">
+            {focusItems.map((item) => (
+              <Tag key={item}>{item}</Tag>
+            ))}
+          </div>
         </section>
 
-        <div className="flex flex-wrap gap-1.5">
-          {focusItems.map((item) => (
-            <Tag key={item}>{item}</Tag>
-          ))}
-        </div>
-
-        <div className="grid min-h-0 gap-3 lg:grid-cols-[1.05fr_0.95fr]">
-          <section className="rounded-[12px] border border-[#cfddeb] bg-white p-3 shadow-[0_10px_20px_rgba(23,53,91,0.06)]">
-            <h3 className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#5f7ea4]">Tausta lyhyesti</h3>
-            <p className="mt-2 text-[13px] leading-6 text-[#355171]">{profile.aboutBody[0]}</p>
-            <p className="mt-2 text-[13px] leading-6 text-[#355171]">{profile.aboutBody[1]}</p>
+        <div className="grid min-h-0 gap-2 lg:grid-cols-[1fr_1fr]">
+          <section className="rounded-[12px] border border-[#cfddeb] bg-white p-2 shadow-[0_10px_20px_rgba(23,53,91,0.06)]">
+            <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#5f7ea4]">Background</h3>
+            <p className="mt-1 text-[11px] leading-4.5 text-[#355171]">{profile.aboutBody[0]}</p>
+            <p className="mt-1 text-[11px] leading-4.5 text-[#355171]">{profile.aboutBody[1]}</p>
           </section>
 
-          <section className="rounded-[12px] border border-[#cfddeb] bg-white p-3 shadow-[0_10px_20px_rgba(23,53,91,0.06)]">
-            <h3 className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#5f7ea4]">Työtapa</h3>
-            <div className="mt-2 space-y-2">
+          <section className="rounded-[12px] border border-[#cfddeb] bg-white p-2 shadow-[0_10px_20px_rgba(23,53,91,0.06)]">
+            <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#5f7ea4]">Work style</h3>
+            <div className="mt-1 space-y-1">
               {[
-                "Opin nopeasti ja vien asiat käytännön tasolle.",
-                "Rakennan, testaan ja korjaan järjestelmällisesti.",
-                "Dokumentoin niin, että työn tulos on toistettavissa.",
-                "Otan vastuuta toteutuksen laadusta alusta loppuun.",
+                "I learn quickly and move from idea to implementation fast.",
+                "I build, test and fix systematically.",
+                "I document clearly so work stays repeatable.",
               ].map((item) => (
-                <div key={item} className="rounded-[9px] border border-[#d8e4f1] bg-[#f7fafe] px-3 py-2 text-[12px] leading-5 text-[#31506f]">
+                <div key={item} className="rounded-[9px] border border-[#d8e4f1] bg-[#f7fafe] px-2.5 py-1 text-[10.5px] leading-4 text-[#31506f]">
                   {item}
                 </div>
               ))}
             </div>
-            <p className="mt-3 rounded-[9px] border border-[#d8e4f1] bg-[#f4f8fd] px-3 py-2 text-[12px] leading-5 text-[#365577]">
+            <p className="mt-1 rounded-[9px] border border-[#d8e4f1] bg-[#f4f8fd] px-2.5 py-1 text-[10.5px] leading-4 text-[#365577]">
               {profile.aboutBody[2]}
             </p>
           </section>
@@ -397,16 +388,11 @@ export function ContactPanelContent({
     <div className="h-full overflow-hidden rounded-[14px] border border-[#c4d4e8] bg-[linear-gradient(180deg,#f7faff_0%,#edf3fb_100%)] p-3 text-[#132742]">
       <div className="mx-auto grid h-full max-w-[1140px] grid-cols-[minmax(0,1.16fr)_minmax(0,0.84fr)] gap-3">
         <div className="flex h-full min-h-0 flex-col rounded-[14px] border border-[#ccdbec] bg-white p-4 shadow-[0_18px_34px_rgba(23,53,91,0.08)]">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#5f7ea4]">Contact Me</p>
-          <h2 className="mt-2 text-[clamp(2rem,4.1vw,3.9rem)] leading-[0.92] tracking-[-0.03em]">
+          <h2 className="text-[clamp(2rem,4.1vw,3.9rem)] leading-[0.92] tracking-[-0.03em]">
             <span className="block font-light text-[#3769a0]">Let&apos;s build</span>
             <span className="block font-light text-[#3769a0]">something</span>
             <span className="block font-semibold text-[#123e70]">great together.</span>
           </h2>
-
-          <p className="mt-2 max-w-[52ch] text-[13px] leading-5 text-[#597497]">
-            Lähetä viesti suoraan lomakkeella. Vastaan sekä työmahdollisuuksiin että projektikysymyksiin.
-          </p>
 
           <form
             action="mailto:roope.aa@hotmail.com"
@@ -444,8 +430,7 @@ export function ContactPanelContent({
         </div>
 
         <aside className="flex h-full min-h-0 flex-col rounded-[14px] border border-[#ccdbec] bg-white p-4 shadow-[0_18px_34px_rgba(23,53,91,0.08)]">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#5f7ea4]">Connect</p>
-          <h3 className="mt-2 text-[35px] leading-[1.04] tracking-[-0.02em] text-[#123e70]">Find me online</h3>
+          <h3 className="text-[35px] leading-[1.04] tracking-[-0.02em] text-[#123e70]">Find me online</h3>
 
           <div className="mt-3 flex flex-wrap gap-2.5">
             <SocialLogoLink href="https://www.linkedin.com/in/roope-aaltonen/" label="LinkedIn">
@@ -519,7 +504,7 @@ function SocialLogoLink({
       rel="noreferrer"
       aria-label={label}
       title={label}
-      className="group inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#9eb7d6] bg-[#edf3fc] text-[#1d4f88] transition hover:-translate-y-[1px] hover:border-[#6f95c2] hover:bg-[#e1ebf9]"
+      className="group inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#a7bfdc] bg-white transition hover:-translate-y-[1px] hover:border-[#6f95c2] hover:shadow-[0_6px_14px_rgba(28,76,130,0.16)]"
     >
       <span className="h-5 w-5">{children}</span>
     </a>
@@ -528,31 +513,44 @@ function SocialLogoLink({
 
 function LinkedInGlyph() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" className="h-full w-full" aria-hidden="true">
-      <rect x="3.2" y="3.2" width="17.6" height="17.6" rx="3.2" stroke="currentColor" strokeWidth="1.8" />
-      <circle cx="8.2" cy="8.1" r="1.2" fill="currentColor" />
-      <path d="M7.2 10.3V16.8" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" />
-      <path d="M11.2 16.8V12.7C11.2 11.9 11.8 11.3 12.6 11.3C13.4 11.3 14 11.9 14 12.7V16.8" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" />
+    <svg viewBox="0 0 24 24" className="h-full w-full" aria-hidden="true">
+      <rect x="2.5" y="2.5" width="19" height="19" rx="4.1" fill="#0A66C2" />
+      <rect x="7.1" y="10.1" width="2.3" height="6.8" rx="1.15" fill="#FFFFFF" />
+      <circle cx="8.25" cy="7.9" r="1.35" fill="#FFFFFF" />
+      <path
+        d="M11.1 10.1H13.3V11.1C13.77 10.48 14.51 10.04 15.53 10.04C17.37 10.04 18.35 11.15 18.35 13.36V16.9H16.02V13.83C16.02 12.83 15.66 12.22 14.83 12.22C13.92 12.22 13.43 12.83 13.43 13.83V16.9H11.1V10.1Z"
+        fill="#FFFFFF"
+      />
     </svg>
   );
 }
 
 function InstagramGlyph() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" className="h-full w-full" aria-hidden="true">
-      <rect x="3.5" y="3.5" width="17" height="17" rx="5" stroke="currentColor" strokeWidth="1.8" />
-      <circle cx="12" cy="12" r="3.9" stroke="currentColor" strokeWidth="1.8" />
-      <circle cx="17.2" cy="6.9" r="1.1" fill="currentColor" />
+    <svg viewBox="0 0 24 24" className="h-full w-full" aria-hidden="true">
+      <defs>
+        <linearGradient id="igGradient" x1="4" y1="20" x2="20" y2="4" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#F9CE34" />
+          <stop offset="38%" stopColor="#EE2A7B" />
+          <stop offset="68%" stopColor="#6228D7" />
+          <stop offset="100%" stopColor="#4F5BD5" />
+        </linearGradient>
+      </defs>
+      <rect x="2.5" y="2.5" width="19" height="19" rx="5.2" fill="url(#igGradient)" />
+      <rect x="7" y="7" width="10" height="10" rx="3.5" fill="none" stroke="#FFFFFF" strokeWidth="1.8" />
+      <circle cx="12" cy="12" r="2.55" fill="none" stroke="#FFFFFF" strokeWidth="1.8" />
+      <circle cx="16.65" cy="7.6" r="1.05" fill="#FFFFFF" />
     </svg>
   );
 }
 
 function FacebookGlyph() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" className="h-full w-full" aria-hidden="true">
+    <svg viewBox="0 0 24 24" className="h-full w-full" aria-hidden="true">
+      <circle cx="12" cy="12" r="9.5" fill="#1877F2" />
       <path
-        d="M14.2 7.1H16.3V4.2H14.1C11.7 4.2 10.4 5.6 10.4 8.1V10H8.7V12.8H10.4V19.4H13.4V12.8H15.8L16.2 10H13.4V8.4C13.4 7.6 13.7 7.1 14.2 7.1Z"
-        fill="currentColor"
+        d="M13.45 20V13.22H15.73L16.07 10.57H13.45V8.86C13.45 8.09 13.67 7.57 14.78 7.57H16.16V5.2C15.49 5.13 14.82 5.09 14.14 5.1C12.1 5.1 10.71 6.34 10.71 8.61V10.57H8.47V13.22H10.71V20H13.45Z"
+        fill="#FFFFFF"
       />
     </svg>
   );
@@ -560,8 +558,12 @@ function FacebookGlyph() {
 
 function GitHubGlyph() {
   return (
-    <svg viewBox="0 0 24 24" fill="currentColor" className="h-full w-full" aria-hidden="true">
-      <path d="M12 3.2C7 3.2 3 7.3 3 12.3C3 16.3 5.6 19.6 9.1 20.8C9.5 20.9 9.6 20.7 9.6 20.4V18.9C7.6 19.3 7.1 18 7.1 18C6.8 17.1 6.2 16.8 6.2 16.8C5.4 16.3 6.3 16.3 6.3 16.3C7.2 16.4 7.7 17.2 7.7 17.2C8.5 18.6 9.8 18.1 10.4 17.8C10.5 17.2 10.8 16.9 11 16.7C9.2 16.5 7.3 15.8 7.3 12.8C7.3 12 7.6 11.2 8.1 10.7C8 10.5 7.7 9.7 8.2 8.6C8.2 8.6 9 8.3 10.4 9.3C11.1 9.1 11.8 9 12.5 9C13.2 9 13.9 9.1 14.6 9.3C16 8.3 16.8 8.6 16.8 8.6C17.3 9.7 17 10.5 16.9 10.7C17.4 11.2 17.7 12 17.7 12.8C17.7 15.8 15.8 16.5 14 16.7C14.3 17 14.6 17.5 14.6 18.3V20.4C14.6 20.7 14.7 20.9 15.1 20.8C18.6 19.6 21.2 16.3 21.2 12.3C21.2 7.3 17.2 3.2 12 3.2Z" />
+    <svg viewBox="0 0 24 24" className="h-full w-full" aria-hidden="true">
+      <circle cx="12" cy="12" r="9.5" fill="#111827" />
+      <path
+        d="M12 6.45C8.83 6.45 6.25 9.07 6.25 12.3C6.25 14.88 7.88 17.06 10.16 17.83C10.46 17.89 10.56 17.7 10.56 17.54V16.58C8.92 16.94 8.58 15.86 8.58 15.86C8.31 15.16 7.93 14.98 7.93 14.98C7.39 14.61 7.97 14.62 7.97 14.62C8.57 14.66 8.89 15.25 8.89 15.25C9.43 16.2 10.31 15.92 10.59 15.75C10.64 15.35 10.8 15.09 10.98 14.93C9.67 14.78 8.29 14.26 8.29 12.01C8.29 11.37 8.52 10.84 8.9 10.41C8.84 10.25 8.65 9.61 8.96 8.75C8.96 8.75 9.47 8.58 10.56 9.31C11.05 9.17 11.56 9.1 12.07 9.09C12.58 9.1 13.09 9.17 13.58 9.31C14.67 8.58 15.18 8.75 15.18 8.75C15.49 9.61 15.3 10.25 15.24 10.41C15.62 10.84 15.85 11.37 15.85 12.01C15.85 14.27 14.46 14.78 13.14 14.93C13.37 15.13 13.57 15.52 13.57 16.11V17.54C13.57 17.7 13.67 17.9 13.97 17.83C16.24 17.05 17.86 14.88 17.86 12.3C17.86 9.07 15.29 6.45 12 6.45Z"
+        fill="#FFFFFF"
+      />
     </svg>
   );
 }
