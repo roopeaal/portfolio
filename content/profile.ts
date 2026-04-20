@@ -49,23 +49,23 @@ export const profile = {
     "Red Hat Academy studies",
   ],
   aboutIntro:
-    "I am building toward junior infrastructure, networking, Linux, cloud and cybersecurity work through practical labs, implementation-focused coursework and disciplined documentation.",
+    "Olen ICT-insinööriopiskelija Metropolia Ammattikorkeakoulusta, ja kiinnostukseni painottuvat erityisesti tietoverkkoihin, Linuxiin, pilvipalveluihin, IoT:hen ja käytännön tekniseen ongelmanratkaisuun.",
   aboutBody: [
-    "What interests me most is work where topology, systems and implementation details all matter at the same time. I like understanding how components connect, what changes behavior and how to verify that the result actually works.",
-    "My working style is straightforward: define the goal, choose tools for a reason, build carefully, test what changed and document the result clearly enough that someone else can follow it. I prefer finished, explainable output over half-polished demos.",
-    "I am not presenting myself as senior. What I can offer now is solid junior-level attitude: willingness to work hands-on, learn fast, stay precise and carry technical work through to a usable result.",
+    "Ennen opintojani työskentelin useita vuosia varastotyössä trukkikuskina. Työssä korostui ERP-järjestelmän käyttö, saldojen hallinta, palautusten käsittely, vastaanotto sekä keräilyprosessien tarkkuus. Osaamisen karttuessa pystyin selvittämään poikkeamia järjestelmästä tarkasti, korjaamaan saldoja itsenäisesti ja varmistamaan, että tuotteet olivat seuraavan työntekijän käytettävissä myös järjestelmän näkökulmasta.",
+    "Nämä kokemukset saivat minut hakemaan tietotekniikan opintoihin. Opintojen aikana olen halunnut rakentaa osaamista konkreettisina toteutuksina. Kun huomasin työnhaussa, ettei pelkkä hakemus riitä erottautumaan, rakensin portfolion käytännössä tyhjästä ja tein siitä sekä teknisesti että visuaalisesti omannäköiseni. Koska opintoni painottuvat vahvasti verkkoihin ja topology-ympäristöihin, rakensin portfolion niiden inspiroimaksi kokonaisuudeksi.",
+    "Tämä portfolio on minulle enemmän kuin kokoelma projekteja. Se on tapa osoittaa, miten lähestyn teknistä tekemistä: opin nopeasti, vien asioita käytännön tasolle, etsin ratkaisuja itsenäisesti ja haluan ymmärtää kokonaisuudet kunnolla. Minua motivoi erityisesti se, että pääsen rakentamaan, testaamaan, korjaamaan ja kehittämään ratkaisuja, joilla on oikea käyttötarkoitus.",
   ],
   workCredibility: {
     title: "Operational reliability",
     body:
-      "Laattapiste Oy logistics work was accepted by Metropolia as Internship 1. The strongest transfer value is not fake IT history but proof of reliability: ERP usage, process discipline, order accuracy, teamwork and responsibility for getting operational work finished correctly.",
+      "Varastotyötausta toi minulle vahvan perustan huolelliseen, itsenäiseen ja vastuulliseen tekemiseen. ERP-käyttö, prosessikuri, saldotarkkuus, palautukset, vastaanotto ja työn loppuunvieminen ovat edelleen ydinosaamista, jota hyödynnän nyt teknisissä rooleissa.",
   },
   contactNotes: {
     availability:
-      "Open to trainee, internship, thesis and junior opportunities related to infrastructure, networking, Linux, cloud, cybersecurity and connected systems.",
+      "Avoin trainee-, internship-, opinnäyte- ja junior-mahdollisuuksille infrastruktuurin, verkkojen, Linuxin, pilven, kyberturvan ja connected systems -teemoissa.",
     preference:
-      "Best fit: practical technical work where implementation quality, documentation and follow-through matter more than surface-level presentation.",
+      "Paras match: käytännön tekninen tekeminen, jossa toteutuksen laatu, dokumentointi ja loppuunvieminen ovat keskiössä.",
     roleFocus:
-      "Primary direction: infrastructure, networking, Linux / servers, cloud foundations, cybersecurity and systems specialist path.",
+      "Pääsuuntani on verkot, Linux/servers, pilven perusteet, IoT ja kyberturvallisuus sekä niihin liittyvä systems specialist -polku.",
   },
 };
