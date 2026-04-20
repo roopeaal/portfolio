@@ -378,38 +378,34 @@ export function ContactPanelContent({
 
   if (preview) {
     return (
-      <div className="h-full overflow-hidden rounded-[14px] bg-[linear-gradient(135deg,#eff6ff_0%,#f8fafc_42%,#ecfeff_100%)] p-4 text-[#0f172a]">
-        <div className="flex h-full flex-col justify-between rounded-[12px] border border-white/80 bg-white/80 p-4 shadow-[0_18px_40px_rgba(15,23,42,0.10)] backdrop-blur">
+      <div className="h-full overflow-hidden rounded-[14px] border border-[#315487] bg-[radial-gradient(circle_at_16%_8%,#102e64_0%,#0a2147_40%,#05162f_100%)] p-4 text-[#eaf2ff]">
+        <div className="flex h-full flex-col justify-between rounded-[12px] border border-white/14 bg-[#071832]/72 p-4">
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-sky-600">Contact</p>
-            <h3 className="mt-2 text-[20px] font-semibold leading-tight">Message Roope directly</h3>
-            <p className="mt-2 text-[12px] leading-5 text-slate-600">
-              Even a short hello, question or opportunity is welcome.
-            </p>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#86baf7]">Contact</p>
+            <h3 className="mt-2 text-[20px] font-semibold leading-tight text-white">Let&apos;s build something great together.</h3>
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <SocialLogoLink href="https://www.linkedin.com/in/roope-aaltonen/" label="LinkedIn">
+                <LinkedInGlyph />
+              </SocialLogoLink>
+              <SocialLogoLink href="https://facebook.com/roope_aaltonen" label="Instagram">
+                <InstagramGlyph />
+              </SocialLogoLink>
+              <SocialLogoLink href="https://facebook.com/roope.aaltonen.5" label="Facebook">
+                <FacebookGlyph />
+              </SocialLogoLink>
+              <SocialLogoLink href="https://github.com/roopeaal" label="GitHub">
+                <GitHubGlyph />
+              </SocialLogoLink>
+            </div>
             <a
-              href="mailto:roope.aa@hotmail.com?subject=Quick%20hello%20from%20your%20portfolio&body=Hi%20Roope%2C%0A%0A"
-              className="flex items-center justify-center rounded-[12px] bg-[#0f172a] px-4 py-3 text-[12px] font-semibold text-white shadow-[0_12px_24px_rgba(15,23,42,0.18)] transition hover:-translate-y-[1px] hover:bg-[#111827]"
+              href="mailto:roope.aa@hotmail.com?subject=Quick%20hello%20from%20your%20portfolio"
+              className="inline-flex rounded-[11px] border border-[#4c7fbf] bg-[#0f2e58] px-3 py-2 text-[11px] font-semibold text-white transition hover:bg-[#154178]"
             >
               Open message draft
             </a>
-
-            <div className="flex gap-2 text-[11px]">
-              <a
-                href="mailto:roope.aa@hotmail.com?subject=Internship%20opportunity"
-                className="flex-1 rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-center text-slate-700 hover:border-sky-300 hover:text-sky-700"
-              >
-                Internship
-              </a>
-              <a
-                href="mailto:roope.aa@hotmail.com?subject=Project%20discussion"
-                className="flex-1 rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-center text-slate-700 hover:border-sky-300 hover:text-sky-700"
-              >
-                Project
-              </a>
-            </div>
           </div>
         </div>
       </div>
@@ -417,117 +413,181 @@ export function ContactPanelContent({
   }
 
   return (
-    <div className="h-full overflow-auto rounded-[16px] bg-[radial-gradient(circle_at_top_left,#eff6ff_0%,#ffffff_34%,#ecfeff_100%)] p-4 text-[#0f172a]">
-      <div className="grid gap-4 lg:grid-cols-[1.08fr_0.92fr]">
-        <div className="rounded-[18px] border border-white/80 bg-white/86 p-5 shadow-[0_24px_48px_rgba(15,23,42,0.10)] backdrop-blur">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-sky-600">Contact Me</p>
-          <h2 className="mt-3 text-[30px] font-semibold leading-[1.05] text-slate-900">
-            Start a conversation with almost zero friction.
+    <div className="h-full overflow-auto rounded-[16px] border border-[#284873] bg-[radial-gradient(circle_at_16%_8%,#143164_0%,#0a2147_42%,#05162f_100%)] p-4 text-[#e8f1ff]">
+      <div className="mx-auto grid max-w-[1140px] gap-4 xl:grid-cols-[1.18fr_0.82fr]">
+        <div className="rounded-[18px] border border-white/14 bg-[#071832]/74 p-5 shadow-[0_26px_56px_rgba(3,8,19,0.42)]">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#8abcf8]">Contact Me</p>
+          <h2 className="mt-4 text-[clamp(2.2rem,5.3vw,4.9rem)] leading-[0.94] tracking-[-0.03em]">
+            <span className="block font-light text-[#bcd4ff]">Let&apos;s build</span>
+            <span className="block font-light text-[#bcd4ff]">something</span>
+            <span className="block font-semibold text-white">great together.</span>
           </h2>
-          <p className="mt-3 max-w-[42ch] text-[14px] leading-6 text-slate-600">
-            If something here caught your attention, a short message is enough. Internship opportunity, project idea, quick question or just a hello — all welcome.
+
+          <p className="mt-4 max-w-[52ch] text-[14px] leading-6 text-[#9cb3d8]">
+            Lähetä viesti suoraan lomakkeella. Vastaan sekä työmahdollisuuksiin että projektikysymyksiin.
           </p>
 
-          <div className="mt-5 grid gap-3 sm:grid-cols-3">
-            <a
-              href="mailto:roope.aa@hotmail.com?subject=Hello%20Roope"
-              className="rounded-[14px] border border-slate-200 bg-slate-50 px-4 py-3 text-left transition hover:-translate-y-[1px] hover:border-sky-300 hover:bg-sky-50"
-            >
-              <div className="text-[11px] uppercase tracking-[0.18em] text-slate-500">Quick hello</div>
-              <div className="mt-1 text-[14px] font-semibold text-slate-900">Say hi</div>
-            </a>
-
-            <a
-              href="mailto:roope.aa@hotmail.com?subject=Internship%20opportunity"
-              className="rounded-[14px] border border-slate-200 bg-slate-50 px-4 py-3 text-left transition hover:-translate-y-[1px] hover:border-sky-300 hover:bg-sky-50"
-            >
-              <div className="text-[11px] uppercase tracking-[0.18em] text-slate-500">Career</div>
-              <div className="mt-1 text-[14px] font-semibold text-slate-900">Internship / role</div>
-            </a>
-
-            <a
-              href="mailto:roope.aa@hotmail.com?subject=Project%20discussion"
-              className="rounded-[14px] border border-slate-200 bg-slate-50 px-4 py-3 text-left transition hover:-translate-y-[1px] hover:border-sky-300 hover:bg-sky-50"
-            >
-              <div className="text-[11px] uppercase tracking-[0.18em] text-slate-500">Collaboration</div>
-              <div className="mt-1 text-[14px] font-semibold text-slate-900">Project discussion</div>
-            </a>
-          </div>
-
-          <div className="mt-5 rounded-[16px] border border-sky-100 bg-[linear-gradient(135deg,#e0f2fe_0%,#f8fafc_55%,#ecfeff_100%)] p-4">
-            <div className="text-[12px] font-semibold uppercase tracking-[0.18em] text-sky-700">Low-pressure outreach</div>
-            <ul className="mt-3 space-y-2 text-[13px] leading-5 text-slate-700">
-              <li>• A one-line message is enough.</li>
-              <li>• You do not need a polished brief to reach out.</li>
-              <li>• The button below opens a ready-to-send email draft addressed to Roope.</li>
-            </ul>
-          </div>
-        </div>
-
-        <form
-          action="mailto:roope.aa@hotmail.com"
-          method="post"
-          encType="text/plain"
-          className="rounded-[18px] border border-slate-200 bg-[#0f172a] p-5 text-white shadow-[0_24px_48px_rgba(15,23,42,0.16)]"
-        >
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-sky-300">Message form</p>
-              <h3 className="mt-2 text-[26px] font-semibold leading-tight">Send a message</h3>
-            </div>
-            <div className="rounded-full border border-white/12 bg-white/8 px-3 py-1 text-[11px] text-white/70">
-              roope.aa@hotmail.com
-            </div>
-          </div>
-
-          <div className="mt-5 space-y-3">
+          <form
+            action="mailto:roope.aa@hotmail.com"
+            method="post"
+            encType="text/plain"
+            className="mt-7 space-y-3"
+          >
             <input
               name="Name"
               type="text"
-              placeholder="Your name"
-              className="w-full rounded-[14px] border border-white/12 bg-white/8 px-4 py-3 text-[14px] text-white placeholder:text-white/45 outline-none transition focus:border-sky-300 focus:bg-white/10"
+              placeholder="Name"
+              className="w-full rounded-[12px] border border-[#426aa5] bg-[#0d264b] px-4 py-3 text-[14px] text-white placeholder:text-[#88a4d0] outline-none transition focus:border-[#74b8ff]"
             />
             <input
               name="Email"
               type="email"
-              placeholder="Your email"
-              className="w-full rounded-[14px] border border-white/12 bg-white/8 px-4 py-3 text-[14px] text-white placeholder:text-white/45 outline-none transition focus:border-sky-300 focus:bg-white/10"
-            />
-            <input
-              name="Subject"
-              type="text"
-              defaultValue="Hello Roope"
-              className="w-full rounded-[14px] border border-white/12 bg-white/8 px-4 py-3 text-[14px] text-white placeholder:text-white/45 outline-none transition focus:border-sky-300 focus:bg-white/10"
+              placeholder="Email"
+              className="w-full rounded-[12px] border border-[#426aa5] bg-[#0d264b] px-4 py-3 text-[14px] text-white placeholder:text-[#88a4d0] outline-none transition focus:border-[#74b8ff]"
             />
             <textarea
               name="Message"
-              placeholder="Write even a short message here — for example: Hi Roope, your portfolio caught my attention..."
-              className="min-h-[188px] w-full rounded-[16px] border border-white/12 bg-white/8 px-4 py-3 text-[14px] leading-6 text-white placeholder:text-white/45 outline-none transition focus:border-sky-300 focus:bg-white/10"
+              placeholder="Write your message..."
+              className="min-h-[170px] w-full rounded-[14px] border border-[#426aa5] bg-[#0d264b] px-4 py-3 text-[14px] leading-6 text-white placeholder:text-[#88a4d0] outline-none transition focus:border-[#74b8ff]"
             />
+
+            <div className="flex flex-wrap gap-2 pt-1">
+              <button
+                type="submit"
+                className="inline-flex items-center justify-center rounded-[12px] border border-[#7dc6ff] bg-[#63b6ff] px-5 py-2.5 text-[14px] font-semibold text-[#05213e] transition hover:bg-[#79c3ff]"
+              >
+                Open Email Draft
+              </button>
+              <a
+                href="mailto:roope.aa@hotmail.com"
+                className="inline-flex items-center justify-center rounded-[12px] border border-[#4f7db5] bg-[#103059] px-5 py-2.5 text-[14px] font-medium text-[#d8e8ff] transition hover:bg-[#154070]"
+              >
+                Direct Email
+              </a>
+            </div>
+          </form>
+        </div>
+
+        <aside className="rounded-[18px] border border-white/14 bg-[#071832]/74 p-5 shadow-[0_26px_56px_rgba(3,8,19,0.42)]">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#8abcf8]">Connect</p>
+          <h3 className="mt-3 text-[30px] leading-[1.06] tracking-[-0.02em] text-white">Find me online</h3>
+
+          <div className="mt-5 flex flex-wrap gap-3">
+            <SocialLogoLink href="https://www.linkedin.com/in/roope-aaltonen/" label="LinkedIn">
+              <LinkedInGlyph />
+            </SocialLogoLink>
+            <SocialLogoLink href="https://facebook.com/roope_aaltonen" label="Instagram">
+              <InstagramGlyph />
+            </SocialLogoLink>
+            <SocialLogoLink href="https://facebook.com/roope.aaltonen.5" label="Facebook">
+              <FacebookGlyph />
+            </SocialLogoLink>
+            <SocialLogoLink href="https://github.com/roopeaal" label="GitHub">
+              <GitHubGlyph />
+            </SocialLogoLink>
           </div>
 
-          <div className="mt-4 flex flex-col gap-3 sm:flex-row">
-            <button
-              type="submit"
-              className="inline-flex items-center justify-center rounded-[14px] bg-sky-400 px-5 py-3 text-[14px] font-semibold text-slate-950 shadow-[0_14px_28px_rgba(56,189,248,0.35)] transition hover:-translate-y-[1px] hover:bg-sky-300"
-            >
-              Open ready-to-send email
-            </button>
-
-            <a
-              href="mailto:roope.aa@hotmail.com"
-              className="inline-flex items-center justify-center rounded-[14px] border border-white/12 bg-white/8 px-5 py-3 text-[14px] font-medium text-white/86 transition hover:bg-white/12"
-            >
-              Or email directly
-            </a>
+          <div className="mt-7 space-y-3">
+            <ContactInfoRow label="Phone" value="040 528 3008" href="tel:+358405283008" />
+            <ContactInfoRow label="Email" value="roope.aa@hotmail.com" href="mailto:roope.aa@hotmail.com" />
+            <ContactInfoRow label="Location" value="Vantaa, Hämeenkylä" />
           </div>
-
-          <p className="mt-3 text-[11px] leading-5 text-white/55">
-            This static portfolio opens your mail app with the message addressed to Roope.
-          </p>
-        </form>
+        </aside>
       </div>
     </div>
+  );
+}
+
+function ContactInfoRow({
+  label,
+  value,
+  href,
+}: {
+  label: string;
+  value: string;
+  href?: string;
+}) {
+  const content = (
+    <>
+      <p className="text-[11px] uppercase tracking-[0.17em] text-[#87a9d7]">{label}</p>
+      <p className="mt-1 text-[16px] font-medium text-white">{value}</p>
+    </>
+  );
+
+  if (href) {
+    return (
+      <a
+        href={href}
+        className="block rounded-[12px] border border-[#335b90] bg-[#0c274d] px-4 py-3 transition hover:border-[#5f90c9] hover:bg-[#113666]"
+      >
+        {content}
+      </a>
+    );
+  }
+
+  return <div className="rounded-[12px] border border-[#335b90] bg-[#0c274d] px-4 py-3">{content}</div>;
+}
+
+function SocialLogoLink({
+  href,
+  label,
+  children,
+}: {
+  href: string;
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noreferrer"
+      aria-label={label}
+      title={label}
+      className="group inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#4c79b1] bg-[#0f325f] text-[#d7e7ff] transition hover:-translate-y-[1px] hover:border-[#8ec3ff] hover:bg-[#15457e]"
+    >
+      <span className="h-5 w-5">{children}</span>
+    </a>
+  );
+}
+
+function LinkedInGlyph() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className="h-full w-full" aria-hidden="true">
+      <rect x="3.2" y="3.2" width="17.6" height="17.6" rx="3.2" stroke="currentColor" strokeWidth="1.8" />
+      <circle cx="8.2" cy="8.1" r="1.2" fill="currentColor" />
+      <path d="M7.2 10.3V16.8" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" />
+      <path d="M11.2 16.8V12.7C11.2 11.9 11.8 11.3 12.6 11.3C13.4 11.3 14 11.9 14 12.7V16.8" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function InstagramGlyph() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className="h-full w-full" aria-hidden="true">
+      <rect x="3.5" y="3.5" width="17" height="17" rx="5" stroke="currentColor" strokeWidth="1.8" />
+      <circle cx="12" cy="12" r="3.9" stroke="currentColor" strokeWidth="1.8" />
+      <circle cx="17.2" cy="6.9" r="1.1" fill="currentColor" />
+    </svg>
+  );
+}
+
+function FacebookGlyph() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className="h-full w-full" aria-hidden="true">
+      <path
+        d="M14.2 7.1H16.3V4.2H14.1C11.7 4.2 10.4 5.6 10.4 8.1V10H8.7V12.8H10.4V19.4H13.4V12.8H15.8L16.2 10H13.4V8.4C13.4 7.6 13.7 7.1 14.2 7.1Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
+
+function GitHubGlyph() {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className="h-full w-full" aria-hidden="true">
+      <path d="M12 3.2C7 3.2 3 7.3 3 12.3C3 16.3 5.6 19.6 9.1 20.8C9.5 20.9 9.6 20.7 9.6 20.4V18.9C7.6 19.3 7.1 18 7.1 18C6.8 17.1 6.2 16.8 6.2 16.8C5.4 16.3 6.3 16.3 6.3 16.3C7.2 16.4 7.7 17.2 7.7 17.2C8.5 18.6 9.8 18.1 10.4 17.8C10.5 17.2 10.8 16.9 11 16.7C9.2 16.5 7.3 15.8 7.3 12.8C7.3 12 7.6 11.2 8.1 10.7C8 10.5 7.7 9.7 8.2 8.6C8.2 8.6 9 8.3 10.4 9.3C11.1 9.1 11.8 9 12.5 9C13.2 9 13.9 9.1 14.6 9.3C16 8.3 16.8 8.6 16.8 8.6C17.3 9.7 17 10.5 16.9 10.7C17.4 11.2 17.7 12 17.7 12.8C17.7 15.8 15.8 16.5 14 16.7C14.3 17 14.6 17.5 14.6 18.3V20.4C14.6 20.7 14.7 20.9 15.1 20.8C18.6 19.6 21.2 16.3 21.2 12.3C21.2 7.3 17.2 3.2 12 3.2Z" />
+    </svg>
   );
 }
 
