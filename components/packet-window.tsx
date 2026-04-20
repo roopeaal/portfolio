@@ -44,7 +44,7 @@ export function PacketWindow({
   sidebarItems = [],
   browserUrl,
   browserLink,
-  shellTitle = "Global Settings",
+  shellTitle,
 }: PacketWindowProps) {
   const titleId = useId();
   const dialogRef = useRef<HTMLDivElement | null>(null);
@@ -261,9 +261,15 @@ export function PacketWindow({
                 </div>
 
                 <div className="min-w-0 flex-1 border border-[#c5c5c5] bg-[#f4f4f4] p-3 md:p-4">
-                  <div className="mx-auto flex h-full flex-col overflow-auto pr-1">
-                    <div className="border border-[#c9c9c9] bg-[#efefef] px-4 py-1.5 text-center text-[14px] font-medium text-[#727272]">{shellTitle}</div>
-                    <div className="flex-1 border border-t-0 border-[#c9c9c9] bg-[#f8f8f8] px-4 py-4 md:px-5 md:py-4">{children}</div>
+                  <div className={`mx-auto h-full overflow-auto pr-1 ${shellTitle ? "flex flex-col" : ""}`}>
+                    {shellTitle ? (
+                      <>
+                        <div className="border border-[#c9c9c9] bg-[#efefef] px-4 py-1.5 text-center text-[14px] font-medium text-[#727272]">{shellTitle}</div>
+                        <div className="flex-1 border border-t-0 border-[#c9c9c9] bg-[#f8f8f8] px-4 py-4 md:px-5 md:py-4">{children}</div>
+                      </>
+                    ) : (
+                      <div className="h-full border border-[#c9c9c9] bg-[#f8f8f8] px-4 py-4 md:px-5 md:py-4">{children}</div>
+                    )}
                   </div>
                 </div>
               </div>

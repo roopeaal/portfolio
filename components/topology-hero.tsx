@@ -1406,7 +1406,6 @@ export function TopologyHero() {
         title="About Me · Wireless Router1"
         sidebarTitle={SIDEBAR_TITLE.about}
         sidebarItems={aboutSidebarItems}
-        shellTitle="Global Settings"
       >
         <AboutPanelContent />
       </PacketWindow>
@@ -1418,7 +1417,6 @@ export function TopologyHero() {
         title="Projects · Switch0"
         sidebarTitle={SIDEBAR_TITLE.projects}
         sidebarItems={projectsSidebarItems}
-        shellTitle={selectedProject ? "Project Case Study" : "Project Overview"}
       >
         <ProjectsPanelContent
           selectedProjectSlug={selectedProjectSlug}
@@ -1434,7 +1432,6 @@ export function TopologyHero() {
         title="Contact Me · Smartphone0"
         sidebarTitle={SIDEBAR_TITLE.contact}
         sidebarItems={contactSidebarItems}
-        shellTitle="Interface Configuration"
       >
         <ContactPanelContent section={contactSection} />
       </PacketWindow>
@@ -1673,8 +1670,7 @@ function PreviewWindow({
           </div>
         ) : null}
         <div className="overflow-hidden rounded-[2px] border border-[#cfcfcf] bg-white">
-          <div className="border-b border-[#d9d9d9] bg-[#fbfbfb] px-3 py-1.5 text-center text-[11px] font-medium text-[#747474]">Global Settings</div>
-          <div className="h-[calc(100%-31px)] overflow-hidden p-3">{children}</div>
+          <div className="h-full overflow-hidden p-3">{children}</div>
         </div>
       </div>
     </div>
