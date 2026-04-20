@@ -1813,15 +1813,28 @@ function DetachedEthernetStub({
 
 function CableSegment({ from, to, disconnected = false, looseEnd }: { from: { x: number; y: number }; to: { x: number; y: number }; disconnected?: boolean; looseEnd?: { x: number; y: number } }) {
   const end = disconnected && looseEnd ? looseEnd : to;
-  const direction = Math.sign(end.x - from.x) || 1;
-  const elbowBaseY = end.y + 9;
-  const cornerRadius = Math.min(9, Math.max(6, Math.abs(end.x - from.x) * 0.03));
-  const bendStartX = end.x - direction * (cornerRadius + 2);
-  const bendEndY = elbowBaseY - cornerRadius;
+  const deltaX = end.x - from.x;
+  const deltaY = end.y - from.y;
+  const absX = Math.abs(deltaX);
+  const absY = Math.abs(deltaY);
+  const needsCorner = absX > 18 && absY > 14;
+
+  let path = `M ${from.x} ${from.y} L ${end.x} ${end.y}`;
+
+  if (needsCorner) {
+    const direction = Math.sign(deltaX) || 1;
+    const elbowDepth = Math.min(12, Math.max(7, absY * 0.08));
+    const elbowBaseY = end.y + elbowDepth;
+    const cornerRadius = Math.min(10, Math.max(3.4, Math.min(absX * 0.18, elbowDepth - 1)));
+    const bendStartX = end.x - direction * (cornerRadius + 1.2);
+    const bendEndY = elbowBaseY - cornerRadius;
+
+    path = `M ${from.x} ${from.y} L ${bendStartX} ${elbowBaseY} Q ${end.x} ${elbowBaseY} ${end.x} ${bendEndY} L ${end.x} ${end.y}`;
+  }
 
   return (
     <path
-      d={`M ${from.x} ${from.y} L ${bendStartX} ${elbowBaseY} Q ${end.x} ${elbowBaseY} ${end.x} ${bendEndY} L ${end.x} ${end.y}`}
+      d={path}
       fill="none"
       stroke={disconnected ? "#101010" : "#111111"}
       strokeWidth={5.1}
