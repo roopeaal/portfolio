@@ -426,9 +426,9 @@ function resolveNonOverlappingPosition(
 const SWITCH_PORT_CENTERS = [73, 90, 108, 125, 143, 160] as const;
 const SWITCH_LEFT_CABLE_PORT_INDEX = 0;
 const SWITCH_RIGHT_CABLE_PORT_INDEX = 5;
-const SWITCH_STUB_Y = 132.0;
-const SWITCH_LEFT_STUB_X_OFFSET = -22.0;
-const SWITCH_RIGHT_STUB_X_OFFSET = 8.0;
+const SWITCH_STUB_Y = 138.0;
+const SWITCH_LEFT_STUB_X_OFFSET = 32.0;
+const SWITCH_RIGHT_STUB_X_OFFSET = -24.0;
 
 const DEBUG_NODE_HALOS = false;
 const NODE_PROTECTIVE_HALO = 14;
@@ -1806,7 +1806,7 @@ function DetachedEthernetStub({
 
 function CableSegment({ from, to, disconnected = false, looseEnd }: { from: { x: number; y: number }; to: { x: number; y: number }; disconnected?: boolean; looseEnd?: { x: number; y: number } }) {
   const baseEnd = disconnected && looseEnd ? looseEnd : to;
-  const cableAttachDrop = disconnected ? 0 : 22;
+  const cableAttachDrop = disconnected ? 0 : 40;
   const end = { x: baseEnd.x, y: baseEnd.y + cableAttachDrop };
   const deltaX = end.x - from.x;
   const deltaY = end.y - from.y;
