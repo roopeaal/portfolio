@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo } from "react";
+import { useMemo, useState, type FormEvent } from "react";
 import { projects } from "@/content/projects";
 import { profile } from "@/content/profile";
 
@@ -347,6 +347,22 @@ export function ContactPanelContent({
   preview?: boolean;
 }) {
   void section;
+  const [contactDraft, setContactDraft] = useState({ name: "", email: "", message: "" });
+
+  const handleContactSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const safeName = contactDraft.name.trim() || "Website visitor";
+    const safeEmail = contactDraft.email.trim() || "Not provided";
+    const safeMessage = contactDraft.message.trim() || "(No message written)";
+
+    const subject = encodeURIComponent(`Portfolio contact from ${safeName}`);
+    const body = encodeURIComponent(
+      [`Name: ${safeName}`, `Email: ${safeEmail}`, "", "Message:", safeMessage].join("\n"),
+    );
+
+    window.location.href = `mailto:roope.aa@hotmail.com?subject=${subject}&body=${body}`;
+  };
 
   if (preview) {
     return (
@@ -394,27 +410,31 @@ export function ContactPanelContent({
             <span className="block font-semibold text-[#123e70]">great together.</span>
           </h2>
 
-          <form
-            action="mailto:roope.aa@hotmail.com"
-            method="post"
-            encType="text/plain"
-            className="mt-3 flex min-h-0 flex-1 flex-col gap-2"
-          >
+          <form onSubmit={handleContactSubmit} className="mt-3 flex min-h-0 flex-1 flex-col gap-2" autoComplete="on">
             <input
               name="Name"
               type="text"
               placeholder="Name"
+              autoComplete="name"
+              value={contactDraft.name}
+              onChange={(event) => setContactDraft((prev) => ({ ...prev, name: event.target.value }))}
               className="w-full rounded-[11px] border border-[#c0d2e7] bg-[#f4f8fe] px-3 py-2.5 text-[14px] text-[#173861] placeholder:text-[#7f97b8] outline-none transition focus:border-[#6d96c6] focus:bg-white"
             />
             <input
               name="Email"
               type="email"
               placeholder="Email"
+              autoComplete="email"
+              value={contactDraft.email}
+              onChange={(event) => setContactDraft((prev) => ({ ...prev, email: event.target.value }))}
               className="w-full rounded-[11px] border border-[#c0d2e7] bg-[#f4f8fe] px-3 py-2.5 text-[14px] text-[#173861] placeholder:text-[#7f97b8] outline-none transition focus:border-[#6d96c6] focus:bg-white"
             />
             <textarea
               name="Message"
               placeholder="Write your message..."
+              autoComplete="off"
+              value={contactDraft.message}
+              onChange={(event) => setContactDraft((prev) => ({ ...prev, message: event.target.value }))}
               className="min-h-0 flex-1 rounded-[12px] border border-[#c0d2e7] bg-[#f4f8fe] px-3 py-2.5 text-[14px] leading-6 text-[#173861] placeholder:text-[#7f97b8] outline-none transition focus:border-[#6d96c6] focus:bg-white"
             />
 
@@ -549,7 +569,7 @@ function FacebookGlyph() {
     <svg viewBox="0 0 24 24" className="h-full w-full" aria-hidden="true">
       <circle cx="12" cy="12" r="9.5" fill="#1877F2" />
       <path
-        d="M13.45 20V13.22H15.73L16.07 10.57H13.45V8.86C13.45 8.09 13.67 7.57 14.78 7.57H16.16V5.2C15.49 5.13 14.82 5.09 14.14 5.1C12.1 5.1 10.71 6.34 10.71 8.61V10.57H8.47V13.22H10.71V20H13.45Z"
+        d="M13.39 19.9V12.7H15.72L16.07 10H13.39V8.3C13.39 7.52 13.6 6.99 14.78 6.99H16.16V4.55C15.49 4.49 14.81 4.44 14.13 4.45C11.69 4.45 10.33 5.94 10.33 8.64V10H7.88V12.7H10.33V19.9H13.39Z"
         fill="#FFFFFF"
       />
     </svg>
