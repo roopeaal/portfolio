@@ -378,14 +378,14 @@ export function ContactPanelContent({
 
   if (preview) {
     return (
-      <div className="h-full overflow-hidden rounded-[14px] border border-[#315487] bg-[radial-gradient(circle_at_16%_8%,#102e64_0%,#0a2147_40%,#05162f_100%)] p-4 text-[#eaf2ff]">
-        <div className="flex h-full flex-col justify-between rounded-[12px] border border-white/14 bg-[#071832]/72 p-4">
+      <div className="h-full overflow-hidden rounded-[12px] border border-[#bfd0e5] bg-[linear-gradient(180deg,#f5f8fd_0%,#e8f0fb_100%)] p-3 text-[#122845]">
+        <div className="flex h-full flex-col justify-between rounded-[10px] border border-[#d0deee] bg-white/92 p-3">
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#86baf7]">Contact</p>
-            <h3 className="mt-2 text-[20px] font-semibold leading-tight text-white">Let&apos;s build something great together.</h3>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#5f7ea4]">Contact</p>
+            <h3 className="mt-2 text-[18px] font-semibold leading-tight text-[#143862]">Let&apos;s build something great together.</h3>
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-2.5">
             <div className="flex items-center gap-2">
               <SocialLogoLink href="https://www.linkedin.com/in/roope-aaltonen/" label="LinkedIn">
                 <LinkedInGlyph />
@@ -402,7 +402,7 @@ export function ContactPanelContent({
             </div>
             <a
               href="mailto:roope.aa@hotmail.com?subject=Quick%20hello%20from%20your%20portfolio"
-              className="inline-flex rounded-[11px] border border-[#4c7fbf] bg-[#0f2e58] px-3 py-2 text-[11px] font-semibold text-white transition hover:bg-[#154178]"
+              className="inline-flex rounded-[10px] border border-[#7f9fc5] bg-[#1a4f86] px-3 py-1.5 text-[11px] font-semibold text-white transition hover:bg-[#2364a6]"
             >
               Open message draft
             </a>
@@ -413,17 +413,17 @@ export function ContactPanelContent({
   }
 
   return (
-    <div className="h-full overflow-auto rounded-[16px] border border-[#284873] bg-[radial-gradient(circle_at_16%_8%,#143164_0%,#0a2147_42%,#05162f_100%)] p-4 text-[#e8f1ff]">
-      <div className="mx-auto grid max-w-[1140px] gap-4 xl:grid-cols-[1.18fr_0.82fr]">
-        <div className="rounded-[18px] border border-white/14 bg-[#071832]/74 p-5 shadow-[0_26px_56px_rgba(3,8,19,0.42)]">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#8abcf8]">Contact Me</p>
-          <h2 className="mt-4 text-[clamp(2.2rem,5.3vw,4.9rem)] leading-[0.94] tracking-[-0.03em]">
-            <span className="block font-light text-[#bcd4ff]">Let&apos;s build</span>
-            <span className="block font-light text-[#bcd4ff]">something</span>
-            <span className="block font-semibold text-white">great together.</span>
+    <div className="h-full overflow-hidden rounded-[14px] border border-[#c4d4e8] bg-[linear-gradient(180deg,#f7faff_0%,#edf3fb_100%)] p-3 text-[#132742]">
+      <div className="mx-auto grid h-full max-w-[1140px] grid-cols-[minmax(0,1.16fr)_minmax(0,0.84fr)] gap-3">
+        <div className="flex h-full min-h-0 flex-col rounded-[14px] border border-[#ccdbec] bg-white p-4 shadow-[0_18px_34px_rgba(23,53,91,0.08)]">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#5f7ea4]">Contact Me</p>
+          <h2 className="mt-2 text-[clamp(2rem,4.1vw,3.9rem)] leading-[0.92] tracking-[-0.03em]">
+            <span className="block font-light text-[#3769a0]">Let&apos;s build</span>
+            <span className="block font-light text-[#3769a0]">something</span>
+            <span className="block font-semibold text-[#123e70]">great together.</span>
           </h2>
 
-          <p className="mt-4 max-w-[52ch] text-[14px] leading-6 text-[#9cb3d8]">
+          <p className="mt-2 max-w-[52ch] text-[13px] leading-5 text-[#597497]">
             Lähetä viesti suoraan lomakkeella. Vastaan sekä työmahdollisuuksiin että projektikysymyksiin.
           </p>
 
@@ -431,36 +431,36 @@ export function ContactPanelContent({
             action="mailto:roope.aa@hotmail.com"
             method="post"
             encType="text/plain"
-            className="mt-7 space-y-3"
+            className="mt-3 flex min-h-0 flex-1 flex-col gap-2"
           >
             <input
               name="Name"
               type="text"
               placeholder="Name"
-              className="w-full rounded-[12px] border border-[#426aa5] bg-[#0d264b] px-4 py-3 text-[14px] text-white placeholder:text-[#88a4d0] outline-none transition focus:border-[#74b8ff]"
+              className="w-full rounded-[11px] border border-[#c0d2e7] bg-[#f4f8fe] px-3 py-2.5 text-[14px] text-[#173861] placeholder:text-[#7f97b8] outline-none transition focus:border-[#6d96c6] focus:bg-white"
             />
             <input
               name="Email"
               type="email"
               placeholder="Email"
-              className="w-full rounded-[12px] border border-[#426aa5] bg-[#0d264b] px-4 py-3 text-[14px] text-white placeholder:text-[#88a4d0] outline-none transition focus:border-[#74b8ff]"
+              className="w-full rounded-[11px] border border-[#c0d2e7] bg-[#f4f8fe] px-3 py-2.5 text-[14px] text-[#173861] placeholder:text-[#7f97b8] outline-none transition focus:border-[#6d96c6] focus:bg-white"
             />
             <textarea
               name="Message"
               placeholder="Write your message..."
-              className="min-h-[170px] w-full rounded-[14px] border border-[#426aa5] bg-[#0d264b] px-4 py-3 text-[14px] leading-6 text-white placeholder:text-[#88a4d0] outline-none transition focus:border-[#74b8ff]"
+              className="min-h-0 flex-1 rounded-[12px] border border-[#c0d2e7] bg-[#f4f8fe] px-3 py-2.5 text-[14px] leading-6 text-[#173861] placeholder:text-[#7f97b8] outline-none transition focus:border-[#6d96c6] focus:bg-white"
             />
 
-            <div className="flex flex-wrap gap-2 pt-1">
+            <div className="flex flex-wrap gap-2 pt-0.5">
               <button
                 type="submit"
-                className="inline-flex items-center justify-center rounded-[12px] border border-[#7dc6ff] bg-[#63b6ff] px-5 py-2.5 text-[14px] font-semibold text-[#05213e] transition hover:bg-[#79c3ff]"
+                className="inline-flex items-center justify-center rounded-[11px] border border-[#1c4f88] bg-[#1c4f88] px-4 py-2 text-[13px] font-semibold text-white transition hover:bg-[#2666ac]"
               >
                 Open Email Draft
               </button>
               <a
                 href="mailto:roope.aa@hotmail.com"
-                className="inline-flex items-center justify-center rounded-[12px] border border-[#4f7db5] bg-[#103059] px-5 py-2.5 text-[14px] font-medium text-[#d8e8ff] transition hover:bg-[#154070]"
+                className="inline-flex items-center justify-center rounded-[11px] border border-[#9eb8d8] bg-white px-4 py-2 text-[13px] font-medium text-[#214a7c] transition hover:bg-[#f0f6ff]"
               >
                 Direct Email
               </a>
@@ -468,11 +468,11 @@ export function ContactPanelContent({
           </form>
         </div>
 
-        <aside className="rounded-[18px] border border-white/14 bg-[#071832]/74 p-5 shadow-[0_26px_56px_rgba(3,8,19,0.42)]">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#8abcf8]">Connect</p>
-          <h3 className="mt-3 text-[30px] leading-[1.06] tracking-[-0.02em] text-white">Find me online</h3>
+        <aside className="flex h-full min-h-0 flex-col rounded-[14px] border border-[#ccdbec] bg-white p-4 shadow-[0_18px_34px_rgba(23,53,91,0.08)]">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#5f7ea4]">Connect</p>
+          <h3 className="mt-2 text-[35px] leading-[1.04] tracking-[-0.02em] text-[#123e70]">Find me online</h3>
 
-          <div className="mt-5 flex flex-wrap gap-3">
+          <div className="mt-3 flex flex-wrap gap-2.5">
             <SocialLogoLink href="https://www.linkedin.com/in/roope-aaltonen/" label="LinkedIn">
               <LinkedInGlyph />
             </SocialLogoLink>
@@ -487,7 +487,7 @@ export function ContactPanelContent({
             </SocialLogoLink>
           </div>
 
-          <div className="mt-7 space-y-3">
+          <div className="mt-4 space-y-2">
             <ContactInfoRow label="Phone" value="040 528 3008" href="tel:+358405283008" />
             <ContactInfoRow label="Email" value="roope.aa@hotmail.com" href="mailto:roope.aa@hotmail.com" />
             <ContactInfoRow label="Location" value="Vantaa, Hämeenkylä" />
@@ -509,8 +509,8 @@ function ContactInfoRow({
 }) {
   const content = (
     <>
-      <p className="text-[11px] uppercase tracking-[0.17em] text-[#87a9d7]">{label}</p>
-      <p className="mt-1 text-[16px] font-medium text-white">{value}</p>
+      <p className="text-[10px] uppercase tracking-[0.17em] text-[#6485ac]">{label}</p>
+      <p className="mt-1 text-[14px] font-medium text-[#153a66]">{value}</p>
     </>
   );
 
@@ -518,14 +518,14 @@ function ContactInfoRow({
     return (
       <a
         href={href}
-        className="block rounded-[12px] border border-[#335b90] bg-[#0c274d] px-4 py-3 transition hover:border-[#5f90c9] hover:bg-[#113666]"
+        className="block rounded-[11px] border border-[#c1d3e8] bg-[#f4f8fe] px-3 py-2.5 transition hover:border-[#8eaecf] hover:bg-[#eaf2fd]"
       >
         {content}
       </a>
     );
   }
 
-  return <div className="rounded-[12px] border border-[#335b90] bg-[#0c274d] px-4 py-3">{content}</div>;
+  return <div className="rounded-[11px] border border-[#c1d3e8] bg-[#f4f8fe] px-3 py-2.5">{content}</div>;
 }
 
 function SocialLogoLink({
@@ -544,7 +544,7 @@ function SocialLogoLink({
       rel="noreferrer"
       aria-label={label}
       title={label}
-      className="group inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#4c79b1] bg-[#0f325f] text-[#d7e7ff] transition hover:-translate-y-[1px] hover:border-[#8ec3ff] hover:bg-[#15457e]"
+      className="group inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#9eb7d6] bg-[#edf3fc] text-[#1d4f88] transition hover:-translate-y-[1px] hover:border-[#6f95c2] hover:bg-[#e1ebf9]"
     >
       <span className="h-5 w-5">{children}</span>
     </a>
