@@ -67,18 +67,30 @@ export const projects: Project[] = [
   },
   {
     slug: "metropolia-login-ui",
-    title: "Metropolia Login Page UI Concept",
-    category: "UI Recreation / Frontend",
-    summary: "A frontend concept inspired by Metropolia login flows and student-facing sign-in views. Screenshots and demo coming later.",
-    objective: "Recreate a clean academic login-style interface and focus on visual hierarchy, form structure and credibility.",
-    technicalScope: "Login form layout, branded UI styling, input states, button hierarchy and realistic institutional interface patterns.",
-    environment: "Frontend mockup / UI exercise inspired by a real higher-education sign-in flow.",
-    implementation: "Designed a Metropolia-style login concept around realistic student sign-in conventions and service UI patterns.",
-    validation: "Visual comparison, spacing refinement and consistency checks across input, action and branding elements.",
-    result: "A neat UI-focused piece that fits well into a portfolio as a compact interface recreation exercise.",
-    learned: "Better eye for credible product-style UI, typography balance and realistic form design.",
-    stack: ["React", "HTML", "CSS", "UI design"],
-    evidence: ["Screenshots and demo coming later."],
+    title: "Phishing Awareness Login Demo",
+    category: "Security Awareness / Frontend + Backend",
+    summary:
+      "A controlled security awareness demo that recreates a familiar university login experience to show how convincing phishing pages can look in practice, without storing real passwords.",
+    objective:
+      "Demonstrate phishing risk in a realistic but controlled and authorized exercise where trust can be exploited through design alone.",
+    technicalScope:
+      "Familiar login UI recreation, responsive interaction flow, lightweight backend event tracking, username masking, no password storage and immediate post-interaction reveal.",
+    environment:
+      "Built as an authorized Practical Hacking course exercise with a frontend login simulation and a lightweight backend for safe demo tracking.",
+    implementation:
+      "Recreated a familiar university-style login flow, connected it to a lightweight backend, and implemented safety controls so usernames are masked and passwords are never stored.",
+    validation:
+      "Tested end-to-end interaction flow, verified that only safe metadata is tracked, confirmed password non-storage and ensured immediate disclosure of the exercise after interaction.",
+    result:
+      "A practical phishing awareness demo that combines realistic UI replication, backend tracking and safe security-focused design.",
+    learned:
+      "Stronger hands-on understanding of ethical security demo design, safe scope control, and how convincing interface familiarity can influence user trust.",
+    stack: ["React", "TypeScript", "HTML", "CSS", "Node.js", "Express", "Security awareness"],
+    evidence: [
+      "Authorized course scope: Practical Hacking exercise.",
+      "Usernames are masked and passwords are never stored.",
+      "Immediate post-interaction disclosure explains the lesson clearly.",
+    ],
     cardAccent: "switch",
   },
 ];

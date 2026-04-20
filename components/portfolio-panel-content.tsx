@@ -348,20 +348,51 @@ export function ContactPanelContent({
 }) {
   void section;
   const [contactDraft, setContactDraft] = useState({ name: "", email: "", message: "" });
+  const [isSending, setIsSending] = useState(false);
+  const [sendFeedback, setSendFeedback] = useState<{ kind: "ok" | "error"; text: string } | null>(null);
 
-  const handleContactSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleContactSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (isSending) return;
 
     const safeName = contactDraft.name.trim() || "Website visitor";
     const safeEmail = contactDraft.email.trim() || "Not provided";
     const safeMessage = contactDraft.message.trim() || "(No message written)";
 
-    const subject = encodeURIComponent(`Portfolio contact from ${safeName}`);
-    const body = encodeURIComponent(
-      [`Name: ${safeName}`, `Email: ${safeEmail}`, "", "Message:", safeMessage].join("\n"),
-    );
+    setSendFeedback(null);
+    setIsSending(true);
 
-    window.location.href = `mailto:roope.aa@hotmail.com?subject=${subject}&body=${body}`;
+    try {
+      const response = await fetch("https://formsubmit.co/ajax/roope.aa@hotmail.com", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          name: safeName,
+          email: safeEmail,
+          message: safeMessage,
+          _subject: `Portfolio contact from ${safeName}`,
+          _template: "table",
+          _captcha: "false",
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Form submit failed");
+      }
+
+      setSendFeedback({ kind: "ok", text: "Message sent successfully." });
+      setContactDraft({ name: "", email: "", message: "" });
+    } catch {
+      setSendFeedback({
+        kind: "error",
+        text: "Sending failed. Please try again or email me directly at roope.aa@hotmail.com.",
+      });
+    } finally {
+      setIsSending(false);
+    }
   };
 
   if (preview) {
@@ -441,10 +472,16 @@ export function ContactPanelContent({
             <div className="pt-0.5">
               <button
                 type="submit"
+                disabled={isSending}
                 className="inline-flex items-center justify-center rounded-[10px] border border-[#8eaed1] bg-white px-4 py-1.5 text-[12px] font-medium text-[#214a7c] transition hover:bg-[#f0f6ff]"
               >
-                Send
+                {isSending ? "Sending..." : "Send"}
               </button>
+              {sendFeedback ? (
+                <p className={`mt-2 text-[11px] ${sendFeedback.kind === "ok" ? "text-[#2b6b35]" : "text-[#9a2f2f]"}`}>
+                  {sendFeedback.text}
+                </p>
+              ) : null}
             </div>
           </form>
         </div>
