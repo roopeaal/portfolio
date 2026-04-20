@@ -111,6 +111,7 @@ export function AboutPanelContent({
   void section;
 
   const heroLine = `${profile.name.toUpperCase()} IS AN ICT ENGINEERING STUDENT FOCUSED ON NETWORKING, LINUX, CLOUD AND PRACTICAL SYSTEM BUILDING`;
+  const portraitSrc = "/portfolio/about-vintage-roope-transparent.png";
   const leftCopy =
     "Hi, I am Roope Aaltonen. I work in a practical, build-first way and I enjoy turning technical ideas into working systems. My strongest interest areas are networking, Linux environments and connected infrastructure where reliability matters.";
   const rightCopy =
@@ -126,12 +127,12 @@ export function AboutPanelContent({
             "radial-gradient(circle at 22% 18%, rgba(255,255,255,0.08) 0, rgba(255,255,255,0) 42%), radial-gradient(circle at 78% 22%, rgba(135,154,186,0.22) 0, rgba(135,154,186,0) 44%), repeating-linear-gradient(135deg, rgba(255,255,255,0.035) 0px, rgba(255,255,255,0.035) 2px, rgba(255,255,255,0.015) 2px, rgba(255,255,255,0.015) 8px)",
         }}
       >
-        <div className="grid h-full min-h-0 grid-cols-[1fr_120px_1fr] items-center gap-2">
-          <p className="text-[9px] leading-4 text-[#c8d2df]">{leftCopy}</p>
-          <div className="relative mx-auto h-[150px] w-[110px] overflow-hidden rounded-[4px] border border-[#6f7f97] bg-[#0f141e] shadow-[0_8px_16px_rgba(0,0,0,0.45)]">
-            <Image src="/portfolio/about-vintage-roope.png" alt={profile.name} fill sizes="110px" className="object-cover" />
+        <div className="grid h-full min-h-0 grid-cols-[1fr_126px_1fr] items-center gap-2">
+          <p className="text-[9px] leading-4 text-[#c8d2df]" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>{leftCopy}</p>
+          <div className="relative mx-auto h-[156px] w-[126px] overflow-hidden">
+            <Image src={portraitSrc} alt={profile.name} fill sizes="126px" className="object-contain object-center scale-[1.09] [filter:contrast(1.05)_brightness(0.98)]" />
           </div>
-          <p className="text-[9px] leading-4 text-[#c8d2df]">{rightCopy}</p>
+          <p className="text-[9px] leading-4 text-[#c8d2df]" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>{rightCopy}</p>
         </div>
       </div>
     );
@@ -143,42 +144,51 @@ export function AboutPanelContent({
       style={{
         backgroundColor: "#1a2230",
         backgroundImage:
-          "radial-gradient(circle at 18% 14%, rgba(255,255,255,0.1) 0, rgba(255,255,255,0) 40%), radial-gradient(circle at 82% 18%, rgba(143,165,193,0.2) 0, rgba(143,165,193,0) 45%), radial-gradient(circle at 50% 84%, rgba(255,255,255,0.06) 0, rgba(255,255,255,0) 55%), repeating-linear-gradient(130deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 2px, rgba(255,255,255,0.015) 2px, rgba(255,255,255,0.015) 10px)",
+          "radial-gradient(circle at 18% 14%, rgba(255,255,255,0.10) 0, rgba(255,255,255,0) 40%), radial-gradient(circle at 82% 18%, rgba(143,165,193,0.2) 0, rgba(143,165,193,0) 45%), radial-gradient(circle at 50% 84%, rgba(255,255,255,0.06) 0, rgba(255,255,255,0) 55%), radial-gradient(circle at 16% 18%, rgba(255,255,255,0.03) 0, rgba(255,255,255,0) 22%), radial-gradient(circle at 84% 84%, rgba(255,255,255,0.03) 0, rgba(255,255,255,0) 24%), repeating-linear-gradient(130deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 2px, rgba(255,255,255,0.015) 2px, rgba(255,255,255,0.015) 10px)",
       }}
     >
       <div className="flex h-full min-h-0 flex-col">
         <header className="text-center">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.38em] text-[#c6d1df]">{heroLine}</p>
-          <div className="mt-3 flex items-center gap-3">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.34em] text-[#c6d1df]" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>{heroLine}</p>
+          <div className="mt-2 flex items-center gap-3">
             <div className="h-px flex-1 bg-[#72829b]/40" />
             <span className="text-[16px] text-[#b7c4d7]">❦</span>
             <div className="h-px flex-1 bg-[#72829b]/40" />
           </div>
         </header>
 
-        <div className="mt-4 grid min-h-0 flex-1 items-center gap-4 lg:grid-cols-[1fr_320px_1fr]">
-          <section className="rounded-[12px] border border-[#5a6981]/45 bg-[#101722]/40 p-3 text-[13px] leading-7 text-[#d7e0eb] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.05)]">
+        <div className="mt-3 grid min-h-0 flex-1 items-center gap-4 lg:grid-cols-[1fr_430px_1fr]">
+          <section
+            className="mx-auto max-w-[360px] px-4 text-center text-[13px] leading-8 text-[#d7e0eb]"
+            style={{ fontFamily: "Georgia, 'Times New Roman', serif", textShadow: "0 1px 0 rgba(0,0,0,0.28)" }}
+          >
             {leftCopy}
           </section>
 
-          <figure className="flex flex-col items-center">
-            <div className="relative w-full max-w-[320px] overflow-hidden rounded-[8px] border border-[#d2c08a]/45 bg-[#0d1018] shadow-[0_14px_34px_rgba(0,0,0,0.48)]">
+          <figure className="flex h-full min-h-0 flex-col items-center">
+            <div className="relative min-h-0 w-full max-w-[430px] flex-1 overflow-hidden">
               <Image
-                src="/portfolio/about-vintage-roope.png"
+                src={portraitSrc}
                 alt={`${profile.name} vintage portrait`}
-                width={512}
-                height={768}
-                className="h-auto w-full object-cover"
+                fill
+                sizes="430px"
+                className="object-contain object-center scale-[1.12] [filter:contrast(1.08)_brightness(0.985)] drop-shadow-[0_12px_20px_rgba(0,0,0,0.35)]"
                 priority={false}
               />
             </div>
-            <figcaption className="mt-3 text-center text-[13px] italic leading-6 text-[#c7d3e4]">
+            <figcaption
+              className="mt-2 text-center text-[13px] italic leading-6 text-[#c7d3e4]"
+              style={{ fontFamily: "Georgia, 'Times New Roman', serif", textShadow: "0 1px 0 rgba(0,0,0,0.35)" }}
+            >
               {profile.name}
               <span className="block text-[11px] tracking-[0.2em] text-[#99aac4]">ICT Engineer in Progress</span>
             </figcaption>
           </figure>
 
-          <section className="rounded-[12px] border border-[#5a6981]/45 bg-[#101722]/40 p-3 text-[13px] leading-7 text-[#d7e0eb] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.05)]">
+          <section
+            className="mx-auto max-w-[360px] px-4 text-center text-[13px] leading-8 text-[#d7e0eb]"
+            style={{ fontFamily: "Georgia, 'Times New Roman', serif", textShadow: "0 1px 0 rgba(0,0,0,0.28)" }}
+          >
             {rightCopy}
           </section>
         </div>
