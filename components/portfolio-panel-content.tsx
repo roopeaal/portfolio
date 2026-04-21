@@ -181,12 +181,15 @@ export function AboutPanelContent({
               style={{ textShadow: "0 1px 0 rgba(0,0,0,0.35)" }}
             >
               <span
-                className="block text-[36px] leading-[0.95] text-[#d9e2ef]"
+                className="block text-[20px] leading-[1.02] text-[#d9e2ef]"
                 style={{ fontFamily: "'Apple Chancery', 'Snell Roundhand', 'URW Chancery L', 'Brush Script MT', cursive" }}
               >
                 Roope Aaltonen
               </span>
-              <span className="mt-1 block text-[11px] italic tracking-[0.18em] text-[#99aac4]" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
+              <span
+                className="mt-0.5 block text-[16px] leading-[1.02] text-[#aebdd2]"
+                style={{ fontFamily: "'Apple Chancery', 'Snell Roundhand', 'URW Chancery L', 'Brush Script MT', cursive" }}
+              >
                 ICT Engineer in Progress
               </span>
             </figcaption>
