@@ -111,7 +111,7 @@ export function AboutPanelContent({
   void section;
 
   const heroLine = `${profile.name.toUpperCase()} IS AN ICT ENGINEERING STUDENT FOCUSED ON NETWORKING, LINUX, CLOUD AND PRACTICAL SYSTEM BUILDING`;
-  const portraitSrc = "/portfolio/about-vintage-roope-transparent.png";
+  const portraitSrc = "/portfolio/about-vintage-roope.png";
   const leftCopy =
     "Hi, I am Roope Aaltonen. I work in a practical, build-first way and I enjoy turning technical ideas into working systems. My strongest interest areas are networking, Linux environments and connected infrastructure where reliability matters.";
   const rightCopy =
@@ -130,7 +130,7 @@ export function AboutPanelContent({
         <div className="grid h-full min-h-0 grid-cols-[1fr_126px_1fr] items-center gap-2">
           <p className="text-[9px] leading-4 text-[#c8d2df]" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>{leftCopy}</p>
           <div className="relative mx-auto h-[156px] w-[126px] overflow-hidden">
-            <Image src={portraitSrc} alt={profile.name} fill sizes="126px" className="object-contain object-center scale-[1.09] mix-blend-multiply [filter:contrast(1.05)_brightness(0.98)]" />
+            <Image src={portraitSrc} alt={profile.name} fill sizes="126px" className="object-contain object-center scale-[1.1] mix-blend-darken [filter:contrast(1.08)_brightness(0.94)]" />
           </div>
           <p className="text-[9px] leading-4 text-[#c8d2df]" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>{rightCopy}</p>
         </div>
@@ -172,7 +172,7 @@ export function AboutPanelContent({
                 alt={`${profile.name} vintage portrait`}
                 fill
                 sizes="430px"
-                className="object-contain object-center scale-[1.12] mix-blend-multiply [filter:contrast(1.08)_brightness(0.985)]"
+                className="object-contain object-center scale-[1.13] mix-blend-darken [filter:contrast(1.1)_brightness(0.93)_drop-shadow(0_12px_18px_rgba(0,0,0,0.55))]"
                 priority={false}
               />
             </div>
