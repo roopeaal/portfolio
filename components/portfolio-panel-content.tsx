@@ -124,7 +124,8 @@ export function AboutPanelContent({
         style={{
           backgroundColor: "#1c2432",
           backgroundImage:
-            "radial-gradient(circle at 22% 18%, rgba(255,255,255,0.08) 0, rgba(255,255,255,0) 42%), radial-gradient(circle at 78% 22%, rgba(135,154,186,0.22) 0, rgba(135,154,186,0) 44%), repeating-linear-gradient(135deg, rgba(255,255,255,0.035) 0px, rgba(255,255,255,0.035) 2px, rgba(255,255,255,0.015) 2px, rgba(255,255,255,0.015) 8px)",
+            "radial-gradient(ellipse 34px 20px at 50% 28%, rgba(184,201,224,0.11) 0 58%, rgba(184,201,224,0) 61%), radial-gradient(circle at 50% 12%, rgba(184,201,224,0.1) 0 4px, rgba(184,201,224,0) 5px), radial-gradient(circle at 25% 52%, rgba(167,188,216,0.08) 0 3px, rgba(167,188,216,0) 4px), radial-gradient(circle at 75% 52%, rgba(167,188,216,0.08) 0 3px, rgba(167,188,216,0) 4px), radial-gradient(ellipse 24px 15px at 50% 76%, rgba(176,196,221,0.08) 0 60%, rgba(176,196,221,0) 63%), radial-gradient(circle at 22% 18%, rgba(255,255,255,0.08) 0, rgba(255,255,255,0) 42%), radial-gradient(circle at 78% 22%, rgba(135,154,186,0.22) 0, rgba(135,154,186,0) 44%)",
+          backgroundSize: "128px 128px, 128px 128px, 128px 128px, 128px 128px, 128px 128px, 100% 100%, 100% 100%",
         }}
       >
         <div className="grid h-full min-h-0 grid-cols-[1fr_126px_1fr] items-center gap-2">
@@ -151,7 +152,8 @@ export function AboutPanelContent({
         style={{
           opacity: 0.92,
           backgroundImage:
-            "radial-gradient(120% 88% at 18% 12%, rgba(255,255,255,0.08) 0, rgba(255,255,255,0) 58%), radial-gradient(120% 88% at 82% 12%, rgba(148,169,198,0.18) 0, rgba(148,169,198,0) 58%), repeating-radial-gradient(circle at 18% 20%, rgba(183,198,221,0.045) 0px, rgba(183,198,221,0.045) 2px, rgba(183,198,221,0) 2px, rgba(183,198,221,0) 18px), repeating-radial-gradient(circle at 82% 20%, rgba(183,198,221,0.045) 0px, rgba(183,198,221,0.045) 2px, rgba(183,198,221,0) 2px, rgba(183,198,221,0) 18px), repeating-linear-gradient(135deg, rgba(255,255,255,0.022) 0px, rgba(255,255,255,0.022) 2px, rgba(255,255,255,0.008) 2px, rgba(255,255,255,0.008) 10px)",
+            "radial-gradient(ellipse 52px 30px at 50% 28%, rgba(186,203,225,0.1) 0 58%, rgba(186,203,225,0) 61%), radial-gradient(circle at 50% 12%, rgba(186,203,225,0.1) 0 6px, rgba(186,203,225,0) 7px), radial-gradient(circle at 24% 50%, rgba(170,191,220,0.08) 0 5px, rgba(170,191,220,0) 6px), radial-gradient(circle at 76% 50%, rgba(170,191,220,0.08) 0 5px, rgba(170,191,220,0) 6px), radial-gradient(ellipse 36px 22px at 50% 76%, rgba(177,197,223,0.09) 0 60%, rgba(177,197,223,0) 63%), radial-gradient(120% 88% at 18% 12%, rgba(255,255,255,0.08) 0, rgba(255,255,255,0) 58%), radial-gradient(120% 88% at 82% 12%, rgba(148,169,198,0.18) 0, rgba(148,169,198,0) 58%)",
+          backgroundSize: "176px 176px, 176px 176px, 176px 176px, 176px 176px, 176px 176px, 100% 100%, 100% 100%",
           WebkitMaskImage: "linear-gradient(to bottom, #000 0%, #000 70%, rgba(0,0,0,0) 92%)",
           maskImage: "linear-gradient(to bottom, #000 0%, #000 70%, rgba(0,0,0,0) 92%)",
         }}
