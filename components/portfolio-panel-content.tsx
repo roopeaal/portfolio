@@ -140,14 +140,14 @@ export function AboutPanelContent({
 
   return (
     <div
-      className="h-full overflow-hidden rounded-[14px] border border-[#2f394a] p-4 text-[#d5deea]"
+      className="h-full w-full overflow-hidden text-[#d5deea]"
       style={{
         backgroundColor: "#1a2230",
         backgroundImage:
           "radial-gradient(circle at 18% 14%, rgba(255,255,255,0.10) 0, rgba(255,255,255,0) 40%), radial-gradient(circle at 82% 18%, rgba(143,165,193,0.2) 0, rgba(143,165,193,0) 45%), radial-gradient(circle at 50% 84%, rgba(255,255,255,0.06) 0, rgba(255,255,255,0) 55%), radial-gradient(circle at 16% 18%, rgba(255,255,255,0.03) 0, rgba(255,255,255,0) 22%), radial-gradient(circle at 84% 84%, rgba(255,255,255,0.03) 0, rgba(255,255,255,0) 24%), repeating-linear-gradient(130deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 2px, rgba(255,255,255,0.015) 2px, rgba(255,255,255,0.015) 10px)",
       }}
     >
-      <div className="flex h-full min-h-0 flex-col">
+      <div className="flex h-full min-h-0 flex-col px-4 py-4 md:px-6 md:py-5">
         <header className="text-center">
           <p className="text-[11px] font-semibold uppercase tracking-[0.34em] text-[#c6d1df]" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>{heroLine}</p>
           <div className="mt-2 flex items-center gap-3">
@@ -157,7 +157,7 @@ export function AboutPanelContent({
           </div>
         </header>
 
-        <div className="mt-3 grid min-h-0 flex-1 items-center gap-4 lg:grid-cols-[1fr_430px_1fr]">
+        <div className="mt-3 grid min-h-0 flex-1 items-center gap-4 lg:grid-cols-[1fr_400px_1fr]">
           <section
             className="mx-auto max-w-[360px] px-4 text-center text-[13px] leading-8 text-[#d7e0eb]"
             style={{ fontFamily: "Georgia, 'Times New Roman', serif", textShadow: "0 1px 0 rgba(0,0,0,0.28)" }}
@@ -165,23 +165,30 @@ export function AboutPanelContent({
             {leftCopy}
           </section>
 
-          <figure className="flex h-full min-h-0 flex-col items-center">
-            <div className="relative min-h-0 w-full max-w-[430px] flex-1 overflow-hidden">
+          <figure className="flex h-full min-h-0 flex-col items-center justify-center">
+            <div className="relative min-h-0 w-full max-w-[400px] flex-1 overflow-hidden">
               <Image
                 src={portraitSrc}
                 alt={`${profile.name} vintage portrait`}
                 fill
-                sizes="430px"
-                className="object-contain object-center scale-[1.13] [filter:contrast(1.06)_brightness(0.98)_drop-shadow(0_12px_18px_rgba(0,0,0,0.52))]"
+                sizes="400px"
+                className="object-contain object-center [filter:contrast(1.06)_brightness(0.99)_drop-shadow(0_10px_16px_rgba(0,0,0,0.5))]"
                 priority={false}
               />
             </div>
             <figcaption
-              className="mt-2 text-center text-[13px] italic leading-6 text-[#c7d3e4]"
-              style={{ fontFamily: "Georgia, 'Times New Roman', serif", textShadow: "0 1px 0 rgba(0,0,0,0.35)" }}
+              className="mt-2 text-center text-[#c7d3e4]"
+              style={{ textShadow: "0 1px 0 rgba(0,0,0,0.35)" }}
             >
-              {profile.name}
-              <span className="block text-[11px] tracking-[0.2em] text-[#99aac4]">ICT Engineer in Progress</span>
+              <span
+                className="block text-[36px] leading-[0.95] text-[#d9e2ef]"
+                style={{ fontFamily: "'Apple Chancery', 'Snell Roundhand', 'URW Chancery L', 'Brush Script MT', cursive" }}
+              >
+                Roope Aaltonen
+              </span>
+              <span className="mt-1 block text-[11px] italic tracking-[0.18em] text-[#99aac4]" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
+                ICT Engineer in Progress
+              </span>
             </figcaption>
           </figure>
 
