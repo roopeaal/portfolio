@@ -150,10 +150,11 @@ export function AboutPanelContent({
         aria-hidden="true"
         className="pointer-events-none absolute inset-0"
         style={{
-          opacity: 0.92,
+          opacity: 0.96,
           backgroundImage:
-            "radial-gradient(ellipse 52px 30px at 50% 28%, rgba(186,203,225,0.1) 0 58%, rgba(186,203,225,0) 61%), radial-gradient(circle at 50% 12%, rgba(186,203,225,0.1) 0 6px, rgba(186,203,225,0) 7px), radial-gradient(circle at 24% 50%, rgba(170,191,220,0.08) 0 5px, rgba(170,191,220,0) 6px), radial-gradient(circle at 76% 50%, rgba(170,191,220,0.08) 0 5px, rgba(170,191,220,0) 6px), radial-gradient(ellipse 36px 22px at 50% 76%, rgba(177,197,223,0.09) 0 60%, rgba(177,197,223,0) 63%), radial-gradient(120% 88% at 18% 12%, rgba(255,255,255,0.08) 0, rgba(255,255,255,0) 58%), radial-gradient(120% 88% at 82% 12%, rgba(148,169,198,0.18) 0, rgba(148,169,198,0) 58%)",
-          backgroundSize: "176px 176px, 176px 176px, 176px 176px, 176px 176px, 176px 176px, 100% 100%, 100% 100%",
+            "radial-gradient(140% 84% at 18% 10%, rgba(255,255,255,0.075) 0, rgba(255,255,255,0) 54%), radial-gradient(140% 84% at 82% 10%, rgba(143,165,193,0.17) 0, rgba(143,165,193,0) 56%), url('/portfolio/about-vintage-wallpaper.svg')",
+          backgroundSize: "100% 100%, 100% 100%, 180px 180px",
+          backgroundPosition: "center top, center top, center top",
           WebkitMaskImage: "linear-gradient(to bottom, #000 0%, #000 70%, rgba(0,0,0,0) 92%)",
           maskImage: "linear-gradient(to bottom, #000 0%, #000 70%, rgba(0,0,0,0) 92%)",
         }}
