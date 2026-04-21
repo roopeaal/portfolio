@@ -140,14 +140,24 @@ export function AboutPanelContent({
 
   return (
     <div
-      className="h-full w-full overflow-hidden text-[#d5deea]"
+      className="relative h-full w-full overflow-hidden text-[#d5deea]"
       style={{
         backgroundColor: "#1a2230",
-        backgroundImage:
-          "radial-gradient(circle at 18% 14%, rgba(255,255,255,0.10) 0, rgba(255,255,255,0) 40%), radial-gradient(circle at 82% 18%, rgba(143,165,193,0.2) 0, rgba(143,165,193,0) 45%), radial-gradient(circle at 50% 84%, rgba(255,255,255,0.06) 0, rgba(255,255,255,0) 55%), radial-gradient(circle at 16% 18%, rgba(255,255,255,0.03) 0, rgba(255,255,255,0) 22%), radial-gradient(circle at 84% 84%, rgba(255,255,255,0.03) 0, rgba(255,255,255,0) 24%), repeating-linear-gradient(130deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 2px, rgba(255,255,255,0.015) 2px, rgba(255,255,255,0.015) 10px)",
       }}
     >
-      <div className="flex h-full min-h-0 flex-col px-4 py-4 md:px-6 md:py-5">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0"
+        style={{
+          opacity: 0.92,
+          backgroundImage:
+            "radial-gradient(120% 88% at 18% 12%, rgba(255,255,255,0.08) 0, rgba(255,255,255,0) 58%), radial-gradient(120% 88% at 82% 12%, rgba(148,169,198,0.18) 0, rgba(148,169,198,0) 58%), repeating-radial-gradient(circle at 18% 20%, rgba(183,198,221,0.045) 0px, rgba(183,198,221,0.045) 2px, rgba(183,198,221,0) 2px, rgba(183,198,221,0) 18px), repeating-radial-gradient(circle at 82% 20%, rgba(183,198,221,0.045) 0px, rgba(183,198,221,0.045) 2px, rgba(183,198,221,0) 2px, rgba(183,198,221,0) 18px), repeating-linear-gradient(135deg, rgba(255,255,255,0.022) 0px, rgba(255,255,255,0.022) 2px, rgba(255,255,255,0.008) 2px, rgba(255,255,255,0.008) 10px)",
+          WebkitMaskImage: "linear-gradient(to bottom, #000 0%, #000 70%, rgba(0,0,0,0) 92%)",
+          maskImage: "linear-gradient(to bottom, #000 0%, #000 70%, rgba(0,0,0,0) 92%)",
+        }}
+      />
+
+      <div className="relative z-[1] flex h-full min-h-0 flex-col px-4 py-4 md:px-6 md:py-5">
         <header className="text-center">
           <p className="text-[11px] font-semibold uppercase tracking-[0.34em] text-[#c6d1df]" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>{heroLine}</p>
           <div className="mt-2 flex items-center gap-3">
