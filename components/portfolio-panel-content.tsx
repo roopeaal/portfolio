@@ -130,7 +130,7 @@ export function AboutPanelContent({
         <div className="grid h-full min-h-0 grid-cols-[1fr_126px_1fr] items-center gap-2">
           <p className="text-[9px] leading-4 text-[#c8d2df]" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>{leftCopy}</p>
           <div className="relative mx-auto h-[156px] w-[126px] overflow-hidden">
-            <Image src={portraitSrc} alt={profile.name} fill sizes="126px" className="object-contain object-center scale-[1.09] [filter:contrast(1.05)_brightness(0.98)]" />
+            <Image src={portraitSrc} alt={profile.name} fill sizes="126px" className="object-contain object-center scale-[1.09] mix-blend-multiply [filter:contrast(1.05)_brightness(0.98)]" />
           </div>
           <p className="text-[9px] leading-4 text-[#c8d2df]" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>{rightCopy}</p>
         </div>
@@ -172,7 +172,7 @@ export function AboutPanelContent({
                 alt={`${profile.name} vintage portrait`}
                 fill
                 sizes="430px"
-                className="object-contain object-center scale-[1.12] [filter:contrast(1.08)_brightness(0.985)] drop-shadow-[0_12px_20px_rgba(0,0,0,0.35)]"
+                className="object-contain object-center scale-[1.12] mix-blend-multiply [filter:contrast(1.08)_brightness(0.985)]"
                 priority={false}
               />
             </div>
