@@ -110,12 +110,12 @@ export function AboutPanelContent({
 }) {
   void section;
 
-  const heroLine = `${profile.name.toUpperCase()} IS AN ICT ENGINEERING STUDENT FOCUSED ON NETWORKING, LINUX, CLOUD AND PRACTICAL SYSTEM BUILDING`;
+  const heroLine = `${profile.name.toUpperCase()} IS AN ICT ENGINEERING STUDENT LIVING IN VANTAA AND BUILDING PRACTICAL NETWORKED SYSTEMS`;
   const portraitSrc = "/portfolio/about-vintage-roope.png";
   const leftCopy =
-    "Hi, I am Roope Aaltonen. I work in a practical, build-first way and I enjoy turning technical ideas into working systems. My strongest interest areas are networking, Linux environments and connected infrastructure where reliability matters.";
+    "What is up, dear visitor. I am Roope Aaltonen, an ICT engineering student who prefers real implementation over abstract theory. I enjoy building environments where routers, Linux hosts and cloud services work together cleanly. My approach is calm, methodical and hands-on: test, verify, fix and document.";
   const rightCopy =
-    "I built this portfolio to show implementation skills in a visible way, not just in text. I learn quickly, troubleshoot methodically, and document clearly so the result is repeatable, maintainable and useful in real team workflows.";
+    "I created this portfolio as a practical proof of work. Instead of only describing skills, I wanted to show how I think through systems end-to-end: from topology design to troubleshooting and refinement. I learn fast, take ownership early, and keep solutions clear so they stay maintainable in real team workflows.";
 
   if (preview) {
     return (
@@ -200,7 +200,7 @@ export function AboutPanelContent({
                 className="mt-0.5 block text-[16px] leading-[1.02] text-[#aebdd2]"
                 style={{ fontFamily: "'Apple Chancery', 'Snell Roundhand', 'URW Chancery L', 'Brush Script MT', cursive" }}
               >
-                ICT Engineer in Progress
+                Network Engineer in Progress
               </span>
             </figcaption>
           </figure>
