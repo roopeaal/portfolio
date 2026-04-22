@@ -186,7 +186,7 @@ export function AboutPanelContent({
                 alt={`${profile.name} vintage portrait`}
                 fill
                 sizes="400px"
-                className="object-contain object-center [filter:contrast(1.06)_brightness(0.99)_drop-shadow(0_10px_16px_rgba(0,0,0,0.5))]"
+                className="object-contain object-center [filter:contrast(1.06)_brightness(0.99)]"
                 priority={false}
               />
             </div>
