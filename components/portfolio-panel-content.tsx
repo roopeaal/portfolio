@@ -110,12 +110,13 @@ export function AboutPanelContent({
 }) {
   void section;
 
-  const heroLine = `${profile.name.toUpperCase()} IS AN ICT ENGINEERING STUDENT FOCUSED ON NETWORKING, LINUX, CLOUD AND PRACTICAL SYSTEM BUILDING`;
+  const heroLineTop = "ROOPE AALTONEN IS AN ICT ENGINEERING STUDENT";
+  const heroLineBottom = "LIVING AND WORKING IN THE HELSINKI METROPOLITAN AREA";
   const portraitSrc = "/portfolio/about-vintage-roope.png";
   const leftCopy =
-    "Hi, I am Roope Aaltonen. I work in a practical, build-first way and I enjoy turning technical ideas into working systems. My strongest interest areas are networking, Linux environments and connected infrastructure where reliability matters.";
+    "Greetings, Dear Reader. I'm Roope Aaltonen, an ICT engineering student with a particular fondness for networking, Linux, cloud, IoT and the practical art of solving technical problems. I have long been drawn to the inner logic of systems, how they connect, how they fail, how they recover, and how they may be shaped into something dependable, orderly and fit for real use.";
   const rightCopy =
-    "I built this portfolio to show implementation skills in a visible way, not just in text. I learn quickly, troubleshoot methodically, and document clearly so the result is repeatable, maintainable and useful in real team workflows.";
+    "My interests lie chiefly in networks, infrastructure and the practical side of computing. Before entering the world of formal study, I worked in warehouse operations, where ERP systems, stock control and daily process accuracy first led me further into technology. Since then, that interest has only deepened, and I now spend a good share of my time building projects that turn curiosity into something concrete, functional and plainly visible.";
 
   if (preview) {
     return (
@@ -124,13 +125,14 @@ export function AboutPanelContent({
         style={{
           backgroundColor: "#1c2432",
           backgroundImage:
-            "radial-gradient(circle at 22% 18%, rgba(255,255,255,0.08) 0, rgba(255,255,255,0) 42%), radial-gradient(circle at 78% 22%, rgba(135,154,186,0.22) 0, rgba(135,154,186,0) 44%), repeating-linear-gradient(135deg, rgba(255,255,255,0.035) 0px, rgba(255,255,255,0.035) 2px, rgba(255,255,255,0.015) 2px, rgba(255,255,255,0.015) 8px)",
+            "radial-gradient(ellipse 34px 20px at 50% 28%, rgba(184,201,224,0.11) 0 58%, rgba(184,201,224,0) 61%), radial-gradient(circle at 50% 12%, rgba(184,201,224,0.1) 0 4px, rgba(184,201,224,0) 5px), radial-gradient(circle at 25% 52%, rgba(167,188,216,0.08) 0 3px, rgba(167,188,216,0) 4px), radial-gradient(circle at 75% 52%, rgba(167,188,216,0.08) 0 3px, rgba(167,188,216,0) 4px), radial-gradient(ellipse 24px 15px at 50% 76%, rgba(176,196,221,0.08) 0 60%, rgba(176,196,221,0) 63%), radial-gradient(circle at 22% 18%, rgba(255,255,255,0.08) 0, rgba(255,255,255,0) 42%), radial-gradient(circle at 78% 22%, rgba(135,154,186,0.22) 0, rgba(135,154,186,0) 44%)",
+          backgroundSize: "128px 128px, 128px 128px, 128px 128px, 128px 128px, 128px 128px, 100% 100%, 100% 100%",
         }}
       >
         <div className="grid h-full min-h-0 grid-cols-[1fr_126px_1fr] items-center gap-2">
           <p className="text-[9px] leading-4 text-[#c8d2df]" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>{leftCopy}</p>
           <div className="relative mx-auto h-[156px] w-[126px] overflow-hidden">
-            <Image src={portraitSrc} alt={profile.name} fill sizes="126px" className="object-contain object-center scale-[1.1] mix-blend-darken [filter:contrast(1.08)_brightness(0.94)]" />
+            <Image src={portraitSrc} alt={profile.name} fill sizes="126px" className="object-contain object-center scale-[1.1] [filter:contrast(1.04)_brightness(0.98)]" />
           </div>
           <p className="text-[9px] leading-4 text-[#c8d2df]" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>{rightCopy}</p>
         </div>
@@ -140,16 +142,28 @@ export function AboutPanelContent({
 
   return (
     <div
-      className="h-full overflow-hidden rounded-[14px] border border-[#2f394a] p-4 text-[#d5deea]"
+      className="relative h-full w-full overflow-hidden text-[#d5deea]"
       style={{
         backgroundColor: "#1a2230",
-        backgroundImage:
-          "radial-gradient(circle at 18% 14%, rgba(255,255,255,0.10) 0, rgba(255,255,255,0) 40%), radial-gradient(circle at 82% 18%, rgba(143,165,193,0.2) 0, rgba(143,165,193,0) 45%), radial-gradient(circle at 50% 84%, rgba(255,255,255,0.06) 0, rgba(255,255,255,0) 55%), radial-gradient(circle at 16% 18%, rgba(255,255,255,0.03) 0, rgba(255,255,255,0) 22%), radial-gradient(circle at 84% 84%, rgba(255,255,255,0.03) 0, rgba(255,255,255,0) 24%), repeating-linear-gradient(130deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 2px, rgba(255,255,255,0.015) 2px, rgba(255,255,255,0.015) 10px)",
       }}
     >
-      <div className="flex h-full min-h-0 flex-col">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0"
+        style={{
+          opacity: 1,
+          backgroundImage: "url('/portfolio/about-vintage-wallpaper-v17.png')",
+          backgroundSize: "cover",
+          backgroundPosition: "center top",
+        }}
+      />
+
+      <div className="relative z-[1] flex h-full min-h-0 flex-col px-4 py-4 md:px-6 md:py-5">
         <header className="text-center">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.34em] text-[#c6d1df]" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>{heroLine}</p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.34em] text-[#c6d1df]" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
+            <span className="block">{heroLineTop}</span>
+            <span className="mt-1 block">{heroLineBottom}</span>
+          </p>
           <div className="mt-2 flex items-center gap-3">
             <div className="h-px flex-1 bg-[#72829b]/40" />
             <span className="text-[16px] text-[#b7c4d7]">❦</span>
@@ -157,7 +171,7 @@ export function AboutPanelContent({
           </div>
         </header>
 
-        <div className="mt-3 grid min-h-0 flex-1 items-center gap-4 lg:grid-cols-[1fr_430px_1fr]">
+        <div className="mt-3 grid min-h-0 flex-1 items-center gap-4 lg:grid-cols-[1fr_400px_1fr]">
           <section
             className="mx-auto max-w-[360px] px-4 text-center text-[13px] leading-8 text-[#d7e0eb]"
             style={{ fontFamily: "Georgia, 'Times New Roman', serif", textShadow: "0 1px 0 rgba(0,0,0,0.28)" }}
@@ -165,23 +179,33 @@ export function AboutPanelContent({
             {leftCopy}
           </section>
 
-          <figure className="flex h-full min-h-0 flex-col items-center">
-            <div className="relative min-h-0 w-full max-w-[430px] flex-1 overflow-hidden">
+          <figure className="flex h-full min-h-0 flex-col items-center justify-center">
+            <div className="relative min-h-0 w-full max-w-[400px] flex-1 overflow-hidden">
               <Image
                 src={portraitSrc}
                 alt={`${profile.name} vintage portrait`}
                 fill
-                sizes="430px"
-                className="object-contain object-center scale-[1.13] mix-blend-multiply [filter:contrast(1.08)_brightness(0.95)]"
+                sizes="400px"
+                className="object-contain object-center [filter:contrast(1.06)_brightness(0.99)_drop-shadow(0_10px_16px_rgba(0,0,0,0.5))]"
                 priority={false}
               />
             </div>
             <figcaption
-              className="mt-2 text-center text-[13px] italic leading-6 text-[#c7d3e4]"
-              style={{ fontFamily: "Georgia, 'Times New Roman', serif", textShadow: "0 1px 0 rgba(0,0,0,0.35)" }}
+              className="mt-2 text-center text-[#c7d3e4]"
+              style={{ textShadow: "0 1px 0 rgba(0,0,0,0.35)" }}
             >
-              {profile.name}
-              <span className="block text-[11px] tracking-[0.2em] text-[#99aac4]">ICT Engineer in Progress</span>
+              <span
+                className="block text-[20px] leading-[1.02] text-[#d9e2ef]"
+                style={{ fontFamily: "'Apple Chancery', 'Snell Roundhand', 'URW Chancery L', 'Brush Script MT', cursive" }}
+              >
+                Roope Aaltonen
+              </span>
+              <span
+                className="mt-0.5 block text-[16px] leading-[1.02] text-[#aebdd2]"
+                style={{ fontFamily: "'Apple Chancery', 'Snell Roundhand', 'URW Chancery L', 'Brush Script MT', cursive" }}
+              >
+                Student of Technology
+              </span>
             </figcaption>
           </figure>
 
@@ -419,33 +443,44 @@ export function ContactPanelContent({
 
   if (preview) {
     return (
-      <div className="h-full overflow-hidden rounded-[12px] border border-[#bfd0e5] bg-[linear-gradient(180deg,#f5f8fd_0%,#e8f0fb_100%)] p-3 text-[#122845]">
-        <div className="flex h-full flex-col justify-between rounded-[10px] border border-[#d0deee] bg-white/92 p-3">
+      <div className="relative h-full overflow-hidden rounded-[12px] border border-[#c7d6e8] p-3 text-[#112844]">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle at 16% 18%, rgba(75,134,210,0.22), rgba(75,134,210,0) 46%), radial-gradient(circle at 84% 22%, rgba(32,194,175,0.16), rgba(32,194,175,0) 44%), linear-gradient(180deg, #f9fcff 0%, #edf4fc 100%)",
+          }}
+        />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 opacity-55"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(72,101,143,0.12) 1px, transparent 1px), linear-gradient(90deg, rgba(72,101,143,0.12) 1px, transparent 1px)",
+            backgroundSize: "24px 24px",
+          }}
+        />
+        <div className="relative flex h-full flex-col justify-between rounded-[10px] border border-[#c3d4e9] bg-white/86 p-3 shadow-[0_10px_22px_rgba(22,63,112,0.12)]">
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#5f7ea4]">Contact</p>
-            <h3 className="mt-2 text-[18px] font-semibold leading-tight text-[#143862]">Let&apos;s build something great together.</h3>
+            <p className="text-[10px] uppercase tracking-[0.24em] text-[#6080aa]">Network Contact</p>
+            <h3 className="mt-2 text-[19px] leading-[1.05] text-[#10355d]">Let&apos;s build reliable systems together.</h3>
+            <p className="mt-1 text-[11px] text-[#4e6686]">Fast channels + concise message form.</p>
           </div>
 
-          <div className="space-y-2.5">
-            <div className="flex items-center gap-2">
-              <SocialLogoLink href="https://www.linkedin.com/in/roope-aaltonen/" label="LinkedIn">
-                <LinkedInGlyph />
-              </SocialLogoLink>
-              <SocialLogoLink href="https://facebook.com/roope_aaltonen" label="Instagram">
-                <InstagramGlyph />
-              </SocialLogoLink>
-              <SocialLogoLink href="https://facebook.com/roope.aaltonen.5" label="Facebook">
-                <FacebookGlyph />
-              </SocialLogoLink>
-              <SocialLogoLink href="https://github.com/roopeaal" label="GitHub">
-                <GitHubGlyph />
-              </SocialLogoLink>
+          <div className="space-y-2">
+            <div className="flex flex-wrap items-center gap-1.5">
+              {["Networking", "Linux", "Cloud", "IoT"].map((item) => (
+                <span key={item} className="rounded-full border border-[#c5d7ee] bg-[#f4f9ff] px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.09em] text-[#4a6f9d]">
+                  {item}
+                </span>
+              ))}
             </div>
             <a
-              href="mailto:roope.aa@hotmail.com?subject=Quick%20hello%20from%20your%20portfolio"
-              className="inline-flex rounded-[10px] border border-[#7f9fc5] bg-[#1a4f86] px-3 py-1.5 text-[11px] font-semibold text-white transition hover:bg-[#2364a6]"
+              href="mailto:roope.aa@hotmail.com?subject=Portfolio%20contact%20request"
+              className="inline-flex rounded-[9px] border border-[#89a8cd] bg-[#1b5ea4] px-3 py-1.5 text-[11px] font-semibold text-white transition hover:bg-[#246ebc]"
             >
-              Open message draft
+              Open email
             </a>
           </div>
         </div>
@@ -454,16 +489,72 @@ export function ContactPanelContent({
   }
 
   return (
-    <div className="h-full overflow-hidden rounded-[14px] border border-[#c4d4e8] bg-[linear-gradient(180deg,#f7faff_0%,#edf3fb_100%)] p-3 text-[#132742]">
-      <div className="mx-auto grid h-full max-w-[1140px] grid-cols-[minmax(0,1.16fr)_minmax(0,0.84fr)] gap-3">
-        <div className="flex h-full min-h-0 flex-col rounded-[14px] border border-[#ccdbec] bg-white p-4 shadow-[0_18px_34px_rgba(23,53,91,0.08)]">
-          <h2 className="text-[clamp(2rem,4.1vw,3.9rem)] leading-[0.92] tracking-[-0.03em]">
-            <span className="block font-light text-[#3769a0]">Let&apos;s build</span>
-            <span className="block font-light text-[#3769a0]">something</span>
-            <span className="block font-semibold text-[#123e70]">great together.</span>
-          </h2>
+    <div className="relative h-full w-full overflow-hidden text-[#112742]">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0"
+        style={{
+          backgroundImage:
+            "radial-gradient(circle at 14% 14%, rgba(66,120,198,0.2), rgba(66,120,198,0) 42%), radial-gradient(circle at 88% 22%, rgba(49,180,170,0.16), rgba(49,180,170,0) 44%), linear-gradient(180deg, #f8fbff 0%, #eaf2fb 52%, #e6effa 100%)",
+        }}
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 opacity-55"
+        style={{
+          backgroundImage:
+            "linear-gradient(rgba(74,106,148,0.12) 1px, transparent 1px), linear-gradient(90deg, rgba(74,106,148,0.12) 1px, transparent 1px), radial-gradient(circle at 20% 36%, rgba(68,118,190,0.2) 0 4px, transparent 5px), radial-gradient(circle at 78% 64%, rgba(68,118,190,0.16) 0 4px, transparent 5px), linear-gradient(118deg, transparent 27%, rgba(81,126,190,0.2) 28%, rgba(81,126,190,0.2) 29%, transparent 30%), linear-gradient(63deg, transparent 66%, rgba(61,111,177,0.18) 67%, rgba(61,111,177,0.18) 68%, transparent 69%)",
+          backgroundSize: "26px 26px, 26px 26px, auto, auto, auto, auto",
+        }}
+      />
 
-          <form onSubmit={handleContactSubmit} className="mt-3 flex min-h-0 flex-1 flex-col gap-2" autoComplete="on">
+      <div className="relative z-[1] grid h-full min-h-0 gap-4 px-4 py-4 lg:grid-cols-[minmax(0,1.16fr)_minmax(0,0.84fr)] lg:px-5 lg:py-5">
+        <section className="flex min-h-0 flex-col rounded-[14px] border border-[#c2d4e8] bg-white/90 p-4 shadow-[0_20px_38px_rgba(24,58,101,0.14)]">
+          <p className="text-[11px] uppercase tracking-[0.26em] text-[#5879a4]">Network Contact Gateway</p>
+          <h2 className="mt-2 text-[clamp(2rem,4.8vw,4.2rem)] leading-[0.9] tracking-[-0.02em] text-[#10355d]">
+            Let&apos;s build
+            <span className="block text-[#1a4f85]">something</span>
+            <span className="font-semibold text-[#0f3765]">reliable together.</span>
+          </h2>
+          <p className="mt-3 max-w-[620px] text-[14px] leading-7 text-[#3f5f87]">
+            A clean channel for recruiters and collaborators: quick direct actions, clear availability, and a focused form that goes straight to my inbox.
+          </p>
+
+          <div className="mt-3 flex flex-wrap gap-2.5">
+            <a
+              href="mailto:roope.aa@hotmail.com?subject=Portfolio%20contact%20request"
+              className="inline-flex items-center rounded-[10px] border border-[#8eadd2] bg-[#1d62ab] px-3.5 py-2 text-[12px] font-semibold text-white transition hover:bg-[#2774c6]"
+            >
+              Email
+            </a>
+            <a
+              href="tel:+358405283008"
+              className="inline-flex items-center rounded-[10px] border border-[#b9d2b2] bg-[#49a55c] px-3.5 py-2 text-[12px] font-semibold text-white transition hover:bg-[#56b86a]"
+            >
+              Call
+            </a>
+            <a
+              href="https://www.linkedin.com/in/roope-aaltonen/"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center rounded-[10px] border border-[#8eadd2] bg-[#f3f8ff] px-3.5 py-2 text-[12px] font-semibold text-[#1a4f86] transition hover:bg-[#e5f0ff]"
+            >
+              LinkedIn
+            </a>
+          </div>
+
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            {["Networking", "Linux", "Cloud", "IoT", "Security Mindset"].map((item) => (
+              <span
+                key={item}
+                className="rounded-full border border-[#c5d7eb] bg-[#f4f9ff] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.09em] text-[#4b6f9b]"
+              >
+                {item}
+              </span>
+            ))}
+          </div>
+
+          <form onSubmit={handleContactSubmit} className="mt-4 flex min-h-0 flex-1 flex-col gap-2.5" autoComplete="off">
             <input
               name="Name"
               type="text"
@@ -471,7 +562,7 @@ export function ContactPanelContent({
               autoComplete="name"
               value={contactDraft.name}
               onChange={(event) => setContactDraft((prev) => ({ ...prev, name: event.target.value }))}
-              className="w-full rounded-[11px] border border-[#c0d2e7] bg-[#f4f8fe] px-3 py-2.5 text-[14px] text-[#173861] placeholder:text-[#7f97b8] outline-none transition focus:border-[#6d96c6] focus:bg-white"
+              className="w-full rounded-[11px] border border-[#bdd0e6] bg-[#f8fbff] px-3 py-2.5 text-[14px] text-[#163a62] placeholder:text-[#7d97b8] outline-none transition focus:border-[#6992c1] focus:bg-white"
             />
             <input
               name="Email"
@@ -480,7 +571,7 @@ export function ContactPanelContent({
               autoComplete="email"
               value={contactDraft.email}
               onChange={(event) => setContactDraft((prev) => ({ ...prev, email: event.target.value }))}
-              className="w-full rounded-[11px] border border-[#c0d2e7] bg-[#f4f8fe] px-3 py-2.5 text-[14px] text-[#173861] placeholder:text-[#7f97b8] outline-none transition focus:border-[#6d96c6] focus:bg-white"
+              className="w-full rounded-[11px] border border-[#bdd0e6] bg-[#f8fbff] px-3 py-2.5 text-[14px] text-[#163a62] placeholder:text-[#7d97b8] outline-none transition focus:border-[#6992c1] focus:bg-white"
             />
             <textarea
               name="Message"
@@ -488,28 +579,29 @@ export function ContactPanelContent({
               autoComplete="off"
               value={contactDraft.message}
               onChange={(event) => setContactDraft((prev) => ({ ...prev, message: event.target.value }))}
-              className="min-h-0 flex-1 rounded-[12px] border border-[#c0d2e7] bg-[#f4f8fe] px-3 py-2.5 text-[14px] leading-6 text-[#173861] placeholder:text-[#7f97b8] outline-none transition focus:border-[#6d96c6] focus:bg-white"
+              className="min-h-[142px] flex-1 rounded-[12px] border border-[#bdd0e6] bg-[#f8fbff] px-3 py-2.5 text-[14px] leading-6 text-[#163a62] placeholder:text-[#7d97b8] outline-none transition focus:border-[#6992c1] focus:bg-white"
             />
 
             <div className="pt-0.5">
               <button
                 type="submit"
                 disabled={isSending}
-                className="inline-flex items-center justify-center rounded-[10px] border border-[#8eaed1] bg-white px-4 py-1.5 text-[12px] font-medium text-[#214a7c] transition hover:bg-[#f0f6ff]"
+                className="inline-flex items-center justify-center rounded-[10px] border border-[#88abd3] bg-[#1d63ad] px-4 py-1.5 text-[12px] font-semibold text-white transition hover:bg-[#2775c8]"
               >
-                {isSending ? "Sending..." : "Send"}
+                {isSending ? "Sending..." : "Send message"}
               </button>
               {sendFeedback ? (
-                <p className={`mt-2 text-[11px] ${sendFeedback.kind === "ok" ? "text-[#2b6b35]" : "text-[#9a2f2f]"}`}>
+                <p className={`mt-2 text-[11px] ${sendFeedback.kind === "ok" ? "text-[#2e7f3f]" : "text-[#bf3e3e]"}`}>
                   {sendFeedback.text}
                 </p>
               ) : null}
             </div>
           </form>
-        </div>
+        </section>
 
-        <aside className="flex h-full min-h-0 flex-col rounded-[14px] border border-[#ccdbec] bg-white p-4 shadow-[0_18px_34px_rgba(23,53,91,0.08)]">
-          <h3 className="text-[35px] leading-[1.04] tracking-[-0.02em] text-[#123e70]">Find me online</h3>
+        <aside className="flex min-h-0 flex-col rounded-[14px] border border-[#c2d4e8] bg-[#f7fbff]/92 p-4 shadow-[0_20px_38px_rgba(24,58,101,0.14)]">
+          <p className="text-[11px] uppercase tracking-[0.24em] text-[#5d7ea8]">Direct Channels</p>
+          <h3 className="mt-2 text-[clamp(2rem,3.5vw,3rem)] leading-[1.02] text-[#153f6f]">Find me online</h3>
 
           <div className="mt-3 flex flex-wrap gap-2.5">
             <SocialLogoLink href="https://www.linkedin.com/in/roope-aaltonen/" label="LinkedIn">
@@ -526,10 +618,15 @@ export function ContactPanelContent({
             </SocialLogoLink>
           </div>
 
-          <div className="mt-4 space-y-2">
+          <div className="mt-4 space-y-2.5">
             <ContactInfoRow label="Phone" value="040 528 3008" href="tel:+358405283008" />
             <ContactInfoRow label="Email" value="roope.aa@hotmail.com" href="mailto:roope.aa@hotmail.com" />
             <ContactInfoRow label="Location" value="Vantaa, Hämeenkylä" />
+          </div>
+
+          <div className="mt-3 rounded-[11px] border border-[#c4d6ea] bg-[#eef6ff] px-3 py-2.5 text-[12px] leading-5 text-[#355980]">
+            <p className="font-semibold uppercase tracking-[0.12em] text-[#5477a4]">Availability</p>
+            <p className="mt-1">Open to internships and junior technical roles. Typical response time: within 24h.</p>
           </div>
         </aside>
       </div>
@@ -548,8 +645,8 @@ function ContactInfoRow({
 }) {
   const content = (
     <>
-      <p className="text-[10px] uppercase tracking-[0.17em] text-[#6485ac]">{label}</p>
-      <p className="mt-1 text-[14px] font-medium text-[#153a66]">{value}</p>
+      <p className="text-[10px] uppercase tracking-[0.17em] text-[#6384ad]">{label}</p>
+      <p className="mt-1 text-[14px] font-medium text-[#123c69]">{value}</p>
     </>
   );
 
@@ -557,14 +654,14 @@ function ContactInfoRow({
     return (
       <a
         href={href}
-        className="block rounded-[11px] border border-[#c1d3e8] bg-[#f4f8fe] px-3 py-2.5 transition hover:border-[#8eaecf] hover:bg-[#eaf2fd]"
+        className="block rounded-[11px] border border-[#bfd2e8] bg-[#fafdff] px-3 py-2.5 transition hover:border-[#8baed4] hover:bg-[#f1f8ff]"
       >
         {content}
       </a>
     );
   }
 
-  return <div className="rounded-[11px] border border-[#c1d3e8] bg-[#f4f8fe] px-3 py-2.5">{content}</div>;
+  return <div className="rounded-[11px] border border-[#bfd2e8] bg-[#fafdff] px-3 py-2.5">{content}</div>;
 }
 
 function SocialLogoLink({
@@ -583,7 +680,7 @@ function SocialLogoLink({
       rel="noreferrer"
       aria-label={label}
       title={label}
-      className="group inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#a7bfdc] bg-white transition hover:-translate-y-[1px] hover:border-[#6f95c2] hover:shadow-[0_6px_14px_rgba(28,76,130,0.16)]"
+      className="group inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#b8cde6] bg-white transition hover:-translate-y-[1px] hover:border-[#7ea3cc] hover:shadow-[0_8px_16px_rgba(28,76,130,0.16)]"
     >
       <span className="h-5 w-5">{children}</span>
     </a>
