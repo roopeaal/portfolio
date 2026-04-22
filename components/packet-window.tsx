@@ -113,7 +113,7 @@ export function PacketWindow({
 
   const overlayTransition = prefersReducedMotion ? { duration: 0 } : { duration: 0.18 };
   const windowTransition = prefersReducedMotion ? { duration: 0 } : { duration: 0.24, ease: [0.22, 1, 0.36, 1] as const };
-  const isAboutPanel = type === "about";
+  const isExpandedPanel = type === "about" || type === "contact";
 
   const handleHardClose = useCallback(() => {
     try {
@@ -262,7 +262,7 @@ export function PacketWindow({
                 </div>
 
                 <div
-                  className={`min-w-0 flex-1 border border-[#c5c5c5] ${isAboutPanel ? "bg-[#f8f8f8] p-1.5 md:p-1.5" : "bg-[#f4f4f4] p-3 md:p-4"}`}
+                  className={`min-w-0 flex-1 border border-[#c5c5c5] ${isExpandedPanel ? "bg-[#f8f8f8] p-1.5 md:p-1.5" : "bg-[#f4f4f4] p-3 md:p-4"}`}
                 >
                   <div className={`mx-auto h-full overflow-auto pr-1 ${shellTitle ? "flex flex-col" : ""}`}>
                     {shellTitle ? (
@@ -271,7 +271,7 @@ export function PacketWindow({
                         <div className="flex-1 border border-t-0 border-[#c9c9c9] bg-[#f8f8f8] px-4 py-4 md:px-5 md:py-4">{children}</div>
                       </>
                     ) : (
-                      <div className={isAboutPanel ? "h-full overflow-hidden" : "h-full border border-[#c9c9c9] bg-[#f8f8f8] px-4 py-4 md:px-5 md:py-4"}>
+                      <div className={isExpandedPanel ? "h-full overflow-hidden" : "h-full border border-[#c9c9c9] bg-[#f8f8f8] px-4 py-4 md:px-5 md:py-4"}>
                         {children}
                       </div>
                     )}
