@@ -150,13 +150,10 @@ export function AboutPanelContent({
         aria-hidden="true"
         className="pointer-events-none absolute inset-0"
         style={{
-          opacity: 0.96,
-          backgroundImage:
-            "radial-gradient(140% 84% at 18% 10%, rgba(255,255,255,0.075) 0, rgba(255,255,255,0) 54%), radial-gradient(140% 84% at 82% 10%, rgba(143,165,193,0.17) 0, rgba(143,165,193,0) 56%), url('/portfolio/about-vintage-wallpaper.svg')",
-          backgroundSize: "100% 100%, 100% 100%, 180px 180px",
-          backgroundPosition: "center top, center top, center top",
-          WebkitMaskImage: "linear-gradient(to bottom, #000 0%, #000 70%, rgba(0,0,0,0) 92%)",
-          maskImage: "linear-gradient(to bottom, #000 0%, #000 70%, rgba(0,0,0,0) 92%)",
+          opacity: 1,
+          backgroundImage: "url('/portfolio/about-vintage-wallpaper.svg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center top",
         }}
       />
 
