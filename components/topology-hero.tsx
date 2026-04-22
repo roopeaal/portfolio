@@ -427,8 +427,8 @@ const SWITCH_PORT_CENTERS = [73, 90, 108, 125, 143, 160] as const;
 const SWITCH_LEFT_CABLE_PORT_INDEX = 0;
 const SWITCH_RIGHT_CABLE_PORT_INDEX = 5;
 const SWITCH_STUB_Y = 133.0;
-const SWITCH_LEFT_STUB_X_OFFSET = 31.0;
-const SWITCH_RIGHT_STUB_X_OFFSET = -5.0;
+const SWITCH_LEFT_STUB_X_OFFSET = 32.0;
+const SWITCH_RIGHT_STUB_X_OFFSET = -6.0;
 const CABLE_ATTACH_DROP = 34;
 
 const DEBUG_NODE_HALOS = false;
@@ -1769,6 +1769,9 @@ function DetachedEthernetStub({
   const headWidth = 16.6;
   const headHeight = 16.0;
   const lowerNudge = 8.0;
+  const headWidthPercent = (headWidth / VIEWBOX.width) * 100;
+  const headHeightPercent = (headHeight / VIEWBOX.height) * 100;
+  const anchorOffsetPercent = ((headHeight - lowerNudge) / VIEWBOX.height) * 100;
   const leftPercent = (bottom.x / VIEWBOX.width) * 100;
   const topPercent = (bottom.y / VIEWBOX.height) * 100;
 
@@ -1781,10 +1784,10 @@ function DetachedEthernetStub({
       className="pointer-events-none absolute overflow-visible"
       style={{
         zIndex,
-        left: `calc(${leftPercent}% - ${headWidth / 2}px)`,
-        top: `calc(${topPercent}% - ${headHeight - lowerNudge}px)`,
-        width: `${headWidth}px`,
-        height: `${headHeight}px`,
+        left: `calc(${leftPercent}% - ${headWidthPercent / 2}%)`,
+        top: `calc(${topPercent}% - ${anchorOffsetPercent}%)`,
+        width: `${headWidthPercent}%`,
+        height: `${headHeightPercent}%`,
       }}
       aria-hidden="true"
     >
