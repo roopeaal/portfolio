@@ -40,6 +40,7 @@ const PREVIEW_GAP = 42;
 const PREVIEW_MARGIN = 18;
 const DEVICE_FLOAT_FILTER = "drop-shadow(0 16px 22px rgba(10,18,31,0.18)) drop-shadow(0 5px 12px rgba(24,79,113,0.10))";
 const DEVICE_FLOAT_FILTER_SOFT = "drop-shadow(0 12px 18px rgba(10,18,31,0.14)) drop-shadow(0 4px 10px rgba(24,79,113,0.08))";
+const NODE_HOVER_SCALE = 1.035;
 const UNIFIED_DEVICE_WIDTH = 232;
 const UNIFIED_DEVICE_HEIGHT = 198;
 const UNIFIED_NODE_HEIGHT = 268;
@@ -546,7 +547,7 @@ function getAnimatedDevicePoint(
   const { width, deviceHeight } = NODE_META[node];
   const centerX = positions[node].x + width / 2;
   const centerY = positions[node].y + deviceHeight / 2;
-  const scale = 1.035;
+  const scale = NODE_HOVER_SCALE;
 
   return {
     x: centerX + (point.x - centerX) * scale,
@@ -1350,9 +1351,25 @@ export function TopologyHero() {
                   ) : null}
                 </motion.svg>
 
-                {networkMode === "stable" || networkMode === "recovering" ? <DetachedEthernetStub bottom={switchLeftCableEnd} zIndex={draggingNode === "projects" ? 186 : 90} /> : null}
-                {networkMode !== "stable" && networkMode !== "recovering" ? <DetachedEthernetStub bottom={looseEnd} zIndex={draggingNode === "projects" ? 186 : 90} /> : null}
-                <DetachedEthernetStub bottom={switchRightCableEnd} zIndex={draggingNode === "projects" ? 186 : 90} />
+                {networkMode === "stable" || networkMode === "recovering" ? (
+                  <DetachedEthernetStub
+                    bottom={switchLeftCableEnd}
+                    zIndex={draggingNode === "projects" ? 186 : 90}
+                    scale={active === "projects" && draggingNode !== "projects" ? NODE_HOVER_SCALE : 1}
+                  />
+                ) : null}
+                {networkMode !== "stable" && networkMode !== "recovering" ? (
+                  <DetachedEthernetStub
+                    bottom={looseEnd}
+                    zIndex={draggingNode === "projects" ? 186 : 90}
+                    scale={active === "projects" && draggingNode !== "projects" ? NODE_HOVER_SCALE : 1}
+                  />
+                ) : null}
+                <DetachedEthernetStub
+                  bottom={switchRightCableEnd}
+                  zIndex={draggingNode === "projects" ? 186 : 90}
+                  scale={active === "projects" && draggingNode !== "projects" ? NODE_HOVER_SCALE : 1}
+                />
                 {serviceCursor ? <ServiceMouse cursor={serviceCursor} /> : null}
 
                 <AnimatePresence>
@@ -1765,14 +1782,16 @@ function EthernetHeadGraphic({ className = "" }: { className?: string }) {
 function DetachedEthernetStub({
   bottom,
   zIndex = 90,
+  scale = 1,
 }: {
   bottom: { x: number; y: number };
   zIndex?: number;
+  scale?: number;
 }) {
   const color = "#111111";
-  const headWidth = 16.6;
-  const headHeight = 16.0;
-  const lowerNudge = 8.0;
+  const headWidth = 16.6 * scale;
+  const headHeight = 16.0 * scale;
+  const lowerNudge = 8.0 * scale;
   const leftPercent = (bottom.x / VIEWBOX.width) * 100;
   const topPercent = (bottom.y / VIEWBOX.height) * 100;
 
