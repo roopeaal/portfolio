@@ -44,6 +44,7 @@ const UNIFIED_DEVICE_WIDTH = 232;
 const UNIFIED_DEVICE_HEIGHT = 198;
 const UNIFIED_NODE_HEIGHT = 268;
 const NODE_LABEL_GAP = 12;
+const CABLE_ATTACH_DROP = 40;
 
 type NodePosition = { x: number; y: number };
 type NodeMeta = {
@@ -426,10 +427,9 @@ function resolveNonOverlappingPosition(
 const SWITCH_PORT_CENTERS = [73, 90, 108, 125, 143, 160] as const;
 const SWITCH_LEFT_CABLE_PORT_INDEX = 0;
 const SWITCH_RIGHT_CABLE_PORT_INDEX = 5;
-const SWITCH_STUB_Y = 133.0;
+const SWITCH_STUB_Y = 138.0;
 const SWITCH_LEFT_STUB_X_OFFSET = 32.0;
-const SWITCH_RIGHT_STUB_X_OFFSET = -6.0;
-const CABLE_ATTACH_DROP = 34;
+const SWITCH_RIGHT_STUB_X_OFFSET = -24.0;
 
 const DEBUG_NODE_HALOS = false;
 const NODE_PROTECTIVE_HALO = 14;
@@ -813,6 +813,8 @@ export function TopologyHero() {
   const contactAttach = getAnimatedDevicePoint("contact", getAttachPoint("contact", nodePositions), nodePositions, active, draggingNode);
   const switchLeftCableEnd = getAnimatedDevicePoint("projects", getSwitchCableStubEnd("left", nodePositions), nodePositions, active, draggingNode);
   const switchRightCableEnd = getAnimatedDevicePoint("projects", getSwitchCableStubEnd("right", nodePositions), nodePositions, active, draggingNode);
+  const switchLeftCableAttach = { x: switchLeftCableEnd.x, y: switchLeftCableEnd.y + CABLE_ATTACH_DROP };
+  const switchRightCableAttach = { x: switchRightCableEnd.x, y: switchRightCableEnd.y + CABLE_ATTACH_DROP };
 
   useEffect(() => {
     const start = Date.now();
@@ -1143,8 +1145,6 @@ export function TopologyHero() {
     : networkMode === "recovering"
       ? "orange"
       : "none";
-  const switchLeftCableAttach = { x: switchLeftCableEnd.x, y: switchLeftCableEnd.y + CABLE_ATTACH_DROP };
-  const switchRightCableAttach = { x: switchRightCableEnd.x, y: switchRightCableEnd.y + CABLE_ATTACH_DROP };
   const topIndicators = [0.32, 0.7].map((value) => pointOnLine(aboutCableAttach, switchLeftCableAttach, value));
   const diagIndicators = [0.4, 0.78].map((value) => pointOnLine(homeAttach, switchRightCableAttach, value));
   const activePreview = active && !draggingNode ? getPreviewByNode(active) : null;
@@ -1344,7 +1344,7 @@ export function TopologyHero() {
                     <StatusTriangle key={`diag-${index}`} {...point} />
                   ))}
 
-                  {typingActive ? <TrafficPulse from={homeAttach} to={switchRightCableAttach} tick={motionTick} duration={64} delay={14} /> : null}
+                  {typingActive ? <TrafficPulse from={homeAttach} to={switchRightCableEnd} tick={motionTick} duration={64} delay={14} /> : null}
                   {!routerGlitchActive && active === "about" ? (
                     <TrafficPulse from={aboutCableAttach} to={contactAttach} tick={motionTick} duration={86} delay={20} dotted color="#a8e6ff" />
                   ) : null}
@@ -1409,6 +1409,7 @@ export function TopologyHero() {
         title="About Me · Wireless Router1"
         sidebarTitle={SIDEBAR_TITLE.about}
         sidebarItems={aboutSidebarItems}
+        shellTitle="Global Settings"
       >
         <AboutPanelContent />
       </PacketWindow>
@@ -1420,6 +1421,7 @@ export function TopologyHero() {
         title="Projects · Switch0"
         sidebarTitle={SIDEBAR_TITLE.projects}
         sidebarItems={projectsSidebarItems}
+        shellTitle={selectedProject ? "Project Case Study" : "Project Overview"}
       >
         <ProjectsPanelContent
           selectedProjectSlug={selectedProjectSlug}
@@ -1435,6 +1437,7 @@ export function TopologyHero() {
         title="Contact Me · Smartphone0"
         sidebarTitle={SIDEBAR_TITLE.contact}
         sidebarItems={contactSidebarItems}
+        shellTitle="Interface Configuration"
       >
         <ContactPanelContent section={contactSection} />
       </PacketWindow>
@@ -1673,7 +1676,8 @@ function PreviewWindow({
           </div>
         ) : null}
         <div className="overflow-hidden rounded-[2px] border border-[#cfcfcf] bg-white">
-          <div className="h-full overflow-hidden p-3">{children}</div>
+          <div className="border-b border-[#d9d9d9] bg-[#fbfbfb] px-3 py-1.5 text-center text-[11px] font-medium text-[#747474]">Global Settings</div>
+          <div className="h-[calc(100%-31px)] overflow-hidden p-3">{children}</div>
         </div>
       </div>
     </div>
@@ -1769,9 +1773,6 @@ function DetachedEthernetStub({
   const headWidth = 16.6;
   const headHeight = 16.0;
   const lowerNudge = 8.0;
-  const headWidthPercent = (headWidth / VIEWBOX.width) * 100;
-  const headHeightPercent = (headHeight / VIEWBOX.height) * 100;
-  const anchorOffsetPercent = ((headHeight - lowerNudge) / VIEWBOX.height) * 100;
   const leftPercent = (bottom.x / VIEWBOX.width) * 100;
   const topPercent = (bottom.y / VIEWBOX.height) * 100;
 
@@ -1784,10 +1785,10 @@ function DetachedEthernetStub({
       className="pointer-events-none absolute overflow-visible"
       style={{
         zIndex,
-        left: `calc(${leftPercent}% - ${headWidthPercent / 2}%)`,
-        top: `calc(${topPercent}% - ${anchorOffsetPercent}%)`,
-        width: `${headWidthPercent}%`,
-        height: `${headHeightPercent}%`,
+        left: `calc(${leftPercent}% - ${headWidth / 2}px)`,
+        top: `calc(${topPercent}% - ${headHeight - lowerNudge}px)`,
+        width: `${headWidth}px`,
+        height: `${headHeight}px`,
       }}
       aria-hidden="true"
     >
