@@ -110,12 +110,13 @@ export function AboutPanelContent({
 }) {
   void section;
 
-  const heroLine = `${profile.name.toUpperCase()} IS AN ICT ENGINEERING STUDENT LIVING IN VANTAA AND BUILDING PRACTICAL NETWORKED SYSTEMS`;
+  const heroLineTop = "ROOPE AALTONEN IS AN ICT ENGINEERING STUDENT";
+  const heroLineBottom = "LIVING AND WORKING IN THE HELSINKI METROPOLITAN AREA";
   const portraitSrc = "/portfolio/about-vintage-roope.png";
   const leftCopy =
-    "What is up, dear visitor. I am Roope Aaltonen, an ICT engineering student who prefers real implementation over abstract theory. I enjoy building environments where routers, Linux hosts and cloud services work together cleanly. My approach is calm, methodical and hands-on: test, verify, fix and document.";
+    "Greetings, Dear Reader. I'm Roope Aaltonen, an ICT engineering student with a particular fondness for networking, Linux, cloud, IoT and the practical art of solving technical problems. I have long been drawn to the inner logic of systems, how they connect, how they fail, how they recover, and how they may be shaped into something dependable, orderly and fit for real use.";
   const rightCopy =
-    "I created this portfolio as a practical proof of work. Instead of only describing skills, I wanted to show how I think through systems end-to-end: from topology design to troubleshooting and refinement. I learn fast, take ownership early, and keep solutions clear so they stay maintainable in real team workflows.";
+    "My interests lie chiefly in networks, infrastructure and the practical side of computing. Before entering the world of formal study, I worked in warehouse operations, where ERP systems, stock control and daily process accuracy first led me further into technology. Since then, that interest has only deepened, and I now spend a good share of my time building projects that turn curiosity into something concrete, functional and plainly visible.";
 
   if (preview) {
     return (
@@ -159,7 +160,10 @@ export function AboutPanelContent({
 
       <div className="relative z-[1] flex h-full min-h-0 flex-col px-4 py-4 md:px-6 md:py-5">
         <header className="text-center">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.34em] text-[#c6d1df]" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>{heroLine}</p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.34em] text-[#c6d1df]" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
+            <span className="block">{heroLineTop}</span>
+            <span className="mt-1 block">{heroLineBottom}</span>
+          </p>
           <div className="mt-2 flex items-center gap-3">
             <div className="h-px flex-1 bg-[#72829b]/40" />
             <span className="text-[16px] text-[#b7c4d7]">❦</span>
@@ -200,7 +204,7 @@ export function AboutPanelContent({
                 className="mt-0.5 block text-[16px] leading-[1.02] text-[#aebdd2]"
                 style={{ fontFamily: "'Apple Chancery', 'Snell Roundhand', 'URW Chancery L', 'Brush Script MT', cursive" }}
               >
-                Network Engineer in Progress
+                Student of Technology
               </span>
             </figcaption>
           </figure>
