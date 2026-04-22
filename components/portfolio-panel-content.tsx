@@ -151,7 +151,7 @@ export function AboutPanelContent({
         className="pointer-events-none absolute inset-0"
         style={{
           opacity: 1,
-          backgroundImage: "url('/portfolio/about-vintage-wallpaper.svg')",
+          backgroundImage: "url('/portfolio/about-vintage-wallpaper-v17.png')",
           backgroundSize: "cover",
           backgroundPosition: "center top",
         }}
