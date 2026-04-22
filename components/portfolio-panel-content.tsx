@@ -121,15 +121,18 @@ export function AboutPanelContent({
   if (preview) {
     return (
       <div
-        className="h-full overflow-hidden rounded-[12px] border border-[#2f394a] p-3 text-[#d5deea]"
-        style={{
-          backgroundColor: "#1c2432",
-          backgroundImage:
-            "radial-gradient(ellipse 34px 20px at 50% 28%, rgba(184,201,224,0.11) 0 58%, rgba(184,201,224,0) 61%), radial-gradient(circle at 50% 12%, rgba(184,201,224,0.1) 0 4px, rgba(184,201,224,0) 5px), radial-gradient(circle at 25% 52%, rgba(167,188,216,0.08) 0 3px, rgba(167,188,216,0) 4px), radial-gradient(circle at 75% 52%, rgba(167,188,216,0.08) 0 3px, rgba(167,188,216,0) 4px), radial-gradient(ellipse 24px 15px at 50% 76%, rgba(176,196,221,0.08) 0 60%, rgba(176,196,221,0) 63%), radial-gradient(circle at 22% 18%, rgba(255,255,255,0.08) 0, rgba(255,255,255,0) 42%), radial-gradient(circle at 78% 22%, rgba(135,154,186,0.22) 0, rgba(135,154,186,0) 44%)",
-          backgroundSize: "128px 128px, 128px 128px, 128px 128px, 128px 128px, 128px 128px, 100% 100%, 100% 100%",
-        }}
+        className="relative h-full overflow-hidden rounded-[12px] border border-[#2f394a] p-3 text-[#d5deea]"
       >
-        <div className="grid h-full min-h-0 grid-cols-[1fr_126px_1fr] items-center gap-2">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0"
+          style={{
+            backgroundImage: "url('/portfolio/about-vintage-wallpaper-v17.png')",
+            backgroundSize: "cover",
+            backgroundPosition: "center top",
+          }}
+        />
+        <div className="relative z-[1] grid h-full min-h-0 grid-cols-[1fr_126px_1fr] items-center gap-2">
           <p className="text-[9px] leading-4 text-[#c8d2df]" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>{leftCopy}</p>
           <div className="relative mx-auto h-[156px] w-[126px] overflow-hidden">
             <Image src={portraitSrc} alt={profile.name} fill sizes="126px" className="object-contain object-center scale-[1.1] [filter:contrast(1.04)_brightness(0.98)]" />
