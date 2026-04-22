@@ -447,26 +447,32 @@ export function ContactPanelContent({
   if (preview) {
     return (
       <div className="h-full overflow-hidden rounded-[12px] border border-[#cf8b66] bg-[linear-gradient(180deg,#ef651f_0%,#e65415_100%)] p-3 text-white">
-        <div className="flex h-full flex-col rounded-[10px] border border-white/25 bg-white/10 p-3">
+        <div className="relative flex h-full flex-col rounded-[10px] border border-white/25 bg-white/10 p-3">
+          <span className="pointer-events-none absolute left-0 top-0 h-[66px] w-[8px] bg-[#f0b6cc]/90" />
+          <span className="pointer-events-none absolute left-0 bottom-0 h-[72px] w-[8px] bg-[#f0b6cc]/90" />
           <h3 className="text-[21px] font-semibold leading-[1.02]">Let&apos;s build something great together.</h3>
+          <div className="mt-2 space-y-0.5 text-[10px] text-white/95">
+            <p>040 528 3008</p>
+            <p>roope.aa@hotmail.com</p>
+            <p>Vantaa, Hämeenkylä</p>
+          </div>
           <div className="mt-2 flex gap-2">
-            <SocialLogoLink href="https://www.linkedin.com/in/roope-aaltonen/" label="LinkedIn" className="h-9 w-9 border-white/40 bg-white">
+            <SocialLogoLink href="https://www.linkedin.com/in/roope-aaltonen/" label="LinkedIn" className="h-9 w-9 border-white/40 bg-white/10">
               <LinkedInGlyph />
             </SocialLogoLink>
-            <SocialLogoLink href="https://facebook.com/roope_aaltonen" label="Instagram" className="h-9 w-9 border-white/40 bg-white">
+            <SocialLogoLink href="https://facebook.com/roope_aaltonen" label="Instagram" className="h-9 w-9 border-white/40 bg-white/10">
               <InstagramGlyph />
             </SocialLogoLink>
-            <SocialLogoLink href="https://facebook.com/roope.aaltonen.5" label="Facebook" className="h-9 w-9 border-white/40 bg-white">
+            <SocialLogoLink href="https://facebook.com/roope.aaltonen.5" label="Facebook" className="h-9 w-9 border-white/40 bg-white/10">
               <FacebookGlyph />
             </SocialLogoLink>
-            <SocialLogoLink href="https://github.com/roopeaal" label="GitHub" className="h-9 w-9 border-white/40 bg-white">
+            <SocialLogoLink href="https://github.com/roopeaal" label="GitHub" className="h-9 w-9 border-white/40 bg-white/10">
               <GitHubGlyph />
             </SocialLogoLink>
           </div>
-          <p className="mt-2 text-[11px]">040 528 3008 · roope.aa@hotmail.com · Vantaa, Hämeenkylä</p>
           <div className="mt-3 min-h-0 flex-1 rounded-[10px] border border-[#e3bcc1] bg-[#f2e5ea] p-2">
             <div className="relative h-full w-full min-h-[110px]">
-              <Image src="/portfolio/iphone-call-screen.png" alt="Contact illustration" fill sizes="220px" className="object-contain object-center" />
+              <Image src="/portfolio/contact-splash-cup.png" alt="3D splash cup illustration" fill sizes="220px" className="object-contain object-center p-1.5" />
             </div>
           </div>
         </div>
@@ -476,137 +482,105 @@ export function ContactPanelContent({
 
   return (
     <div className="h-full w-full overflow-hidden rounded-[14px] border border-[#cf885f] bg-[linear-gradient(180deg,#ef6620_0%,#e85517_100%)] p-4 text-[#1f120b]">
-      <div className="grid h-full min-h-0 gap-4 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
-        <section className="flex min-h-0 flex-col rounded-[14px] border border-[#f6b28c]/70 bg-[linear-gradient(180deg,#ef6924_0%,#e8591a_100%)] p-5 text-[#fff7f0] shadow-[inset_0_1px_0_rgba(255,255,255,0.24)]">
-          <h2 className="text-[clamp(2.1rem,5.1vw,4.2rem)] font-semibold leading-[0.92] tracking-[-0.02em]">
-            Let&apos;s build
-            <span className="block font-extrabold text-white">something great together.</span>
-          </h2>
+      <div className="relative h-full overflow-hidden rounded-[14px] border border-[#f7b999]/70">
+        <span className="pointer-events-none absolute left-0 top-0 z-[1] h-[130px] w-[16px] bg-[#f0b6cc]/94" />
+        <span className="pointer-events-none absolute left-0 bottom-0 z-[1] h-[156px] w-[16px] bg-[#f0b6cc]/94" />
+        <span className="pointer-events-none absolute right-0 top-0 z-[1] h-[130px] w-[16px] bg-[#f0b6cc]/94" />
+        <span className="pointer-events-none absolute right-0 bottom-0 z-[1] h-[156px] w-[16px] bg-[#f0b6cc]/94" />
 
-          <div className="mt-4 flex flex-wrap gap-2.5">
-            <SocialLogoLink href="https://www.linkedin.com/in/roope-aaltonen/" label="LinkedIn" className="border-white/40 bg-white">
-              <LinkedInGlyph />
-            </SocialLogoLink>
-            <SocialLogoLink href="https://facebook.com/roope_aaltonen" label="Instagram" className="border-white/40 bg-white">
-              <InstagramGlyph />
-            </SocialLogoLink>
-            <SocialLogoLink href="https://facebook.com/roope.aaltonen.5" label="Facebook" className="border-white/40 bg-white">
-              <FacebookGlyph />
-            </SocialLogoLink>
-            <SocialLogoLink href="https://github.com/roopeaal" label="GitHub" className="border-white/40 bg-white">
-              <GitHubGlyph />
-            </SocialLogoLink>
-          </div>
+        <div className="grid h-full min-h-0 gap-0 lg:grid-cols-[minmax(0,1.06fr)_minmax(0,0.94fr)]">
+          <section className="flex min-h-0 flex-col bg-[linear-gradient(180deg,#ef6924_0%,#e8591a_100%)] p-6 text-[#fff7f0] shadow-[inset_0_1px_0_rgba(255,255,255,0.24)]">
+            <h2 className="max-w-[720px] text-[clamp(2.4rem,5.6vw,5.6rem)] font-extrabold leading-[0.88] tracking-[-0.03em] text-white">
+              Let&apos;s build something great together.
+            </h2>
 
-          <div className="mt-4 space-y-2 text-[14px]">
-            <a href="tel:+358405283008" className="block rounded-full border border-white/30 bg-white/12 px-4 py-2 transition hover:bg-white/18">
-              <span className="text-[11px] uppercase tracking-[0.14em] text-[#ffe6d2]">Phone</span>
-              <span className="ml-2 font-semibold text-white">040 528 3008</span>
-            </a>
-            <a href="mailto:roope.aa@hotmail.com" className="block rounded-full border border-white/30 bg-white/12 px-4 py-2 transition hover:bg-white/18">
-              <span className="text-[11px] uppercase tracking-[0.14em] text-[#ffe6d2]">Email</span>
-              <span className="ml-2 font-semibold text-white">roope.aa@hotmail.com</span>
-            </a>
-            <div className="rounded-full border border-white/30 bg-white/12 px-4 py-2">
-              <span className="text-[11px] uppercase tracking-[0.14em] text-[#ffe6d2]">Location</span>
-              <span className="ml-2 font-semibold text-white">Vantaa, Hämeenkylä</span>
+            <div className="mt-5 space-y-1.5 text-[clamp(18px,2.2vw,27px)] font-medium leading-[1.12] text-white/98">
+              <a href="tel:+358405283008" className="block w-fit transition hover:text-[#ffe9db]">040 528 3008</a>
+              <a href="mailto:roope.aa@hotmail.com" className="block w-fit transition hover:text-[#ffe9db]">roope.aa@hotmail.com</a>
+              <p>Vantaa, Hämeenkylä</p>
             </div>
-          </div>
 
-          <div className="mt-4 min-h-0 flex-1 rounded-[14px] border border-[#e0bcc2] bg-[#f3e5ea] p-3">
-            <div className="relative h-full w-full min-h-[220px]">
-              <Image
-                src="/portfolio/iphone-call-screen.png"
-                alt="Contact illustration"
-                fill
-                sizes="(max-width: 1024px) 100vw, 520px"
-                className="object-contain object-bottom"
-                priority={false}
+            <div className="mt-5 flex flex-wrap gap-3">
+              <SocialLogoLink href="https://www.linkedin.com/in/roope-aaltonen/" label="LinkedIn" className="border-white/40 bg-white/10 hover:border-white/60 hover:bg-white/16">
+                <LinkedInGlyph />
+              </SocialLogoLink>
+              <SocialLogoLink href="https://facebook.com/roope_aaltonen" label="Instagram" className="border-white/40 bg-white/10 hover:border-white/60 hover:bg-white/16">
+                <InstagramGlyph />
+              </SocialLogoLink>
+              <SocialLogoLink href="https://facebook.com/roope.aaltonen.5" label="Facebook" className="border-white/40 bg-white/10 hover:border-white/60 hover:bg-white/16">
+                <FacebookGlyph />
+              </SocialLogoLink>
+              <SocialLogoLink href="https://github.com/roopeaal" label="GitHub" className="border-white/40 bg-white/10 hover:border-white/60 hover:bg-white/16">
+                <GitHubGlyph />
+              </SocialLogoLink>
+            </div>
+
+            <div className="mt-6 flex min-h-0 flex-1 items-end">
+              <div className="relative h-full min-h-[250px] w-full overflow-hidden rounded-[2px] border border-[#f0b4cb]/85 bg-[#f8e3ed] shadow-[0_22px_38px_rgba(88,28,8,0.28)]">
+                <Image
+                  src="/portfolio/contact-splash-cup.png"
+                  alt="3D splash cup"
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 560px"
+                  className="object-contain object-center p-6"
+                  priority={false}
+                  draggable={false}
+                />
+              </div>
+            </div>
+          </section>
+
+          <aside className="flex min-h-0 flex-col border-l border-[#dfa985] bg-[#f3e6eb] p-6 shadow-[0_12px_32px_rgba(76,28,15,0.18)]">
+            <h3 className="text-[clamp(1.9rem,3.4vw,2.9rem)] font-semibold leading-[1.03] text-[#8b3f1c]">Fill in your details</h3>
+
+            <form onSubmit={handleContactSubmit} className="mt-5 flex min-h-0 flex-1 flex-col gap-3.5" autoComplete="off">
+              <input
+                name="Name"
+                type="text"
+                placeholder="Name"
+                autoComplete="name"
+                value={contactDraft.name}
+                onChange={(event) => setContactDraft((prev) => ({ ...prev, name: event.target.value }))}
+                className="w-full rounded-full border border-[#d1652c] bg-[#eb5f1f] px-5 py-3 text-[17px] text-white placeholder:text-[#ffd5be] outline-none transition focus:border-[#b84910]"
               />
-            </div>
-          </div>
-        </section>
+              <input
+                name="Email"
+                type="email"
+                placeholder="Email"
+                autoComplete="email"
+                value={contactDraft.email}
+                onChange={(event) => setContactDraft((prev) => ({ ...prev, email: event.target.value }))}
+                className="w-full rounded-full border border-[#d1652c] bg-[#eb5f1f] px-5 py-3 text-[17px] text-white placeholder:text-[#ffd5be] outline-none transition focus:border-[#b84910]"
+              />
+              <textarea
+                name="Message"
+                placeholder="Write your message..."
+                autoComplete="off"
+                value={contactDraft.message}
+                onChange={(event) => setContactDraft((prev) => ({ ...prev, message: event.target.value }))}
+                className="min-h-[190px] flex-1 rounded-[30px] border border-[#d1652c] bg-[#eb5f1f] px-5 py-4 text-[17px] leading-7 text-white placeholder:text-[#ffd5be] outline-none transition focus:border-[#b84910]"
+              />
 
-        <aside className="flex min-h-0 flex-col rounded-[14px] border border-[#d3bbc3] bg-[#f3e6eb] p-5 shadow-[0_12px_32px_rgba(76,28,15,0.18)]">
-          <h3 className="text-[clamp(1.7rem,3.2vw,2.6rem)] font-semibold leading-[1.03] text-[#8b3f1c]">Fill in Your Details</h3>
-
-          <form onSubmit={handleContactSubmit} className="mt-4 flex min-h-0 flex-1 flex-col gap-3" autoComplete="off">
-            <input
-              name="Name"
-              type="text"
-              placeholder="Name"
-              autoComplete="name"
-              value={contactDraft.name}
-              onChange={(event) => setContactDraft((prev) => ({ ...prev, name: event.target.value }))}
-              className="w-full rounded-full border border-[#d1652c] bg-[#eb5f1f] px-4 py-2.5 text-[15px] text-white placeholder:text-[#ffd5be] outline-none transition focus:border-[#b84910]"
-            />
-            <input
-              name="Email"
-              type="email"
-              placeholder="Email"
-              autoComplete="email"
-              value={contactDraft.email}
-              onChange={(event) => setContactDraft((prev) => ({ ...prev, email: event.target.value }))}
-              className="w-full rounded-full border border-[#d1652c] bg-[#eb5f1f] px-4 py-2.5 text-[15px] text-white placeholder:text-[#ffd5be] outline-none transition focus:border-[#b84910]"
-            />
-            <textarea
-              name="Message"
-              placeholder="Write your message..."
-              autoComplete="off"
-              value={contactDraft.message}
-              onChange={(event) => setContactDraft((prev) => ({ ...prev, message: event.target.value }))}
-              className="min-h-[180px] flex-1 rounded-[30px] border border-[#d1652c] bg-[#eb5f1f] px-4 py-3 text-[15px] leading-6 text-white placeholder:text-[#ffd5be] outline-none transition focus:border-[#b84910]"
-            />
-
-            <div className="pt-1">
-              <button
-                type="submit"
-                disabled={isSending}
-                className="inline-flex items-center justify-center rounded-full border border-[#1a6e62] bg-[#1e6d63] px-7 py-2.5 text-[16px] font-semibold text-white transition hover:bg-[#248073]"
-              >
-                {isSending ? "Sending..." : "Send"}
-              </button>
-              {sendFeedback ? (
-                <p className={`mt-2 text-[12px] ${sendFeedback.kind === "ok" ? "text-[#2e7f3f]" : "text-[#bf3e3e]"}`}>
-                  {sendFeedback.text}
-                </p>
-              ) : null}
-            </div>
-          </form>
-        </aside>
+              <div className="pt-1">
+                <button
+                  type="submit"
+                  disabled={isSending}
+                  className="inline-flex items-center justify-center rounded-full border border-[#1a6e62] bg-[#1e6d63] px-8 py-2.5 text-[18px] font-semibold text-white transition hover:bg-[#248073]"
+                >
+                  {isSending ? "Sending..." : "Send"}
+                </button>
+                {sendFeedback ? (
+                  <p className={`mt-2 text-[12px] ${sendFeedback.kind === "ok" ? "text-[#2e7f3f]" : "text-[#bf3e3e]"}`}>
+                    {sendFeedback.text}
+                  </p>
+                ) : null}
+              </div>
+            </form>
+          </aside>
+        </div>
       </div>
     </div>
   );
-}
-
-function ContactInfoRow({
-  label,
-  value,
-  href,
-}: {
-  label: string;
-  value: string;
-  href?: string;
-}) {
-  const content = (
-    <>
-      <p className="text-[10px] uppercase tracking-[0.17em] text-[#6384ad]">{label}</p>
-      <p className="mt-1 text-[14px] font-medium text-[#123c69]">{value}</p>
-    </>
-  );
-
-  if (href) {
-    return (
-      <a
-        href={href}
-        className="block rounded-[11px] border border-[#bfd2e8] bg-[#fafdff] px-3 py-2.5 transition hover:border-[#8baed4] hover:bg-[#f1f8ff]"
-      >
-        {content}
-      </a>
-    );
-  }
-
-  return <div className="rounded-[11px] border border-[#bfd2e8] bg-[#fafdff] px-3 py-2.5">{content}</div>;
 }
 
 function SocialLogoLink({
