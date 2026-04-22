@@ -46,6 +46,18 @@ const UNIFIED_DEVICE_HEIGHT = 198;
 const UNIFIED_NODE_HEIGHT = 268;
 const NODE_LABEL_GAP = 12;
 const CABLE_ATTACH_DROP = 40;
+const DEVICE_NAME_LABEL_STYLE: CSSProperties = {
+  color: "#6e7e95",
+  textShadow:
+    "0 0 1px rgba(245,248,255,0.92), 0 0 7px rgba(248,251,255,0.6), 0 1px 0 rgba(255,255,255,0.7)",
+  WebkitTextStroke: "0.2px rgba(246,249,255,0.85)",
+};
+const DEVICE_TITLE_LABEL_STYLE: CSSProperties = {
+  color: "#0a0f16",
+  textShadow:
+    "0 0 1px rgba(250,252,255,0.96), 0 0 8px rgba(247,250,255,0.72), 0 1px 0 rgba(255,255,255,0.78)",
+  WebkitTextStroke: "0.24px rgba(247,250,255,0.9)",
+};
 
 type NodePosition = { x: number; y: number };
 type NodeMeta = {
@@ -1426,7 +1438,6 @@ export function TopologyHero() {
         title="About Me · Wireless Router1"
         sidebarTitle={SIDEBAR_TITLE.about}
         sidebarItems={aboutSidebarItems}
-        shellTitle="Global Settings"
       >
         <AboutPanelContent />
       </PacketWindow>
@@ -1438,7 +1449,6 @@ export function TopologyHero() {
         title="Projects · Switch0"
         sidebarTitle={SIDEBAR_TITLE.projects}
         sidebarItems={projectsSidebarItems}
-        shellTitle={selectedProject ? "Project Case Study" : "Project Overview"}
       >
         <ProjectsPanelContent
           selectedProjectSlug={selectedProjectSlug}
@@ -1454,7 +1464,6 @@ export function TopologyHero() {
         title="Contact Me · Smartphone0"
         sidebarTitle={SIDEBAR_TITLE.contact}
         sidebarItems={contactSidebarItems}
-        shellTitle="Interface Configuration"
       >
         <ContactPanelContent section={contactSection} />
       </PacketWindow>
@@ -1638,8 +1647,12 @@ function NodeButton({
             transform: NODE_META[node].labelOffsetX ? `translateX(${NODE_META[node].labelOffsetX}px)` : undefined,
           }}
         >
-          <p className="text-[12px] font-medium uppercase tracking-[0.18em] text-[#7f8b9d] drop-shadow-none [text-shadow:none]">{deviceName}</p>
-          <p className="mt-1 text-[18px] font-semibold tracking-[-0.02em] text-[#050505] drop-shadow-none [text-shadow:none]">{label}</p>
+          <p className="text-[12px] font-medium uppercase tracking-[0.18em]" style={DEVICE_NAME_LABEL_STYLE}>
+            {deviceName}
+          </p>
+          <p className="mt-1 text-[18px] font-semibold tracking-[-0.02em]" style={DEVICE_TITLE_LABEL_STYLE}>
+            {label}
+          </p>
         </div>
       </button>
     </div>
@@ -1692,9 +1705,8 @@ function PreviewWindow({
             </div>
           </div>
         ) : null}
-        <div className="overflow-hidden rounded-[2px] border border-[#cfcfcf] bg-white">
-          <div className="border-b border-[#d9d9d9] bg-[#fbfbfb] px-3 py-1.5 text-center text-[11px] font-medium text-[#747474]">Global Settings</div>
-          <div className="h-[calc(100%-31px)] overflow-hidden p-3">{children}</div>
+        <div className="h-full overflow-hidden rounded-[2px] border border-[#cfcfcf] bg-white">
+          <div className="h-full overflow-hidden p-3">{children}</div>
         </div>
       </div>
     </div>
