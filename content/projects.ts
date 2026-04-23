@@ -70,28 +70,28 @@ export const projects: Project[] = [
     title: "Phishing Awareness Login Demo",
     category: "Security Awareness / Frontend + Backend",
     summary:
-      "A controlled security awareness demo that recreates a familiar university login experience to show how convincing phishing pages can look in practice, without storing real passwords.",
+      "An authorized phishing-awareness simulation that recreates a familiar Metropolia CAS / OMA login experience to show how easily visual trust can be abused, while keeping the exercise technically safe.",
     objective:
-      "Demonstrate phishing risk in a realistic but controlled and authorized exercise where trust can be exploited through design alone.",
+      "Demonstrate real phishing risk in a controlled course context and prove that convincing UI imitation alone can trigger unsafe user behavior.",
     technicalScope:
-      "Familiar login UI recreation, responsive interaction flow, lightweight backend event tracking, username masking, no password storage and immediate post-interaction reveal.",
+      "CAS-style UI recreation, client-side username masking, strict no-password-storage policy, login-click telemetry, and an immediate warning/disclosure step after interaction.",
     environment:
-      "Built as an authorized Practical Hacking course exercise with a frontend login simulation and a lightweight backend for safe demo tracking. Deployed on Render (free tier).",
+      "Built as an authorized Practical Hacking exercise: frontend simulation + lightweight backend on an external Render domain (free tier).",
     implementation:
-      "Recreated a familiar university-style login flow, connected it to a lightweight backend, and implemented safety controls so usernames are masked and passwords are never stored.",
+      "Implemented a CAS-style clone with matching visual structure, then added safety controls so the password value is never read or stored and usernames are masked before any logging.",
     validation:
-      "Tested end-to-end interaction flow, verified that only safe metadata is tracked, confirmed password non-storage and ensured immediate disclosure of the exercise after interaction.",
+      "Verified end-to-end interaction flow, confirmed masked username output, confirmed password non-storage, and validated immediate post-interaction disclosure messaging.",
     result:
-      "A practical phishing awareness demo that combines realistic UI replication, backend tracking and safe security-focused design.",
+      "A practical awareness demo that combines realistic interface replication with safe telemetry and clear ethical boundaries.",
     learned:
-      "Stronger hands-on understanding of ethical security demo design, safe scope control, and how convincing interface familiarity can influence user trust.",
+      "Stronger hands-on understanding of security-awareness engineering: scope control, safe data handling, and how interface familiarity influences user decisions.",
     stack: ["React", "TypeScript", "HTML", "CSS", "Node.js", "Express", "Security awareness"],
     evidence: [
       "Live demo: https://idp-metropolia-profile-cas-login.onrender.com",
       "Deployment note: hosted on Render free tier. First load may take around 30–90 seconds because of cold start.",
-      "Authorized course scope: Practical Hacking exercise.",
-      "Usernames are masked and passwords are never stored.",
-      "Immediate post-interaction disclosure explains the lesson clearly.",
+      "Authorized scope: Practical Hacking course simulation (not an official Metropolia login page).",
+      "Safety controls: passwords are never read or stored, and usernames are masked before logging.",
+      "Full finding reports are kept private by default because they contain social-engineering methodology and target-context details.",
     ],
     cardAccent: "switch",
   },

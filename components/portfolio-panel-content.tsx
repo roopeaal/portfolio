@@ -283,6 +283,12 @@ const PROJECT_CARD_MEDIA: Record<
     mode: "contain",
     backdrop: "#f2ebdb",
   },
+  "metropolia-login-ui": {
+    src: "/portfolio/project-metropolia-login-demo.png",
+    alt: "Phishing awareness login demo screenshot",
+    mode: "cover",
+    backdrop: "#eceff4",
+  },
 };
 
 function extractProjectUrl(project: (typeof projects)[number]): string | null {
@@ -341,32 +347,45 @@ function ProjectMarqueeCard({
       </div>
 
       <div className="flex items-center justify-between px-3 py-2.5">
-        <p className="text-[12px] font-medium" style={{ color: visual.accent }}>
-          {liveUrl ? "Open live demo" : "Open project case"}
-        </p>
-        <span className="text-[16px] font-semibold" style={{ color: visual.accent }}>
-          {liveUrl ? "↗" : "→"}
-        </span>
+        <div className="flex items-center gap-1.5">
+          <p className="text-[12px] font-medium" style={{ color: visual.accent }}>
+            Open project case
+          </p>
+          <span className="text-[16px] font-semibold" style={{ color: visual.accent }}>
+            →
+          </span>
+        </div>
+        {liveUrl ? (
+          <a
+            href={liveUrl}
+            target="_blank"
+            rel="noreferrer"
+            onClick={(event) => event.stopPropagation()}
+            onKeyDown={(event) => event.stopPropagation()}
+            className="rounded-full border border-[#b7d59f] bg-[#effadb] px-2.5 py-1 text-[11px] font-semibold text-[#35552e] transition hover:bg-[#e2f3ca]"
+          >
+            Live demo ↗
+          </a>
+        ) : null}
       </div>
     </article>
   );
 
-  if (liveUrl) {
-    return (
-      <a href={liveUrl} target="_blank" rel="noreferrer" className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#234e84] focus-visible:ring-offset-2">
-        {inner}
-      </a>
-    );
-  }
-
   return (
-    <button
-      type="button"
+    <div
+      role="button"
+      tabIndex={0}
       onClick={() => onSelectProject?.(project.slug)}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          onSelectProject?.(project.slug);
+        }
+      }}
       className="block w-full text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#234e84] focus-visible:ring-offset-2"
     >
       {inner}
-    </button>
+    </div>
   );
 }
 
