@@ -268,6 +268,23 @@ const PROJECT_TILE_STYLES: Array<{
   },
 ];
 
+const PROJECT_CARD_MEDIA: Record<
+  string,
+  {
+    src: string;
+    alt: string;
+    mode?: "contain" | "cover";
+    backdrop?: string;
+  }
+> = {
+  "aircraft-game-python-react": {
+    src: "/portfolio/project-maanarvauspeli.png",
+    alt: "Kristoffer Kolumbuksen jaljilla - maanarvauspeli screenshot",
+    mode: "contain",
+    backdrop: "#f2ebdb",
+  },
+};
+
 function extractProjectUrl(project: (typeof projects)[number]): string | null {
   for (const line of project.evidence) {
     const url = line.match(/https?:\/\/\S+/i)?.[0];
@@ -286,14 +303,32 @@ function ProjectMarqueeCard({
   onSelectProject?: (slug: string) => void;
 }) {
   const visual = PROJECT_TILE_STYLES[visualIndex % PROJECT_TILE_STYLES.length];
+  const media = PROJECT_CARD_MEDIA[project.slug];
   const liveUrl = extractProjectUrl(project);
 
   const inner = (
     <article className="overflow-hidden rounded-[16px] border border-[#e5f4d7] bg-[#f5ffe8] shadow-[0_10px_20px_rgba(39,73,28,0.12)] transition duration-200 hover:shadow-[0_14px_24px_rgba(29,62,22,0.18)]">
       <div className="relative h-[145px] overflow-hidden border-b border-[#cee6bb]">
-        <div className="absolute inset-0" style={{ background: visual.background }} />
-        <div className="absolute inset-0" style={{ background: visual.overlay }} />
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.12)_0%,rgba(255,255,255,0)_38%,rgba(6,23,43,0.18)_100%)]" />
+        {media ? (
+          <>
+            <div className="absolute inset-0" style={{ background: media.backdrop ?? "#f1f5f9" }} />
+            <Image
+              src={media.src}
+              alt={media.alt}
+              fill
+              sizes="(max-width: 1200px) 46vw, 260px"
+              className={media.mode === "cover" ? "object-cover object-center" : "object-contain object-center p-1"}
+              draggable={false}
+            />
+            <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.04)_0%,rgba(255,255,255,0)_40%,rgba(6,23,43,0.24)_100%)]" />
+          </>
+        ) : (
+          <>
+            <div className="absolute inset-0" style={{ background: visual.background }} />
+            <div className="absolute inset-0" style={{ background: visual.overlay }} />
+            <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.12)_0%,rgba(255,255,255,0)_38%,rgba(6,23,43,0.18)_100%)]" />
+          </>
+        )}
 
         <div className="absolute left-3 top-3 inline-flex max-w-[82%] rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-white" style={{ backgroundColor: visual.tagBg }}>
           {project.category}
