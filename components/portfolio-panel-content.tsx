@@ -91,16 +91,6 @@ export function HomePanelContent() {
   );
 }
 
-
-function FieldCard({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded border border-[#d8d8d8] bg-[linear-gradient(180deg,#ffffff_0%,#f6f8fb_100%)] px-3 py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.85)]">
-      <div className="text-[9px] font-semibold uppercase tracking-[0.12em] text-[#6f87a6]">{label}</div>
-      <div className="mt-1 text-[11px] font-medium text-[#1f2a37]">{value}</div>
-    </div>
-  );
-}
-
 export function AboutPanelContent({
   section,
   preview = false,
@@ -290,6 +280,14 @@ const PROJECT_CARD_MEDIA: Record<
   },
 };
 
+function extractUrls(text: string): string[] {
+  return Array.from(text.matchAll(/https?:\/\/\S+/gi)).map((match) => match[0].replace(/[),.;]+$/, ""));
+}
+
+function stripUrls(text: string): string {
+  return text.replace(/https?:\/\/\S+/gi, "").replace(/\s{2,}/g, " ").trim();
+}
+
 function ProjectMarqueeCard({
   project,
   visualIndex,
@@ -301,6 +299,11 @@ function ProjectMarqueeCard({
 }) {
   const visual = PROJECT_TILE_STYLES[visualIndex % PROJECT_TILE_STYLES.length];
   const media = PROJECT_CARD_MEDIA[project.slug];
+  const [mediaFailed, setMediaFailed] = useState(false);
+
+  useEffect(() => {
+    setMediaFailed(false);
+  }, [project.slug, media?.src]);
 
   return (
     <button
@@ -311,16 +314,17 @@ function ProjectMarqueeCard({
     >
       <article className="overflow-hidden rounded-[16px] border border-[#d4e7c2] bg-[#f5ffe8] shadow-[0_10px_20px_rgba(39,73,28,0.12)] transition duration-200 group-hover:shadow-[0_14px_24px_rgba(29,62,22,0.18)]">
         <div className="relative h-[188px] overflow-hidden">
-          {media ? (
+          {media && !mediaFailed ? (
             <>
               <div className="absolute inset-0" style={{ background: media.backdrop ?? "#f1f5f9" }} />
-              <Image
+              <img
                 src={media.src}
                 alt={media.alt}
-                fill
-                sizes="(max-width: 1200px) 46vw, 260px"
-                className={media.mode === "cover" ? "object-cover object-center transition duration-300 group-hover:scale-[1.02]" : "object-contain object-center p-1 transition duration-300 group-hover:scale-[1.02]"}
+                className={`h-full w-full transition duration-300 group-hover:scale-[1.02] ${media.mode === "cover" ? "object-cover object-center" : "object-contain object-center p-1"}`}
                 draggable={false}
+                loading="lazy"
+                decoding="async"
+                onError={() => setMediaFailed(true)}
               />
             </>
           ) : (
@@ -458,6 +462,11 @@ export function ProjectsPanelContent({
     const items = projects.filter((_, index) => index % 2 === 1);
     return items.length > 0 ? items : projects;
   }, []);
+  const [heroImageFailed, setHeroImageFailed] = useState(false);
+
+  useEffect(() => {
+    setHeroImageFailed(false);
+  }, [selectedProject?.slug]);
 
   if (preview) {
     return (
@@ -477,7 +486,7 @@ export function ProjectsPanelContent({
 
   if (!selectedProject) {
     return (
-      <div className="-m-2 h-[calc(100%+1rem)] w-[calc(100%+1rem)] overflow-hidden bg-[linear-gradient(180deg,#d6edc3_0%,#cbe7b1_100%)] p-4 text-[#1d3658]">
+      <div className="h-full w-full overflow-hidden bg-[linear-gradient(180deg,#d6edc3_0%,#cbe7b1_100%)] p-4 text-[#1d3658]">
         <div className="grid h-full min-h-0 gap-4 rounded-[28px] border border-[#bad6a4] bg-[linear-gradient(180deg,#d8efc0_0%,#cce8b3_100%)] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.66)] lg:grid-cols-[minmax(280px,0.84fr)_minmax(0,1.16fr)]">
           <section className="flex min-h-0 flex-col justify-between rounded-[24px] border border-[#b7d59f] bg-[linear-gradient(180deg,#d8efbe_0%,#c9e4ad_100%)] p-5 shadow-[0_12px_24px_rgba(53,89,41,0.12)]">
             <div>
@@ -513,71 +522,157 @@ export function ProjectsPanelContent({
   const index = projects.findIndex((project) => project.slug === selectedProject.slug);
   const previous = index > 0 ? projects[index - 1] : null;
   const next = index < projects.length - 1 ? projects[index + 1] : null;
+  const selectedProjectMedia = PROJECT_CARD_MEDIA[selectedProject.slug];
+  const evidenceItems = selectedProject.evidence.map(stripUrls).filter(Boolean);
+  const projectLinks = Array.from(
+    new Set([
+      ...extractUrls(selectedProject.summary),
+      ...extractUrls(selectedProject.objective),
+      ...extractUrls(selectedProject.environment),
+      ...selectedProject.evidence.flatMap(extractUrls),
+    ]),
+  );
 
   return (
-    <div className="space-y-4 text-[13px] leading-6 text-[#1f2937]">
-      <div className="flex flex-wrap items-center gap-2">
-        <button
-          type="button"
-          onClick={onShowOverview}
-          className="rounded border border-[#d7d7d7] bg-[#f7f7f7] px-3 py-1.5 text-[12px] text-[#4b5563] transition hover:bg-[#efefef] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4b74ff]"
-        >
-          ← Back to all projects
-        </button>
-        <Tag>{selectedProject.category}</Tag>
-      </div>
+    <div className="h-full w-full overflow-auto bg-[#f8fafd] text-[#111827]">
+      <article className="mx-auto max-w-[1040px] px-5 py-5 md:px-7 md:py-6">
+        <header className="flex flex-wrap items-center justify-between gap-2 border-b border-[#dbe4ef] pb-3">
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={onShowOverview}
+              className="rounded border border-[#d3dce8] bg-white px-3 py-1.5 text-[12px] font-medium text-[#475569] transition hover:bg-[#f8fafc] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4b74ff]"
+            >
+              ← Back to all projects
+            </button>
+            <span className="rounded border border-[#d3dce8] bg-white px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.08em] text-[#5f6f85]">
+              {selectedProject.category}
+            </span>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {previous ? (
+              <button
+                type="button"
+                onClick={() => onSelectProject?.(previous.slug)}
+                className="rounded border border-[#d3dce8] bg-white px-3 py-1.5 text-[12px] font-medium text-[#475569] transition hover:bg-[#f8fafc] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4b74ff]"
+              >
+                ← Previous
+              </button>
+            ) : null}
+            {next ? (
+              <button
+                type="button"
+                onClick={() => onSelectProject?.(next.slug)}
+                className="rounded border border-[#d3dce8] bg-white px-3 py-1.5 text-[12px] font-medium text-[#475569] transition hover:bg-[#f8fafc] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4b74ff]"
+              >
+                Next →
+              </button>
+            ) : null}
+          </div>
+        </header>
 
-      <section className="rounded border border-[#dcdcdc] bg-white p-4">
-        <p className="text-[11px] uppercase tracking-[0.16em] text-[#8b96a8]">Project detail view</p>
-        <h2 className="mt-2 text-2xl font-semibold tracking-tight text-[#111827]">{selectedProject.title}</h2>
-        <p className="mt-3 text-[15px] leading-7 text-[#334155]">{selectedProject.summary}</p>
-      </section>
+        <section className="pt-4">
+          <h2 className="text-[clamp(1.45rem,2.4vw,2.05rem)] font-semibold tracking-tight text-[#0f172a]">{selectedProject.title}</h2>
+          <p className="mt-2 max-w-[920px] text-[15px] leading-7 text-[#334155]">{selectedProject.summary}</p>
+        </section>
 
-      <FieldCard label="Objective" value={selectedProject.objective} />
-      <FieldCard label="Technical scope" value={selectedProject.technicalScope} />
-      <FieldCard label="Environment / tools / stack" value={selectedProject.environment} />
-      <FieldCard label="Implementation" value={selectedProject.implementation} />
-      <FieldCard label="Validation / testing / evidence" value={selectedProject.validation} />
-      <FieldCard label="Result / outcome" value={selectedProject.result} />
-      <FieldCard label="What I learned" value={selectedProject.learned} />
+        <figure className="mt-5 overflow-hidden rounded-[12px] border border-[#d9e2ee] bg-[#eff3f8]">
+          <div className="relative aspect-[16/9] w-full overflow-hidden">
+            {selectedProjectMedia && !heroImageFailed ? (
+              <>
+                <div className="absolute inset-0" style={{ background: selectedProjectMedia.backdrop ?? "#edf2f7" }} />
+                <img
+                  src={selectedProjectMedia.src}
+                  alt={selectedProjectMedia.alt}
+                  className={`h-full w-full ${selectedProjectMedia.mode === "cover" ? "object-cover object-center" : "object-contain object-center p-4"}`}
+                  draggable={false}
+                  loading="lazy"
+                  decoding="async"
+                  onError={() => setHeroImageFailed(true)}
+                />
+              </>
+            ) : (
+              <div className="absolute inset-0 flex items-center justify-center px-6 text-center">
+                <span className="text-[clamp(1.2rem,2.8vw,2rem)] font-semibold tracking-tight text-[#1f3b6b]">{selectedProject.title}</span>
+              </div>
+            )}
+          </div>
+        </figure>
 
-      <section className="rounded border border-[#dcdcdc] bg-white p-4">
-        <h3 className="text-sm font-semibold uppercase tracking-[0.12em] text-[#516074]">Evidence points</h3>
-        <ul className="mt-3 space-y-2">
-          {selectedProject.evidence.map((item) => (
-            <li key={item} className="rounded border border-[#e5e7eb] bg-[#f8fafc] px-3 py-2 text-[13px] text-[#334155]">
-              {item}
-            </li>
-          ))}
-        </ul>
-      </section>
+        <section className="mt-6 grid gap-7 lg:grid-cols-[minmax(0,1.22fr)_minmax(0,0.78fr)]">
+          <div className="space-y-5">
+            <article>
+              <h3 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#64748b]">Objective</h3>
+              <p className="mt-2 text-[14px] leading-7 text-[#1f2937]">{selectedProject.objective}</p>
+            </article>
+            <article className="border-t border-[#e7edf4] pt-5">
+              <h3 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#64748b]">Implementation</h3>
+              <p className="mt-2 text-[14px] leading-7 text-[#1f2937]">{selectedProject.implementation}</p>
+            </article>
+            <article className="border-t border-[#e7edf4] pt-5">
+              <h3 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#64748b]">Result</h3>
+              <p className="mt-2 text-[14px] leading-7 text-[#1f2937]">{selectedProject.result}</p>
+            </article>
+            <article className="border-t border-[#e7edf4] pt-5">
+              <h3 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#64748b]">What I learned</h3>
+              <p className="mt-2 text-[14px] leading-7 text-[#1f2937]">{selectedProject.learned}</p>
+            </article>
+          </div>
 
-      <div className="flex flex-wrap gap-2">
-        {selectedProject.stack.map((item) => (
-          <Tag key={item}>{item}</Tag>
-        ))}
-      </div>
+          <aside className="space-y-5">
+            <article>
+              <h3 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#64748b]">Technical scope</h3>
+              <p className="mt-2 text-[14px] leading-7 text-[#1f2937]">{selectedProject.technicalScope}</p>
+            </article>
+            <article className="border-t border-[#e7edf4] pt-5">
+              <h3 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#64748b]">Environment / tools</h3>
+              <p className="mt-2 text-[14px] leading-7 text-[#1f2937]">{selectedProject.environment}</p>
+            </article>
+            <article className="border-t border-[#e7edf4] pt-5">
+              <h3 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#64748b]">Validation / testing</h3>
+              <p className="mt-2 text-[14px] leading-7 text-[#1f2937]">{selectedProject.validation}</p>
+            </article>
+            {evidenceItems.length > 0 ? (
+              <article className="border-t border-[#e7edf4] pt-5">
+                <h3 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#64748b]">Evidence</h3>
+                <ul className="mt-2 list-disc space-y-1.5 pl-5 text-[14px] leading-7 text-[#334155]">
+                  {evidenceItems.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </article>
+            ) : null}
+          </aside>
+        </section>
 
-      <div className="flex flex-wrap gap-2">
-        {previous ? (
-          <button
-            type="button"
-            onClick={() => onSelectProject?.(previous.slug)}
-            className="rounded border border-[#d7d7d7] bg-[#f7f7f7] px-3 py-1.5 text-[12px] text-[#4b5563] transition hover:bg-[#efefef] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4b74ff]"
-          >
-            ← {previous.title}
-          </button>
+        <section className="mt-6 border-t border-[#dbe4ef] pt-4">
+          <h3 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#64748b]">Tech stack</h3>
+          <div className="mt-2 flex flex-wrap gap-2">
+            {selectedProject.stack.map((item) => (
+              <Tag key={item}>{item}</Tag>
+            ))}
+          </div>
+        </section>
+
+        {projectLinks.length > 0 ? (
+          <section className="mt-5 border-t border-[#dbe4ef] pt-4">
+            <h3 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#64748b]">Project links</h3>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {projectLinks.map((url, linkIndex) => (
+                <a
+                  key={url}
+                  href={url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="rounded border border-[#d3dce8] bg-white px-3 py-1.5 text-[12px] font-medium text-[#36507a] transition hover:bg-[#f8fbff]"
+                >
+                  {linkIndex === 0 ? "Open live link" : `Reference ${linkIndex + 1}`}
+                </a>
+              ))}
+            </div>
+          </section>
         ) : null}
-        {next ? (
-          <button
-            type="button"
-            onClick={() => onSelectProject?.(next.slug)}
-            className="rounded border border-[#d7d7d7] bg-[#f7f7f7] px-3 py-1.5 text-[12px] text-[#4b5563] transition hover:bg-[#efefef] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4b74ff]"
-          >
-            {next.title} →
-          </button>
-        ) : null}
-      </div>
+      </article>
     </div>
   );
 }
@@ -696,7 +791,7 @@ export function ContactPanelContent({
   }
 
   return (
-    <div className="-m-2 h-[calc(100%+1rem)] w-[calc(100%+1rem)] overflow-hidden rounded-none bg-[linear-gradient(180deg,#ef6620_0%,#e85517_100%)] text-[#1f120b]">
+    <div className="h-full w-full overflow-hidden rounded-none bg-[linear-gradient(180deg,#ef6620_0%,#e85517_100%)] text-[#1f120b]">
       <div className="relative grid h-full min-h-0 gap-0 lg:grid-cols-[minmax(0,1.03fr)_minmax(0,0.97fr)]">
         <section className="relative flex min-h-0 flex-col px-9 pb-0 pt-7 text-white">
           <h2 className="relative z-[2] max-w-[700px] text-[clamp(2rem,4.7vw,4.35rem)] font-extrabold leading-[0.88] tracking-[-0.03em] text-white [text-shadow:0_2px_0_rgba(118,48,20,0.22)]">

@@ -113,7 +113,7 @@ export function PacketWindow({
 
   const overlayTransition = prefersReducedMotion ? { duration: 0 } : { duration: 0.18 };
   const windowTransition = prefersReducedMotion ? { duration: 0 } : { duration: 0.24, ease: [0.22, 1, 0.36, 1] as const };
-  const isExpandedPanel = type === "about" || type === "contact";
+  const isExpandedPanel = type === "about" || type === "contact" || type === "projects";
 
   const handleHardClose = useCallback(() => {
     try {
@@ -237,8 +237,12 @@ export function PacketWindow({
                 </div>
               </div>
             ) : (
-              <div className="flex h-[calc(100%-60px)] bg-[#ededed] p-3 md:p-4">
-                <div className="mr-3 hidden w-[174px] shrink-0 overflow-hidden border border-[#a8a8a8] bg-[#efefef] md:block">
+              <div className={`flex h-[calc(100%-60px)] ${isExpandedPanel ? "bg-transparent p-0" : "bg-[#ededed] p-3 md:p-4"}`}>
+                <div
+                  className={`hidden w-[174px] shrink-0 overflow-hidden border border-[#a8a8a8] bg-[#efefef] md:block ${
+                    isExpandedPanel ? "mr-0" : "mr-3"
+                  }`}
+                >
                   <div className="border-b border-[#b4b4b4] bg-[#f2f2f2] px-3 py-2 text-center text-[12px] font-semibold tracking-wide text-[#666666]">
                     {sidebarTitle}
                   </div>
@@ -262,20 +266,22 @@ export function PacketWindow({
                 </div>
 
                 <div
-                  className={`min-w-0 flex-1 border border-[#c5c5c5] ${isExpandedPanel ? "bg-[#f8f8f8] p-1.5 md:p-1.5" : "bg-[#f4f4f4] p-3 md:p-4"}`}
+                  className={`min-w-0 flex-1 ${isExpandedPanel ? "overflow-hidden bg-transparent" : "border border-[#c5c5c5] bg-[#f4f4f4] p-3 md:p-4"}`}
                 >
-                  <div className={`mx-auto h-full overflow-auto pr-1 ${shellTitle ? "flex flex-col" : ""}`}>
-                    {shellTitle ? (
-                      <>
-                        <div className="border border-[#c9c9c9] bg-[#efefef] px-4 py-1.5 text-center text-[14px] font-medium text-[#727272]">{shellTitle}</div>
-                        <div className="flex-1 border border-t-0 border-[#c9c9c9] bg-[#f8f8f8] px-4 py-4 md:px-5 md:py-4">{children}</div>
-                      </>
-                    ) : (
-                      <div className={isExpandedPanel ? "h-full overflow-hidden" : "h-full border border-[#c9c9c9] bg-[#f8f8f8] px-4 py-4 md:px-5 md:py-4"}>
-                        {children}
-                      </div>
-                    )}
-                  </div>
+                  {isExpandedPanel ? (
+                    <div className="h-full w-full overflow-hidden">{children}</div>
+                  ) : (
+                    <div className={`mx-auto h-full overflow-auto pr-1 ${shellTitle ? "flex flex-col" : ""}`}>
+                      {shellTitle ? (
+                        <>
+                          <div className="border border-[#c9c9c9] bg-[#efefef] px-4 py-1.5 text-center text-[14px] font-medium text-[#727272]">{shellTitle}</div>
+                          <div className="flex-1 border border-t-0 border-[#c9c9c9] bg-[#f8f8f8] px-4 py-4 md:px-5 md:py-4">{children}</div>
+                        </>
+                      ) : (
+                        <div className="h-full border border-[#c9c9c9] bg-[#f8f8f8] px-4 py-4 md:px-5 md:py-4">{children}</div>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             )}
