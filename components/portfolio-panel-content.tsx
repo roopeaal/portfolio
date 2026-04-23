@@ -214,43 +214,6 @@ export function AboutPanelContent({
   );
 }
 
-const PROJECT_TILE_STYLES: Array<{
-  background: string;
-  overlay: string;
-  text: string;
-}> = [
-  {
-    background: "linear-gradient(145deg,#ddf4ff 0%,#acd9ff 50%,#8ec3f5 100%)",
-    overlay: "radial-gradient(120% 90% at 82% -10%,rgba(7,56,117,0.24),transparent 65%)",
-    text: "#0a2e57",
-  },
-  {
-    background: "linear-gradient(145deg,#f7e3ff 0%,#d8c7ff 45%,#b89bf4 100%)",
-    overlay: "radial-gradient(100% 80% at 10% -20%,rgba(92,35,144,0.26),transparent 62%)",
-    text: "#3d1f67",
-  },
-  {
-    background: "linear-gradient(145deg,#daf8db 0%,#bcecbf 48%,#8bd59a 100%)",
-    overlay: "radial-gradient(100% 80% at 88% -16%,rgba(17,110,64,0.24),transparent 62%)",
-    text: "#0f4e2d",
-  },
-  {
-    background: "linear-gradient(145deg,#fff1d1 0%,#ffd89f 42%,#f7bb68 100%)",
-    overlay: "radial-gradient(100% 80% at 86% -20%,rgba(120,65,8,0.26),transparent 65%)",
-    text: "#703909",
-  },
-  {
-    background: "linear-gradient(145deg,#d8eff4 0%,#a8d4df 45%,#83b6c5 100%)",
-    overlay: "radial-gradient(100% 80% at 8% -22%,rgba(14,68,88,0.24),transparent 62%)",
-    text: "#0c4254",
-  },
-  {
-    background: "linear-gradient(145deg,#ffdede 0%,#ffc3bf 45%,#f5a29c 100%)",
-    overlay: "radial-gradient(100% 80% at 82% -20%,rgba(120,29,42,0.26),transparent 64%)",
-    text: "#66212b",
-  },
-];
-
 const PROJECT_CARD_MEDIA: Record<
   string,
   {
@@ -290,14 +253,11 @@ function stripUrls(text: string): string {
 
 function ProjectMarqueeCard({
   project,
-  visualIndex,
   onSelectProject,
 }: {
   project: (typeof projects)[number];
-  visualIndex: number;
   onSelectProject?: (slug: string) => void;
 }) {
-  const visual = PROJECT_TILE_STYLES[visualIndex % PROJECT_TILE_STYLES.length];
   const media = PROJECT_CARD_MEDIA[project.slug];
   const [mediaFailed, setMediaFailed] = useState(false);
 
@@ -309,14 +269,14 @@ function ProjectMarqueeCard({
     <button
       type="button"
       onClick={() => onSelectProject?.(project.slug)}
-      className="group block w-full rounded-[16px] text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#234e84] focus-visible:ring-offset-2"
+      className="group block w-full rounded-[10px] text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3d7f35] focus-visible:ring-offset-2"
       aria-label={`Open project: ${project.title}`}
     >
-      <article className="overflow-hidden rounded-[16px] border border-[#d4e7c2] bg-[#f5ffe8] shadow-[0_10px_20px_rgba(39,73,28,0.12)] transition duration-200 group-hover:shadow-[0_14px_24px_rgba(29,62,22,0.18)]">
+      <article className="overflow-hidden rounded-[10px] border border-[#79c271] bg-[#edf8df] transition duration-200 group-hover:border-[#4f9b47]">
         <div className="relative h-[188px] overflow-hidden">
           {media && !mediaFailed ? (
             <>
-              <div className="absolute inset-0" style={{ background: media.backdrop ?? "#f1f5f9" }} />
+              <div className="absolute inset-0" style={{ background: media.backdrop ?? "#edf6df" }} />
               <img
                 src={media.src}
                 alt={media.alt}
@@ -328,18 +288,14 @@ function ProjectMarqueeCard({
               />
             </>
           ) : (
-            <>
-              <div className="absolute inset-0" style={{ background: visual.background }} />
-              <div className="absolute inset-0" style={{ background: visual.overlay }} />
-              <div className="absolute inset-0 flex items-center justify-center px-6 text-center">
-                <span
-                  className="text-[clamp(1.05rem,2.2vw,1.35rem)] font-semibold leading-[1.18] tracking-[0.01em]"
-                  style={{ color: visual.text, fontFamily: "Georgia, 'Times New Roman', serif" }}
-                >
-                  {project.title}
-                </span>
-              </div>
-            </>
+            <div className="absolute inset-0 flex items-center justify-center bg-[#e8f5d9] px-6 text-center">
+              <span
+                className="text-[clamp(1.05rem,2.2vw,1.35rem)] font-semibold leading-[1.2] tracking-[0.01em] text-[#2a5b2b]"
+                style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
+              >
+                {project.title}
+              </span>
+            </div>
           )}
         </div>
       </article>
@@ -358,7 +314,7 @@ function ProjectMarqueeLane({
 }) {
   const laneRef = useRef<HTMLDivElement>(null);
   const segmentRef = useRef<HTMLDivElement>(null);
-  const [isHovered, setIsHovered] = useState(false);
+  const isHoveredRef = useRef(false);
 
   useEffect(() => {
     const lane = laneRef.current;
@@ -386,7 +342,7 @@ function ProjectMarqueeLane({
       const deltaTime = Math.min((time - previousTime) / 1000, 0.05);
       previousTime = time;
 
-      if (!isHovered && segmentHeight > 0) {
+      if (!isHoveredRef.current && segmentHeight > 0) {
         const delta = (direction === "up" ? -1 : 1) * speedPxPerSecond * deltaTime;
         lane.scrollTop += delta;
         if (lane.scrollTop < segmentHeight * 0.24) lane.scrollTop += segmentHeight;
@@ -401,35 +357,35 @@ function ProjectMarqueeLane({
       window.cancelAnimationFrame(rafId);
       observer.disconnect();
     };
-  }, [direction, isHovered, items]);
+  }, [direction, items]);
 
   return (
     <div
-      className="relative h-full min-h-0 overflow-hidden rounded-[20px] border border-[#bddba8] bg-[linear-gradient(180deg,#dcf0cb_0%,#d4eec1_100%)] p-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.65)]"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      className="relative h-full min-h-0 overflow-hidden"
+      onMouseEnter={() => {
+        isHoveredRef.current = true;
+      }}
+      onMouseLeave={() => {
+        isHoveredRef.current = false;
+      }}
     >
-      <div className="pointer-events-none absolute right-3 top-3 z-[1] rounded-full border border-[#9fc487] bg-[#eefadf]/80 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-[#537043]">
-        {isHovered ? "Manual scroll" : "Auto"}
-      </div>
-
       <div
         ref={laneRef}
-        className="h-full overflow-y-auto pr-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="h-full overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         <div ref={segmentRef} className="space-y-3 py-1">
           {items.map((project, index) => (
-            <ProjectMarqueeCard key={`${project.slug}-segment-a`} project={project} visualIndex={index} onSelectProject={onSelectProject} />
+            <ProjectMarqueeCard key={`${project.slug}-segment-a`} project={project} onSelectProject={onSelectProject} />
           ))}
         </div>
         <div aria-hidden className="space-y-3 py-1">
           {items.map((project, index) => (
-            <ProjectMarqueeCard key={`${project.slug}-segment-b`} project={project} visualIndex={index + 11} onSelectProject={onSelectProject} />
+            <ProjectMarqueeCard key={`${project.slug}-segment-b`} project={project} onSelectProject={onSelectProject} />
           ))}
         </div>
         <div aria-hidden className="space-y-3 py-1">
           {items.map((project, index) => (
-            <ProjectMarqueeCard key={`${project.slug}-segment-c`} project={project} visualIndex={index + 22} onSelectProject={onSelectProject} />
+            <ProjectMarqueeCard key={`${project.slug}-segment-c`} project={project} onSelectProject={onSelectProject} />
           ))}
         </div>
       </div>
@@ -474,9 +430,9 @@ export function ProjectsPanelContent({
         <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#35587d]">Projects</p>
         <h3 className="mt-1 text-[18px] font-semibold leading-[1.04] text-[#16345e]">Discover projects I have built</h3>
         <div className="mt-3 grid h-[calc(100%-68px)] min-h-0 grid-cols-2 gap-2">
-          {[...leftLaneProjects.slice(0, 2), ...rightLaneProjects.slice(0, 2)].slice(0, 4).map((project, index) => (
+          {[...leftLaneProjects.slice(0, 2), ...rightLaneProjects.slice(0, 2)].slice(0, 4).map((project) => (
             <div key={project.slug} className="min-h-0">
-              <ProjectMarqueeCard project={project} visualIndex={index} onSelectProject={onSelectProject} />
+              <ProjectMarqueeCard project={project} onSelectProject={onSelectProject} />
             </div>
           ))}
         </div>
@@ -486,31 +442,15 @@ export function ProjectsPanelContent({
 
   if (!selectedProject) {
     return (
-      <div className="h-full w-full overflow-hidden bg-[linear-gradient(180deg,#d6edc3_0%,#cbe7b1_100%)] p-4 text-[#1d3658]">
-        <div className="grid h-full min-h-0 gap-4 rounded-[28px] border border-[#bad6a4] bg-[linear-gradient(180deg,#d8efc0_0%,#cce8b3_100%)] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.66)] lg:grid-cols-[minmax(280px,0.84fr)_minmax(0,1.16fr)]">
-          <section className="flex min-h-0 flex-col justify-between rounded-[24px] border border-[#b7d59f] bg-[linear-gradient(180deg,#d8efbe_0%,#c9e4ad_100%)] p-5 shadow-[0_12px_24px_rgba(53,89,41,0.12)]">
-            <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#496f44]">Project Explorer</p>
-              <h2 className="mt-2 max-w-[420px] text-[clamp(2rem,4.5vw,4rem)] font-semibold leading-[0.97] tracking-[-0.02em] text-[#163f81]">
-                Discover projects I have built
-              </h2>
-              <p className="mt-4 max-w-[500px] text-[15px] leading-7 text-[#274c3f]">
-                Two live lanes keep moving in opposite directions. Hover a lane to pause, then scroll with your mouse wheel to inspect projects one by one.
-              </p>
-            </div>
-
-            <div className="mt-5">
-              <button
-                type="button"
-                onClick={onShowOverview}
-                className="inline-flex items-center rounded-full border border-[#1f3f8b] bg-[#173f90] px-6 py-3 text-[14px] font-semibold text-white shadow-[0_8px_16px_rgba(20,56,130,0.24)] transition hover:bg-[#1d4ba8]"
-              >
-                Explore all case studies
-              </button>
-            </div>
+      <div className="h-full w-full overflow-hidden bg-[linear-gradient(180deg,#d6edc3_0%,#cbe7b1_100%)] p-0 text-[#1d3658]">
+        <div className="grid h-full min-h-0 gap-4 px-6 py-6 lg:grid-cols-[minmax(280px,0.84fr)_minmax(0,1.16fr)]">
+          <section className="flex min-h-0 items-start">
+            <h2 className="max-w-[430px] text-[clamp(2rem,4.5vw,4rem)] font-semibold leading-[0.97] tracking-[-0.02em] text-[#163f81]">
+              Discover projects I have built
+            </h2>
           </section>
 
-          <section className="grid min-h-0 gap-4 rounded-[24px] border border-[#b9d6a1] bg-[#dff1cf]/72 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.55)] md:grid-cols-2">
+          <section className="grid min-h-0 gap-4 md:grid-cols-2">
             <ProjectMarqueeLane items={leftLaneProjects} direction="up" onSelectProject={onSelectProject} />
             <ProjectMarqueeLane items={rightLaneProjects} direction="down" onSelectProject={onSelectProject} />
           </section>
