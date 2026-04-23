@@ -479,17 +479,17 @@ export function ContactPanelContent({
                 <div className="min-h-[56px] rounded-[20px] bg-[#eb5f1f] px-3 py-2 text-[10px] text-[#ffd7c4]">Message</div>
               </div>
             </div>
-            <div className="grid grid-cols-4 items-center justify-items-center gap-1 px-2 pb-2 pt-1.5">
-              <SocialLogoLink href="https://www.linkedin.com/in/roope-aaltonen/" label="LinkedIn" className="!h-8 !w-8 !border-0 !bg-transparent !shadow-none hover:!translate-y-0">
+            <div className="grid grid-cols-4 items-center justify-items-center gap-1.5 px-2 pb-1.5 pt-1.5">
+              <SocialLogoLink href="https://www.linkedin.com/in/roope-aaltonen/" label="LinkedIn" className="!h-10 !w-10 !border-0 !bg-transparent !shadow-none hover:!translate-y-0">
                 <LinkedInGlyph />
               </SocialLogoLink>
-              <SocialLogoLink href="https://facebook.com/roope_aaltonen" label="Instagram" className="!h-8 !w-8 !border-0 !bg-transparent !shadow-none hover:!translate-y-0">
+              <SocialLogoLink href="https://facebook.com/roope_aaltonen" label="Instagram" className="!h-10 !w-10 !border-0 !bg-transparent !shadow-none hover:!translate-y-0">
                 <InstagramGlyph />
               </SocialLogoLink>
-              <SocialLogoLink href="https://facebook.com/roope.aaltonen.5" label="Facebook" className="!h-8 !w-8 !border-0 !bg-transparent !shadow-none hover:!translate-y-0">
+              <SocialLogoLink href="https://facebook.com/roope.aaltonen.5" label="Facebook" className="!h-10 !w-10 !border-0 !bg-transparent !shadow-none hover:!translate-y-0">
                 <FacebookGlyph />
               </SocialLogoLink>
-              <SocialLogoLink href="https://github.com/roopeaal" label="GitHub" className="!h-8 !w-8 !border-0 !bg-transparent !shadow-none hover:!translate-y-0">
+              <SocialLogoLink href="https://github.com/roopeaal" label="GitHub" className="!h-10 !w-10 !border-0 !bg-transparent !shadow-none hover:!translate-y-0">
                 <GitHubGlyph />
               </SocialLogoLink>
             </div>
@@ -529,7 +529,7 @@ export function ContactPanelContent({
         </section>
 
         <aside className="relative flex min-h-0 flex-col bg-[#e95a1b] pl-0 pr-7 pt-0">
-          <div className="relative z-[2] flex min-h-0 flex-[0_0_84%] flex-col bg-[#f3e6eb] px-8 pb-7 pt-7 shadow-[0_14px_28px_rgba(76,28,15,0.1)]">
+          <div className="relative z-[2] flex min-h-0 flex-[0_0_80%] flex-col bg-[#f3e6eb] px-8 pb-7 pt-7 shadow-[0_14px_28px_rgba(76,28,15,0.1)]">
             <h3 className="text-[clamp(2.05rem,3.7vw,3.25rem)] font-semibold leading-[1.03] text-[#8b3f1c]">Fill in your details</h3>
 
             <form onSubmit={handleContactSubmit} className="mt-5 flex min-h-0 flex-1 flex-col gap-3.5" autoComplete="off">
@@ -577,17 +577,17 @@ export function ContactPanelContent({
             </form>
           </div>
 
-          <div className="relative z-[2] grid w-full grid-cols-4 items-center justify-items-center gap-2 px-8 pb-5 pt-3">
-            <SocialLogoLink href="https://www.linkedin.com/in/roope-aaltonen/" label="LinkedIn" className="!h-14 !w-14 !border-0 !bg-transparent !shadow-none hover:!translate-y-0">
+          <div className="relative z-[2] grid w-full grid-cols-4 items-center justify-items-center gap-2 px-8 pb-5 pt-2">
+            <SocialLogoLink href="https://www.linkedin.com/in/roope-aaltonen/" label="LinkedIn" className="!h-[clamp(72px,7.6vw,126px)] !w-[clamp(72px,7.6vw,126px)] !border-0 !bg-transparent !shadow-none hover:!translate-y-0">
               <LinkedInGlyph />
             </SocialLogoLink>
-            <SocialLogoLink href="https://facebook.com/roope_aaltonen" label="Instagram" className="!h-14 !w-14 !border-0 !bg-transparent !shadow-none hover:!translate-y-0">
+            <SocialLogoLink href="https://facebook.com/roope_aaltonen" label="Instagram" className="!h-[clamp(72px,7.6vw,126px)] !w-[clamp(72px,7.6vw,126px)] !border-0 !bg-transparent !shadow-none hover:!translate-y-0">
               <InstagramGlyph />
             </SocialLogoLink>
-            <SocialLogoLink href="https://facebook.com/roope.aaltonen.5" label="Facebook" className="!h-14 !w-14 !border-0 !bg-transparent !shadow-none hover:!translate-y-0">
+            <SocialLogoLink href="https://facebook.com/roope.aaltonen.5" label="Facebook" className="!h-[clamp(72px,7.6vw,126px)] !w-[clamp(72px,7.6vw,126px)] !border-0 !bg-transparent !shadow-none hover:!translate-y-0">
               <FacebookGlyph />
             </SocialLogoLink>
-            <SocialLogoLink href="https://github.com/roopeaal" label="GitHub" className="!h-14 !w-14 !border-0 !bg-transparent !shadow-none hover:!translate-y-0">
+            <SocialLogoLink href="https://github.com/roopeaal" label="GitHub" className="!h-[clamp(72px,7.6vw,126px)] !w-[clamp(72px,7.6vw,126px)] !border-0 !bg-transparent !shadow-none hover:!translate-y-0">
               <GitHubGlyph />
             </SocialLogoLink>
           </div>
@@ -617,7 +617,7 @@ function SocialLogoLink({
       title={label}
       className={`group inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#b8cde6] bg-white transition hover:-translate-y-[1px] hover:border-[#7ea3cc] hover:shadow-[0_8px_16px_rgba(28,76,130,0.16)] ${className ?? ""}`}
     >
-      <span className="h-5 w-5">{children}</span>
+      <span className="h-[62%] w-[62%]">{children}</span>
     </a>
   );
 }
