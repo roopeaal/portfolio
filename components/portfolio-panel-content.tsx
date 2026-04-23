@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { projects } from "@/content/projects";
 import { profile } from "@/content/profile";
 
@@ -224,6 +224,207 @@ export function AboutPanelContent({
   );
 }
 
+const PROJECT_TILE_STYLES: Array<{
+  background: string;
+  overlay: string;
+  tagBg: string;
+  accent: string;
+}> = [
+  {
+    background: "linear-gradient(145deg,#ddf4ff 0%,#acd9ff 50%,#8ec3f5 100%)",
+    overlay: "radial-gradient(120% 90% at 82% -10%,rgba(7,56,117,0.24),transparent 65%)",
+    tagBg: "#1f4f88",
+    accent: "#0a2e57",
+  },
+  {
+    background: "linear-gradient(145deg,#f7e3ff 0%,#d8c7ff 45%,#b89bf4 100%)",
+    overlay: "radial-gradient(100% 80% at 10% -20%,rgba(92,35,144,0.26),transparent 62%)",
+    tagBg: "#5c2f97",
+    accent: "#3d1f67",
+  },
+  {
+    background: "linear-gradient(145deg,#daf8db 0%,#bcecbf 48%,#8bd59a 100%)",
+    overlay: "radial-gradient(100% 80% at 88% -16%,rgba(17,110,64,0.24),transparent 62%)",
+    tagBg: "#1d7a49",
+    accent: "#0f4e2d",
+  },
+  {
+    background: "linear-gradient(145deg,#fff1d1 0%,#ffd89f 42%,#f7bb68 100%)",
+    overlay: "radial-gradient(100% 80% at 86% -20%,rgba(120,65,8,0.26),transparent 65%)",
+    tagBg: "#aa5d13",
+    accent: "#703909",
+  },
+  {
+    background: "linear-gradient(145deg,#d8eff4 0%,#a8d4df 45%,#83b6c5 100%)",
+    overlay: "radial-gradient(100% 80% at 8% -22%,rgba(14,68,88,0.24),transparent 62%)",
+    tagBg: "#1f6f8a",
+    accent: "#0c4254",
+  },
+  {
+    background: "linear-gradient(145deg,#ffdede 0%,#ffc3bf 45%,#f5a29c 100%)",
+    overlay: "radial-gradient(100% 80% at 82% -20%,rgba(120,29,42,0.26),transparent 64%)",
+    tagBg: "#a13949",
+    accent: "#66212b",
+  },
+];
+
+function extractProjectUrl(project: (typeof projects)[number]): string | null {
+  for (const line of project.evidence) {
+    const url = line.match(/https?:\/\/\S+/i)?.[0];
+    if (url) return url;
+  }
+  return null;
+}
+
+function ProjectMarqueeCard({
+  project,
+  visualIndex,
+  onSelectProject,
+}: {
+  project: (typeof projects)[number];
+  visualIndex: number;
+  onSelectProject?: (slug: string) => void;
+}) {
+  const visual = PROJECT_TILE_STYLES[visualIndex % PROJECT_TILE_STYLES.length];
+  const liveUrl = extractProjectUrl(project);
+
+  const inner = (
+    <article className="overflow-hidden rounded-[16px] border border-[#e5f4d7] bg-[#f5ffe8] shadow-[0_10px_20px_rgba(39,73,28,0.12)] transition duration-200 hover:shadow-[0_14px_24px_rgba(29,62,22,0.18)]">
+      <div className="relative h-[145px] overflow-hidden border-b border-[#cee6bb]">
+        <div className="absolute inset-0" style={{ background: visual.background }} />
+        <div className="absolute inset-0" style={{ background: visual.overlay }} />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.12)_0%,rgba(255,255,255,0)_38%,rgba(6,23,43,0.18)_100%)]" />
+
+        <div className="absolute left-3 top-3 inline-flex max-w-[82%] rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-white" style={{ backgroundColor: visual.tagBg }}>
+          {project.category}
+        </div>
+
+        <div className="absolute bottom-3 left-3 right-3 rounded-[10px] border border-white/40 bg-[#0f2944]/72 px-2.5 py-2 backdrop-blur-[1px]">
+          <p className="line-clamp-2 text-[14px] font-semibold leading-[1.26] text-white">{project.title}</p>
+          <p className="mt-1 text-[11px] text-[#d5e7ff]">{project.stack.slice(0, 3).join(" • ")}</p>
+        </div>
+      </div>
+
+      <div className="flex items-center justify-between px-3 py-2.5">
+        <p className="text-[12px] font-medium" style={{ color: visual.accent }}>
+          {liveUrl ? "Open live demo" : "Open project case"}
+        </p>
+        <span className="text-[16px] font-semibold" style={{ color: visual.accent }}>
+          {liveUrl ? "↗" : "→"}
+        </span>
+      </div>
+    </article>
+  );
+
+  if (liveUrl) {
+    return (
+      <a href={liveUrl} target="_blank" rel="noreferrer" className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#234e84] focus-visible:ring-offset-2">
+        {inner}
+      </a>
+    );
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={() => onSelectProject?.(project.slug)}
+      className="block w-full text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#234e84] focus-visible:ring-offset-2"
+    >
+      {inner}
+    </button>
+  );
+}
+
+function ProjectMarqueeLane({
+  items,
+  direction,
+  onSelectProject,
+}: {
+  items: (typeof projects)[number][];
+  direction: "up" | "down";
+  onSelectProject?: (slug: string) => void;
+}) {
+  const laneRef = useRef<HTMLDivElement>(null);
+  const segmentRef = useRef<HTMLDivElement>(null);
+  const [isHovered, setIsHovered] = useState(false);
+
+  useEffect(() => {
+    const lane = laneRef.current;
+    const segment = segmentRef.current;
+    if (!lane || !segment || items.length === 0) return;
+
+    let segmentHeight = 0;
+    let rafId = 0;
+    let previousTime = 0;
+    const speedPxPerSecond = 20;
+
+    const setBaseline = () => {
+      segmentHeight = segment.scrollHeight;
+      if (segmentHeight > 0) {
+        lane.scrollTop = segmentHeight;
+      }
+    };
+
+    setBaseline();
+    const observer = new ResizeObserver(() => setBaseline());
+    observer.observe(segment);
+
+    const loop = (time: number) => {
+      if (!previousTime) previousTime = time;
+      const deltaTime = Math.min((time - previousTime) / 1000, 0.05);
+      previousTime = time;
+
+      if (!isHovered && segmentHeight > 0) {
+        const delta = (direction === "up" ? -1 : 1) * speedPxPerSecond * deltaTime;
+        lane.scrollTop += delta;
+        if (lane.scrollTop < segmentHeight * 0.24) lane.scrollTop += segmentHeight;
+        if (lane.scrollTop > segmentHeight * 1.76) lane.scrollTop -= segmentHeight;
+      }
+
+      rafId = window.requestAnimationFrame(loop);
+    };
+
+    rafId = window.requestAnimationFrame(loop);
+    return () => {
+      window.cancelAnimationFrame(rafId);
+      observer.disconnect();
+    };
+  }, [direction, isHovered, items]);
+
+  return (
+    <div
+      className="relative h-full min-h-0 overflow-hidden rounded-[20px] border border-[#bddba8] bg-[linear-gradient(180deg,#dcf0cb_0%,#d4eec1_100%)] p-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.65)]"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <div className="pointer-events-none absolute right-3 top-3 z-[1] rounded-full border border-[#9fc487] bg-[#eefadf]/80 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-[#537043]">
+        {isHovered ? "Manual scroll" : "Auto"}
+      </div>
+
+      <div
+        ref={laneRef}
+        className="h-full overflow-y-auto pr-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
+        <div ref={segmentRef} className="space-y-3 py-1">
+          {items.map((project, index) => (
+            <ProjectMarqueeCard key={`${project.slug}-segment-a`} project={project} visualIndex={index} onSelectProject={onSelectProject} />
+          ))}
+        </div>
+        <div aria-hidden className="space-y-3 py-1">
+          {items.map((project, index) => (
+            <ProjectMarqueeCard key={`${project.slug}-segment-b`} project={project} visualIndex={index + 11} onSelectProject={onSelectProject} />
+          ))}
+        </div>
+        <div aria-hidden className="space-y-3 py-1">
+          {items.map((project, index) => (
+            <ProjectMarqueeCard key={`${project.slug}-segment-c`} project={project} visualIndex={index + 22} onSelectProject={onSelectProject} />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function ProjectsPanelContent({
   selectedProjectSlug,
   preview = false,
@@ -240,27 +441,26 @@ export function ProjectsPanelContent({
     [selectedProjectSlug],
   );
 
+  const leftLaneProjects = useMemo(() => {
+    const items = projects.filter((_, index) => index % 2 === 0);
+    return items.length > 0 ? items : projects;
+  }, []);
+
+  const rightLaneProjects = useMemo(() => {
+    const items = projects.filter((_, index) => index % 2 === 1);
+    return items.length > 0 ? items : projects;
+  }, []);
+
   if (preview) {
     return (
-      <div className="space-y-3 text-[11px] leading-5 text-[#202020]">
-        <FieldCard label="Section" value="Projects" />
-        <section className="rounded border border-[#dfdfdf] bg-white p-3">
-          <p>Projects are presented as engineering case studies with objective, scope, implementation, validation and result.</p>
-        </section>
-        <div className="space-y-3">
-          {projects.slice(0, 2).map((project) => (
-            <button
-              key={project.slug}
-              type="button"
-              onClick={() => onSelectProject?.(project.slug)}
-              className="block w-full rounded border border-[#dfdfdf] bg-white p-3 text-left"
-            >
-              <div className="flex items-center justify-between gap-3">
-                <p className="font-medium text-black">{project.title}</p>
-                <span className="rounded border border-[#d8d8d8] bg-[#f7f7f7] px-2 py-1 text-[11px] text-[#8f8f8f]">{project.category}</span>
-              </div>
-              <p className="mt-2 text-black">{project.summary}</p>
-            </button>
+      <div className="h-full overflow-hidden rounded-[12px] border border-[#bcd7a8] bg-[linear-gradient(180deg,#dff2ce_0%,#d4ecbf_100%)] p-3 text-[#16345e]">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#35587d]">Projects</p>
+        <h3 className="mt-1 text-[18px] font-semibold leading-[1.04] text-[#16345e]">Discover projects I have built</h3>
+        <div className="mt-3 grid h-[calc(100%-68px)] min-h-0 grid-cols-2 gap-2">
+          {[...leftLaneProjects.slice(0, 2), ...rightLaneProjects.slice(0, 2)].slice(0, 4).map((project, index) => (
+            <div key={project.slug} className="min-h-0">
+              <ProjectMarqueeCard project={project} visualIndex={index} onSelectProject={onSelectProject} />
+            </div>
           ))}
         </div>
       </div>
@@ -269,46 +469,34 @@ export function ProjectsPanelContent({
 
   if (!selectedProject) {
     return (
-      <div className="space-y-4 text-[13px] leading-6 text-[#1f2937]">
-        <FieldCard label="Section" value="Projects" />
+      <div className="-m-2 h-[calc(100%+1rem)] w-[calc(100%+1rem)] overflow-hidden bg-[linear-gradient(180deg,#d6edc3_0%,#cbe7b1_100%)] p-4 text-[#1d3658]">
+        <div className="grid h-full min-h-0 gap-4 rounded-[28px] border border-[#bad6a4] bg-[linear-gradient(180deg,#d8efc0_0%,#cce8b3_100%)] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.66)] lg:grid-cols-[minmax(280px,0.84fr)_minmax(0,1.16fr)]">
+          <section className="flex min-h-0 flex-col justify-between rounded-[24px] border border-[#b7d59f] bg-[linear-gradient(180deg,#d8efbe_0%,#c9e4ad_100%)] p-5 shadow-[0_12px_24px_rgba(53,89,41,0.12)]">
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#496f44]">Project Explorer</p>
+              <h2 className="mt-2 max-w-[420px] text-[clamp(2rem,4.5vw,4rem)] font-semibold leading-[0.97] tracking-[-0.02em] text-[#163f81]">
+                Discover projects I have built
+              </h2>
+              <p className="mt-4 max-w-[500px] text-[15px] leading-7 text-[#274c3f]">
+                Two live lanes keep moving in opposite directions. Hover a lane to pause, then scroll with your mouse wheel to inspect projects one by one.
+              </p>
+            </div>
 
-        <section className="rounded border border-[#dcdcdc] bg-white p-4">
-          <h2 className="text-base font-semibold text-[#111827]">Project overview</h2>
-          <p className="mt-3">
-            These entries are structured as engineering case studies instead of blog cards. The focus is on objective, scope, implementation,
-            validation and what the work actually demonstrates for infrastructure, networking, Linux, cloud and security-oriented roles.
-          </p>
-          <p className="mt-3 rounded border border-[#e5e7eb] bg-[#f8fafc] px-3 py-2 text-[12px] text-[#4b5563]">
-            Compact credibility statement: these are student and lab-oriented implementation cases, not inflated production claims.
-          </p>
-        </section>
+            <div className="mt-5">
+              <button
+                type="button"
+                onClick={onShowOverview}
+                className="inline-flex items-center rounded-full border border-[#1f3f8b] bg-[#173f90] px-6 py-3 text-[14px] font-semibold text-white shadow-[0_8px_16px_rgba(20,56,130,0.24)] transition hover:bg-[#1d4ba8]"
+              >
+                Explore all case studies
+              </button>
+            </div>
+          </section>
 
-        <div className="grid gap-4 xl:grid-cols-2">
-          {projects.map((project) => (
-            <button
-              key={project.slug}
-              type="button"
-              onClick={() => onSelectProject?.(project.slug)}
-              className="group rounded border border-[#dcdcdc] bg-white p-4 text-left shadow-[0_8px_18px_rgba(15,23,42,0.04)] transition hover:border-[#b9c4d0] hover:bg-[#fcfcfc] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4b74ff]"
-            >
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <p className="text-[11px] uppercase tracking-[0.16em] text-[#8b96a8]">Engineering case study</p>
-                  <h3 className="mt-2 text-[17px] font-semibold text-[#111827]">{project.title}</h3>
-                </div>
-                <Tag>{project.category}</Tag>
-              </div>
-              <p className="mt-3 text-[14px] leading-6 text-[#334155]">{project.summary}</p>
-              <div className="mt-4 rounded border border-[#e5e7eb] bg-[#f8fafc] px-3 py-2 text-[13px] text-[#475569]">
-                <span className="font-medium text-[#111827]">Objective:</span> {project.objective}
-              </div>
-              <div className="mt-4 flex flex-wrap gap-2">
-                {project.stack.slice(0, 4).map((item) => (
-                  <Tag key={item}>{item}</Tag>
-                ))}
-              </div>
-            </button>
-          ))}
+          <section className="grid min-h-0 gap-4 rounded-[24px] border border-[#b9d6a1] bg-[#dff1cf]/72 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.55)] md:grid-cols-2">
+            <ProjectMarqueeLane items={leftLaneProjects} direction="up" onSelectProject={onSelectProject} />
+            <ProjectMarqueeLane items={rightLaneProjects} direction="down" onSelectProject={onSelectProject} />
+          </section>
         </div>
       </div>
     );
