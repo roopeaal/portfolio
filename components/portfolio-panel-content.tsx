@@ -690,14 +690,34 @@ export function ContactPanelContent({
   const [contactDraft, setContactDraft] = useState({ name: "", email: "", message: "" });
   const [isSending, setIsSending] = useState(false);
   const [sendFeedback, setSendFeedback] = useState<{ kind: "ok" | "error"; text: string } | null>(null);
+  const [submitAttempted, setSubmitAttempted] = useState(false);
+
+  const missingFields = useMemo(
+    () => ({
+      name: contactDraft.name.trim().length === 0,
+      email: contactDraft.email.trim().length === 0,
+      message: contactDraft.message.trim().length === 0,
+    }),
+    [contactDraft],
+  );
+  const hasMissingFields = missingFields.name || missingFields.email || missingFields.message;
 
   const handleContactSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (isSending) return;
+    setSubmitAttempted(true);
 
-    const safeName = contactDraft.name.trim() || "Website visitor";
-    const safeEmail = contactDraft.email.trim() || "Not provided";
-    const safeMessage = contactDraft.message.trim() || "(No message written)";
+    if (hasMissingFields) {
+      setSendFeedback({
+        kind: "error",
+        text: "Please fill in all fields before sending.",
+      });
+      return;
+    }
+
+    const safeName = contactDraft.name.trim();
+    const safeEmail = contactDraft.email.trim();
+    const safeMessage = contactDraft.message.trim();
 
     setSendFeedback(null);
     setIsSending(true);
@@ -725,6 +745,7 @@ export function ContactPanelContent({
 
       setSendFeedback({ kind: "ok", text: "Message sent successfully." });
       setContactDraft({ name: "", email: "", message: "" });
+      setSubmitAttempted(false);
     } catch {
       setSendFeedback({
         kind: "error",
@@ -794,17 +815,17 @@ export function ContactPanelContent({
     <div className="h-full w-full overflow-hidden rounded-none bg-[linear-gradient(180deg,#ef6620_0%,#e85517_100%)] text-[#1f120b]">
       <div className="relative grid h-full min-h-0 gap-0 lg:grid-cols-[minmax(0,1.03fr)_minmax(0,0.97fr)]">
         <section className="relative flex min-h-0 flex-col px-9 pb-0 pt-7 text-white">
-          <h2 className="relative z-[2] max-w-[700px] text-[clamp(2rem,4.7vw,4.35rem)] font-extrabold leading-[0.88] tracking-[-0.03em] text-white [text-shadow:0_2px_0_rgba(118,48,20,0.22)]">
-            Let&apos;s build something{" "}
-            <span
-              className="inline-block bg-clip-text text-transparent [-webkit-background-clip:text]"
-              style={{
-                backgroundImage:
-                  "linear-gradient(180deg,#fff9d4 0%,#ffe88f 24%,#ffd761 41%,#ffba3f 58%,#ff8f2f 74%,#ef4c1e 88%,#c51d0c 100%),radial-gradient(18% 40% at 6% 100%,#ffe69b 0 56%,transparent 60%),radial-gradient(20% 42% at 24% 100%,#ffdb77 0 56%,transparent 60%),radial-gradient(20% 44% at 42% 100%,#ffd261 0 56%,transparent 60%),radial-gradient(20% 43% at 60% 100%,#ffbf4e 0 56%,transparent 60%),radial-gradient(20% 42% at 78% 100%,#ffad3f 0 56%,transparent 60%),radial-gradient(18% 39% at 95% 100%,#ff9d35 0 56%,transparent 60%)",
-                WebkitTextStroke: "1.6px #5f1a08",
-                textShadow: "0 2px 0 rgba(76,20,6,0.3), 0 0 14px rgba(255,227,149,0.32)",
-              }}
-            >
+            <h2 className="relative z-[2] max-w-[700px] text-[clamp(2rem,4.7vw,4.35rem)] font-extrabold leading-[0.88] tracking-[-0.03em] text-white [text-shadow:0_2px_0_rgba(118,48,20,0.22)]">
+              Let&apos;s build something{" "}
+              <span
+                className="inline-block bg-clip-text text-transparent [-webkit-background-clip:text]"
+                style={{
+                  backgroundImage:
+                    "linear-gradient(180deg,#ffffff 0%,#ffffff 49%,#fff5cd 51%,#ffe58a 58%,#ffc958 68%,#ff9934 80%,#ec5a1f 90%,#bc220f 100%),radial-gradient(14% 58% at 5% 100%,#ffe9a3 0 62%,transparent 64%),radial-gradient(16% 60% at 16% 100%,#ffd676 0 61%,transparent 63%),radial-gradient(16% 62% at 28% 100%,#ffc75e 0 62%,transparent 64%),radial-gradient(18% 64% at 42% 100%,#ffb64a 0 61%,transparent 63%),radial-gradient(17% 61% at 57% 100%,#ffa63e 0 62%,transparent 64%),radial-gradient(16% 59% at 72% 100%,#ff9a35 0 62%,transparent 64%),radial-gradient(15% 58% at 85% 100%,#ff8a2e 0 62%,transparent 64%),radial-gradient(13% 56% at 96% 100%,#ff7d28 0 62%,transparent 64%)",
+                  WebkitTextStroke: "1.6px #5f1a08",
+                  textShadow: "0 2px 0 rgba(76,20,6,0.3), 0 0 14px rgba(255,227,149,0.32)",
+                }}
+              >
               great
             </span>{" "}
             together.
@@ -842,8 +863,14 @@ export function ContactPanelContent({
                 placeholder="Name"
                 autoComplete="name"
                 value={contactDraft.name}
-                onChange={(event) => setContactDraft((prev) => ({ ...prev, name: event.target.value }))}
-                className="w-full rounded-full border border-[#d1652c] bg-[#eb5f1f] px-5 py-3.5 text-[17px] text-white placeholder:text-[#ffd5be] outline-none transition focus:border-[#b84910]"
+                onChange={(event) => {
+                  setContactDraft((prev) => ({ ...prev, name: event.target.value }));
+                  setSendFeedback(null);
+                }}
+                aria-invalid={submitAttempted && missingFields.name}
+                className={`w-full rounded-full border bg-[#eb5f1f] px-5 py-3.5 text-[17px] text-white placeholder:text-[#ffd5be] outline-none transition focus:border-[#b84910] ${
+                  submitAttempted && missingFields.name ? "border-[#bb2d2d]" : "border-[#d1652c]"
+                }`}
               />
               <input
                 name="Email"
@@ -851,16 +878,28 @@ export function ContactPanelContent({
                 placeholder="Email"
                 autoComplete="email"
                 value={contactDraft.email}
-                onChange={(event) => setContactDraft((prev) => ({ ...prev, email: event.target.value }))}
-                className="w-full rounded-full border border-[#d1652c] bg-[#eb5f1f] px-5 py-3.5 text-[17px] text-white placeholder:text-[#ffd5be] outline-none transition focus:border-[#b84910]"
+                onChange={(event) => {
+                  setContactDraft((prev) => ({ ...prev, email: event.target.value }));
+                  setSendFeedback(null);
+                }}
+                aria-invalid={submitAttempted && missingFields.email}
+                className={`w-full rounded-full border bg-[#eb5f1f] px-5 py-3.5 text-[17px] text-white placeholder:text-[#ffd5be] outline-none transition focus:border-[#b84910] ${
+                  submitAttempted && missingFields.email ? "border-[#bb2d2d]" : "border-[#d1652c]"
+                }`}
               />
               <textarea
                 name="Message"
                 placeholder="Write your message..."
                 autoComplete="off"
                 value={contactDraft.message}
-                onChange={(event) => setContactDraft((prev) => ({ ...prev, message: event.target.value }))}
-                className="min-h-[180px] flex-1 rounded-[34px] border border-[#d1652c] bg-[#eb5f1f] px-5 py-4 text-[17px] leading-7 text-white placeholder:text-[#ffd5be] outline-none transition focus:border-[#b84910]"
+                onChange={(event) => {
+                  setContactDraft((prev) => ({ ...prev, message: event.target.value }));
+                  setSendFeedback(null);
+                }}
+                aria-invalid={submitAttempted && missingFields.message}
+                className={`min-h-[180px] flex-1 rounded-[34px] border bg-[#eb5f1f] px-5 py-4 text-[17px] leading-7 text-white placeholder:text-[#ffd5be] outline-none transition focus:border-[#b84910] ${
+                  submitAttempted && missingFields.message ? "border-[#bb2d2d]" : "border-[#d1652c]"
+                }`}
               />
 
               <div className="pt-1">
