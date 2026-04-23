@@ -52,17 +52,29 @@ export const projects: Project[] = [
   {
     slug: "heart-rate-monitor",
     title: "Heart Rate / BPM Monitor UI",
-    category: "Course Project / Frontend",
-    summary: "A BPM / heart rate themed course project combining user interface elements with application logic. Screenshots and demo coming later.",
-    objective: "Practice data-focused UI building with inputs, actions and a visible result view such as a table or graph.",
-    technicalScope: "User input handling, BPM-related display logic, state updates and structured result presentation.",
-    environment: "Frontend course project with interactive UI elements.",
-    implementation: "Built a small monitoring-style interface with button/input driven interaction and a visual result area for BPM data.",
-    validation: "UI interaction tests and state update checks.",
-    result: "A compact frontend project showing that the interface was not static and included logic.",
-    learned: "More confidence in building interfaces where data, user actions and visible output connect cleanly.",
-    stack: ["React", "JavaScript", "HTML", "CSS"],
-    evidence: ["Screenshots and demo coming later."],
+    category: "Embedded Systems / Health Data",
+    summary:
+      "PulseMaster is a first-year hardware project where we built an embedded heart-rate and HRV prototype using optical PPG sensing on Raspberry Pi Pico W.",
+    objective:
+      "Design a practical embedded system that can measure heart rate and compute HRV metrics in a usable interface, not just in theory.",
+    technicalScope:
+      "PPG signal capture, peak-to-peak interval processing, HRV metric calculation (mean PPI, mean HR, SDNN, RMSSD), menu control via rotary encoder, and OLED-based result rendering.",
+    environment:
+      "Raspberry Pi Pico W + CrowTail Pulse Sensor v2.0 + OLED + rotary encoder. Software developed in MicroPython with Thonny IDE, including WLAN/MQTT integration support.",
+    implementation:
+      "Implemented two measurement flows: a basic HR mode with live updates and an HRV mode that collects data for 30 seconds before computing advanced metrics on-device.",
+    validation:
+      "Validated readings by comparing output against trusted reference values/devices and iterating on the peak-detection logic and signal handling during testing.",
+    result:
+      "Delivered a working prototype and full project report for Metropolia Hardware 2, with reliable baseline BPM output and functional HRV analysis pipeline.",
+    learned:
+      "Deepened skills in embedded programming, signal-processing fundamentals, hardware-software integration, and structured team delivery under project constraints.",
+    stack: ["MicroPython", "Raspberry Pi Pico W", "CrowTail Pulse Sensor v2.0", "OLED", "Rotary Encoder", "MQTT", "Thonny IDE"],
+    evidence: [
+      "Hardware build photo included in project overview.",
+      "Project report completed: PulseMaster, Metropolia Hardware 2 (May 2024).",
+      "Full report is available on request (contains full team member details and internal course documentation).",
+    ],
     cardAccent: "switch",
   },
   {

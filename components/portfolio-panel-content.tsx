@@ -283,6 +283,12 @@ const PROJECT_CARD_MEDIA: Record<
     mode: "contain",
     backdrop: "#f2ebdb",
   },
+  "heart-rate-monitor": {
+    src: "/portfolio/project-pulsemaster-hw.jpeg",
+    alt: "PulseMaster hardware setup with Raspberry Pi Pico and pulse sensor",
+    mode: "cover",
+    backdrop: "#1f2429",
+  },
   "metropolia-login-ui": {
     src: "/portfolio/project-metropolia-login-demo.png",
     alt: "Phishing awareness login demo screenshot",
