@@ -227,44 +227,37 @@ export function AboutPanelContent({
 const PROJECT_TILE_STYLES: Array<{
   background: string;
   overlay: string;
-  tagBg: string;
-  accent: string;
+  text: string;
 }> = [
   {
     background: "linear-gradient(145deg,#ddf4ff 0%,#acd9ff 50%,#8ec3f5 100%)",
     overlay: "radial-gradient(120% 90% at 82% -10%,rgba(7,56,117,0.24),transparent 65%)",
-    tagBg: "#1f4f88",
-    accent: "#0a2e57",
+    text: "#0a2e57",
   },
   {
     background: "linear-gradient(145deg,#f7e3ff 0%,#d8c7ff 45%,#b89bf4 100%)",
     overlay: "radial-gradient(100% 80% at 10% -20%,rgba(92,35,144,0.26),transparent 62%)",
-    tagBg: "#5c2f97",
-    accent: "#3d1f67",
+    text: "#3d1f67",
   },
   {
     background: "linear-gradient(145deg,#daf8db 0%,#bcecbf 48%,#8bd59a 100%)",
     overlay: "radial-gradient(100% 80% at 88% -16%,rgba(17,110,64,0.24),transparent 62%)",
-    tagBg: "#1d7a49",
-    accent: "#0f4e2d",
+    text: "#0f4e2d",
   },
   {
     background: "linear-gradient(145deg,#fff1d1 0%,#ffd89f 42%,#f7bb68 100%)",
     overlay: "radial-gradient(100% 80% at 86% -20%,rgba(120,65,8,0.26),transparent 65%)",
-    tagBg: "#aa5d13",
-    accent: "#703909",
+    text: "#703909",
   },
   {
     background: "linear-gradient(145deg,#d8eff4 0%,#a8d4df 45%,#83b6c5 100%)",
     overlay: "radial-gradient(100% 80% at 8% -22%,rgba(14,68,88,0.24),transparent 62%)",
-    tagBg: "#1f6f8a",
-    accent: "#0c4254",
+    text: "#0c4254",
   },
   {
     background: "linear-gradient(145deg,#ffdede 0%,#ffc3bf 45%,#f5a29c 100%)",
     overlay: "radial-gradient(100% 80% at 82% -20%,rgba(120,29,42,0.26),transparent 64%)",
-    tagBg: "#a13949",
-    accent: "#66212b",
+    text: "#66212b",
   },
 ];
 
@@ -297,14 +290,6 @@ const PROJECT_CARD_MEDIA: Record<
   },
 };
 
-function extractProjectUrl(project: (typeof projects)[number]): string | null {
-  for (const line of project.evidence) {
-    const url = line.match(/https?:\/\/\S+/i)?.[0];
-    if (url) return url;
-  }
-  return null;
-}
-
 function ProjectMarqueeCard({
   project,
   visualIndex,
@@ -316,82 +301,45 @@ function ProjectMarqueeCard({
 }) {
   const visual = PROJECT_TILE_STYLES[visualIndex % PROJECT_TILE_STYLES.length];
   const media = PROJECT_CARD_MEDIA[project.slug];
-  const liveUrl = extractProjectUrl(project);
-
-  const inner = (
-    <article className="overflow-hidden rounded-[16px] border border-[#e5f4d7] bg-[#f5ffe8] shadow-[0_10px_20px_rgba(39,73,28,0.12)] transition duration-200 hover:shadow-[0_14px_24px_rgba(29,62,22,0.18)]">
-      <div className="relative h-[145px] overflow-hidden border-b border-[#cee6bb]">
-        {media ? (
-          <>
-            <div className="absolute inset-0" style={{ background: media.backdrop ?? "#f1f5f9" }} />
-            <Image
-              src={media.src}
-              alt={media.alt}
-              fill
-              sizes="(max-width: 1200px) 46vw, 260px"
-              className={media.mode === "cover" ? "object-cover object-center" : "object-contain object-center p-1"}
-              draggable={false}
-            />
-            <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.04)_0%,rgba(255,255,255,0)_40%,rgba(6,23,43,0.24)_100%)]" />
-          </>
-        ) : (
-          <>
-            <div className="absolute inset-0" style={{ background: visual.background }} />
-            <div className="absolute inset-0" style={{ background: visual.overlay }} />
-            <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.12)_0%,rgba(255,255,255,0)_38%,rgba(6,23,43,0.18)_100%)]" />
-          </>
-        )}
-
-        <div className="absolute left-3 top-3 inline-flex max-w-[82%] rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-white" style={{ backgroundColor: visual.tagBg }}>
-          {project.category}
-        </div>
-
-        <div className="absolute bottom-3 left-3 right-3 rounded-[10px] border border-white/40 bg-[#0f2944]/72 px-2.5 py-2 backdrop-blur-[1px]">
-          <p className="line-clamp-2 text-[14px] font-semibold leading-[1.26] text-white">{project.title}</p>
-          <p className="mt-1 text-[11px] text-[#d5e7ff]">{project.stack.slice(0, 3).join(" • ")}</p>
-        </div>
-      </div>
-
-      <div className="flex items-center justify-between px-3 py-2.5">
-        <div className="flex items-center gap-1.5">
-          <p className="text-[12px] font-medium" style={{ color: visual.accent }}>
-            Open project case
-          </p>
-          <span className="text-[16px] font-semibold" style={{ color: visual.accent }}>
-            →
-          </span>
-        </div>
-        {liveUrl ? (
-          <a
-            href={liveUrl}
-            target="_blank"
-            rel="noreferrer"
-            onClick={(event) => event.stopPropagation()}
-            onKeyDown={(event) => event.stopPropagation()}
-            className="rounded-full border border-[#b7d59f] bg-[#effadb] px-2.5 py-1 text-[11px] font-semibold text-[#35552e] transition hover:bg-[#e2f3ca]"
-          >
-            Live demo ↗
-          </a>
-        ) : null}
-      </div>
-    </article>
-  );
 
   return (
-    <div
-      role="button"
-      tabIndex={0}
+    <button
+      type="button"
       onClick={() => onSelectProject?.(project.slug)}
-      onKeyDown={(event) => {
-        if (event.key === "Enter" || event.key === " ") {
-          event.preventDefault();
-          onSelectProject?.(project.slug);
-        }
-      }}
-      className="block w-full text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#234e84] focus-visible:ring-offset-2"
+      className="group block w-full rounded-[16px] text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#234e84] focus-visible:ring-offset-2"
+      aria-label={`Open project: ${project.title}`}
     >
-      {inner}
-    </div>
+      <article className="overflow-hidden rounded-[16px] border border-[#d4e7c2] bg-[#f5ffe8] shadow-[0_10px_20px_rgba(39,73,28,0.12)] transition duration-200 group-hover:shadow-[0_14px_24px_rgba(29,62,22,0.18)]">
+        <div className="relative h-[188px] overflow-hidden">
+          {media ? (
+            <>
+              <div className="absolute inset-0" style={{ background: media.backdrop ?? "#f1f5f9" }} />
+              <Image
+                src={media.src}
+                alt={media.alt}
+                fill
+                sizes="(max-width: 1200px) 46vw, 260px"
+                className={media.mode === "cover" ? "object-cover object-center transition duration-300 group-hover:scale-[1.02]" : "object-contain object-center p-1 transition duration-300 group-hover:scale-[1.02]"}
+                draggable={false}
+              />
+            </>
+          ) : (
+            <>
+              <div className="absolute inset-0" style={{ background: visual.background }} />
+              <div className="absolute inset-0" style={{ background: visual.overlay }} />
+              <div className="absolute inset-0 flex items-center justify-center px-6 text-center">
+                <span
+                  className="text-[clamp(1.05rem,2.2vw,1.35rem)] font-semibold leading-[1.18] tracking-[0.01em]"
+                  style={{ color: visual.text, fontFamily: "Georgia, 'Times New Roman', serif" }}
+                >
+                  {project.title}
+                </span>
+              </div>
+            </>
+          )}
+        </div>
+      </article>
+    </button>
   );
 }
 
