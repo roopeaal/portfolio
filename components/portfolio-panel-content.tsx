@@ -447,10 +447,9 @@ export function ContactPanelContent({
   if (preview) {
     return (
       <div className="h-full overflow-hidden rounded-[12px] border border-[#cf8b66] bg-[linear-gradient(180deg,#ef651f_0%,#e65415_100%)] p-1 text-white">
-        <div className="relative grid h-full min-h-0 grid-cols-[1.05fr_0.95fr] overflow-hidden rounded-[10px] border border-white/25">
-          <section className="relative flex min-h-0 flex-col bg-[linear-gradient(180deg,#ef6924_0%,#e8591a_100%)] p-3">
-            <span className="pointer-events-none absolute left-0 bottom-0 h-[42%] w-[8px] bg-[#f0b6cc]/92" />
-            <h3 className="relative z-[1] text-[20px] font-extrabold leading-[0.94] tracking-[-0.018em]">
+        <div className="relative grid h-full min-h-0 grid-cols-[1.02fr_0.98fr] overflow-hidden rounded-[10px] border border-white/20">
+          <section className="relative flex min-h-0 flex-col bg-[linear-gradient(180deg,#ef6a24_0%,#e8591a_100%)] p-3 pb-0">
+            <h3 className="relative z-[1] text-[18px] font-extrabold leading-[0.94] tracking-[-0.018em]">
               Let&apos;s build something great together.
             </h3>
             <div className="relative z-[1] mt-1.5 space-y-0.5 text-[9.5px] text-white/96">
@@ -458,22 +457,21 @@ export function ContactPanelContent({
               <p>roope.aa@hotmail.com</p>
               <p>Vantaa, Hämeenkylä</p>
             </div>
-            <div className="relative z-[1] mt-auto min-h-0 rounded-[2px] border border-[#e3bcc1] bg-[#f2e5ea] p-1.5">
-              <div className="relative h-full w-full min-h-[112px]">
+            <div className="relative z-[1] mt-2 min-h-0 flex-1">
+              <div className="relative h-full w-[88%] min-h-[120px] border border-[#e3bcc1]/90 bg-[#f2e5ea] p-1">
                 <Image
                   src="/portfolio/contact-splash-cup.png"
                   alt="3D splash cup illustration"
                   fill
                   sizes="220px"
-                  className="object-contain object-center p-1 mix-blend-multiply [filter:saturate(1.05)_contrast(1.03)]"
+                  className="object-contain object-center p-0.5"
                 />
               </div>
             </div>
           </section>
 
           <section className="relative flex min-h-0 flex-col bg-[#e95a1b] p-0">
-            <span className="pointer-events-none absolute right-0 top-0 h-[38%] w-[8px] bg-[#f0b6cc]/92" />
-            <div className="min-h-0 flex-1 bg-[#f3e6eb] p-3">
+            <div className="min-h-0 flex-[0_0_82%] bg-[#f3e6eb] p-3">
               <h4 className="text-[20px] font-extrabold leading-[0.98] text-[#8b3f1c]">Fill in your details</h4>
               <div className="mt-2.5 flex flex-col gap-2">
                 <div className="rounded-full bg-[#eb5f1f] px-3 py-2 text-[10px] text-[#ffd7c4]">Name</div>
@@ -481,17 +479,17 @@ export function ContactPanelContent({
                 <div className="min-h-[56px] rounded-[20px] bg-[#eb5f1f] px-3 py-2 text-[10px] text-[#ffd7c4]">Message</div>
               </div>
             </div>
-            <div className="flex items-center gap-1.5 px-3 pb-2 pt-1">
-              <SocialLogoLink href="https://www.linkedin.com/in/roope-aaltonen/" label="LinkedIn" className="h-8 w-8 border-white/40 bg-white/10">
+            <div className="grid grid-cols-4 items-center justify-items-center gap-1 px-2 pb-2 pt-1.5">
+              <SocialLogoLink href="https://www.linkedin.com/in/roope-aaltonen/" label="LinkedIn" className="!h-8 !w-8 !border-0 !bg-transparent !shadow-none hover:!translate-y-0">
                 <LinkedInGlyph />
               </SocialLogoLink>
-              <SocialLogoLink href="https://facebook.com/roope_aaltonen" label="Instagram" className="h-8 w-8 border-white/40 bg-white/10">
+              <SocialLogoLink href="https://facebook.com/roope_aaltonen" label="Instagram" className="!h-8 !w-8 !border-0 !bg-transparent !shadow-none hover:!translate-y-0">
                 <InstagramGlyph />
               </SocialLogoLink>
-              <SocialLogoLink href="https://facebook.com/roope.aaltonen.5" label="Facebook" className="h-8 w-8 border-white/40 bg-white/10">
+              <SocialLogoLink href="https://facebook.com/roope.aaltonen.5" label="Facebook" className="!h-8 !w-8 !border-0 !bg-transparent !shadow-none hover:!translate-y-0">
                 <FacebookGlyph />
               </SocialLogoLink>
-              <SocialLogoLink href="https://github.com/roopeaal" label="GitHub" className="h-8 w-8 border-white/40 bg-white/10">
+              <SocialLogoLink href="https://github.com/roopeaal" label="GitHub" className="!h-8 !w-8 !border-0 !bg-transparent !shadow-none hover:!translate-y-0">
                 <GitHubGlyph />
               </SocialLogoLink>
             </div>
@@ -502,28 +500,27 @@ export function ContactPanelContent({
   }
 
   return (
-    <div className="-m-1.5 h-[calc(100%+0.75rem)] w-[calc(100%+0.75rem)] overflow-hidden rounded-none bg-[linear-gradient(180deg,#ef6620_0%,#e85517_100%)] text-[#1f120b]">
-      <div className="relative grid h-full min-h-0 gap-0 lg:grid-cols-[minmax(0,1.02fr)_minmax(0,0.98fr)]">
-        <section className="relative flex min-h-0 flex-col bg-[linear-gradient(180deg,#ef6723_0%,#e95a1b_72%,#e65117_100%)] px-9 pb-8 pt-7 text-white">
-          <span className="pointer-events-none absolute left-0 bottom-0 z-[1] h-[40%] w-[22px] bg-[#efb5cb]/96" />
-          <h2 className="relative z-[2] max-w-[740px] text-[clamp(2.2rem,5.9vw,5.6rem)] font-extrabold leading-[0.86] tracking-[-0.03em] text-white [text-shadow:0_2px_0_rgba(118,48,20,0.22)]">
+    <div className="-m-2 h-[calc(100%+1rem)] w-[calc(100%+1rem)] overflow-hidden rounded-none bg-[linear-gradient(180deg,#ef6620_0%,#e85517_100%)] text-[#1f120b]">
+      <div className="relative grid h-full min-h-0 gap-0 lg:grid-cols-[minmax(0,1.03fr)_minmax(0,0.97fr)]">
+        <section className="relative flex min-h-0 flex-col bg-[linear-gradient(180deg,#ef6723_0%,#e95a1b_70%,#e65117_100%)] px-9 pb-0 pt-7 text-white">
+          <h2 className="relative z-[2] max-w-[700px] text-[clamp(2rem,4.7vw,4.35rem)] font-extrabold leading-[0.88] tracking-[-0.03em] text-white [text-shadow:0_2px_0_rgba(118,48,20,0.22)]">
             Let&apos;s build something great together.
           </h2>
 
-          <div className="relative z-[2] mt-4 space-y-1 text-[clamp(20px,2.24vw,31px)] font-medium leading-[1.12] text-white/98">
+          <div className="relative z-[2] mt-4 space-y-1 text-[clamp(18px,1.9vw,26px)] font-medium leading-[1.12] text-white/98">
             <a href="tel:+358405283008" className="block w-fit transition hover:text-[#ffe9db]">040 528 3008</a>
             <a href="mailto:roope.aa@hotmail.com" className="block w-fit transition hover:text-[#ffe9db]">roope.aa@hotmail.com</a>
             <p>Vantaa, Hämeenkylä</p>
           </div>
 
-          <div className="relative z-[2] mt-5 flex min-h-0 flex-1 items-end">
-            <div className="relative h-full min-h-[260px] w-full overflow-hidden rounded-[2px] border border-[#ecb8ce]/85 bg-[#f2e3ea]">
+          <div className="relative z-[2] mt-4 flex min-h-0 flex-1 items-end">
+            <div className="relative h-full min-h-[320px] w-[88%] overflow-hidden border border-[#ecb8ce]/85 bg-[#f2e3ea]">
               <Image
                 src="/portfolio/contact-splash-cup.png"
                 alt="3D splash cup"
                 fill
                 sizes="(max-width: 1024px) 100vw, 560px"
-                className="object-contain object-center p-8"
+                className="object-contain object-center p-3"
                 priority={false}
                 draggable={false}
               />
@@ -532,9 +529,7 @@ export function ContactPanelContent({
         </section>
 
         <aside className="relative flex min-h-0 flex-col bg-[#e95a1b] pl-0 pr-7 pt-0">
-          <span className="pointer-events-none absolute right-0 top-0 z-[1] h-[39%] w-[22px] bg-[#efb5cb]/96" />
-
-          <div className="relative z-[2] min-h-0 flex-1 bg-[#f3e6eb] px-8 pb-7 pt-7 shadow-[0_14px_28px_rgba(76,28,15,0.1)]">
+          <div className="relative z-[2] flex min-h-0 flex-[0_0_84%] flex-col bg-[#f3e6eb] px-8 pb-7 pt-7 shadow-[0_14px_28px_rgba(76,28,15,0.1)]">
             <h3 className="text-[clamp(2.05rem,3.7vw,3.25rem)] font-semibold leading-[1.03] text-[#8b3f1c]">Fill in your details</h3>
 
             <form onSubmit={handleContactSubmit} className="mt-5 flex min-h-0 flex-1 flex-col gap-3.5" autoComplete="off">
@@ -582,17 +577,17 @@ export function ContactPanelContent({
             </form>
           </div>
 
-          <div className="relative z-[2] flex flex-wrap items-center gap-3 px-8 pb-5 pt-4">
-            <SocialLogoLink href="https://www.linkedin.com/in/roope-aaltonen/" label="LinkedIn" className="h-12 w-12 border-white/36 bg-white/12 hover:border-white/62 hover:bg-white/18">
+          <div className="relative z-[2] grid w-full grid-cols-4 items-center justify-items-center gap-2 px-8 pb-5 pt-3">
+            <SocialLogoLink href="https://www.linkedin.com/in/roope-aaltonen/" label="LinkedIn" className="!h-14 !w-14 !border-0 !bg-transparent !shadow-none hover:!translate-y-0">
               <LinkedInGlyph />
             </SocialLogoLink>
-            <SocialLogoLink href="https://facebook.com/roope_aaltonen" label="Instagram" className="h-12 w-12 border-white/36 bg-white/12 hover:border-white/62 hover:bg-white/18">
+            <SocialLogoLink href="https://facebook.com/roope_aaltonen" label="Instagram" className="!h-14 !w-14 !border-0 !bg-transparent !shadow-none hover:!translate-y-0">
               <InstagramGlyph />
             </SocialLogoLink>
-            <SocialLogoLink href="https://facebook.com/roope.aaltonen.5" label="Facebook" className="h-12 w-12 border-white/36 bg-white/12 hover:border-white/62 hover:bg-white/18">
+            <SocialLogoLink href="https://facebook.com/roope.aaltonen.5" label="Facebook" className="!h-14 !w-14 !border-0 !bg-transparent !shadow-none hover:!translate-y-0">
               <FacebookGlyph />
             </SocialLogoLink>
-            <SocialLogoLink href="https://github.com/roopeaal" label="GitHub" className="h-12 w-12 border-white/36 bg-white/12 hover:border-white/62 hover:bg-white/18">
+            <SocialLogoLink href="https://github.com/roopeaal" label="GitHub" className="!h-14 !w-14 !border-0 !bg-transparent !shadow-none hover:!translate-y-0">
               <GitHubGlyph />
             </SocialLogoLink>
           </div>
