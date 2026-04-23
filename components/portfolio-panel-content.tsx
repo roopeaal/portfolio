@@ -409,15 +409,21 @@ export function ProjectsPanelContent({
     [selectedProjectSlug],
   );
 
-  const leftLaneProjects = useMemo(() => {
-    const items = projects.filter((_, index) => index % 2 === 0);
-    return items.length > 0 ? items : projects;
+  const overviewProjectOrder = useMemo(() => {
+    const withMedia = projects.filter((project) => Boolean(PROJECT_CARD_MEDIA[project.slug]));
+    const withoutMedia = projects.filter((project) => !PROJECT_CARD_MEDIA[project.slug]);
+    return [...withMedia, ...withoutMedia];
   }, []);
 
+  const leftLaneProjects = useMemo(() => {
+    const items = overviewProjectOrder.filter((_, index) => index % 2 === 0);
+    return items.length > 0 ? items : overviewProjectOrder;
+  }, [overviewProjectOrder]);
+
   const rightLaneProjects = useMemo(() => {
-    const items = projects.filter((_, index) => index % 2 === 1);
-    return items.length > 0 ? items : projects;
-  }, []);
+    const items = overviewProjectOrder.filter((_, index) => index % 2 === 1);
+    return items.length > 0 ? items : overviewProjectOrder;
+  }, [overviewProjectOrder]);
   const [heroImageFailed, setHeroImageFailed] = useState(false);
 
   useEffect(() => {
