@@ -502,9 +502,21 @@ export function ContactPanelContent({
   return (
     <div className="-m-2 h-[calc(100%+1rem)] w-[calc(100%+1rem)] overflow-hidden rounded-none bg-[linear-gradient(180deg,#ef6620_0%,#e85517_100%)] text-[#1f120b]">
       <div className="relative grid h-full min-h-0 gap-0 lg:grid-cols-[minmax(0,1.03fr)_minmax(0,0.97fr)]">
-        <section className="relative flex min-h-0 flex-col bg-[linear-gradient(180deg,#ef6723_0%,#e95a1b_70%,#e65117_100%)] px-9 pb-0 pt-7 text-white">
+        <section className="relative flex min-h-0 flex-col px-9 pb-0 pt-7 text-white">
           <h2 className="relative z-[2] max-w-[700px] text-[clamp(2rem,4.7vw,4.35rem)] font-extrabold leading-[0.88] tracking-[-0.03em] text-white [text-shadow:0_2px_0_rgba(118,48,20,0.22)]">
-            Let&apos;s build something great together.
+            Let&apos;s build something{" "}
+            <span
+              className="inline-block bg-clip-text text-transparent [-webkit-background-clip:text]"
+              style={{
+                backgroundImage:
+                  "linear-gradient(180deg,#fff9d4 0%,#ffe88f 24%,#ffd761 41%,#ffba3f 58%,#ff8f2f 74%,#ef4c1e 88%,#c51d0c 100%),radial-gradient(18% 40% at 6% 100%,#ffe69b 0 56%,transparent 60%),radial-gradient(20% 42% at 24% 100%,#ffdb77 0 56%,transparent 60%),radial-gradient(20% 44% at 42% 100%,#ffd261 0 56%,transparent 60%),radial-gradient(20% 43% at 60% 100%,#ffbf4e 0 56%,transparent 60%),radial-gradient(20% 42% at 78% 100%,#ffad3f 0 56%,transparent 60%),radial-gradient(18% 39% at 95% 100%,#ff9d35 0 56%,transparent 60%)",
+                WebkitTextStroke: "1.6px #5f1a08",
+                textShadow: "0 2px 0 rgba(76,20,6,0.3), 0 0 14px rgba(255,227,149,0.32)",
+              }}
+            >
+              great
+            </span>{" "}
+            together.
           </h2>
 
           <div className="relative z-[2] mt-4 space-y-1 text-[clamp(18px,1.9vw,26px)] font-medium leading-[1.12] text-white/98">
@@ -528,7 +540,7 @@ export function ContactPanelContent({
           </div>
         </section>
 
-        <aside className="relative flex min-h-0 flex-col bg-[#e95a1b] pl-0 pr-7 pt-0">
+        <aside className="relative flex min-h-0 flex-col pl-0 pr-7 pt-0">
           <div className="relative z-[2] flex min-h-0 flex-[0_0_80%] flex-col bg-[#f3e6eb] px-8 pb-7 pt-7 shadow-[0_14px_28px_rgba(76,28,15,0.1)]">
             <h3 className="text-[clamp(2.05rem,3.7vw,3.25rem)] font-semibold leading-[1.03] text-[#8b3f1c]">Fill in your details</h3>
 
