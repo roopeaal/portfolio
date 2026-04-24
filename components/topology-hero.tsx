@@ -44,7 +44,7 @@ const UNIFIED_DEVICE_WIDTH = 232;
 const UNIFIED_DEVICE_HEIGHT = 198;
 const UNIFIED_NODE_HEIGHT = 268;
 const NODE_LABEL_GAP = 12;
-const CABLE_ATTACH_DROP = 39;
+const CABLE_ATTACH_DROP = 40;
 
 type NodePosition = { x: number; y: number };
 type NodeMeta = {
@@ -188,123 +188,6 @@ function lerp(start: number, end: number, t: number) {
 
 function pointOnLine(start: { x: number; y: number }, end: { x: number; y: number }, t: number) {
   return { x: lerp(start.x, end.x, t), y: lerp(start.y, end.y, t) };
-}
-
-function getDistance(a: { x: number; y: number }, b: { x: number; y: number }) {
-  return Math.hypot(b.x - a.x, b.y - a.y);
-}
-
-function quadraticPoint(start: { x: number; y: number }, control: { x: number; y: number }, end: { x: number; y: number }, t: number) {
-  const inverse = 1 - t;
-  return {
-    x: inverse * inverse * start.x + 2 * inverse * t * control.x + t * t * end.x,
-    y: inverse * inverse * start.y + 2 * inverse * t * control.y + t * t * end.y,
-  };
-}
-
-function getCablePathGeometry(
-  from: { x: number; y: number },
-  to: { x: number; y: number },
-  disconnected = false,
-  looseEnd?: { x: number; y: number },
-) {
-  const baseEnd = disconnected && looseEnd ? looseEnd : to;
-  const cableAttachDrop = disconnected ? 0 : CABLE_ATTACH_DROP;
-  const end = { x: baseEnd.x, y: baseEnd.y + cableAttachDrop };
-  const deltaX = end.x - from.x;
-  const deltaY = end.y - from.y;
-  const absX = Math.abs(deltaX);
-  const absY = Math.abs(deltaY);
-  const needsJoinCorner = !disconnected && absX > 14 && absY > 10;
-
-  if (!needsJoinCorner) {
-    return { from, end, corner: null as null };
-  }
-
-  const joinTail = Math.min(44, Math.max(24, absY * 0.34));
-  const cornerX = end.x;
-  const cornerY = end.y + joinTail;
-
-  const leg1X = cornerX - from.x;
-  const leg1Y = cornerY - from.y;
-  const leg1Len = Math.max(0.0001, Math.hypot(leg1X, leg1Y));
-  const leg2Len = Math.max(0.0001, Math.abs(end.y - cornerY));
-  const verticalDir = end.y >= cornerY ? 1 : -1;
-
-  const rounding = Math.min(62, Math.max(32, Math.min(absX, absY) * 0.8));
-  const inDist = Math.min(rounding, leg1Len * 0.82);
-  const outDist = Math.min(rounding * 0.95, leg2Len * 0.98);
-
-  const curveStartX = cornerX - (leg1X / leg1Len) * inDist;
-  const curveStartY = cornerY - (leg1Y / leg1Len) * inDist;
-  const curveEndX = cornerX;
-  const curveEndY = cornerY + verticalDir * outDist;
-
-  return {
-    from,
-    end,
-    corner: {
-      point: { x: cornerX, y: cornerY },
-      curveStart: { x: curveStartX, y: curveStartY },
-      curveEnd: { x: curveEndX, y: curveEndY },
-    },
-  };
-}
-
-function pointOnCablePath(from: { x: number; y: number }, to: { x: number; y: number }, t: number) {
-  const geometry = getCablePathGeometry(from, to, false);
-  const clampedT = clamp(t, 0, 1);
-
-  if (!geometry.corner) {
-    return pointOnLine(geometry.from, geometry.end, clampedT);
-  }
-
-  const { point, curveStart, curveEnd } = geometry.corner;
-  const line1Len = getDistance(geometry.from, curveStart);
-  const line3Len = getDistance(curveEnd, geometry.end);
-
-  const samples = 28;
-  const curveLengthTable: Array<{ t: number; length: number }> = [{ t: 0, length: 0 }];
-  let previous = curveStart;
-  let curveLen = 0;
-
-  for (let i = 1; i <= samples; i += 1) {
-    const sampleT = i / samples;
-    const samplePoint = quadraticPoint(curveStart, point, curveEnd, sampleT);
-    curveLen += getDistance(previous, samplePoint);
-    curveLengthTable.push({ t: sampleT, length: curveLen });
-    previous = samplePoint;
-  }
-
-  const totalLen = line1Len + curveLen + line3Len;
-  const targetLen = totalLen * clampedT;
-
-  if (targetLen <= line1Len || line1Len <= 0.0001) {
-    const localT = line1Len <= 0.0001 ? 0 : targetLen / line1Len;
-    return pointOnLine(geometry.from, curveStart, localT);
-  }
-
-  if (targetLen <= line1Len + curveLen || line3Len <= 0.0001) {
-    const onCurveLen = targetLen - line1Len;
-
-    for (let i = 1; i < curveLengthTable.length; i += 1) {
-      const previousSample = curveLengthTable[i - 1];
-      const nextSample = curveLengthTable[i];
-
-      if (onCurveLen <= nextSample.length) {
-        const segmentLength = Math.max(0.0001, nextSample.length - previousSample.length);
-        const ratio = (onCurveLen - previousSample.length) / segmentLength;
-        const mappedT = lerp(previousSample.t, nextSample.t, ratio);
-        return quadraticPoint(curveStart, point, curveEnd, mappedT);
-      }
-    }
-
-    return curveEnd;
-  }
-
-  const remaining = targetLen - line1Len - curveLen;
-  const localT = line3Len <= 0.0001 ? 1 : remaining / line3Len;
-  return pointOnLine(curveEnd, geometry.end, localT);
 }
 
 function stepToward(from: { x: number; y: number }, to: { x: number; y: number }, maxStep: number) {
@@ -544,9 +427,9 @@ function resolveNonOverlappingPosition(
 const SWITCH_PORT_CENTERS = [73, 90, 108, 125, 143, 160] as const;
 const SWITCH_LEFT_CABLE_PORT_INDEX = 0;
 const SWITCH_RIGHT_CABLE_PORT_INDEX = 5;
-const SWITCH_STUB_Y = 137.0;
+const SWITCH_STUB_Y = 138.0;
 const SWITCH_LEFT_STUB_X_OFFSET = 32.0;
-const SWITCH_RIGHT_STUB_X_OFFSET = -23.0;
+const SWITCH_RIGHT_STUB_X_OFFSET = -24.0;
 
 const DEBUG_NODE_HALOS = false;
 const NODE_PROTECTIVE_HALO = 14;
@@ -925,6 +808,8 @@ export function TopologyHero() {
   const contactAttach = getAnimatedDevicePoint("contact", getAttachPoint("contact", nodePositions), nodePositions, active, draggingNode);
   const switchLeftCableEnd = getAnimatedDevicePoint("projects", getSwitchCableStubEnd("left", nodePositions), nodePositions, active, draggingNode);
   const switchRightCableEnd = getAnimatedDevicePoint("projects", getSwitchCableStubEnd("right", nodePositions), nodePositions, active, draggingNode);
+  const switchLeftCableAttach = { x: switchLeftCableEnd.x, y: switchLeftCableEnd.y + CABLE_ATTACH_DROP };
+  const switchRightCableAttach = { x: switchRightCableEnd.x, y: switchRightCableEnd.y + CABLE_ATTACH_DROP };
 
   useEffect(() => {
     const start = Date.now();
@@ -1255,8 +1140,8 @@ export function TopologyHero() {
     : networkMode === "recovering"
       ? "orange"
       : "none";
-  const topIndicators = [0.32, 0.7].map((value) => pointOnCablePath(aboutCableAttach, switchLeftCableEnd, value));
-  const diagIndicators = [0.4, 0.78].map((value) => pointOnCablePath(homeAttach, switchRightCableEnd, value));
+  const topIndicators = [0.32, 0.7].map((value) => pointOnLine(aboutCableAttach, switchLeftCableAttach, value));
+  const diagIndicators = [0.4, 0.78].map((value) => pointOnLine(homeAttach, switchRightCableAttach, value));
   const activePreview = active && !draggingNode ? getPreviewByNode(active) : null;
   const previewStyle = active && !draggingNode ? getPreviewStyle(active, nodePositions) : undefined;
   const nodeStyle = useMemo(() => {
@@ -1918,12 +1803,38 @@ function DetachedEthernetStub({
 }
 
 function CableSegment({ from, to, disconnected = false, looseEnd }: { from: { x: number; y: number }; to: { x: number; y: number }; disconnected?: boolean; looseEnd?: { x: number; y: number } }) {
-  const geometry = getCablePathGeometry(from, to, disconnected, looseEnd);
-  let path = `M ${geometry.from.x} ${geometry.from.y} L ${geometry.end.x} ${geometry.end.y}`;
+  const baseEnd = disconnected && looseEnd ? looseEnd : to;
+  const cableAttachDrop = disconnected ? 0 : CABLE_ATTACH_DROP;
+  const end = { x: baseEnd.x, y: baseEnd.y + cableAttachDrop };
+  const deltaX = end.x - from.x;
+  const deltaY = end.y - from.y;
+  const absX = Math.abs(deltaX);
+  const absY = Math.abs(deltaY);
+  const needsJoinCorner = !disconnected && absX > 14 && absY > 10;
 
-  if (geometry.corner) {
-    const { point, curveStart, curveEnd } = geometry.corner;
-    path = `M ${geometry.from.x} ${geometry.from.y} L ${curveStart.x} ${curveStart.y} Q ${point.x} ${point.y} ${curveEnd.x} ${curveEnd.y} L ${geometry.end.x} ${geometry.end.y}`;
+  let path = `M ${from.x} ${from.y} L ${end.x} ${end.y}`;
+
+  if (needsJoinCorner) {
+    const joinTail = Math.min(44, Math.max(24, absY * 0.34));
+    const cornerX = end.x;
+    const cornerY = end.y + joinTail;
+
+    const leg1X = cornerX - from.x;
+    const leg1Y = cornerY - from.y;
+    const leg1Len = Math.max(0.0001, Math.hypot(leg1X, leg1Y));
+    const leg2Len = Math.max(0.0001, Math.abs(end.y - cornerY));
+    const verticalDir = end.y >= cornerY ? 1 : -1;
+
+    const rounding = Math.min(62, Math.max(32, Math.min(absX, absY) * 0.8));
+    const inDist = Math.min(rounding, leg1Len * 0.82);
+    const outDist = Math.min(rounding * 0.95, leg2Len * 0.98);
+
+    const curveStartX = cornerX - (leg1X / leg1Len) * inDist;
+    const curveStartY = cornerY - (leg1Y / leg1Len) * inDist;
+    const curveEndX = cornerX;
+    const curveEndY = cornerY + verticalDir * outDist;
+
+    path = `M ${from.x} ${from.y} L ${curveStartX} ${curveStartY} Q ${cornerX} ${cornerY} ${curveEndX} ${curveEndY} L ${end.x} ${end.y}`;
   }
 
   return (
@@ -1977,55 +1888,82 @@ function StatusOrb({ x, y, tick }: { x: number; y: number; tick: number }) {
 }
 
 function ServiceMouse({ cursor }: { cursor: { x: number; y: number; state: CursorState } }) {
-  const gripOffset = cursor.state === "pointer"
-    ? { x: 8, y: 6 }
-    : { x: 16, y: 15 };
+  const visual = cursor.state === "pointer"
+    ? { width: 38, height: 42, gripOffset: { x: 5, y: 3 } }
+    : cursor.state === "closed"
+      ? { width: 40, height: 41, gripOffset: { x: 10, y: 6 } }
+      : { width: 40, height: 44, gripOffset: { x: 10, y: 6 } };
 
   return (
     <div
       className="pointer-events-none absolute z-[85]"
       style={{
-        left: `${((cursor.x - gripOffset.x) / VIEWBOX.width) * 100}%`,
-        top: `${((cursor.y - gripOffset.y) / VIEWBOX.height) * 100}%`,
+        left: `${((cursor.x - visual.gripOffset.x) / VIEWBOX.width) * 100}%`,
+        top: `${((cursor.y - visual.gripOffset.y) / VIEWBOX.height) * 100}%`,
         willChange: "left, top",
-        transform: cursor.state === "closed" ? "translateY(1px) scale(0.985)" : cursor.state === "pointer" ? "scale(1)" : undefined,
+        transform: cursor.state === "closed" ? "translateY(1px) scale(0.985)" : undefined,
         filter: "drop-shadow(0 1px 0 rgba(255,255,255,0.55)) drop-shadow(0 2px 3px rgba(0,0,0,0.18))",
       }}
     >
       {cursor.state === "pointer" ? (
-        <svg width="28" height="36" viewBox="0 0 28 36" fill="none" aria-hidden="true">
-          <path
-            d="M3 2.2 L24.4 18.2 L15.9 18.5 L18.4 31.4 L13.9 33 L11.1 20.1 L5 25.4 Z"
-            fill="#ffffff"
-            stroke="#111111"
-            strokeWidth="1.6"
-            strokeLinejoin="round"
-          />
-        </svg>
-      ) : cursor.state === "open" ? (
-        <svg width="40" height="44" viewBox="0 0 40 44" fill="none" aria-hidden="true">
-          <path
-            d="M14.9 4.8V16.2M20 4.5V14.8M25 6.8V15.3M29.9 9.3V18.8M8.1 18.5L12.8 22.6V8.4C12.8 5.8 13.9 4.1 15.7 4.1C17.4 4.1 18.4 5.4 18.4 7.8V16.8V6.7C18.4 4.8 19.5 3.6 21 3.6C22.6 3.6 23.6 4.9 23.6 6.9V15.8V8.9C23.6 7.2 24.6 6 26.1 6C27.6 6 28.6 7.2 28.6 8.9V17.6V11.4C28.6 9.8 29.8 8.6 31.3 8.6C32.9 8.6 34 9.9 34 11.7V22.8C34 30.8 28.2 35.9 20.7 35.9H17.8C12.7 35.9 8.7 33.1 7.2 28.3L4.5 20.1C3.8 18.1 4.7 16.5 6.2 15.9C7.8 15.2 9.2 16.2 10.2 17.9L12.8 22.2"
-            fill="#ffffff"
-            stroke="#111111"
-            strokeWidth="1.8"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
+        <ServicePointerCursor width={visual.width} height={visual.height} />
+      ) : cursor.state === "closed" ? (
+        <ServiceClosedHandCursor width={visual.width} height={visual.height} />
       ) : (
-        <svg width="38" height="42" viewBox="0 0 38 42" fill="none" aria-hidden="true">
-          <path
-            d="M14 12.6V20.4M19.2 11.4V19.6M24.4 11.6V19.8M29.6 13.3V21.3M12.1 24.4V18.2C12.1 16.2 13.4 14.8 15.2 14.8C17 14.8 18.3 16.2 18.3 18.2V23.4V17C18.3 15 19.6 13.6 21.4 13.6C23.2 13.6 24.5 15 24.5 17V23.4V17.6C24.5 15.8 25.8 14.5 27.5 14.5C29.2 14.5 30.5 15.8 30.5 17.6V24.2V20.6C30.5 18.8 31.8 17.5 33.6 17.5C35.4 17.5 36.7 18.8 36.7 20.6V27.1C36.7 33.4 31.6 38.5 25.3 38.5H19.6C14 38.5 9.4 34.6 8.5 29L8 25.8C7.7 24.3 8.6 22.8 10 22.5C11.3 22.2 12.4 22.8 12.9 24L13.5 25.1"
-            fill="#ffffff"
-            stroke="#0d0d0d"
-            strokeWidth="2.15"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
+        <ServiceOpenHandCursor width={visual.width} height={visual.height} />
       )}
     </div>
+  );
+}
+
+function ServicePointerCursor({ width, height }: { width: number; height: number }) {
+  return (
+    <svg width={width} height={height} viewBox="0 0 88 96" fill="none" aria-hidden="true">
+      <path
+        d="M13.5 6C12.1193 6 11 7.11929 11 8.5V75.3697C11 77.4927 13.5046 78.6282 15.1024 77.2242L33.2598 61.2694L43.7786 87.1198C45.3408 90.9594 49.7181 92.8071 53.5578 91.2449L59.5083 88.8234C63.3479 87.2612 65.1956 82.8839 63.6334 79.0442L53.0879 53.1282L78.7514 51.4711C81.2252 51.3113 82.2926 48.2067 80.3264 46.6963L14.8982 6.44527C14.4763 6.1606 13.9796 6 13.5 6Z"
+        fill="#ffffff"
+        stroke="#000000"
+        strokeWidth="3.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function ServiceOpenHandCursor({ width, height }: { width: number; height: number }) {
+  return (
+    <svg width={width} height={height} viewBox="0 0 124 136" fill="none" aria-hidden="true">
+      <path
+        d="M34 58V24C34 18.4772 38.4772 14 44 14C49.5228 14 54 18.4772 54 24V58H56V16C56 10.4772 60.4772 6 66 6C71.5228 6 76 10.4772 76 16V58H78V24C78 18.4772 82.4772 14 88 14C93.5228 14 98 18.4772 98 24V58H100V34C100 28.4772 104.03 24 109 24C113.97 24 118 28.4772 118 34V88C118 111.196 99.196 130 76 130H58C39.3747 130 23.2584 117.012 16 99.8586L6 80C3.06269 74.1691 2.30489 68.4369 5.0486 64.9747C7.79231 61.5125 13.0195 61.6291 17.0328 65.2474L26 79.2V24C26 18.4772 30.4772 14 36 14C41.5228 14 46 18.4772 46 24V58H34Z"
+        fill="#ffffff"
+        stroke="#000000"
+        strokeWidth="4.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path d="M54 32V68" stroke="#000000" strokeWidth="4.2" strokeLinecap="round" />
+      <path d="M76 24V68" stroke="#000000" strokeWidth="4.2" strokeLinecap="round" />
+      <path d="M98 34V72" stroke="#000000" strokeWidth="4.2" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function ServiceClosedHandCursor({ width, height }: { width: number; height: number }) {
+  return (
+    <svg width={width} height={height} viewBox="0 0 122 124" fill="none" aria-hidden="true">
+      <path
+        d="M34 54V31C34 25.4772 38.4772 21 44 21C49.5228 21 54 25.4772 54 31V54H56V23C56 17.4772 60.4772 13 66 13C71.5228 13 76 17.4772 76 23V54H78V31C78 25.4772 82.4772 21 88 21C93.5228 21 98 25.4772 98 31V54H100V38C100 32.4772 104.477 28 110 28C115.523 28 120 32.4772 120 38V71C120 92.5391 102.539 110 81 110H52C30.4609 110 13 92.5391 13 71V54C13 48.4772 17.4772 44 23 44C28.5228 44 33 48.4772 33 54H34Z"
+        fill="#ffffff"
+        stroke="#000000"
+        strokeWidth="4.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path d="M54 34V64" stroke="#000000" strokeWidth="4.2" strokeLinecap="round" />
+      <path d="M76 26V64" stroke="#000000" strokeWidth="4.2" strokeLinecap="round" />
+      <path d="M98 38V64" stroke="#000000" strokeWidth="4.2" strokeLinecap="round" />
+    </svg>
   );
 }
 
