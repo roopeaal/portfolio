@@ -40,24 +40,11 @@ const PREVIEW_GAP = 42;
 const PREVIEW_MARGIN = 18;
 const DEVICE_FLOAT_FILTER = "drop-shadow(0 16px 22px rgba(10,18,31,0.18)) drop-shadow(0 5px 12px rgba(24,79,113,0.10))";
 const DEVICE_FLOAT_FILTER_SOFT = "drop-shadow(0 12px 18px rgba(10,18,31,0.14)) drop-shadow(0 4px 10px rgba(24,79,113,0.08))";
-const NODE_HOVER_SCALE = 1.035;
 const UNIFIED_DEVICE_WIDTH = 232;
 const UNIFIED_DEVICE_HEIGHT = 198;
 const UNIFIED_NODE_HEIGHT = 268;
 const NODE_LABEL_GAP = 12;
 const CABLE_ATTACH_DROP = 40;
-const DEVICE_NAME_LABEL_STYLE: CSSProperties = {
-  color: "#6e7e95",
-  textShadow:
-    "0 0 1px rgba(245,248,255,0.92), 0 0 7px rgba(248,251,255,0.6), 0 1px 0 rgba(255,255,255,0.7)",
-  WebkitTextStroke: "0.2px rgba(246,249,255,0.85)",
-};
-const DEVICE_TITLE_LABEL_STYLE: CSSProperties = {
-  color: "#0a0f16",
-  textShadow:
-    "0 0 1px rgba(250,252,255,0.96), 0 0 8px rgba(247,250,255,0.72), 0 1px 0 rgba(255,255,255,0.78)",
-  WebkitTextStroke: "0.24px rgba(247,250,255,0.9)",
-};
 
 type NodePosition = { x: number; y: number };
 type NodeMeta = {
@@ -559,7 +546,7 @@ function getAnimatedDevicePoint(
   const { width, deviceHeight } = NODE_META[node];
   const centerX = positions[node].x + width / 2;
   const centerY = positions[node].y + deviceHeight / 2;
-  const scale = NODE_HOVER_SCALE;
+  const scale = 1.035;
 
   return {
     x: centerX + (point.x - centerX) * scale,
@@ -723,7 +710,7 @@ export function TopologyHero() {
   const [routerPowerOn, setRouterPowerOn] = useState(true);
   const [routerSignalLevel, setRouterSignalLevel] = useState<0 | 1 | 2>(2);
   const [routerWifiReady, setRouterWifiReady] = useState(true);
-  const [contactSection, setContactSection] = useState<"channels" | "roles" | "cv" | "status">("channels");
+  const [contactSection, setContactSection] = useState<"overview">("overview");
 
   const sceneRef = useRef<HTMLDivElement | null>(null);
 
@@ -812,12 +799,7 @@ export function TopologyHero() {
   );
 
   const contactSidebarItems = useMemo<PanelSidebarItem[]>(
-    () => [
-      { id: "channels", label: "Channels", active: contactSection === "channels", onSelect: () => setContactSection("channels") },
-      { id: "roles", label: "Role fit", active: contactSection === "roles", onSelect: () => setContactSection("roles") },
-      { id: "cv", label: "CV", active: contactSection === "cv", onSelect: () => setContactSection("cv") },
-      { id: "status", label: "Status", active: contactSection === "status", onSelect: () => setContactSection("status") },
-    ],
+    () => [{ id: "overview", label: "Overview", active: contactSection === "overview", onSelect: () => setContactSection("overview") }],
     [contactSection],
   );
 
@@ -923,7 +905,7 @@ export function TopologyHero() {
       return;
     }
 
-    if (panel === "contact") setContactSection("channels");
+    if (panel === "contact") setContactSection("overview");
 
     if (panel === "projects" && projectSlug) {
       openProject(projectSlug);
@@ -1363,25 +1345,9 @@ export function TopologyHero() {
                   ) : null}
                 </motion.svg>
 
-                {networkMode === "stable" || networkMode === "recovering" ? (
-                  <DetachedEthernetStub
-                    bottom={switchLeftCableEnd}
-                    zIndex={draggingNode === "projects" ? 186 : 90}
-                    scale={active === "projects" && draggingNode !== "projects" ? NODE_HOVER_SCALE : 1}
-                  />
-                ) : null}
-                {networkMode !== "stable" && networkMode !== "recovering" ? (
-                  <DetachedEthernetStub
-                    bottom={looseEnd}
-                    zIndex={draggingNode === "projects" ? 186 : 90}
-                    scale={active === "projects" && draggingNode !== "projects" ? NODE_HOVER_SCALE : 1}
-                  />
-                ) : null}
-                <DetachedEthernetStub
-                  bottom={switchRightCableEnd}
-                  zIndex={draggingNode === "projects" ? 186 : 90}
-                  scale={active === "projects" && draggingNode !== "projects" ? NODE_HOVER_SCALE : 1}
-                />
+                {networkMode === "stable" || networkMode === "recovering" ? <DetachedEthernetStub bottom={switchLeftCableEnd} zIndex={draggingNode === "projects" ? 186 : 90} /> : null}
+                {networkMode !== "stable" && networkMode !== "recovering" ? <DetachedEthernetStub bottom={looseEnd} zIndex={draggingNode === "projects" ? 186 : 90} /> : null}
+                <DetachedEthernetStub bottom={switchRightCableEnd} zIndex={draggingNode === "projects" ? 186 : 90} />
                 {serviceCursor ? <ServiceMouse cursor={serviceCursor} /> : null}
 
                 <AnimatePresence>
@@ -1438,6 +1404,7 @@ export function TopologyHero() {
         title="About Me · Wireless Router1"
         sidebarTitle={SIDEBAR_TITLE.about}
         sidebarItems={aboutSidebarItems}
+        shellTitle="Global Settings"
       >
         <AboutPanelContent />
       </PacketWindow>
@@ -1449,6 +1416,7 @@ export function TopologyHero() {
         title="Projects · Switch0"
         sidebarTitle={SIDEBAR_TITLE.projects}
         sidebarItems={projectsSidebarItems}
+        shellTitle={selectedProject ? "Project Case Study" : "Project Overview"}
       >
         <ProjectsPanelContent
           selectedProjectSlug={selectedProjectSlug}
@@ -1464,6 +1432,7 @@ export function TopologyHero() {
         title="Contact Me · Smartphone0"
         sidebarTitle={SIDEBAR_TITLE.contact}
         sidebarItems={contactSidebarItems}
+        shellTitle="Interface Configuration"
       >
         <ContactPanelContent section={contactSection} />
       </PacketWindow>
@@ -1647,12 +1616,8 @@ function NodeButton({
             transform: NODE_META[node].labelOffsetX ? `translateX(${NODE_META[node].labelOffsetX}px)` : undefined,
           }}
         >
-          <p className="text-[12px] font-medium uppercase tracking-[0.18em]" style={DEVICE_NAME_LABEL_STYLE}>
-            {deviceName}
-          </p>
-          <p className="mt-1 text-[18px] font-semibold tracking-[-0.02em]" style={DEVICE_TITLE_LABEL_STYLE}>
-            {label}
-          </p>
+          <p className="text-[12px] font-medium uppercase tracking-[0.18em] text-[#7f8b9d] drop-shadow-none [text-shadow:none]">{deviceName}</p>
+          <p className="mt-1 text-[18px] font-semibold tracking-[-0.02em] text-[#050505] drop-shadow-none [text-shadow:none]">{label}</p>
         </div>
       </button>
     </div>
@@ -1705,8 +1670,9 @@ function PreviewWindow({
             </div>
           </div>
         ) : null}
-        <div className="h-full overflow-hidden rounded-[2px] border border-[#cfcfcf] bg-white">
-          <div className="h-full overflow-hidden p-3">{children}</div>
+        <div className="overflow-hidden rounded-[2px] border border-[#cfcfcf] bg-white">
+          <div className="border-b border-[#d9d9d9] bg-[#fbfbfb] px-3 py-1.5 text-center text-[11px] font-medium text-[#747474]">Global Settings</div>
+          <div className="h-[calc(100%-31px)] overflow-hidden p-3">{children}</div>
         </div>
       </div>
     </div>
@@ -1767,7 +1733,7 @@ function getPreviewByNode(node: NodeKey) {
       );
     case "contact":
       return (
-        <PreviewWindow title="Contact Me · Smartphone0" tab="Config" sidebarTitle={SIDEBAR_TITLE.contact} sidebarItems={["Channels", "Role fit", "CV", "Status"]} hideSidebar>
+        <PreviewWindow title="Contact Me · Smartphone0" tab="Config" sidebarTitle={SIDEBAR_TITLE.contact} sidebarItems={["Overview"]} hideSidebar>
           <ContactPanelContent preview />
         </PreviewWindow>
       );
@@ -1794,16 +1760,14 @@ function EthernetHeadGraphic({ className = "" }: { className?: string }) {
 function DetachedEthernetStub({
   bottom,
   zIndex = 90,
-  scale = 1,
 }: {
   bottom: { x: number; y: number };
   zIndex?: number;
-  scale?: number;
 }) {
   const color = "#111111";
-  const headWidth = 16.6 * scale;
-  const headHeight = 16.0 * scale;
-  const lowerNudge = 8.0 * scale;
+  const headWidth = 16.6;
+  const headHeight = 16.0;
+  const lowerNudge = 8.0;
   const leftPercent = (bottom.x / VIEWBOX.width) * 100;
   const topPercent = (bottom.y / VIEWBOX.height) * 100;
 

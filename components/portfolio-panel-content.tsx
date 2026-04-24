@@ -273,7 +273,7 @@ function ProjectMarqueeCard({
       aria-label={`Open project: ${project.title}`}
     >
       <article className="overflow-hidden rounded-[10px] border border-[#79c271] bg-[#edf8df] transition duration-200 group-hover:border-[#4f9b47]">
-        <div className="relative h-[188px] overflow-hidden">
+        <div className="relative h-[236px] overflow-hidden">
           {media && !mediaFailed ? (
             <>
               <div className="absolute inset-0" style={{ background: media.backdrop ?? "#edf6df" }} />
@@ -345,8 +345,8 @@ function ProjectMarqueeLane({
       if (!isHoveredRef.current && segmentHeight > 0) {
         const delta = (direction === "up" ? -1 : 1) * speedPxPerSecond * deltaTime;
         lane.scrollTop += delta;
-        if (lane.scrollTop < segmentHeight * 0.24) lane.scrollTop += segmentHeight;
-        if (lane.scrollTop > segmentHeight * 1.76) lane.scrollTop -= segmentHeight;
+        if (lane.scrollTop < segmentHeight * 0.02) lane.scrollTop += segmentHeight;
+        if (lane.scrollTop > segmentHeight * 1.98) lane.scrollTop -= segmentHeight;
       }
 
       rafId = window.requestAnimationFrame(loop);
@@ -373,17 +373,17 @@ function ProjectMarqueeLane({
         ref={laneRef}
         className="h-full overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
-        <div ref={segmentRef} className="space-y-3 py-1">
+        <div ref={segmentRef} className="space-y-4 py-0">
           {items.map((project, index) => (
             <ProjectMarqueeCard key={`${project.slug}-segment-a`} project={project} onSelectProject={onSelectProject} />
           ))}
         </div>
-        <div aria-hidden className="space-y-3 py-1">
+        <div aria-hidden className="space-y-4 py-0">
           {items.map((project, index) => (
             <ProjectMarqueeCard key={`${project.slug}-segment-b`} project={project} onSelectProject={onSelectProject} />
           ))}
         </div>
-        <div aria-hidden className="space-y-3 py-1">
+        <div aria-hidden className="space-y-4 py-0">
           {items.map((project, index) => (
             <ProjectMarqueeCard key={`${project.slug}-segment-c`} project={project} onSelectProject={onSelectProject} />
           ))}
@@ -449,14 +449,14 @@ export function ProjectsPanelContent({
   if (!selectedProject) {
     return (
       <div className="h-full w-full overflow-hidden bg-[linear-gradient(180deg,#d6edc3_0%,#cbe7b1_100%)] p-0 text-[#1d3658]">
-        <div className="grid h-full min-h-0 gap-4 px-6 py-6 lg:grid-cols-[minmax(280px,0.84fr)_minmax(0,1.16fr)]">
-          <section className="flex min-h-0 items-start">
+        <div className="grid h-full min-h-0 gap-0 lg:grid-cols-[minmax(280px,0.84fr)_minmax(0,1.16fr)]">
+          <section className="flex min-h-0 items-start px-6 py-6">
             <h2 className="max-w-[430px] text-[clamp(2rem,4.5vw,4rem)] font-semibold leading-[0.97] tracking-[-0.02em] text-[#163f81]">
               Discover projects I have built
             </h2>
           </section>
 
-          <section className="grid min-h-0 gap-4 md:grid-cols-2">
+          <section className="grid h-full min-h-0 gap-4 px-4 py-0 md:grid-cols-2">
             <ProjectMarqueeLane items={leftLaneProjects} direction="up" onSelectProject={onSelectProject} />
             <ProjectMarqueeLane items={rightLaneProjects} direction="down" onSelectProject={onSelectProject} />
           </section>
@@ -626,10 +626,10 @@ export function ProjectsPanelContent({
 
 
 export function ContactPanelContent({
-  section = "channels",
+  section = "overview",
   preview = false,
 }: {
-  section?: "channels" | "roles" | "cv" | "status";
+  section?: "overview";
   preview?: boolean;
 }) {
   void section;
@@ -763,15 +763,7 @@ export function ContactPanelContent({
         <section className="relative flex min-h-0 flex-col px-9 pb-0 pt-7 text-white">
             <h2 className="relative z-[2] max-w-[700px] text-[clamp(2rem,4.7vw,4.35rem)] font-extrabold leading-[0.88] tracking-[-0.03em] text-white [text-shadow:0_2px_0_rgba(118,48,20,0.22)]">
               Let&apos;s build something{" "}
-              <span
-                className="inline-block bg-clip-text text-transparent [-webkit-background-clip:text]"
-                style={{
-                  backgroundImage:
-                    "linear-gradient(180deg,#ffffff 0%,#ffffff 49%,#fff5cd 51%,#ffe58a 58%,#ffc958 68%,#ff9934 80%,#ec5a1f 90%,#bc220f 100%),radial-gradient(14% 58% at 5% 100%,#ffe9a3 0 62%,transparent 64%),radial-gradient(16% 60% at 16% 100%,#ffd676 0 61%,transparent 63%),radial-gradient(16% 62% at 28% 100%,#ffc75e 0 62%,transparent 64%),radial-gradient(18% 64% at 42% 100%,#ffb64a 0 61%,transparent 63%),radial-gradient(17% 61% at 57% 100%,#ffa63e 0 62%,transparent 64%),radial-gradient(16% 59% at 72% 100%,#ff9a35 0 62%,transparent 64%),radial-gradient(15% 58% at 85% 100%,#ff8a2e 0 62%,transparent 64%),radial-gradient(13% 56% at 96% 100%,#ff7d28 0 62%,transparent 64%)",
-                  WebkitTextStroke: "1.6px #5f1a08",
-                  textShadow: "0 2px 0 rgba(76,20,6,0.3), 0 0 14px rgba(255,227,149,0.32)",
-                }}
-              >
+              <span className="inline-block text-white">
               great
             </span>{" "}
             together.
