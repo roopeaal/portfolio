@@ -1985,7 +1985,7 @@ function ServiceMouse({ cursor }: { cursor: { x: number; y: number; state: Curso
 
   return (
     <div
-      className="pointer-events-none absolute z-[85]"
+      className="pointer-events-none absolute z-[190]"
       style={{
         left: `${((cursor.x - visual.gripOffset.x) / VIEWBOX.width) * 100}%`,
         top: `${((cursor.y - visual.gripOffset.y) / VIEWBOX.height) * 100}%`,
