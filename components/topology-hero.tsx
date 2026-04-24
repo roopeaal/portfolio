@@ -1978,10 +1978,16 @@ function StatusOrb({ x, y, tick }: { x: number; y: number; tick: number }) {
 
 function ServiceMouse({ cursor }: { cursor: { x: number; y: number; state: CursorState } }) {
   const visual = cursor.state === "pointer"
-    ? { width: 33, height: 36, gripOffset: { x: 4, y: 3 } }
+    ? { width: 26, height: 38, gripOffset: { x: 4, y: 3 } }
     : cursor.state === "closed"
-      ? { width: 27, height: 28, gripOffset: { x: 7, y: 4 } }
-      : { width: 40, height: 44, gripOffset: { x: 10, y: 6 } };
+      ? { width: 32, height: 30, gripOffset: { x: 9, y: 5 } }
+      : { width: 36, height: 44, gripOffset: { x: 9, y: 6 } };
+
+  const spriteSrc = cursor.state === "pointer"
+    ? `${ASSET_BASE}/cursor-pointer-ref.png?v=20260425-1`
+    : cursor.state === "closed"
+      ? `${ASSET_BASE}/cursor-closed-hand-ref.png?v=20260425-1`
+      : `${ASSET_BASE}/cursor-open-hand-ref.png?v=20260425-1`;
 
   return (
     <div
@@ -1994,65 +2000,15 @@ function ServiceMouse({ cursor }: { cursor: { x: number; y: number; state: Curso
         filter: "drop-shadow(0 1px 0 rgba(255,255,255,0.55)) drop-shadow(0 2px 3px rgba(0,0,0,0.18))",
       }}
     >
-      {cursor.state === "pointer" ? (
-        <ServicePointerCursor width={visual.width} height={visual.height} />
-      ) : cursor.state === "closed" ? (
-        <ServiceClosedHandCursor width={visual.width} height={visual.height} />
-      ) : (
-        <ServiceOpenHandCursor width={visual.width} height={visual.height} />
-      )}
+      <img
+        src={spriteSrc}
+        alt=""
+        aria-hidden="true"
+        draggable={false}
+        className="pointer-events-none select-none"
+        style={{ width: `${visual.width}px`, height: `${visual.height}px` }}
+      />
     </div>
-  );
-}
-
-function ServicePointerCursor({ width, height }: { width: number; height: number }) {
-  return (
-    <svg width={width} height={height} viewBox="0 0 88 96" fill="none" aria-hidden="true">
-      <path
-        d="M17 7C15.9 7 15 7.9 15 9V84C15 86 17.4 87 18.9 85.7L39.5 67.8L49.8 93.9C51.2 97.2 55 98.9 58.3 97.5L64.1 95.1C67.5 93.7 69.1 89.8 67.7 86.5L57.3 60.3L86.6 58.4C89 58.3 90 55.2 88.1 53.8L18.1 7.4C17.8 7.1 17.4 7 17 7Z"
-        fill="#ffffff"
-        stroke="#000000"
-        strokeWidth="3.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function ServiceOpenHandCursor({ width, height }: { width: number; height: number }) {
-  return (
-    <svg width={width} height={height} viewBox="0 0 124 136" fill="none" aria-hidden="true">
-      <path
-        d="M36 56V28C36 22.5 40.5 18 46 18C51.5 18 56 22.5 56 28V54H58V18C58 12.5 62.5 8 68 8C73.5 8 78 12.5 78 18V54H80V26C80 20.5 84.5 16 90 16C95.5 16 100 20.5 100 26V54H102V36C102 30.5 106.5 26 112 26C117.5 26 122 30.5 122 36V85C122 108.7 102.7 128 79 128H59C41 128 24.9 116.8 18.6 99.9L8.5 76.6C7.1 73.2 8.2 69.4 11.2 67.5C14.6 65.4 19.1 66.2 21.5 69.5L28 78.3V28C28 22.5 32.5 18 38 18C43.5 18 48 22.5 48 28V56H36Z"
-        fill="#ffffff"
-        stroke="#000000"
-        strokeWidth="4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path d="M56 34V70" stroke="#000000" strokeWidth="4" strokeLinecap="round" />
-      <path d="M78 26V70" stroke="#000000" strokeWidth="4" strokeLinecap="round" />
-      <path d="M100 36V74" stroke="#000000" strokeWidth="4" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function ServiceClosedHandCursor({ width, height }: { width: number; height: number }) {
-  return (
-    <svg width={width} height={height} viewBox="0 0 122 124" fill="none" aria-hidden="true">
-      <path
-        d="M32 54V35C32 29.5 36.5 25 42 25C47.5 25 52 29.5 52 35V52H54V29C54 23.5 58.5 19 64 19C69.5 19 74 23.5 74 29V52H76V35C76 29.5 80.5 25 86 25C91.5 25 96 29.5 96 35V52H98V42C98 36.5 102.5 32 108 32C113.5 32 118 36.5 118 42V72C118 93.5 100.5 111 79 111H56C34.5 111 17 93.5 17 72V54C17 48.5 21.5 44 27 44C31.7 44 35.5 47.1 36.5 51.3V54H32Z"
-        fill="#ffffff"
-        stroke="#000000"
-        strokeWidth="4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path d="M52 38V66" stroke="#000000" strokeWidth="4" strokeLinecap="round" />
-      <path d="M74 32V66" stroke="#000000" strokeWidth="4" strokeLinecap="round" />
-      <path d="M96 40V66" stroke="#000000" strokeWidth="4" strokeLinecap="round" />
-    </svg>
   );
 }
 
