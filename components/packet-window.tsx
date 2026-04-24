@@ -147,7 +147,7 @@ export function PacketWindow({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 18 }}
             transition={windowTransition}
-            className="fixed inset-x-[1.6vw] top-[1.5vh] z-[110] mx-auto h-[calc(100dvh-3vh)] w-[min(1520px,96.8vw)] overflow-hidden rounded-[10px] border border-[#c8c8c8] bg-[#efefef] shadow-[0_26px_90px_rgba(15,23,42,0.26)] focus:outline-none"
+            className="fixed inset-x-[1.6vw] top-[1.5vh] z-[110] mx-auto h-[calc(100dvh-3vh)] w-[min(1520px,96.8vw)] overflow-hidden rounded-[10px] bg-[#efefef] shadow-[0_26px_90px_rgba(15,23,42,0.26)] focus:outline-none"
             role="dialog"
             aria-modal="true"
             aria-labelledby={titleId}
@@ -239,8 +239,8 @@ export function PacketWindow({
             ) : (
               <div className={`flex h-[calc(100%-60px)] ${isExpandedPanel ? "bg-transparent p-0" : "bg-[#ededed] p-3 md:p-4"}`}>
                 <div
-                  className={`hidden w-[174px] shrink-0 overflow-hidden border border-[#a8a8a8] bg-[#efefef] md:block ${
-                    isExpandedPanel ? "mr-0" : "mr-3"
+                  className={`hidden w-[174px] shrink-0 overflow-hidden bg-[#efefef] md:block ${
+                    isExpandedPanel ? "mr-0 border-r border-[#b6b6b6]" : "mr-3 border border-[#a8a8a8]"
                   }`}
                 >
                   <div className="border-b border-[#b4b4b4] bg-[#f2f2f2] px-3 py-2 text-center text-[12px] font-semibold tracking-wide text-[#666666]">
