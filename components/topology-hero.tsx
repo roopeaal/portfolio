@@ -44,7 +44,7 @@ const UNIFIED_DEVICE_WIDTH = 232;
 const UNIFIED_DEVICE_HEIGHT = 198;
 const UNIFIED_NODE_HEIGHT = 268;
 const NODE_LABEL_GAP = 12;
-const CABLE_ATTACH_DROP = 40;
+const CABLE_ATTACH_DROP = 39;
 
 type NodePosition = { x: number; y: number };
 type NodeMeta = {
@@ -188,6 +188,112 @@ function lerp(start: number, end: number, t: number) {
 
 function pointOnLine(start: { x: number; y: number }, end: { x: number; y: number }, t: number) {
   return { x: lerp(start.x, end.x, t), y: lerp(start.y, end.y, t) };
+}
+
+function pointOnQuadratic(
+  start: { x: number; y: number },
+  control: { x: number; y: number },
+  end: { x: number; y: number },
+  t: number,
+) {
+  const u = 1 - t;
+  return {
+    x: u * u * start.x + 2 * u * t * control.x + t * t * end.x,
+    y: u * u * start.y + 2 * u * t * control.y + t * t * end.y,
+  };
+}
+
+function getCablePathGeometry(
+  from: { x: number; y: number },
+  to: { x: number; y: number },
+  disconnected = false,
+) {
+  const cableAttachDrop = disconnected ? 0 : CABLE_ATTACH_DROP;
+  const end = { x: to.x, y: to.y + cableAttachDrop };
+  const deltaX = end.x - from.x;
+  const deltaY = end.y - from.y;
+  const absX = Math.abs(deltaX);
+  const absY = Math.abs(deltaY);
+  const needsJoinCorner = !disconnected && absX > 14 && absY > 10;
+
+  if (!needsJoinCorner) {
+    return { from, end, needsJoinCorner: false as const };
+  }
+
+  const joinTail = Math.min(44, Math.max(24, absY * 0.34));
+  const corner = { x: end.x, y: end.y + joinTail };
+  const leg1X = corner.x - from.x;
+  const leg1Y = corner.y - from.y;
+  const leg1Len = Math.max(0.0001, Math.hypot(leg1X, leg1Y));
+  const leg2Len = Math.max(0.0001, Math.abs(end.y - corner.y));
+  const verticalDir = end.y >= corner.y ? 1 : -1;
+  const rounding = Math.min(62, Math.max(32, Math.min(absX, absY) * 0.8));
+  const inDist = Math.min(rounding, leg1Len * 0.82);
+  const outDist = Math.min(rounding * 0.95, leg2Len * 0.98);
+  const curveStart = {
+    x: corner.x - (leg1X / leg1Len) * inDist,
+    y: corner.y - (leg1Y / leg1Len) * inDist,
+  };
+  const curveEnd = {
+    x: corner.x,
+    y: corner.y + verticalDir * outDist,
+  };
+
+  return {
+    from,
+    end,
+    needsJoinCorner: true as const,
+    corner,
+    curveStart,
+    curveEnd,
+  };
+}
+
+function pointOnCable(
+  from: { x: number; y: number },
+  to: { x: number; y: number },
+  t: number,
+  disconnected = false,
+) {
+  const progress = clamp(t, 0, 1);
+  const geometry = getCablePathGeometry(from, to, disconnected);
+
+  if (!geometry.needsJoinCorner) {
+    return pointOnLine(geometry.from, geometry.end, progress);
+  }
+
+  const { corner, curveStart, curveEnd, end } = geometry;
+  const curveSamples = 22;
+  const polyline: { x: number; y: number }[] = [geometry.from, curveStart];
+  for (let i = 1; i <= curveSamples; i += 1) {
+    polyline.push(pointOnQuadratic(curveStart, corner, curveEnd, i / curveSamples));
+  }
+  polyline.push(end);
+
+  let totalLength = 0;
+  const segmentLengths: number[] = [];
+  for (let i = 1; i < polyline.length; i += 1) {
+    const segmentLength = Math.hypot(polyline[i].x - polyline[i - 1].x, polyline[i].y - polyline[i - 1].y);
+    segmentLengths.push(segmentLength);
+    totalLength += segmentLength;
+  }
+
+  if (totalLength <= 0) {
+    return { x: from.x, y: from.y };
+  }
+
+  const targetLength = totalLength * progress;
+  let accumulated = 0;
+  for (let i = 1; i < polyline.length; i += 1) {
+    const segmentLength = segmentLengths[i - 1];
+    if (accumulated + segmentLength >= targetLength) {
+      const localT = (targetLength - accumulated) / Math.max(segmentLength, 0.0001);
+      return pointOnLine(polyline[i - 1], polyline[i], localT);
+    }
+    accumulated += segmentLength;
+  }
+
+  return end;
 }
 
 function stepToward(from: { x: number; y: number }, to: { x: number; y: number }, maxStep: number) {
@@ -427,9 +533,9 @@ function resolveNonOverlappingPosition(
 const SWITCH_PORT_CENTERS = [73, 90, 108, 125, 143, 160] as const;
 const SWITCH_LEFT_CABLE_PORT_INDEX = 0;
 const SWITCH_RIGHT_CABLE_PORT_INDEX = 5;
-const SWITCH_STUB_Y = 138.0;
+const SWITCH_STUB_Y = 137.0;
 const SWITCH_LEFT_STUB_X_OFFSET = 32.0;
-const SWITCH_RIGHT_STUB_X_OFFSET = -24.0;
+const SWITCH_RIGHT_STUB_X_OFFSET = -23.0;
 
 const DEBUG_NODE_HALOS = false;
 const NODE_PROTECTIVE_HALO = 14;
@@ -1140,8 +1246,8 @@ export function TopologyHero() {
     : networkMode === "recovering"
       ? "orange"
       : "none";
-  const topIndicators = [0.32, 0.7].map((value) => pointOnLine(aboutCableAttach, switchLeftCableAttach, value));
-  const diagIndicators = [0.4, 0.78].map((value) => pointOnLine(homeAttach, switchRightCableAttach, value));
+  const topIndicators = [0.32, 0.7].map((value) => pointOnCable(aboutCableAttach, switchLeftCableEnd, value));
+  const diagIndicators = [0.4, 0.78].map((value) => pointOnCable(homeAttach, switchRightCableEnd, value));
   const activePreview = active && !draggingNode ? getPreviewByNode(active) : null;
   const previewStyle = active && !draggingNode ? getPreviewStyle(active, nodePositions) : undefined;
   const nodeStyle = useMemo(() => {
@@ -1804,38 +1910,10 @@ function DetachedEthernetStub({
 
 function CableSegment({ from, to, disconnected = false, looseEnd }: { from: { x: number; y: number }; to: { x: number; y: number }; disconnected?: boolean; looseEnd?: { x: number; y: number } }) {
   const baseEnd = disconnected && looseEnd ? looseEnd : to;
-  const cableAttachDrop = disconnected ? 0 : CABLE_ATTACH_DROP;
-  const end = { x: baseEnd.x, y: baseEnd.y + cableAttachDrop };
-  const deltaX = end.x - from.x;
-  const deltaY = end.y - from.y;
-  const absX = Math.abs(deltaX);
-  const absY = Math.abs(deltaY);
-  const needsJoinCorner = !disconnected && absX > 14 && absY > 10;
-
-  let path = `M ${from.x} ${from.y} L ${end.x} ${end.y}`;
-
-  if (needsJoinCorner) {
-    const joinTail = Math.min(44, Math.max(24, absY * 0.34));
-    const cornerX = end.x;
-    const cornerY = end.y + joinTail;
-
-    const leg1X = cornerX - from.x;
-    const leg1Y = cornerY - from.y;
-    const leg1Len = Math.max(0.0001, Math.hypot(leg1X, leg1Y));
-    const leg2Len = Math.max(0.0001, Math.abs(end.y - cornerY));
-    const verticalDir = end.y >= cornerY ? 1 : -1;
-
-    const rounding = Math.min(62, Math.max(32, Math.min(absX, absY) * 0.8));
-    const inDist = Math.min(rounding, leg1Len * 0.82);
-    const outDist = Math.min(rounding * 0.95, leg2Len * 0.98);
-
-    const curveStartX = cornerX - (leg1X / leg1Len) * inDist;
-    const curveStartY = cornerY - (leg1Y / leg1Len) * inDist;
-    const curveEndX = cornerX;
-    const curveEndY = cornerY + verticalDir * outDist;
-
-    path = `M ${from.x} ${from.y} L ${curveStartX} ${curveStartY} Q ${cornerX} ${cornerY} ${curveEndX} ${curveEndY} L ${end.x} ${end.y}`;
-  }
+  const geometry = getCablePathGeometry(from, baseEnd, disconnected);
+  const path = geometry.needsJoinCorner
+    ? `M ${geometry.from.x} ${geometry.from.y} L ${geometry.curveStart.x} ${geometry.curveStart.y} Q ${geometry.corner.x} ${geometry.corner.y} ${geometry.curveEnd.x} ${geometry.curveEnd.y} L ${geometry.end.x} ${geometry.end.y}`
+    : `M ${geometry.from.x} ${geometry.from.y} L ${geometry.end.x} ${geometry.end.y}`;
 
   return (
     <path

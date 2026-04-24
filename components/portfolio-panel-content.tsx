@@ -326,6 +326,15 @@ function ProjectMarqueeLane({
     let previousTime = 0;
     const speedPxPerSecond = 20;
 
+    const normalizeScrollPosition = () => {
+      if (segmentHeight <= 0) return;
+      const min = segmentHeight * 0.5;
+      const max = segmentHeight * 1.5;
+
+      while (lane.scrollTop < min) lane.scrollTop += segmentHeight;
+      while (lane.scrollTop > max) lane.scrollTop -= segmentHeight;
+    };
+
     const setBaseline = () => {
       segmentHeight = segment.scrollHeight;
       if (segmentHeight > 0) {
@@ -337,6 +346,11 @@ function ProjectMarqueeLane({
     const observer = new ResizeObserver(() => setBaseline());
     observer.observe(segment);
 
+    const handleScroll = () => {
+      normalizeScrollPosition();
+    };
+    lane.addEventListener("scroll", handleScroll, { passive: true });
+
     const loop = (time: number) => {
       if (!previousTime) previousTime = time;
       const deltaTime = Math.min((time - previousTime) / 1000, 0.05);
@@ -345,8 +359,7 @@ function ProjectMarqueeLane({
       if (!isHoveredRef.current && segmentHeight > 0) {
         const delta = (direction === "up" ? -1 : 1) * speedPxPerSecond * deltaTime;
         lane.scrollTop += delta;
-        if (lane.scrollTop < segmentHeight * 0.02) lane.scrollTop += segmentHeight;
-        if (lane.scrollTop > segmentHeight * 1.98) lane.scrollTop -= segmentHeight;
+        normalizeScrollPosition();
       }
 
       rafId = window.requestAnimationFrame(loop);
@@ -355,6 +368,7 @@ function ProjectMarqueeLane({
     rafId = window.requestAnimationFrame(loop);
     return () => {
       window.cancelAnimationFrame(rafId);
+      lane.removeEventListener("scroll", handleScroll);
       observer.disconnect();
     };
   }, [direction, items]);
@@ -373,18 +387,18 @@ function ProjectMarqueeLane({
         ref={laneRef}
         className="h-full overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
-        <div ref={segmentRef} className="space-y-4 py-0">
-          {items.map((project, index) => (
+        <div ref={segmentRef} className="space-y-4 pb-4">
+          {items.map((project) => (
             <ProjectMarqueeCard key={`${project.slug}-segment-a`} project={project} onSelectProject={onSelectProject} />
           ))}
         </div>
-        <div aria-hidden className="space-y-4 py-0">
-          {items.map((project, index) => (
+        <div aria-hidden className="space-y-4 pb-4">
+          {items.map((project) => (
             <ProjectMarqueeCard key={`${project.slug}-segment-b`} project={project} onSelectProject={onSelectProject} />
           ))}
         </div>
-        <div aria-hidden className="space-y-4 py-0">
-          {items.map((project, index) => (
+        <div aria-hidden className="space-y-4 pb-4">
+          {items.map((project) => (
             <ProjectMarqueeCard key={`${project.slug}-segment-c`} project={project} onSelectProject={onSelectProject} />
           ))}
         </div>
