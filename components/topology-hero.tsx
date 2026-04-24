@@ -1978,10 +1978,10 @@ function StatusOrb({ x, y, tick }: { x: number; y: number; tick: number }) {
 
 function ServiceMouse({ cursor }: { cursor: { x: number; y: number; state: CursorState } }) {
   const visual = cursor.state === "pointer"
-    ? { width: 26, height: 38, gripOffset: { x: 4, y: 3 } }
+    ? { width: 27, height: 40, gripOffset: { x: 4, y: 3 } }
     : cursor.state === "closed"
       ? { width: 32, height: 30, gripOffset: { x: 9, y: 5 } }
-      : { width: 36, height: 44, gripOffset: { x: 9, y: 6 } };
+      : { width: 37, height: 46, gripOffset: { x: 9, y: 6 } };
 
   const spriteSrc = cursor.state === "pointer"
     ? `${ASSET_BASE}/cursor-pointer-ref.png?v=20260425-1`
