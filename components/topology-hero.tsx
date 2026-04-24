@@ -1888,7 +1888,9 @@ function StatusOrb({ x, y, tick }: { x: number; y: number; tick: number }) {
 }
 
 function ServiceMouse({ cursor }: { cursor: { x: number; y: number; state: CursorState } }) {
-  const gripOffset = { x: 16, y: 15 };
+  const gripOffset = cursor.state === "pointer"
+    ? { x: 8, y: 6 }
+    : { x: 16, y: 15 };
 
   return (
     <div
@@ -1897,20 +1899,43 @@ function ServiceMouse({ cursor }: { cursor: { x: number; y: number; state: Curso
         left: `${((cursor.x - gripOffset.x) / VIEWBOX.width) * 100}%`,
         top: `${((cursor.y - gripOffset.y) / VIEWBOX.height) * 100}%`,
         willChange: "left, top",
-        transform: cursor.state === "closed" ? "translateY(1px) scale(0.985)" : undefined,
+        transform: cursor.state === "closed" ? "translateY(1px) scale(0.985)" : cursor.state === "pointer" ? "scale(1)" : undefined,
         filter: "drop-shadow(0 1px 0 rgba(255,255,255,0.55)) drop-shadow(0 2px 3px rgba(0,0,0,0.18))",
       }}
     >
-      <svg width="38" height="42" viewBox="0 0 38 42" fill="none" aria-hidden="true">
-        <path
-          d="M14 12.6V20.4M19.2 11.4V19.6M24.4 11.6V19.8M29.6 13.3V21.3M12.1 24.4V18.2C12.1 16.2 13.4 14.8 15.2 14.8C17 14.8 18.3 16.2 18.3 18.2V23.4V17C18.3 15 19.6 13.6 21.4 13.6C23.2 13.6 24.5 15 24.5 17V23.4V17.6C24.5 15.8 25.8 14.5 27.5 14.5C29.2 14.5 30.5 15.8 30.5 17.6V24.2V20.6C30.5 18.8 31.8 17.5 33.6 17.5C35.4 17.5 36.7 18.8 36.7 20.6V27.1C36.7 33.4 31.6 38.5 25.3 38.5H19.6C14 38.5 9.4 34.6 8.5 29L8 25.8C7.7 24.3 8.6 22.8 10 22.5C11.3 22.2 12.4 22.8 12.9 24L13.5 25.1"
-          fill="#ffffff"
-          stroke="#0d0d0d"
-          strokeWidth="2.15"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
+      {cursor.state === "pointer" ? (
+        <svg width="28" height="36" viewBox="0 0 28 36" fill="none" aria-hidden="true">
+          <path
+            d="M3 2.2 L24.4 18.2 L15.9 18.5 L18.4 31.4 L13.9 33 L11.1 20.1 L5 25.4 Z"
+            fill="#ffffff"
+            stroke="#111111"
+            strokeWidth="1.6"
+            strokeLinejoin="round"
+          />
+        </svg>
+      ) : cursor.state === "open" ? (
+        <svg width="40" height="44" viewBox="0 0 40 44" fill="none" aria-hidden="true">
+          <path
+            d="M14.9 4.8V16.2M20 4.5V14.8M25 6.8V15.3M29.9 9.3V18.8M8.1 18.5L12.8 22.6V8.4C12.8 5.8 13.9 4.1 15.7 4.1C17.4 4.1 18.4 5.4 18.4 7.8V16.8V6.7C18.4 4.8 19.5 3.6 21 3.6C22.6 3.6 23.6 4.9 23.6 6.9V15.8V8.9C23.6 7.2 24.6 6 26.1 6C27.6 6 28.6 7.2 28.6 8.9V17.6V11.4C28.6 9.8 29.8 8.6 31.3 8.6C32.9 8.6 34 9.9 34 11.7V22.8C34 30.8 28.2 35.9 20.7 35.9H17.8C12.7 35.9 8.7 33.1 7.2 28.3L4.5 20.1C3.8 18.1 4.7 16.5 6.2 15.9C7.8 15.2 9.2 16.2 10.2 17.9L12.8 22.2"
+            fill="#ffffff"
+            stroke="#111111"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      ) : (
+        <svg width="38" height="42" viewBox="0 0 38 42" fill="none" aria-hidden="true">
+          <path
+            d="M14 12.6V20.4M19.2 11.4V19.6M24.4 11.6V19.8M29.6 13.3V21.3M12.1 24.4V18.2C12.1 16.2 13.4 14.8 15.2 14.8C17 14.8 18.3 16.2 18.3 18.2V23.4V17C18.3 15 19.6 13.6 21.4 13.6C23.2 13.6 24.5 15 24.5 17V23.4V17.6C24.5 15.8 25.8 14.5 27.5 14.5C29.2 14.5 30.5 15.8 30.5 17.6V24.2V20.6C30.5 18.8 31.8 17.5 33.6 17.5C35.4 17.5 36.7 18.8 36.7 20.6V27.1C36.7 33.4 31.6 38.5 25.3 38.5H19.6C14 38.5 9.4 34.6 8.5 29L8 25.8C7.7 24.3 8.6 22.8 10 22.5C11.3 22.2 12.4 22.8 12.9 24L13.5 25.1"
+            fill="#ffffff"
+            stroke="#0d0d0d"
+            strokeWidth="2.15"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      )}
     </div>
   );
 }
