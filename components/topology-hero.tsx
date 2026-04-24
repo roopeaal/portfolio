@@ -44,7 +44,7 @@ const UNIFIED_DEVICE_WIDTH = 232;
 const UNIFIED_DEVICE_HEIGHT = 198;
 const UNIFIED_NODE_HEIGHT = 268;
 const NODE_LABEL_GAP = 12;
-const CABLE_ATTACH_DROP = 40;
+const CABLE_ATTACH_DROP = 39;
 
 type NodePosition = { x: number; y: number };
 type NodeMeta = {
@@ -188,6 +188,123 @@ function lerp(start: number, end: number, t: number) {
 
 function pointOnLine(start: { x: number; y: number }, end: { x: number; y: number }, t: number) {
   return { x: lerp(start.x, end.x, t), y: lerp(start.y, end.y, t) };
+}
+
+function getDistance(a: { x: number; y: number }, b: { x: number; y: number }) {
+  return Math.hypot(b.x - a.x, b.y - a.y);
+}
+
+function quadraticPoint(start: { x: number; y: number }, control: { x: number; y: number }, end: { x: number; y: number }, t: number) {
+  const inverse = 1 - t;
+  return {
+    x: inverse * inverse * start.x + 2 * inverse * t * control.x + t * t * end.x,
+    y: inverse * inverse * start.y + 2 * inverse * t * control.y + t * t * end.y,
+  };
+}
+
+function getCablePathGeometry(
+  from: { x: number; y: number },
+  to: { x: number; y: number },
+  disconnected = false,
+  looseEnd?: { x: number; y: number },
+) {
+  const baseEnd = disconnected && looseEnd ? looseEnd : to;
+  const cableAttachDrop = disconnected ? 0 : CABLE_ATTACH_DROP;
+  const end = { x: baseEnd.x, y: baseEnd.y + cableAttachDrop };
+  const deltaX = end.x - from.x;
+  const deltaY = end.y - from.y;
+  const absX = Math.abs(deltaX);
+  const absY = Math.abs(deltaY);
+  const needsJoinCorner = !disconnected && absX > 14 && absY > 10;
+
+  if (!needsJoinCorner) {
+    return { from, end, corner: null as null };
+  }
+
+  const joinTail = Math.min(44, Math.max(24, absY * 0.34));
+  const cornerX = end.x;
+  const cornerY = end.y + joinTail;
+
+  const leg1X = cornerX - from.x;
+  const leg1Y = cornerY - from.y;
+  const leg1Len = Math.max(0.0001, Math.hypot(leg1X, leg1Y));
+  const leg2Len = Math.max(0.0001, Math.abs(end.y - cornerY));
+  const verticalDir = end.y >= cornerY ? 1 : -1;
+
+  const rounding = Math.min(62, Math.max(32, Math.min(absX, absY) * 0.8));
+  const inDist = Math.min(rounding, leg1Len * 0.82);
+  const outDist = Math.min(rounding * 0.95, leg2Len * 0.98);
+
+  const curveStartX = cornerX - (leg1X / leg1Len) * inDist;
+  const curveStartY = cornerY - (leg1Y / leg1Len) * inDist;
+  const curveEndX = cornerX;
+  const curveEndY = cornerY + verticalDir * outDist;
+
+  return {
+    from,
+    end,
+    corner: {
+      point: { x: cornerX, y: cornerY },
+      curveStart: { x: curveStartX, y: curveStartY },
+      curveEnd: { x: curveEndX, y: curveEndY },
+    },
+  };
+}
+
+function pointOnCablePath(from: { x: number; y: number }, to: { x: number; y: number }, t: number) {
+  const geometry = getCablePathGeometry(from, to, false);
+  const clampedT = clamp(t, 0, 1);
+
+  if (!geometry.corner) {
+    return pointOnLine(geometry.from, geometry.end, clampedT);
+  }
+
+  const { point, curveStart, curveEnd } = geometry.corner;
+  const line1Len = getDistance(geometry.from, curveStart);
+  const line3Len = getDistance(curveEnd, geometry.end);
+
+  const samples = 28;
+  const curveLengthTable: Array<{ t: number; length: number }> = [{ t: 0, length: 0 }];
+  let previous = curveStart;
+  let curveLen = 0;
+
+  for (let i = 1; i <= samples; i += 1) {
+    const sampleT = i / samples;
+    const samplePoint = quadraticPoint(curveStart, point, curveEnd, sampleT);
+    curveLen += getDistance(previous, samplePoint);
+    curveLengthTable.push({ t: sampleT, length: curveLen });
+    previous = samplePoint;
+  }
+
+  const totalLen = line1Len + curveLen + line3Len;
+  const targetLen = totalLen * clampedT;
+
+  if (targetLen <= line1Len || line1Len <= 0.0001) {
+    const localT = line1Len <= 0.0001 ? 0 : targetLen / line1Len;
+    return pointOnLine(geometry.from, curveStart, localT);
+  }
+
+  if (targetLen <= line1Len + curveLen || line3Len <= 0.0001) {
+    const onCurveLen = targetLen - line1Len;
+
+    for (let i = 1; i < curveLengthTable.length; i += 1) {
+      const previousSample = curveLengthTable[i - 1];
+      const nextSample = curveLengthTable[i];
+
+      if (onCurveLen <= nextSample.length) {
+        const segmentLength = Math.max(0.0001, nextSample.length - previousSample.length);
+        const ratio = (onCurveLen - previousSample.length) / segmentLength;
+        const mappedT = lerp(previousSample.t, nextSample.t, ratio);
+        return quadraticPoint(curveStart, point, curveEnd, mappedT);
+      }
+    }
+
+    return curveEnd;
+  }
+
+  const remaining = targetLen - line1Len - curveLen;
+  const localT = line3Len <= 0.0001 ? 1 : remaining / line3Len;
+  return pointOnLine(curveEnd, geometry.end, localT);
 }
 
 function stepToward(from: { x: number; y: number }, to: { x: number; y: number }, maxStep: number) {
@@ -427,9 +544,9 @@ function resolveNonOverlappingPosition(
 const SWITCH_PORT_CENTERS = [73, 90, 108, 125, 143, 160] as const;
 const SWITCH_LEFT_CABLE_PORT_INDEX = 0;
 const SWITCH_RIGHT_CABLE_PORT_INDEX = 5;
-const SWITCH_STUB_Y = 138.0;
+const SWITCH_STUB_Y = 137.0;
 const SWITCH_LEFT_STUB_X_OFFSET = 32.0;
-const SWITCH_RIGHT_STUB_X_OFFSET = -24.0;
+const SWITCH_RIGHT_STUB_X_OFFSET = -23.0;
 
 const DEBUG_NODE_HALOS = false;
 const NODE_PROTECTIVE_HALO = 14;
@@ -808,8 +925,6 @@ export function TopologyHero() {
   const contactAttach = getAnimatedDevicePoint("contact", getAttachPoint("contact", nodePositions), nodePositions, active, draggingNode);
   const switchLeftCableEnd = getAnimatedDevicePoint("projects", getSwitchCableStubEnd("left", nodePositions), nodePositions, active, draggingNode);
   const switchRightCableEnd = getAnimatedDevicePoint("projects", getSwitchCableStubEnd("right", nodePositions), nodePositions, active, draggingNode);
-  const switchLeftCableAttach = { x: switchLeftCableEnd.x, y: switchLeftCableEnd.y + CABLE_ATTACH_DROP };
-  const switchRightCableAttach = { x: switchRightCableEnd.x, y: switchRightCableEnd.y + CABLE_ATTACH_DROP };
 
   useEffect(() => {
     const start = Date.now();
@@ -1140,8 +1255,8 @@ export function TopologyHero() {
     : networkMode === "recovering"
       ? "orange"
       : "none";
-  const topIndicators = [0.32, 0.7].map((value) => pointOnLine(aboutCableAttach, switchLeftCableAttach, value));
-  const diagIndicators = [0.4, 0.78].map((value) => pointOnLine(homeAttach, switchRightCableAttach, value));
+  const topIndicators = [0.32, 0.7].map((value) => pointOnCablePath(aboutCableAttach, switchLeftCableEnd, value));
+  const diagIndicators = [0.4, 0.78].map((value) => pointOnCablePath(homeAttach, switchRightCableEnd, value));
   const activePreview = active && !draggingNode ? getPreviewByNode(active) : null;
   const previewStyle = active && !draggingNode ? getPreviewStyle(active, nodePositions) : undefined;
   const nodeStyle = useMemo(() => {
@@ -1803,38 +1918,12 @@ function DetachedEthernetStub({
 }
 
 function CableSegment({ from, to, disconnected = false, looseEnd }: { from: { x: number; y: number }; to: { x: number; y: number }; disconnected?: boolean; looseEnd?: { x: number; y: number } }) {
-  const baseEnd = disconnected && looseEnd ? looseEnd : to;
-  const cableAttachDrop = disconnected ? 0 : CABLE_ATTACH_DROP;
-  const end = { x: baseEnd.x, y: baseEnd.y + cableAttachDrop };
-  const deltaX = end.x - from.x;
-  const deltaY = end.y - from.y;
-  const absX = Math.abs(deltaX);
-  const absY = Math.abs(deltaY);
-  const needsJoinCorner = !disconnected && absX > 14 && absY > 10;
+  const geometry = getCablePathGeometry(from, to, disconnected, looseEnd);
+  let path = `M ${geometry.from.x} ${geometry.from.y} L ${geometry.end.x} ${geometry.end.y}`;
 
-  let path = `M ${from.x} ${from.y} L ${end.x} ${end.y}`;
-
-  if (needsJoinCorner) {
-    const joinTail = Math.min(44, Math.max(24, absY * 0.34));
-    const cornerX = end.x;
-    const cornerY = end.y + joinTail;
-
-    const leg1X = cornerX - from.x;
-    const leg1Y = cornerY - from.y;
-    const leg1Len = Math.max(0.0001, Math.hypot(leg1X, leg1Y));
-    const leg2Len = Math.max(0.0001, Math.abs(end.y - cornerY));
-    const verticalDir = end.y >= cornerY ? 1 : -1;
-
-    const rounding = Math.min(62, Math.max(32, Math.min(absX, absY) * 0.8));
-    const inDist = Math.min(rounding, leg1Len * 0.82);
-    const outDist = Math.min(rounding * 0.95, leg2Len * 0.98);
-
-    const curveStartX = cornerX - (leg1X / leg1Len) * inDist;
-    const curveStartY = cornerY - (leg1Y / leg1Len) * inDist;
-    const curveEndX = cornerX;
-    const curveEndY = cornerY + verticalDir * outDist;
-
-    path = `M ${from.x} ${from.y} L ${curveStartX} ${curveStartY} Q ${cornerX} ${cornerY} ${curveEndX} ${curveEndY} L ${end.x} ${end.y}`;
+  if (geometry.corner) {
+    const { point, curveStart, curveEnd } = geometry.corner;
+    path = `M ${geometry.from.x} ${geometry.from.y} L ${curveStart.x} ${curveStart.y} Q ${point.x} ${point.y} ${curveEnd.x} ${curveEnd.y} L ${geometry.end.x} ${geometry.end.y}`;
   }
 
   return (
