@@ -2009,10 +2009,10 @@ function ServicePointerCursor({ width, height }: { width: number; height: number
   return (
     <svg width={width} height={height} viewBox="0 0 88 96" fill="none" aria-hidden="true">
       <path
-        d="M13.5 6C12.1193 6 11 7.11929 11 8.5V75.3697C11 77.4927 13.5046 78.6282 15.1024 77.2242L33.2598 61.2694L43.7786 87.1198C45.3408 90.9594 49.7181 92.8071 53.5578 91.2449L59.5083 88.8234C63.3479 87.2612 65.1956 82.8839 63.6334 79.0442L53.0879 53.1282L78.7514 51.4711C81.2252 51.3113 82.2926 48.2067 80.3264 46.6963L14.8982 6.44527C14.4763 6.1606 13.9796 6 13.5 6Z"
+        d="M17 7C15.9 7 15 7.9 15 9V84C15 86 17.4 87 18.9 85.7L39.5 67.8L49.8 93.9C51.2 97.2 55 98.9 58.3 97.5L64.1 95.1C67.5 93.7 69.1 89.8 67.7 86.5L57.3 60.3L86.6 58.4C89 58.3 90 55.2 88.1 53.8L18.1 7.4C17.8 7.1 17.4 7 17 7Z"
         fill="#ffffff"
         stroke="#000000"
-        strokeWidth="3.2"
+        strokeWidth="3.8"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
@@ -2024,16 +2024,16 @@ function ServiceOpenHandCursor({ width, height }: { width: number; height: numbe
   return (
     <svg width={width} height={height} viewBox="0 0 124 136" fill="none" aria-hidden="true">
       <path
-        d="M34 58V24C34 18.4772 38.4772 14 44 14C49.5228 14 54 18.4772 54 24V58H56V16C56 10.4772 60.4772 6 66 6C71.5228 6 76 10.4772 76 16V58H78V24C78 18.4772 82.4772 14 88 14C93.5228 14 98 18.4772 98 24V58H100V34C100 28.4772 104.03 24 109 24C113.97 24 118 28.4772 118 34V88C118 111.196 99.196 130 76 130H58C39.3747 130 23.2584 117.012 16 99.8586L6 80C3.06269 74.1691 2.30489 68.4369 5.0486 64.9747C7.79231 61.5125 13.0195 61.6291 17.0328 65.2474L26 79.2V24C26 18.4772 30.4772 14 36 14C41.5228 14 46 18.4772 46 24V58H34Z"
+        d="M36 56V28C36 22.5 40.5 18 46 18C51.5 18 56 22.5 56 28V54H58V18C58 12.5 62.5 8 68 8C73.5 8 78 12.5 78 18V54H80V26C80 20.5 84.5 16 90 16C95.5 16 100 20.5 100 26V54H102V36C102 30.5 106.5 26 112 26C117.5 26 122 30.5 122 36V85C122 108.7 102.7 128 79 128H59C41 128 24.9 116.8 18.6 99.9L8.5 76.6C7.1 73.2 8.2 69.4 11.2 67.5C14.6 65.4 19.1 66.2 21.5 69.5L28 78.3V28C28 22.5 32.5 18 38 18C43.5 18 48 22.5 48 28V56H36Z"
         fill="#ffffff"
         stroke="#000000"
-        strokeWidth="4.2"
+        strokeWidth="4"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <path d="M54 32V68" stroke="#000000" strokeWidth="4.2" strokeLinecap="round" />
-      <path d="M76 24V68" stroke="#000000" strokeWidth="4.2" strokeLinecap="round" />
-      <path d="M98 34V72" stroke="#000000" strokeWidth="4.2" strokeLinecap="round" />
+      <path d="M56 34V70" stroke="#000000" strokeWidth="4" strokeLinecap="round" />
+      <path d="M78 26V70" stroke="#000000" strokeWidth="4" strokeLinecap="round" />
+      <path d="M100 36V74" stroke="#000000" strokeWidth="4" strokeLinecap="round" />
     </svg>
   );
 }
@@ -2042,16 +2042,16 @@ function ServiceClosedHandCursor({ width, height }: { width: number; height: num
   return (
     <svg width={width} height={height} viewBox="0 0 122 124" fill="none" aria-hidden="true">
       <path
-        d="M34 54V31C34 25.4772 38.4772 21 44 21C49.5228 21 54 25.4772 54 31V54H56V23C56 17.4772 60.4772 13 66 13C71.5228 13 76 17.4772 76 23V54H78V31C78 25.4772 82.4772 21 88 21C93.5228 21 98 25.4772 98 31V54H100V38C100 32.4772 104.477 28 110 28C115.523 28 120 32.4772 120 38V71C120 92.5391 102.539 110 81 110H52C30.4609 110 13 92.5391 13 71V54C13 48.4772 17.4772 44 23 44C28.5228 44 33 48.4772 33 54H34Z"
+        d="M32 54V35C32 29.5 36.5 25 42 25C47.5 25 52 29.5 52 35V52H54V29C54 23.5 58.5 19 64 19C69.5 19 74 23.5 74 29V52H76V35C76 29.5 80.5 25 86 25C91.5 25 96 29.5 96 35V52H98V42C98 36.5 102.5 32 108 32C113.5 32 118 36.5 118 42V72C118 93.5 100.5 111 79 111H56C34.5 111 17 93.5 17 72V54C17 48.5 21.5 44 27 44C31.7 44 35.5 47.1 36.5 51.3V54H32Z"
         fill="#ffffff"
         stroke="#000000"
-        strokeWidth="4.2"
+        strokeWidth="4"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <path d="M54 34V64" stroke="#000000" strokeWidth="4.2" strokeLinecap="round" />
-      <path d="M76 26V64" stroke="#000000" strokeWidth="4.2" strokeLinecap="round" />
-      <path d="M98 38V64" stroke="#000000" strokeWidth="4.2" strokeLinecap="round" />
+      <path d="M52 38V66" stroke="#000000" strokeWidth="4" strokeLinecap="round" />
+      <path d="M74 32V66" stroke="#000000" strokeWidth="4" strokeLinecap="round" />
+      <path d="M96 40V66" stroke="#000000" strokeWidth="4" strokeLinecap="round" />
     </svg>
   );
 }
