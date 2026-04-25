@@ -215,7 +215,7 @@ function getCablePathGeometry(
   const deltaY = end.y - from.y;
   const absX = Math.abs(deltaX);
   const absY = Math.abs(deltaY);
-  const needsJoinCorner = !disconnected && absX > 14 && absY > 10;
+  const needsJoinCorner = !disconnected && absX > 14;
 
   if (!needsJoinCorner) {
     return { from, end, corner: null as null };
