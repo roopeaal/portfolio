@@ -2012,11 +2012,8 @@ function DetachedEthernetStub({
   const anchorY = bottom.y + nudgeY;
   const leftPercent = (anchorX / VIEWBOX.width) * 100;
   const topPercent = (anchorY / VIEWBOX.height) * 100;
-  const widthPercent = (headWidth / VIEWBOX.width) * 100;
-  const heightPercent = (headHeight / VIEWBOX.height) * 100;
-  const halfWidthPercent = widthPercent / 2;
-  const anchorOffsetYPercent = ((headHeight - lowerNudge) / VIEWBOX.height) * 100;
-  const transformOriginYPercent = ((headHeight - lowerNudge) / headHeight) * 100;
+  const halfWidthPx = headWidth / 2;
+  const anchorOffsetYPx = headHeight - lowerNudge;
 
   return (
     <svg
@@ -2027,12 +2024,12 @@ function DetachedEthernetStub({
       className="pointer-events-none absolute overflow-visible"
       style={{
         zIndex,
-        left: `calc(${leftPercent}% - ${halfWidthPercent}%)`,
-        top: `calc(${topPercent}% - ${anchorOffsetYPercent}%)`,
-        width: `${widthPercent}%`,
-        height: `${heightPercent}%`,
+        left: `calc(${leftPercent}% - ${halfWidthPx}px)`,
+        top: `calc(${topPercent}% - ${anchorOffsetYPx}px)`,
+        width: `${headWidth}px`,
+        height: `${headHeight}px`,
         transform: rotationDeg ? `rotate(${rotationDeg}deg)` : undefined,
-        transformOrigin: `50% ${transformOriginYPercent}%`,
+        transformOrigin: `${halfWidthPx}px ${anchorOffsetYPx}px`,
       }}
       aria-hidden="true"
     >
