@@ -251,6 +251,52 @@ function getCablePathGeometry(
   };
 }
 
+function getDetachedCableCurve(
+  from: { x: number; y: number },
+  end: { x: number; y: number },
+  tick = 0,
+  mode: NetworkMode = "stable",
+) {
+  const dx = end.x - from.x;
+  const dy = end.y - from.y;
+  const length = Math.max(0.0001, Math.hypot(dx, dy));
+  const ux = dx / length;
+  const uy = dy / length;
+  const nx = -uy;
+  const ny = ux;
+
+  const baseSag = clamp(length * 0.085, 9, 24);
+  const modeAmp = mode === "dropping"
+    ? 5.2
+    : mode === "grabbing"
+      ? 4.4
+      : mode === "repairing"
+        ? 3.1
+        : 2.2;
+
+  const swayA = Math.sin(tick * 0.28 + length * 0.017);
+  const swayB = Math.cos(tick * 0.21 + 1.2 + length * 0.011);
+  const downBias = clamp(3 + length * 0.02, 4, 16);
+
+  const control1Base = pointOnLine(from, end, 0.28);
+  const control2Base = pointOnLine(from, end, 0.72);
+
+  const sway1 = baseSag + swayA * modeAmp;
+  const sway2 = baseSag * 0.78 - swayA * modeAmp * 0.7;
+  const roll = swayB * modeAmp * 0.62;
+
+  return {
+    control1: {
+      x: control1Base.x + nx * (sway1 + roll) - ux * 2.2,
+      y: control1Base.y + ny * (sway1 + roll) + downBias,
+    },
+    control2: {
+      x: control2Base.x + nx * (sway2 - roll) + ux * 2.2,
+      y: control2Base.y + ny * (sway2 - roll) + downBias * 0.82,
+    },
+  };
+}
+
 function pointOnCablePath(from: { x: number; y: number }, to: { x: number; y: number }, t: number) {
   const geometry = getCablePathGeometry(from, to, false);
   const clampedT = clamp(t, 0, 1);
@@ -312,8 +358,18 @@ function getCableEndDirection(
   to: { x: number; y: number },
   disconnected = false,
   looseEnd?: { x: number; y: number },
+  tick = 0,
+  mode: NetworkMode = "stable",
 ) {
   const geometry = getCablePathGeometry(from, to, disconnected, looseEnd);
+
+  if (disconnected) {
+    const detachedCurve = getDetachedCableCurve(geometry.from, geometry.end, tick, mode);
+    return {
+      x: geometry.end.x - detachedCurve.control2.x,
+      y: geometry.end.y - detachedCurve.control2.y,
+    };
+  }
 
   if (geometry.corner) {
     return {
@@ -1266,7 +1322,14 @@ export function TopologyHero() {
     ? repairLooseEnd
     : getLooseEnd(motionTick, networkMode, phaseTick, detachedOrigin, switchLeftCableEnd);
   const serviceCursor = getServiceCursor(networkMode, phaseTick, looseEnd, switchLeftCableEnd);
-  const detachedCableEndDirection = getCableEndDirection(aboutCableAttach, switchLeftCableEnd, true, looseEnd);
+  const detachedCableEndDirection = getCableEndDirection(
+    aboutCableAttach,
+    switchLeftCableEnd,
+    true,
+    looseEnd,
+    motionTick,
+    networkMode,
+  );
   const detachedCableEndLength = Math.hypot(detachedCableEndDirection.x, detachedCableEndDirection.y);
   const detachedCableEndAngle = detachedCableEndLength > 0.0001
     ? (Math.atan2(detachedCableEndDirection.y, detachedCableEndDirection.x) * 180) / Math.PI
@@ -1468,7 +1531,14 @@ export function TopologyHero() {
                   aria-hidden="true"
                   preserveAspectRatio="none"
                 >
-                  <CableSegment from={aboutCableAttach} to={switchLeftCableEnd} disconnected={networkMode !== "stable" && networkMode !== "recovering"} looseEnd={looseEnd} />
+                  <CableSegment
+                    from={aboutCableAttach}
+                    to={switchLeftCableEnd}
+                    disconnected={networkMode !== "stable" && networkMode !== "recovering"}
+                    looseEnd={looseEnd}
+                    tick={motionTick}
+                    mode={networkMode}
+                  />
                   <CableSegment from={homeAttach} to={switchRightCableEnd} />
 
                   {topLineStatus === "green"
@@ -1954,11 +2024,28 @@ function DetachedEthernetStub({
   );
 }
 
-function CableSegment({ from, to, disconnected = false, looseEnd }: { from: { x: number; y: number }; to: { x: number; y: number }; disconnected?: boolean; looseEnd?: { x: number; y: number } }) {
+function CableSegment({
+  from,
+  to,
+  disconnected = false,
+  looseEnd,
+  tick = 0,
+  mode = "stable",
+}: {
+  from: { x: number; y: number };
+  to: { x: number; y: number };
+  disconnected?: boolean;
+  looseEnd?: { x: number; y: number };
+  tick?: number;
+  mode?: NetworkMode;
+}) {
   const geometry = getCablePathGeometry(from, to, disconnected, looseEnd);
   let path = `M ${geometry.from.x} ${geometry.from.y} L ${geometry.end.x} ${geometry.end.y}`;
 
-  if (geometry.corner) {
+  if (disconnected) {
+    const detachedCurve = getDetachedCableCurve(geometry.from, geometry.end, tick, mode);
+    path = `M ${geometry.from.x} ${geometry.from.y} C ${detachedCurve.control1.x} ${detachedCurve.control1.y} ${detachedCurve.control2.x} ${detachedCurve.control2.y} ${geometry.end.x} ${geometry.end.y}`;
+  } else if (geometry.corner) {
     const { point, curveStart, curveEnd } = geometry.corner;
     path = `M ${geometry.from.x} ${geometry.from.y} L ${curveStart.x} ${curveStart.y} Q ${point.x} ${point.y} ${curveEnd.x} ${curveEnd.y} L ${geometry.end.x} ${geometry.end.y}`;
   }
