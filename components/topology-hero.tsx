@@ -267,12 +267,12 @@ function getDetachedCableWavePoints(
   const ny = ux;
 
   const modeProfile = mode === "dropping"
-    ? { amp: clamp(length * 0.16, 18, 52), speed: 0.46, freq: 2.85, chaos: 0.42 }
+    ? { amp: clamp(length * 0.16, 18, 52), speed: 0.4, freq: 2.85, chaos: 0.42 }
     : mode === "grabbing"
-      ? { amp: clamp(length * 0.13, 14, 42), speed: 0.4, freq: 2.45, chaos: 0.34 }
+      ? { amp: clamp(length * 0.13, 14, 42), speed: 0.35, freq: 2.45, chaos: 0.34 }
       : mode === "repairing"
-        ? { amp: clamp(length * 0.09, 9, 28), speed: 0.34, freq: 2.05, chaos: 0.24 }
-        : { amp: clamp(length * 0.07, 8, 22), speed: 0.3, freq: 1.8, chaos: 0.2 };
+        ? { amp: clamp(length * 0.09, 9, 28), speed: 0.3, freq: 2.05, chaos: 0.24 }
+        : { amp: clamp(length * 0.07, 8, 22), speed: 0.27, freq: 1.8, chaos: 0.2 };
 
   const phase = tick * modeProfile.speed + length * 0.014;
   const baseSag = clamp(length * 0.09, 8, 26);
