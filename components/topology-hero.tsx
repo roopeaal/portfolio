@@ -252,7 +252,7 @@ function getCablePathGeometry(
   };
 }
 
-function getDetachedCableCurve(
+function getDetachedCableWavePoints(
   from: { x: number; y: number },
   end: { x: number; y: number },
   tick = 0,
@@ -266,36 +266,65 @@ function getDetachedCableCurve(
   const nx = -uy;
   const ny = ux;
 
-  const baseSag = clamp(length * 0.085, 9, 24);
-  const modeAmp = mode === "dropping"
-    ? 5.2
+  const modeProfile = mode === "dropping"
+    ? { amp: clamp(length * 0.16, 18, 52), speed: 0.46, freq: 2.85, chaos: 0.42 }
     : mode === "grabbing"
-      ? 4.4
+      ? { amp: clamp(length * 0.13, 14, 42), speed: 0.4, freq: 2.45, chaos: 0.34 }
       : mode === "repairing"
-        ? 3.1
-        : 2.2;
+        ? { amp: clamp(length * 0.09, 9, 28), speed: 0.34, freq: 2.05, chaos: 0.24 }
+        : { amp: clamp(length * 0.07, 8, 22), speed: 0.3, freq: 1.8, chaos: 0.2 };
 
-  const swayA = Math.sin(tick * 0.28 + length * 0.017);
-  const swayB = Math.cos(tick * 0.21 + 1.2 + length * 0.011);
-  const downBias = clamp(3 + length * 0.02, 4, 16);
+  const phase = tick * modeProfile.speed + length * 0.014;
+  const baseSag = clamp(length * 0.09, 8, 26);
+  const downBias = clamp(4 + length * 0.018, 4, 14);
+  const samples = 8;
 
-  const control1Base = pointOnLine(from, end, 0.28);
-  const control2Base = pointOnLine(from, end, 0.72);
+  const points = Array.from({ length: samples + 1 }, (_, index) => {
+    const t = index / samples;
+    const base = pointOnLine(from, end, t);
+    const envelope = Math.pow(t, 1.15);
+    const tailWhip = Math.pow(t, 2.4);
 
-  const sway1 = baseSag + swayA * modeAmp;
-  const sway2 = baseSag * 0.78 - swayA * modeAmp * 0.7;
-  const roll = swayB * modeAmp * 0.62;
+    const waveA = Math.sin(phase + t * Math.PI * modeProfile.freq);
+    const waveB = Math.sin(phase * 1.73 + t * Math.PI * modeProfile.freq * 1.62 + 0.9);
+    const waveC = Math.sin(phase * 0.8 + t * Math.PI * 5.2 + 0.25);
 
-  return {
-    control1: {
-      x: control1Base.x + nx * (sway1 + roll) - ux * 2.2,
-      y: control1Base.y + ny * (sway1 + roll) + downBias,
-    },
-    control2: {
-      x: control2Base.x + nx * (sway2 - roll) + ux * 2.2,
-      y: control2Base.y + ny * (sway2 - roll) + downBias * 0.82,
-    },
-  };
+    const lateral =
+      waveA * modeProfile.amp * envelope +
+      waveB * modeProfile.amp * modeProfile.chaos * envelope +
+      waveC * modeProfile.amp * 0.08 * tailWhip;
+    const alongShift = -modeProfile.amp * 0.12 * waveA * tailWhip;
+    const verticalSag = baseSag * Math.sin(t * Math.PI) + downBias * t;
+
+    return {
+      x: base.x + nx * lateral + ux * alongShift,
+      y: base.y + ny * lateral + uy * alongShift + verticalSag,
+    };
+  });
+
+  points[0] = from;
+  points[points.length - 1] = end;
+  return points;
+}
+
+function buildDetachedCableWavePath(points: Array<{ x: number; y: number }>) {
+  if (points.length === 0) return "";
+  if (points.length === 1) return `M ${points[0].x} ${points[0].y}`;
+  if (points.length === 2) return `M ${points[0].x} ${points[0].y} L ${points[1].x} ${points[1].y}`;
+
+  let path = `M ${points[0].x} ${points[0].y}`;
+
+  for (let i = 1; i < points.length - 1; i += 1) {
+    const control = points[i];
+    const next = points[i + 1];
+    const mid = { x: (control.x + next.x) / 2, y: (control.y + next.y) / 2 };
+    path += ` Q ${control.x} ${control.y} ${mid.x} ${mid.y}`;
+  }
+
+  const lastControl = points[points.length - 2];
+  const last = points[points.length - 1];
+  path += ` Q ${lastControl.x} ${lastControl.y} ${last.x} ${last.y}`;
+  return path;
 }
 
 function pointOnCablePath(from: { x: number; y: number }, to: { x: number; y: number }, t: number, routeOffsetX = 0) {
@@ -365,10 +394,11 @@ function getCableEndDirection(
   const geometry = getCablePathGeometry(from, to, disconnected, looseEnd);
 
   if (disconnected) {
-    const detachedCurve = getDetachedCableCurve(geometry.from, geometry.end, tick, mode);
+    const detachedPoints = getDetachedCableWavePoints(geometry.from, geometry.end, tick, mode);
+    const penultimate = detachedPoints[Math.max(0, detachedPoints.length - 2)];
     return {
-      x: geometry.end.x - detachedCurve.control2.x,
-      y: geometry.end.y - detachedCurve.control2.y,
+      x: geometry.end.x - penultimate.x,
+      y: geometry.end.y - penultimate.y,
     };
   }
 
@@ -2096,8 +2126,8 @@ function CableSegment({
   let path = `M ${geometry.from.x} ${geometry.from.y} L ${geometry.end.x} ${geometry.end.y}`;
 
   if (disconnected) {
-    const detachedCurve = getDetachedCableCurve(geometry.from, geometry.end, tick, mode);
-    path = `M ${geometry.from.x} ${geometry.from.y} C ${detachedCurve.control1.x} ${detachedCurve.control1.y} ${detachedCurve.control2.x} ${detachedCurve.control2.y} ${geometry.end.x} ${geometry.end.y}`;
+    const detachedPoints = getDetachedCableWavePoints(geometry.from, geometry.end, tick, mode);
+    path = buildDetachedCableWavePath(detachedPoints);
   } else if (geometry.corner) {
     const { point, curveStart, curveEnd } = geometry.corner;
     path = `M ${geometry.from.x} ${geometry.from.y} L ${curveStart.x} ${curveStart.y} Q ${point.x} ${point.y} ${curveEnd.x} ${curveEnd.y} L ${geometry.end.x} ${geometry.end.y}`;
