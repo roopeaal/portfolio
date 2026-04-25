@@ -207,6 +207,7 @@ function getCablePathGeometry(
   to: { x: number; y: number },
   disconnected = false,
   looseEnd?: { x: number; y: number },
+  routeOffsetX = 0,
 ) {
   const baseEnd = disconnected && looseEnd ? looseEnd : to;
   const cableAttachDrop = disconnected ? 0 : CABLE_ATTACH_DROP;
@@ -222,7 +223,7 @@ function getCablePathGeometry(
   }
 
   const joinTail = Math.min(44, Math.max(24, absY * 0.34));
-  const cornerX = end.x;
+  const cornerX = end.x + routeOffsetX;
   const cornerY = end.y + joinTail;
 
   const leg1X = cornerX - from.x;
@@ -297,8 +298,8 @@ function getDetachedCableCurve(
   };
 }
 
-function pointOnCablePath(from: { x: number; y: number }, to: { x: number; y: number }, t: number) {
-  const geometry = getCablePathGeometry(from, to, false);
+function pointOnCablePath(from: { x: number; y: number }, to: { x: number; y: number }, t: number, routeOffsetX = 0) {
+  const geometry = getCablePathGeometry(from, to, false, undefined, routeOffsetX);
   const clampedT = clamp(t, 0, 1);
 
   if (!geometry.corner) {
@@ -624,6 +625,8 @@ const SWITCH_RIGHT_CABLE_PORT_INDEX = 5;
 const SWITCH_STUB_Y = 136.0;
 const SWITCH_LEFT_STUB_X_OFFSET = 32.0;
 const SWITCH_RIGHT_STUB_X_OFFSET = -23.0;
+const LEFT_CABLE_ROUTE_OFFSET_X = -1;
+const RIGHT_CABLE_ROUTE_OFFSET_X = 1;
 
 const DEBUG_NODE_HALOS = false;
 const NODE_PROTECTIVE_HALO = 14;
@@ -1345,8 +1348,8 @@ export function TopologyHero() {
     : networkMode === "recovering"
       ? "orange"
       : "none";
-  const topIndicators = [0.32, 0.7].map((value) => pointOnCablePath(aboutCableAttach, switchLeftCableEnd, value));
-  const diagIndicators = [0.4, 0.78].map((value) => pointOnCablePath(homeAttach, switchRightCableEnd, value));
+  const topIndicators = [0.32, 0.7].map((value) => pointOnCablePath(aboutCableAttach, switchLeftCableEnd, value, LEFT_CABLE_ROUTE_OFFSET_X));
+  const diagIndicators = [0.4, 0.78].map((value) => pointOnCablePath(homeAttach, switchRightCableEnd, value, RIGHT_CABLE_ROUTE_OFFSET_X));
   const activePreview = active && !draggingNode ? getPreviewByNode(active) : null;
   const previewStyle = active && !draggingNode ? getPreviewStyle(active, nodePositions) : undefined;
   const nodeStyle = useMemo(() => {
@@ -1538,8 +1541,9 @@ export function TopologyHero() {
                     looseEnd={looseEnd}
                     tick={motionTick}
                     mode={networkMode}
+                    routeOffsetX={LEFT_CABLE_ROUTE_OFFSET_X}
                   />
-                  <CableSegment from={homeAttach} to={switchRightCableEnd} />
+                  <CableSegment from={homeAttach} to={switchRightCableEnd} routeOffsetX={RIGHT_CABLE_ROUTE_OFFSET_X} />
 
                   {topLineStatus === "green"
                     ? topIndicators.map((point, index) => <StatusTriangle key={`top-${index}`} {...point} />)
@@ -2054,6 +2058,7 @@ function CableSegment({
   looseEnd,
   tick = 0,
   mode = "stable",
+  routeOffsetX = 0,
 }: {
   from: { x: number; y: number };
   to: { x: number; y: number };
@@ -2061,8 +2066,9 @@ function CableSegment({
   looseEnd?: { x: number; y: number };
   tick?: number;
   mode?: NetworkMode;
+  routeOffsetX?: number;
 }) {
-  const geometry = getCablePathGeometry(from, to, disconnected, looseEnd);
+  const geometry = getCablePathGeometry(from, to, disconnected, looseEnd, routeOffsetX);
   let path = `M ${geometry.from.x} ${geometry.from.y} L ${geometry.end.x} ${geometry.end.y}`;
 
   if (disconnected) {
