@@ -1984,10 +1984,10 @@ function ServiceMouse({ cursor }: { cursor: { x: number; y: number; state: Curso
       : { width: 37, height: 46, gripOffset: { x: 9, y: 6 } };
 
   const spriteSrc = cursor.state === "pointer"
-    ? `${ASSET_BASE}/cursor-pointer-ref-svc.png?v=20260425-2`
+    ? `${ASSET_BASE}/cursor-pointer-ref-svc.png?v=20260425-3`
     : cursor.state === "closed"
-      ? `${ASSET_BASE}/cursor-closed-hand-ref-svc.png?v=20260425-2`
-      : `${ASSET_BASE}/cursor-open-hand-ref-svc.png?v=20260425-2`;
+      ? `${ASSET_BASE}/cursor-closed-hand-ref-svc.png?v=20260425-3`
+      : `${ASSET_BASE}/cursor-open-hand-ref-svc.png?v=20260425-3`;
 
   return (
     <div
