@@ -44,7 +44,7 @@ const UNIFIED_DEVICE_WIDTH = 232;
 const UNIFIED_DEVICE_HEIGHT = 198;
 const UNIFIED_NODE_HEIGHT = 268;
 const NODE_LABEL_GAP = 12;
-const CABLE_ATTACH_DROP = 39;
+const CABLE_ATTACH_DROP = 37;
 
 type NodePosition = { x: number; y: number };
 type NodeMeta = {
@@ -621,7 +621,7 @@ function resolveNonOverlappingPosition(
 const SWITCH_PORT_CENTERS = [73, 90, 108, 125, 143, 160] as const;
 const SWITCH_LEFT_CABLE_PORT_INDEX = 0;
 const SWITCH_RIGHT_CABLE_PORT_INDEX = 5;
-const SWITCH_STUB_Y = 134.0;
+const SWITCH_STUB_Y = 136.0;
 const SWITCH_LEFT_STUB_X_OFFSET = 32.0;
 const SWITCH_RIGHT_STUB_X_OFFSET = -23.0;
 
