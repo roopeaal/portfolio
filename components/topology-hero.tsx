@@ -44,7 +44,7 @@ const UNIFIED_DEVICE_WIDTH = 232;
 const UNIFIED_DEVICE_HEIGHT = 198;
 const UNIFIED_NODE_HEIGHT = 268;
 const NODE_LABEL_GAP = 12;
-const CABLE_ATTACH_DROP = 34;
+const CABLE_ATTACH_DROP = 31;
 
 type NodePosition = { x: number; y: number };
 type NodeMeta = {
