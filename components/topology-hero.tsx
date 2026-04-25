@@ -307,6 +307,27 @@ function pointOnCablePath(from: { x: number; y: number }, to: { x: number; y: nu
   return pointOnLine(curveEnd, geometry.end, localT);
 }
 
+function getCableEndDirection(
+  from: { x: number; y: number },
+  to: { x: number; y: number },
+  disconnected = false,
+  looseEnd?: { x: number; y: number },
+) {
+  const geometry = getCablePathGeometry(from, to, disconnected, looseEnd);
+
+  if (geometry.corner) {
+    return {
+      x: geometry.end.x - geometry.corner.curveEnd.x,
+      y: geometry.end.y - geometry.corner.curveEnd.y,
+    };
+  }
+
+  return {
+    x: geometry.end.x - geometry.from.x,
+    y: geometry.end.y - geometry.from.y,
+  };
+}
+
 function stepToward(from: { x: number; y: number }, to: { x: number; y: number }, maxStep: number) {
   const dx = to.x - from.x;
   const dy = to.y - from.y;
@@ -1245,6 +1266,12 @@ export function TopologyHero() {
     ? repairLooseEnd
     : getLooseEnd(motionTick, networkMode, phaseTick, detachedOrigin, switchLeftCableEnd);
   const serviceCursor = getServiceCursor(networkMode, phaseTick, looseEnd, switchLeftCableEnd);
+  const detachedCableEndDirection = getCableEndDirection(aboutCableAttach, switchLeftCableEnd, true, looseEnd);
+  const detachedCableEndLength = Math.hypot(detachedCableEndDirection.x, detachedCableEndDirection.y);
+  const detachedCableEndAngle = detachedCableEndLength > 0.0001
+    ? (Math.atan2(detachedCableEndDirection.y, detachedCableEndDirection.x) * 180) / Math.PI
+    : -90;
+  const detachedStubRotationDeg = detachedCableEndAngle + 90;
 
   useEffect(() => {
     looseEndRef.current = looseEnd;
@@ -1461,7 +1488,13 @@ export function TopologyHero() {
                 </motion.svg>
 
                 {networkMode === "stable" || networkMode === "recovering" ? <DetachedEthernetStub bottom={switchLeftCableEnd} zIndex={draggingNode === "projects" ? 186 : 90} /> : null}
-                {networkMode !== "stable" && networkMode !== "recovering" ? <DetachedEthernetStub bottom={looseEnd} zIndex={draggingNode === "projects" ? 186 : 90} /> : null}
+                {networkMode !== "stable" && networkMode !== "recovering" ? (
+                  <DetachedEthernetStub
+                    bottom={looseEnd}
+                    zIndex={draggingNode === "projects" ? 186 : 90}
+                    rotationDeg={detachedStubRotationDeg}
+                  />
+                ) : null}
                 <DetachedEthernetStub bottom={switchRightCableEnd} zIndex={draggingNode === "projects" ? 186 : 90} />
                 {serviceCursor ? <ServiceMouse cursor={serviceCursor} /> : null}
 
@@ -1875,9 +1908,11 @@ function EthernetHeadGraphic({ className = "" }: { className?: string }) {
 function DetachedEthernetStub({
   bottom,
   zIndex = 90,
+  rotationDeg = 0,
 }: {
   bottom: { x: number; y: number };
   zIndex?: number;
+  rotationDeg?: number;
 }) {
   const color = "#111111";
   const headWidth = 16.6;
@@ -1899,6 +1934,8 @@ function DetachedEthernetStub({
         top: `calc(${topPercent}% - ${headHeight - lowerNudge}px)`,
         width: `${headWidth}px`,
         height: `${headHeight}px`,
+        transform: rotationDeg ? `rotate(${rotationDeg}deg)` : undefined,
+        transformOrigin: `${headWidth / 2}px ${headHeight - lowerNudge}px`,
       }}
       aria-hidden="true"
     >
