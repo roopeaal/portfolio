@@ -781,14 +781,25 @@ function getAnimatedDevicePoint(
   };
 }
 
-function getSwitchCableStubEnd(port: "left" | "right", positions: Record<NodeKey, NodePosition>) {
+function getSwitchCableStubEnd(
+  port: "left" | "right",
+  positions: Record<NodeKey, NodePosition>,
+  sceneWidth = VIEWBOX.width,
+) {
   const { x, y } = positions.projects;
   const portIndex = port === "left" ? SWITCH_LEFT_CABLE_PORT_INDEX : SWITCH_RIGHT_CABLE_PORT_INDEX;
   const portOffset = SWITCH_PORT_CENTERS[portIndex];
   const horizontalOffset = port === "left" ? SWITCH_LEFT_STUB_X_OFFSET : SWITCH_RIGHT_STUB_X_OFFSET;
+  const baseOffset = portOffset + horizontalOffset;
+  const projectNodeWidth = NODE_META.projects.width;
+  const switchWidthPx = UNIFIED_DEVICE_WIDTH;
+  const renderedSwitchWidthInViewboxUnits = switchWidthPx * (VIEWBOX.width / Math.max(sceneWidth, 1));
+  const relativeScale = renderedSwitchWidthInViewboxUnits / projectNodeWidth;
+  const centeredOffset = projectNodeWidth / 2;
+  const responsiveOffset = centeredOffset + (baseOffset - centeredOffset) * relativeScale;
 
   return {
-    x: x + portOffset + horizontalOffset,
+    x: x + responsiveOffset,
     y: y + SWITCH_STUB_Y,
   };
 }
@@ -938,8 +949,10 @@ export function TopologyHero() {
   const [routerSignalLevel, setRouterSignalLevel] = useState<0 | 1 | 2>(2);
   const [routerWifiReady, setRouterWifiReady] = useState(true);
   const [contactSection, setContactSection] = useState<"overview">("overview");
+  const [sceneMetrics, setSceneMetrics] = useState({ width: VIEWBOX.width, height: VIEWBOX.height });
 
   const sceneRef = useRef<HTMLDivElement | null>(null);
+  const sceneMetricsRef = useRef({ width: VIEWBOX.width, height: VIEWBOX.height });
 
   const nodePositionsRef = useRef<Record<NodeKey, NodePosition>>(INITIAL_NODE_POSITIONS);
   const nodeTargetPositionsRef = useRef<Record<NodeKey, NodePosition>>(INITIAL_NODE_POSITIONS);
@@ -965,9 +978,20 @@ export function TopologyHero() {
     if (!scene) return;
 
     const syncResponsiveHalo = () => {
+      const nextSceneMetrics = {
+        width: Math.max(1, scene.clientWidth),
+        height: Math.max(1, scene.clientHeight),
+      };
+      sceneMetricsRef.current = nextSceneMetrics;
+      setSceneMetrics((current) => (
+        current.width === nextSceneMetrics.width && current.height === nextSceneMetrics.height
+          ? current
+          : nextSceneMetrics
+      ));
+
       // Keep non-drag magnet area consistent on narrow screens by compensating
       // mostly for horizontal compression of the scene.
-      const widthScale = scene.clientWidth / VIEWBOX.width;
+      const widthScale = nextSceneMetrics.width / VIEWBOX.width;
       const widthCompensation = clamp(1 / Math.max(widthScale, 0.35), 1, 2.4);
       CURRENT_PROTECTIVE_HALO = NODE_PROTECTIVE_HALO * widthCompensation;
 
@@ -1033,8 +1057,8 @@ export function TopologyHero() {
   const aboutCableAttach = getAnimatedDevicePoint("about", getRouterCableAttachPoint(nodePositions), nodePositions, active, draggingNode);
   const homeAttach = getAnimatedDevicePoint("home", getAttachPoint("home", nodePositions), nodePositions, active, draggingNode);
   const contactAttach = getAnimatedDevicePoint("contact", getAttachPoint("contact", nodePositions), nodePositions, active, draggingNode);
-  const switchLeftCableEnd = getAnimatedDevicePoint("projects", getSwitchCableStubEnd("left", nodePositions), nodePositions, active, draggingNode);
-  const switchRightCableEnd = getAnimatedDevicePoint("projects", getSwitchCableStubEnd("right", nodePositions), nodePositions, active, draggingNode);
+  const switchLeftCableEnd = getAnimatedDevicePoint("projects", getSwitchCableStubEnd("left", nodePositions, sceneMetrics.width), nodePositions, active, draggingNode);
+  const switchRightCableEnd = getAnimatedDevicePoint("projects", getSwitchCableStubEnd("right", nodePositions, sceneMetrics.width), nodePositions, active, draggingNode);
 
   useEffect(() => {
     const start = Date.now();
@@ -1160,12 +1184,12 @@ export function TopologyHero() {
   useEffect(() => {
     if (networkMode !== "repairing") return;
 
-    setRepairLooseEnd((current) => current ?? looseEndRef.current ?? detachedOrigin ?? getSwitchCableStubEnd("left", nodePositionsRef.current));
+    setRepairLooseEnd((current) => current ?? looseEndRef.current ?? detachedOrigin ?? getSwitchCableStubEnd("left", nodePositionsRef.current, sceneMetricsRef.current.width));
   }, [networkMode, detachedOrigin]);
 
   useEffect(() => {
     if (networkMode === "repairing") {
-      const target = getSwitchCableStubEnd("left", nodePositionsRef.current);
+      const target = getSwitchCableStubEnd("left", nodePositionsRef.current, sceneMetricsRef.current.width);
       setRepairLooseEnd((current) => {
         const next = stepToward(current ?? looseEndRef.current ?? detachedOrigin ?? target, target, 4.4);
         if (Math.hypot(next.x - target.x, next.y - target.y) < 0.5) {
