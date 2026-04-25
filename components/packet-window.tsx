@@ -263,7 +263,11 @@ export function PacketWindow({
                   </div>
                 </div>
 
-                <div className="min-w-0 flex-1 border border-[#c5c5c5] bg-[#f4f4f4] p-3 md:p-4">
+                <div
+                  className={`min-w-0 flex-1 border border-[#c5c5c5] bg-[#f4f4f4] ${
+                    isExpandedPanel ? "p-0" : "p-3 md:p-4"
+                  }`}
+                >
                   {isExpandedPanel ? (
                     <div className="h-full w-full overflow-hidden">{children}</div>
                   ) : (
