@@ -621,7 +621,7 @@ function resolveNonOverlappingPosition(
 const SWITCH_PORT_CENTERS = [73, 90, 108, 125, 143, 160] as const;
 const SWITCH_LEFT_CABLE_PORT_INDEX = 0;
 const SWITCH_RIGHT_CABLE_PORT_INDEX = 5;
-const SWITCH_STUB_Y = 137.0;
+const SWITCH_STUB_Y = 136.0;
 const SWITCH_LEFT_STUB_X_OFFSET = 32.0;
 const SWITCH_RIGHT_STUB_X_OFFSET = -23.0;
 
@@ -1557,15 +1557,27 @@ export function TopologyHero() {
                   ) : null}
                 </motion.svg>
 
-                {networkMode === "stable" || networkMode === "recovering" ? <DetachedEthernetStub bottom={switchLeftCableEnd} zIndex={draggingNode === "projects" ? 186 : 90} /> : null}
+                {networkMode === "stable" || networkMode === "recovering" ? (
+                  <DetachedEthernetStub
+                    bottom={switchLeftCableEnd}
+                    zIndex={draggingNode === "projects" ? 186 : 90}
+                    nudgeY={-1}
+                  />
+                ) : null}
                 {networkMode !== "stable" && networkMode !== "recovering" ? (
                   <DetachedEthernetStub
                     bottom={looseEnd}
                     zIndex={draggingNode === "projects" ? 186 : 90}
                     rotationDeg={detachedStubRotationDeg}
+                    nudgeY={-1}
                   />
                 ) : null}
-                <DetachedEthernetStub bottom={switchRightCableEnd} zIndex={draggingNode === "projects" ? 186 : 90} />
+                <DetachedEthernetStub
+                  bottom={switchRightCableEnd}
+                  zIndex={draggingNode === "projects" ? 186 : 90}
+                  nudgeX={1}
+                  nudgeY={-1}
+                />
                 {serviceCursor ? <ServiceMouse cursor={serviceCursor} /> : null}
 
                 <AnimatePresence>
@@ -1979,17 +1991,28 @@ function DetachedEthernetStub({
   bottom,
   zIndex = 90,
   rotationDeg = 0,
+  nudgeX = 0,
+  nudgeY = 0,
 }: {
   bottom: { x: number; y: number };
   zIndex?: number;
   rotationDeg?: number;
+  nudgeX?: number;
+  nudgeY?: number;
 }) {
   const color = "#111111";
   const headWidth = 16.6;
   const headHeight = 16.0;
   const lowerNudge = 8.0;
-  const leftPercent = (bottom.x / VIEWBOX.width) * 100;
-  const topPercent = (bottom.y / VIEWBOX.height) * 100;
+  const anchorX = bottom.x + nudgeX;
+  const anchorY = bottom.y + nudgeY;
+  const leftPercent = (anchorX / VIEWBOX.width) * 100;
+  const topPercent = (anchorY / VIEWBOX.height) * 100;
+  const widthPercent = (headWidth / VIEWBOX.width) * 100;
+  const heightPercent = (headHeight / VIEWBOX.height) * 100;
+  const halfWidthPercent = widthPercent / 2;
+  const anchorOffsetYPercent = ((headHeight - lowerNudge) / VIEWBOX.height) * 100;
+  const transformOriginYPercent = ((headHeight - lowerNudge) / headHeight) * 100;
 
   return (
     <svg
@@ -2000,12 +2023,12 @@ function DetachedEthernetStub({
       className="pointer-events-none absolute overflow-visible"
       style={{
         zIndex,
-        left: `calc(${leftPercent}% - ${headWidth / 2}px)`,
-        top: `calc(${topPercent}% - ${headHeight - lowerNudge}px)`,
-        width: `${headWidth}px`,
-        height: `${headHeight}px`,
+        left: `calc(${leftPercent}% - ${halfWidthPercent}%)`,
+        top: `calc(${topPercent}% - ${anchorOffsetYPercent}%)`,
+        width: `${widthPercent}%`,
+        height: `${heightPercent}%`,
         transform: rotationDeg ? `rotate(${rotationDeg}deg)` : undefined,
-        transformOrigin: `${headWidth / 2}px ${headHeight - lowerNudge}px`,
+        transformOrigin: `50% ${transformOriginYPercent}%`,
       }}
       aria-hidden="true"
     >
