@@ -274,7 +274,7 @@ function ProjectMarqueeCard({
 }) {
   const media = PROJECT_CARD_MEDIA[project.slug];
   const [mediaFailed, setMediaFailed] = useState(false);
-  const mediaHeightClass = size === "compact" ? "h-[128px] md:h-[144px]" : "h-[258px] md:h-[286px]";
+  const mediaShapeClass = size === "compact" ? "aspect-[16/9]" : "aspect-[16/9]";
 
   useEffect(() => {
     setMediaFailed(false);
@@ -288,7 +288,7 @@ function ProjectMarqueeCard({
       aria-label={`Open project: ${project.title}`}
     >
       <article className="overflow-hidden rounded-[12px] border border-[#79c271] bg-[#edf8df] transition duration-200 group-hover:border-[#4f9b47]">
-        <div className={`relative overflow-hidden ${mediaHeightClass}`}>
+        <div className={`relative overflow-hidden ${mediaShapeClass}`}>
           {media && !mediaFailed ? (
             <>
               <div className="absolute inset-0 z-0" style={{ background: media.backdrop ?? "#edf6df" }} />
@@ -478,9 +478,9 @@ export function ProjectsPanelContent({
   if (!selectedProject) {
     return (
       <div className="h-full w-full overflow-hidden bg-[linear-gradient(180deg,#d6edc3_0%,#cbe7b1_100%)] p-0 text-[#1d3658]">
-        <div className="grid h-full min-h-0 gap-0 lg:grid-cols-[minmax(280px,0.76fr)_minmax(0,1.24fr)]">
-          <section className="flex min-h-0 items-center px-6 py-8 md:px-8">
-            <div className="max-w-[400px]">
+        <div className="grid h-full min-h-0 gap-0 lg:grid-cols-[minmax(240px,0.62fr)_minmax(0,1.38fr)]">
+          <section className="flex min-h-0 items-center px-5 py-8 md:px-6">
+            <div className="max-w-[360px]">
               <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#29528f]/80">Projects overview</p>
               <h2 className="mt-2 text-[clamp(2.15rem,4.45vw,4.1rem)] font-semibold leading-[0.93] tracking-[-0.024em] text-[#163f81]">
                 Discover projects I have built
