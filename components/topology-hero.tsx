@@ -34,8 +34,9 @@ type CursorState = "pointer" | "open" | "closed";
 
 const VIEWBOX = { width: 1280, height: 760 };
 const ASSET_BASE = process.env.NODE_ENV === "production" ? "/portfolio" : "";
-const PREVIEW_WIDTH = 310;
+const PREVIEW_WIDTH = 340;
 const PREVIEW_HEIGHT = 266;
+const PREVIEW_CONTENT_BLEED = 1.14;
 const PREVIEW_GAP = 42;
 const PREVIEW_MARGIN = 18;
 const DEVICE_FLOAT_FILTER = "drop-shadow(0 16px 22px rgba(10,18,31,0.18)) drop-shadow(0 5px 12px rgba(24,79,113,0.10))";
@@ -88,7 +89,7 @@ const NODE_META: Record<NodeKey, NodeMeta> = {
     width: UNIFIED_DEVICE_WIDTH,
     height: UNIFIED_NODE_HEIGHT,
     deviceHeight: UNIFIED_DEVICE_HEIGHT,
-    previewWidth: 324,
+    previewWidth: 354,
     labelOffsetY: 30,
   },
   contact: {
@@ -1954,7 +1955,7 @@ function ScaledDevicePreview({
         style={{
           width: virtualWidth,
           height: virtualHeight,
-          transform: `scale(${scale})`,
+          transform: `scale(${scale * PREVIEW_CONTENT_BLEED})`,
         }}
       >
         {children}
