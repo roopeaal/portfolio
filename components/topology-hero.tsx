@@ -34,7 +34,7 @@ type CursorState = "pointer" | "open" | "closed";
 
 const VIEWBOX = { width: 1280, height: 760 };
 const ASSET_BASE = process.env.NODE_ENV === "production" ? "/portfolio" : "";
-const PREVIEW_WIDTH = 362;
+const PREVIEW_WIDTH = 310;
 const PREVIEW_HEIGHT = 266;
 const PREVIEW_GAP = 42;
 const PREVIEW_MARGIN = 18;
@@ -88,7 +88,7 @@ const NODE_META: Record<NodeKey, NodeMeta> = {
     width: UNIFIED_DEVICE_WIDTH,
     height: UNIFIED_NODE_HEIGHT,
     deviceHeight: UNIFIED_DEVICE_HEIGHT,
-    previewWidth: 378,
+    previewWidth: 324,
     labelOffsetY: 30,
   },
   contact: {
