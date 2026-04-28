@@ -313,9 +313,12 @@ function ProjectMarqueeCard({
             </div>
           )}
           {size === "overview" ? (
-            <div className="pointer-events-none absolute inset-x-2 bottom-2 z-[2] translate-y-1 rounded-[9px] border border-white/45 bg-[#0f172a]/86 px-3 py-2 opacity-0 shadow-[0_8px_18px_rgba(15,23,42,0.24)] backdrop-blur-[2px] transition duration-200 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100">
-              <p className="text-[9px] font-semibold uppercase tracking-[0.18em] text-white/68">Project</p>
-              <p className="mt-0.5 text-[13px] font-semibold leading-tight text-white">{project.title}</p>
+            <div className="pointer-events-none absolute bottom-2 left-2 z-[2] flex max-w-[calc(100%-1rem)] translate-y-1 items-center gap-2 rounded-[4px] border border-[#b8c0ca] bg-[#f6f7f8]/96 px-2.5 py-1.5 opacity-0 shadow-[0_6px_14px_rgba(15,23,42,0.16)] transition duration-200 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100">
+              <span className="h-2 w-2 shrink-0 rounded-full border border-[#37a04a] bg-[#58d36a] shadow-[0_0_6px_rgba(88,211,106,0.72)]" />
+              <span className="min-w-0">
+                <span className="block text-[8px] font-semibold uppercase tracking-[0.18em] text-[#687386]">Port label</span>
+                <span className="block truncate text-[12px] font-semibold leading-tight text-[#263241]">{project.title}</span>
+              </span>
             </div>
           ) : null}
         </div>
@@ -487,8 +490,7 @@ export function ProjectsPanelContent({
         <div className="grid h-full min-h-0 gap-0 lg:grid-cols-[minmax(240px,0.62fr)_minmax(0,1.38fr)]">
           <section className="flex min-h-0 items-center px-5 py-8 md:px-6">
             <div className="max-w-[360px]">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#29528f]/80">Projects overview</p>
-              <h2 className="mt-2 text-[clamp(2.15rem,4.45vw,4.1rem)] font-semibold leading-[0.93] tracking-[-0.024em] text-[#163f81]">
+              <h2 className="text-[clamp(2.15rem,4.45vw,4.1rem)] font-semibold leading-[0.93] tracking-[-0.024em] text-[#163f81]">
                 Discover projects I have built
               </h2>
             </div>
