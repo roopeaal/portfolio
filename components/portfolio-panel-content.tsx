@@ -338,6 +338,7 @@ function ProjectMarqueeLane({
 }) {
   const laneRef = useRef<HTMLDivElement>(null);
   const segmentRef = useRef<HTMLDivElement>(null);
+  const isPausedRef = useRef(false);
 
   useEffect(() => {
     const lane = laneRef.current;
@@ -379,7 +380,7 @@ function ProjectMarqueeLane({
       const deltaTime = Math.min((time - previousTime) / 1000, 0.05);
       previousTime = time;
 
-      if (segmentHeight > 0) {
+      if (segmentHeight > 0 && !isPausedRef.current) {
         const delta = (direction === "up" ? -1 : 1) * speedPxPerSecond * deltaTime;
         lane.scrollTop += delta;
         normalizeScrollPosition();
@@ -397,7 +398,23 @@ function ProjectMarqueeLane({
   }, [direction, items]);
 
   return (
-    <div className="relative h-full min-h-0 overflow-hidden">
+    <div
+      className="relative h-full min-h-0 overflow-hidden"
+      onPointerEnter={() => {
+        isPausedRef.current = true;
+      }}
+      onPointerLeave={() => {
+        isPausedRef.current = false;
+      }}
+      onFocusCapture={() => {
+        isPausedRef.current = true;
+      }}
+      onBlurCapture={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) {
+          isPausedRef.current = false;
+        }
+      }}
+    >
       <div
         ref={laneRef}
         className="h-full overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
@@ -480,12 +497,35 @@ export function ProjectsPanelContent({
       <div className="h-full w-full overflow-hidden bg-[linear-gradient(180deg,#d6edc3_0%,#cbe7b1_100%)] p-0 text-[#1d3658]">
         <div className="grid h-full min-h-0 gap-0 lg:grid-cols-[minmax(240px,0.62fr)_minmax(0,1.38fr)]">
           <section className="flex min-h-0 items-center px-5 py-8 md:px-6">
-            <div className="max-w-[360px]">
-              <h2 className="font-semibold leading-[0.86] tracking-[-0.035em] text-[#163f81]">
-                <span className="block text-[clamp(2.4rem,4.45vw,4.1rem)]">Discover</span>
-                <span className="block text-[clamp(2.95rem,5.45vw,5.05rem)]">projects</span>
-                <span className="block text-[clamp(2.65rem,4.9vw,4.55rem)]">I have built</span>
-              </h2>
+            <div className="w-full max-w-[360px]">
+              <svg
+                viewBox="0 0 360 330"
+                role="img"
+                aria-label="Discover projects I have built"
+                className="block w-full overflow-visible text-[#163f81]"
+              >
+                {[
+                  ["Discover", 72],
+                  ["projects", 150],
+                  ["I have", 228],
+                  ["built", 306],
+                ].map(([line, y]) => (
+                  <text
+                    key={line}
+                    x="0"
+                    y={y}
+                    textLength="340"
+                    lengthAdjust="spacingAndGlyphs"
+                    fill="currentColor"
+                    fontSize="78"
+                    fontWeight="700"
+                    letterSpacing="-2.5"
+                    style={{ fontFamily: "inherit" }}
+                  >
+                    {line}
+                  </text>
+                ))}
+              </svg>
             </div>
           </section>
 
