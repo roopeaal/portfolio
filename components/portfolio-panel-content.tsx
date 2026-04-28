@@ -274,7 +274,7 @@ function ProjectMarqueeCard({
 }) {
   const media = PROJECT_CARD_MEDIA[project.slug];
   const [mediaFailed, setMediaFailed] = useState(false);
-  const mediaShapeClass = size === "compact" ? "aspect-[16/9]" : "aspect-[16/9]";
+  const mediaShapeClass = size === "compact" ? "aspect-[16/10]" : "aspect-[16/10]";
 
   useEffect(() => {
     setMediaFailed(false);
