@@ -488,7 +488,7 @@ export function ProjectsPanelContent({
             </div>
           </section>
 
-          <section className="grid h-full min-h-0 gap-5 px-4 pb-2 pt-4 md:grid-cols-2 md:px-5">
+          <section className="grid h-full min-h-0 gap-5 overflow-hidden px-4 py-0 md:grid-cols-2 md:px-5">
             <ProjectMarqueeLane items={leftLaneProjects} direction="up" onSelectProject={onSelectProject} />
             <ProjectMarqueeLane items={rightLaneProjects} direction="down" onSelectProject={onSelectProject} />
           </section>
