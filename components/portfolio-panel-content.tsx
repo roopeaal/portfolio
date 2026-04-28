@@ -255,6 +255,9 @@ const PROJECT_CARD_MEDIA: Record<
   },
 };
 
+const CONTACT_GREAT_WORD_BACKGROUND =
+  "url('/portfolio/portfolio/contact-great-word-fire-v2.png?v=20260428-fire2'), url('/portfolio/contact-great-word-fire-v2.png?v=20260428-fire2')";
+
 function extractUrls(text: string): string[] {
   return Array.from(text.matchAll(/https?:\/\/\S+/gi)).map((match) => match[0].replace(/[),.;]+$/, ""));
 }
@@ -790,12 +793,15 @@ export function ContactPanelContent({
               <span className="block">Let&apos;s build</span>
               <span className="flex items-baseline gap-1.5">
                 <span>something</span>
-                <span className="relative inline-flex h-[0.78em] w-[2.08em] translate-y-[0.08em] align-baseline">
-                  <img
-                    src="/portfolio/contact-great-word-fire-v2.png?v=20260428-fire"
-                    alt="great"
-                    className="absolute inset-0 h-full w-full object-contain object-center"
-                    draggable={false}
+                <span
+                  role="img"
+                  aria-label="great"
+                  className="relative inline-flex h-[0.78em] w-[2.08em] translate-y-[0.08em] align-baseline"
+                >
+                  <span
+                    aria-hidden="true"
+                    className="absolute inset-0 bg-contain bg-center bg-no-repeat"
+                    style={{ backgroundImage: CONTACT_GREAT_WORD_BACKGROUND }}
                   />
                 </span>
               </span>
@@ -856,12 +862,15 @@ export function ContactPanelContent({
               <span className="block">Let&apos;s build</span>
               <span className="flex items-baseline gap-4">
                 <span>something</span>
-                <span className="relative inline-flex h-[0.82em] w-[2.18em] translate-y-[0.08em] align-baseline">
-                  <img
-                    src="/portfolio/contact-great-word-fire-v2.png?v=20260428-fire"
-                    alt="great"
-                    className="absolute inset-0 h-full w-full object-contain object-center"
-                    draggable={false}
+                <span
+                  role="img"
+                  aria-label="great"
+                  className="relative inline-flex h-[0.82em] w-[2.18em] translate-y-[0.08em] align-baseline"
+                >
+                  <span
+                    aria-hidden="true"
+                    className="absolute inset-0 bg-contain bg-center bg-no-repeat"
+                    style={{ backgroundImage: CONTACT_GREAT_WORD_BACKGROUND }}
                   />
                 </span>
               </span>
