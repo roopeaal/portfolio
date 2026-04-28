@@ -36,7 +36,7 @@ const VIEWBOX = { width: 1280, height: 760 };
 const ASSET_BASE = process.env.NODE_ENV === "production" ? "/portfolio" : "";
 const PREVIEW_WIDTH = 340;
 const PREVIEW_HEIGHT = 230;
-const PREVIEW_CONTENT_BLEED = 1.04;
+const PREVIEW_CONTENT_BLEED = 1.12;
 const PREVIEW_GAP = 42;
 const PREVIEW_MARGIN = 18;
 const DEVICE_FLOAT_FILTER = "drop-shadow(0 16px 22px rgba(10,18,31,0.18)) drop-shadow(0 5px 12px rgba(24,79,113,0.10))";
@@ -1949,13 +1949,13 @@ function ScaledDevicePreview({
   }, [virtualHeight, virtualWidth]);
 
   return (
-    <div ref={frameRef} className="relative h-full w-full overflow-hidden bg-white">
+    <div ref={frameRef} className="relative h-full w-full overflow-hidden bg-[#d1d1d1]">
       <div
-        className="absolute left-0 top-0 origin-top-left"
+        className="absolute left-1/2 top-1/2 origin-center"
         style={{
           width: virtualWidth,
           height: virtualHeight,
-          transform: `scale(${scale * PREVIEW_CONTENT_BLEED})`,
+          transform: `translate(-50%, -50%) scale(${scale * PREVIEW_CONTENT_BLEED})`,
         }}
       >
         {children}
@@ -1972,14 +1972,16 @@ function DeviceHoverPreview({
   children: ReactNode;
 }) {
   return (
-    <div className="overflow-hidden rounded-[12px] border border-[#c8c8c8] bg-[#ededed] shadow-[0_24px_54px_rgba(15,23,42,0.22)]">
+    <div className="overflow-hidden rounded-[12px] border border-[#b8b8b8] bg-[#dcdcdc] shadow-[0_24px_54px_rgba(15,23,42,0.22)] ring-1 ring-white/70">
       <div className="relative flex h-[30px] items-center justify-center border-b border-[#d0d0d0] bg-[linear-gradient(180deg,#f7f7f7_0%,#ececec_100%)] px-3 text-[11px] font-medium text-[#6e6e6e]">
         {title}
         <span className="absolute right-2 top-1/2 inline-flex h-5 w-5 -translate-y-1/2 items-center justify-center rounded-[3px] border border-[#d0d0d0] bg-[#f2f2f2] text-[13px] leading-none text-[#8d8d8d]">
           ×
         </span>
       </div>
-      <div className="aspect-video overflow-hidden bg-white">{children}</div>
+      <div className="aspect-video overflow-hidden bg-[#dcdcdc] p-[6px]">
+        <div className="h-full w-full overflow-hidden border border-[#b9b9b9] bg-[#d1d1d1]">{children}</div>
+      </div>
     </div>
   );
 }
