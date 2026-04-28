@@ -490,8 +490,10 @@ export function ProjectsPanelContent({
         <div className="grid h-full min-h-0 gap-0 lg:grid-cols-[minmax(240px,0.62fr)_minmax(0,1.38fr)]">
           <section className="flex min-h-0 items-center px-5 py-8 md:px-6">
             <div className="max-w-[360px]">
-              <h2 className="text-[clamp(2.15rem,4.45vw,4.1rem)] font-semibold leading-[0.93] tracking-[-0.024em] text-[#163f81]">
-                Discover projects I have built
+              <h2 className="font-semibold leading-[0.86] tracking-[-0.035em] text-[#163f81]">
+                <span className="block text-[clamp(2.4rem,4.45vw,4.1rem)]">Discover</span>
+                <span className="block text-[clamp(2.95rem,5.45vw,5.05rem)]">projects</span>
+                <span className="block text-[clamp(2.65rem,4.9vw,4.55rem)]">I have built</span>
               </h2>
             </div>
           </section>
