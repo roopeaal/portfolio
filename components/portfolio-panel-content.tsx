@@ -751,12 +751,11 @@ export function ContactPanelContent({
               <span className="flex items-baseline gap-1.5">
                 <span>something</span>
                 <span className="relative inline-flex h-[0.78em] w-[2.08em] translate-y-[0.08em] align-baseline">
-                  <Image
-                    src="/portfolio/contact-great-word-fire-v2.png"
+                  <img
+                    src="/portfolio/contact-great-word-fire-v2.png?v=20260428-fire"
                     alt="great"
-                    fill
-                    sizes="90px"
-                    className="object-contain object-center"
+                    className="absolute inset-0 h-full w-full object-contain object-center"
+                    draggable={false}
                   />
                 </span>
               </span>
@@ -818,13 +817,10 @@ export function ContactPanelContent({
               <span className="flex items-baseline gap-4">
                 <span>something</span>
                 <span className="relative inline-flex h-[0.82em] w-[2.18em] translate-y-[0.08em] align-baseline">
-                  <Image
-                    src="/portfolio/contact-great-word-fire-v2.png"
+                  <img
+                    src="/portfolio/contact-great-word-fire-v2.png?v=20260428-fire"
                     alt="great"
-                    fill
-                    sizes="210px"
-                    className="object-contain object-center"
-                    priority={false}
+                    className="absolute inset-0 h-full w-full object-contain object-center"
                     draggable={false}
                   />
                 </span>
