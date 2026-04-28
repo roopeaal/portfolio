@@ -1936,7 +1936,7 @@ function ScaledDevicePreview({
       const bounds = frame.getBoundingClientRect();
       if (bounds.width <= 0 || bounds.height <= 0) return;
 
-      const nextScale = Math.min(bounds.width / virtualWidth, bounds.height / virtualHeight);
+      const nextScale = Math.max(bounds.width / virtualWidth, bounds.height / virtualHeight);
       setScale((current) => (Math.abs(current - nextScale) > 0.001 ? nextScale : current));
     };
 

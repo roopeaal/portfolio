@@ -136,7 +136,7 @@ export function PacketWindow({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={overlayTransition}
-            className="fixed inset-0 z-[100] bg-black/18 backdrop-blur-[1px]"
+            className="fixed inset-0 z-[500] bg-black/18 backdrop-blur-[1px]"
             onPointerDown={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleHardClose(); }}
             aria-hidden="true"
           />
@@ -147,7 +147,7 @@ export function PacketWindow({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 18 }}
             transition={windowTransition}
-            className="fixed inset-x-[1.6vw] top-[1.5vh] z-[110] mx-auto h-[calc(100dvh-3vh)] w-[min(1520px,96.8vw)] overflow-hidden rounded-[10px] bg-[#efefef] shadow-[0_26px_90px_rgba(15,23,42,0.26)] focus:outline-none"
+            className="fixed inset-x-[1.6vw] top-[1.5vh] z-[510] mx-auto h-[calc(100dvh-3vh)] w-[min(1520px,96.8vw)] overflow-hidden rounded-[10px] bg-[#efefef] shadow-[0_26px_90px_rgba(15,23,42,0.26)] focus:outline-none"
             role="dialog"
             aria-modal="true"
             aria-labelledby={titleId}

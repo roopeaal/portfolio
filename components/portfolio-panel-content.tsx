@@ -223,6 +223,12 @@ const PROJECT_CARD_MEDIA: Record<
     backdrop?: string;
   }
 > = {
+  "multi-platform-iot-security-lab": {
+    src: "/portfolio/portfolio/project-iot-security-lab.png",
+    alt: "Cisco Modeling Labs PwnHub lab demonstration screenshot",
+    mode: "cover",
+    backdrop: "#050505",
+  },
   "aircraft-game-python-react": {
     src: "/portfolio/portfolio/project-maanarvauspeli.png",
     alt: "Kristoffer Kolumbuksen jaljilla - maanarvauspeli screenshot",
@@ -254,12 +260,15 @@ function stripUrls(text: string): string {
 function ProjectMarqueeCard({
   project,
   onSelectProject,
+  size = "overview",
 }: {
   project: (typeof projects)[number];
   onSelectProject?: (slug: string) => void;
+  size?: "overview" | "compact";
 }) {
   const media = PROJECT_CARD_MEDIA[project.slug];
   const [mediaFailed, setMediaFailed] = useState(false);
+  const mediaHeightClass = size === "compact" ? "h-[128px] md:h-[144px]" : "h-[258px] md:h-[286px]";
 
   useEffect(() => {
     setMediaFailed(false);
@@ -272,15 +281,15 @@ function ProjectMarqueeCard({
       className="group block w-full rounded-[10px] text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3d7f35] focus-visible:ring-offset-2"
       aria-label={`Open project: ${project.title}`}
     >
-      <article className="overflow-hidden rounded-[10px] border border-[#79c271] bg-[#edf8df] transition duration-200 group-hover:border-[#4f9b47]">
-        <div className="relative h-[236px] overflow-hidden">
+      <article className="overflow-hidden rounded-[12px] border border-[#79c271] bg-[#edf8df] transition duration-200 group-hover:border-[#4f9b47]">
+        <div className={`relative overflow-hidden ${mediaHeightClass}`}>
           {media && !mediaFailed ? (
             <>
-              <div className="absolute inset-0" style={{ background: media.backdrop ?? "#edf6df" }} />
+              <div className="absolute inset-0 z-0" style={{ background: media.backdrop ?? "#edf6df" }} />
               <img
                 src={media.src}
                 alt={media.alt}
-                className={`h-full w-full transition duration-300 group-hover:scale-[1.02] ${media.mode === "cover" ? "object-cover object-center" : "object-contain object-center p-1"}`}
+                className={`relative z-[1] block h-full w-full opacity-100 transition duration-300 group-hover:scale-[1.02] ${media.mode === "cover" ? "object-cover object-center" : "object-contain object-center p-1"}`}
                 draggable={false}
                 loading="lazy"
                 decoding="async"
@@ -288,7 +297,7 @@ function ProjectMarqueeCard({
               />
             </>
           ) : (
-            <div className="absolute inset-0 flex items-center justify-center bg-[#e8f5d9] px-6 text-center">
+            <div className="absolute inset-0 z-[1] flex items-center justify-center bg-[#e8f5d9] px-6 text-center">
               <span
                 className="text-[clamp(1.05rem,2.2vw,1.35rem)] font-semibold leading-[1.2] tracking-[0.01em] text-[#2a5b2b]"
                 style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
@@ -387,17 +396,17 @@ function ProjectMarqueeLane({
         ref={laneRef}
         className="h-full overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
-        <div ref={segmentRef} className="space-y-4 pb-4">
+        <div ref={segmentRef} className="space-y-5 pb-5">
           {items.map((project) => (
             <ProjectMarqueeCard key={`${project.slug}-segment-a`} project={project} onSelectProject={onSelectProject} />
           ))}
         </div>
-        <div aria-hidden className="space-y-4 pb-4">
+        <div aria-hidden className="space-y-5 pb-5">
           {items.map((project) => (
             <ProjectMarqueeCard key={`${project.slug}-segment-b`} project={project} onSelectProject={onSelectProject} />
           ))}
         </div>
-        <div aria-hidden className="space-y-4 pb-4">
+        <div aria-hidden className="space-y-5 pb-5">
           {items.map((project) => (
             <ProjectMarqueeCard key={`${project.slug}-segment-c`} project={project} onSelectProject={onSelectProject} />
           ))}
@@ -452,7 +461,7 @@ export function ProjectsPanelContent({
         <div className="mt-3 grid h-[calc(100%-68px)] min-h-0 grid-cols-2 gap-2">
           {[...leftLaneProjects.slice(0, 2), ...rightLaneProjects.slice(0, 2)].slice(0, 4).map((project) => (
             <div key={project.slug} className="min-h-0">
-              <ProjectMarqueeCard project={project} onSelectProject={onSelectProject} />
+              <ProjectMarqueeCard project={project} onSelectProject={onSelectProject} size="compact" />
             </div>
           ))}
         </div>
@@ -463,14 +472,17 @@ export function ProjectsPanelContent({
   if (!selectedProject) {
     return (
       <div className="h-full w-full overflow-hidden bg-[linear-gradient(180deg,#d6edc3_0%,#cbe7b1_100%)] p-0 text-[#1d3658]">
-        <div className="grid h-full min-h-0 gap-0 lg:grid-cols-[minmax(280px,0.84fr)_minmax(0,1.16fr)]">
-          <section className="flex min-h-0 items-start px-6 py-6">
-            <h2 className="max-w-[430px] text-[clamp(2rem,4.5vw,4rem)] font-semibold leading-[0.97] tracking-[-0.02em] text-[#163f81]">
-              Discover projects I have built
-            </h2>
+        <div className="grid h-full min-h-0 gap-0 lg:grid-cols-[minmax(280px,0.76fr)_minmax(0,1.24fr)]">
+          <section className="flex min-h-0 items-center px-6 py-8 md:px-8">
+            <div className="max-w-[400px]">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#29528f]/80">Projects overview</p>
+              <h2 className="mt-2 text-[clamp(2.15rem,4.45vw,4.1rem)] font-semibold leading-[0.93] tracking-[-0.024em] text-[#163f81]">
+                Discover projects I have built
+              </h2>
+            </div>
           </section>
 
-          <section className="grid h-full min-h-0 gap-4 px-4 py-0 md:grid-cols-2">
+          <section className="grid h-full min-h-0 gap-5 px-4 pb-2 pt-4 md:grid-cols-2 md:px-5">
             <ProjectMarqueeLane items={leftLaneProjects} direction="up" onSelectProject={onSelectProject} />
             <ProjectMarqueeLane items={rightLaneProjects} direction="down" onSelectProject={onSelectProject} />
           </section>
@@ -540,11 +552,11 @@ export function ProjectsPanelContent({
           <div className="relative aspect-[16/9] w-full overflow-hidden">
             {selectedProjectMedia && !heroImageFailed ? (
               <>
-                <div className="absolute inset-0" style={{ background: selectedProjectMedia.backdrop ?? "#edf2f7" }} />
+                <div className="absolute inset-0 z-0" style={{ background: selectedProjectMedia.backdrop ?? "#edf2f7" }} />
                 <img
                   src={selectedProjectMedia.src}
                   alt={selectedProjectMedia.alt}
-                  className={`h-full w-full ${selectedProjectMedia.mode === "cover" ? "object-cover object-center" : "object-contain object-center p-4"}`}
+                  className={`relative z-[1] block h-full w-full ${selectedProjectMedia.mode === "cover" ? "object-cover object-center" : "object-contain object-center p-4"}`}
                   draggable={false}
                   loading="lazy"
                   decoding="async"
@@ -552,7 +564,7 @@ export function ProjectsPanelContent({
                 />
               </>
             ) : (
-              <div className="absolute inset-0 flex items-center justify-center px-6 text-center">
+              <div className="absolute inset-0 z-[1] flex items-center justify-center px-6 text-center">
                 <span className="text-[clamp(1.2rem,2.8vw,2rem)] font-semibold tracking-tight text-[#1f3b6b]">{selectedProject.title}</span>
               </div>
             )}
