@@ -252,8 +252,8 @@ export function PacketWindow({
                         onClick={item.onSelect}
                         className={`flex w-full items-center border-b border-[#dfdfdf] px-3 py-1.5 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#4b74ff] ${
                           item.active
-                            ? "bg-[#f7f7f7] text-[#4b5563]"
-                            : "text-[#7c8798] hover:bg-[#f8f8f8] hover:text-[#4b5563]"
+                            ? "bg-[#f7f7f7] text-[#374151]"
+                            : "text-[#5b6778] hover:bg-[#f8f8f8] hover:text-[#374151]"
                         }`}
                         aria-current={item.active ? "true" : undefined}
                       >
