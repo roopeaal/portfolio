@@ -312,6 +312,12 @@ function ProjectMarqueeCard({
               </span>
             </div>
           )}
+          {size === "overview" ? (
+            <div className="pointer-events-none absolute inset-x-2 bottom-2 z-[2] translate-y-1 rounded-[9px] border border-white/45 bg-[#0f172a]/86 px-3 py-2 opacity-0 shadow-[0_8px_18px_rgba(15,23,42,0.24)] backdrop-blur-[2px] transition duration-200 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100">
+              <p className="text-[9px] font-semibold uppercase tracking-[0.18em] text-white/68">Project</p>
+              <p className="mt-0.5 text-[13px] font-semibold leading-tight text-white">{project.title}</p>
+            </div>
+          ) : null}
         </div>
       </article>
     </button>
