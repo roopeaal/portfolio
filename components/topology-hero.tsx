@@ -35,8 +35,8 @@ type CursorState = "pointer" | "open" | "closed";
 const VIEWBOX = { width: 1280, height: 760 };
 const ASSET_BASE = process.env.NODE_ENV === "production" ? "/portfolio" : "";
 const PREVIEW_WIDTH = 340;
-const PREVIEW_HEIGHT = 266;
-const PREVIEW_CONTENT_BLEED = 1.14;
+const PREVIEW_HEIGHT = 230;
+const PREVIEW_CONTENT_BLEED = 1.04;
 const PREVIEW_GAP = 42;
 const PREVIEW_MARGIN = 18;
 const DEVICE_FLOAT_FILTER = "drop-shadow(0 16px 22px rgba(10,18,31,0.18)) drop-shadow(0 5px 12px rgba(24,79,113,0.10))";
@@ -1920,7 +1920,7 @@ function NodeButton({
 function ScaledDevicePreview({
   children,
   virtualWidth = 1200,
-  virtualHeight = 490,
+  virtualHeight = 675,
 }: {
   children: ReactNode;
   virtualWidth?: number;
@@ -1979,7 +1979,7 @@ function DeviceHoverPreview({
           ×
         </span>
       </div>
-      <div className="aspect-[1200/490] overflow-hidden bg-white">{children}</div>
+      <div className="aspect-video overflow-hidden bg-white">{children}</div>
     </div>
   );
 }
