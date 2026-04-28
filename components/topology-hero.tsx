@@ -1979,8 +1979,8 @@ function DeviceHoverPreview({
           ×
         </span>
       </div>
-      <div className="aspect-video overflow-hidden bg-[#dcdcdc] p-[6px]">
-        <div className="h-full w-full overflow-hidden border border-[#b9b9b9] bg-[#d1d1d1]">{children}</div>
+      <div className="aspect-video overflow-hidden bg-[#dcdcdc] p-1">
+        <div className="h-full w-full overflow-hidden bg-[#d1d1d1]">{children}</div>
       </div>
     </div>
   );
