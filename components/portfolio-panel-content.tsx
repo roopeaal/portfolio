@@ -757,7 +757,7 @@ export function ContactPanelContent({
               <span className="block">Let&apos;s build</span>
               <span className="flex items-baseline gap-1.5">
                 <span>something</span>
-                <span className="relative inline-flex h-[0.74em] w-[2.38em] translate-y-[0.08em] align-baseline">
+                <span className="relative inline-flex h-[0.78em] w-[2.08em] translate-y-[0.08em] align-baseline">
                   <Image
                     src="/portfolio/contact-great-word.png"
                     alt="great"
@@ -767,7 +767,7 @@ export function ContactPanelContent({
                   />
                 </span>
               </span>
-              <span className="block text-right text-[1em]">together.</span>
+              <span className="block text-[1em]">together.</span>
             </h3>
             <div className="relative z-[1] mt-1.5 space-y-0.5 text-[9.5px] text-white/96">
               <p>040 528 3008</p>
@@ -824,7 +824,7 @@ export function ContactPanelContent({
               <span className="block">Let&apos;s build</span>
               <span className="flex items-baseline gap-4">
                 <span>something</span>
-                <span className="relative inline-flex h-[0.7em] w-[2.24em] translate-y-[0.08em] align-baseline">
+                <span className="relative inline-flex h-[0.82em] w-[2.18em] translate-y-[0.08em] align-baseline">
                   <Image
                     src="/portfolio/contact-great-word.png"
                     alt="great"
@@ -836,7 +836,7 @@ export function ContactPanelContent({
                   />
                 </span>
               </span>
-              <span className="block text-right text-[1em]">together.</span>
+              <span className="block text-[1em]">together.</span>
             </h2>
 
           <div className="relative z-[2] mt-4 space-y-1 text-[clamp(18px,1.9vw,26px)] font-medium leading-[1.12] text-white/98">
