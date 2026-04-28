@@ -653,8 +653,8 @@ const SWITCH_PORT_CENTERS = [73, 90, 108, 125, 143, 160] as const;
 const SWITCH_LEFT_CABLE_PORT_INDEX = 0;
 const SWITCH_RIGHT_CABLE_PORT_INDEX = 5;
 const SWITCH_STUB_Y = 136.0;
-const SWITCH_LEFT_STUB_X_OFFSET = 32.0;
-const SWITCH_RIGHT_STUB_X_OFFSET = -23.0;
+const SWITCH_LEFT_STUB_X_OFFSET = 31.0;
+const SWITCH_RIGHT_STUB_X_OFFSET = -21.0;
 const LEFT_CABLE_ROUTE_OFFSET_X = -1;
 const RIGHT_CABLE_ROUTE_OFFSET_X = 1;
 
@@ -1916,20 +1916,59 @@ function NodeButton({
   );
 }
 
-function PreviewWindow({
-  title,
-  tab,
-  sidebarTitle,
-  sidebarItems,
+function ScaledDevicePreview({
   children,
-  hideSidebar = false,
+  virtualWidth = 1200,
+  virtualHeight = 490,
+}: {
+  children: ReactNode;
+  virtualWidth?: number;
+  virtualHeight?: number;
+}) {
+  const frameRef = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(0.3);
+
+  useEffect(() => {
+    const frame = frameRef.current;
+    if (!frame) return;
+
+    const updateScale = () => {
+      const bounds = frame.getBoundingClientRect();
+      if (bounds.width <= 0 || bounds.height <= 0) return;
+
+      const nextScale = Math.min(bounds.width / virtualWidth, bounds.height / virtualHeight);
+      setScale((current) => (Math.abs(current - nextScale) > 0.001 ? nextScale : current));
+    };
+
+    updateScale();
+    const observer = new ResizeObserver(updateScale);
+    observer.observe(frame);
+
+    return () => observer.disconnect();
+  }, [virtualHeight, virtualWidth]);
+
+  return (
+    <div ref={frameRef} className="relative h-full w-full overflow-hidden bg-white">
+      <div
+        className="absolute left-0 top-0 origin-top-left"
+        style={{
+          width: virtualWidth,
+          height: virtualHeight,
+          transform: `scale(${scale})`,
+        }}
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function DeviceHoverPreview({
+  title,
+  children,
 }: {
   title: string;
-  tab: string;
-  sidebarTitle: string;
-  sidebarItems: string[];
   children: ReactNode;
-  hideSidebar?: boolean;
 }) {
   return (
     <div className="overflow-hidden rounded-[12px] border border-[#c8c8c8] bg-[#ededed] shadow-[0_24px_54px_rgba(15,23,42,0.22)]">
@@ -1939,72 +1978,7 @@ function PreviewWindow({
           ×
         </span>
       </div>
-      <div className="flex h-[28px] items-end justify-center gap-1.5 border-b border-[#d8d8d8] bg-[#f4f4f4] px-3 pt-1.5 text-[10px]">
-        {[
-          { label: "About Me", active: title.startsWith("About") },
-          { label: "Projects", active: title.startsWith("Projects") },
-          { label: "LinkedIn", active: title.startsWith("LinkedIn") },
-          { label: "Contact Me", active: title.startsWith("Contact") },
-        ].map((item) => (
-          <span key={item.label} className={`rounded-t-[2px] border border-b-0 px-2 py-[3px] ${item.active ? "border-[#c4c4c4] bg-[#f9f9f9] text-[#656565]" : "border-transparent text-[#a9a9a9]"}`}>
-            {item.label}
-          </span>
-        ))}
-      </div>
-      <div className={`grid h-[236px] ${hideSidebar ? "grid-cols-1" : "grid-cols-[92px_1fr]"} gap-2 p-2`}>
-        {!hideSidebar ? (
-          <div className="overflow-hidden rounded-[2px] border border-[#c9c9c9] bg-white">
-            <div className="border-b border-[#d7d7d7] bg-[#f5f5f5] px-2 py-1 text-center text-[10px] font-semibold text-[#8b8b8b]">{sidebarTitle}</div>
-            <div className="space-y-0 text-[10px]">
-              {sidebarItems.map((item, index) => (
-                <div key={item} className={`border-b border-[#efefef] px-2 py-1.5 ${index === 0 ? "bg-[#f8f8f8] text-[#9b9b9b]" : "text-[#b7b7b7]"}`}>{item}</div>
-              ))}
-            </div>
-          </div>
-        ) : null}
-        <div className="overflow-hidden rounded-[2px] border border-[#cfcfcf] bg-white">
-          <div className="border-b border-[#d9d9d9] bg-[#fbfbfb] px-3 py-1.5 text-center text-[11px] font-medium text-[#747474]">Global Settings</div>
-          <div className="h-[calc(100%-31px)] overflow-hidden p-3">{children}</div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function BrowserPreviewWindow() {
-  return (
-    <div className="overflow-hidden rounded-[12px] border border-[#c8c8c8] bg-[#ededed] shadow-[0_24px_54px_rgba(15,23,42,0.22)]">
-      <div className="relative flex h-[30px] items-center justify-center border-b border-[#d0d0d0] bg-[linear-gradient(180deg,#f7f7f7_0%,#ececec_100%)] px-3 text-[11px] font-medium text-[#6e6e6e]">
-        LinkedIn · PC1
-        <span className="absolute right-2 top-1/2 inline-flex h-5 w-5 -translate-y-1/2 items-center justify-center rounded-[3px] border border-[#d0d0d0] bg-[#f2f2f2] text-[13px] leading-none text-[#8d8d8d]">
-          ×
-        </span>
-      </div>
-      <div className="flex h-[28px] items-end justify-center gap-1.5 border-b border-[#d8d8d8] bg-[#f4f4f4] px-3 pt-1.5 text-[10px]">
-        {[
-          { label: "About Me", active: false },
-          { label: "Projects", active: false },
-          { label: "LinkedIn", active: true },
-          { label: "Contact Me", active: false },
-        ].map((item) => (
-          <span key={item.label} className={`rounded-t-[2px] border border-b-0 px-2 py-[3px] ${item.active ? "border-[#c4c4c4] bg-[#f9f9f9] text-[#656565]" : "border-transparent text-[#a9a9a9]"}`}>{item.label}</span>
-        ))}
-      </div>
-      <div className="h-[236px] bg-[#ededed] p-2">
-        <div className="overflow-hidden border border-[#c7c7c7] bg-[#f4f4f4]">
-          <div className="flex h-[24px] items-center bg-[#0d16ff] px-2 text-[10px] text-white">Web Browser</div>
-          <div className="flex items-center gap-1 border-b border-[#d0d0d0] bg-[#efefef] px-2 py-1 text-[9px] text-[#666666]">
-            <span className="inline-flex h-4 w-4 items-center justify-center border border-[#c8c8c8] bg-[#f8f8f8]">&lt;</span>
-            <span className="inline-flex h-4 w-4 items-center justify-center border border-[#c8c8c8] bg-[#f8f8f8]">&gt;</span>
-            <span>URL</span>
-            <span className="flex-1 truncate border border-[#cdcdcd] bg-white px-1 py-[2px]">https://www.linkedin.com/in/roope-aaltonen/</span>
-            <span className="inline-flex h-4 items-center border border-[#c8c8c8] bg-[#f8f8f8] px-2">Go</span>
-          </div>
-          <div className="h-[182px] bg-white">
-            <LinkedInMonitorView />
-          </div>
-        </div>
-      </div>
+      <div className="aspect-[1200/490] overflow-hidden bg-white">{children}</div>
     </div>
   );
 }
@@ -2013,24 +1987,34 @@ function getPreviewByNode(node: NodeKey) {
   switch (node) {
     case "about":
       return (
-        <PreviewWindow title="About Me · Wireless Router1" tab="Config" sidebarTitle={SIDEBAR_TITLE.about} sidebarItems={["Summary"]} hideSidebar>
-          <AboutPanelContent preview />
-        </PreviewWindow>
+        <DeviceHoverPreview title="About Me · Wireless Router1">
+          <ScaledDevicePreview>
+            <AboutPanelContent />
+          </ScaledDevicePreview>
+        </DeviceHoverPreview>
       );
     case "projects":
       return (
-        <PreviewWindow title="Projects · Switch0" tab="Config" sidebarTitle={SIDEBAR_TITLE.projects} sidebarItems={["Overview", ...projects.slice(0, 3).map((project) => project.title)]} hideSidebar>
-          <ProjectsPanelContent preview />
-        </PreviewWindow>
+        <DeviceHoverPreview title="Projects · Switch0">
+          <ScaledDevicePreview>
+            <ProjectsPanelContent />
+          </ScaledDevicePreview>
+        </DeviceHoverPreview>
       );
     case "contact":
       return (
-        <PreviewWindow title="Contact Me · Smartphone0" tab="Config" sidebarTitle={SIDEBAR_TITLE.contact} sidebarItems={["Overview"]} hideSidebar>
-          <ContactPanelContent preview />
-        </PreviewWindow>
+        <DeviceHoverPreview title="Contact Me · Smartphone0">
+          <ScaledDevicePreview>
+            <ContactPanelContent />
+          </ScaledDevicePreview>
+        </DeviceHoverPreview>
       );
     default:
-      return <BrowserPreviewWindow />;
+      return (
+        <DeviceHoverPreview title="LinkedIn · PC1">
+          <LinkedInPopupScreenshotView />
+        </DeviceHoverPreview>
+      );
   }
 }
 
