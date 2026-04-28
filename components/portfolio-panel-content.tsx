@@ -338,7 +338,6 @@ function ProjectMarqueeLane({
 }) {
   const laneRef = useRef<HTMLDivElement>(null);
   const segmentRef = useRef<HTMLDivElement>(null);
-  const isHoveredRef = useRef(false);
 
   useEffect(() => {
     const lane = laneRef.current;
@@ -380,7 +379,7 @@ function ProjectMarqueeLane({
       const deltaTime = Math.min((time - previousTime) / 1000, 0.05);
       previousTime = time;
 
-      if (!isHoveredRef.current && segmentHeight > 0) {
+      if (segmentHeight > 0) {
         const delta = (direction === "up" ? -1 : 1) * speedPxPerSecond * deltaTime;
         lane.scrollTop += delta;
         normalizeScrollPosition();
@@ -398,15 +397,7 @@ function ProjectMarqueeLane({
   }, [direction, items]);
 
   return (
-    <div
-      className="relative h-full min-h-0 overflow-hidden"
-      onMouseEnter={() => {
-        isHoveredRef.current = true;
-      }}
-      onMouseLeave={() => {
-        isHoveredRef.current = false;
-      }}
-    >
+    <div className="relative h-full min-h-0 overflow-hidden">
       <div
         ref={laneRef}
         className="h-full overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
@@ -761,7 +752,7 @@ export function ContactPanelContent({
                 <span>something</span>
                 <span className="relative inline-flex h-[0.78em] w-[2.08em] translate-y-[0.08em] align-baseline">
                   <Image
-                    src="/portfolio/contact-great-word.png"
+                    src="/portfolio/contact-great-word-fire-v2.png"
                     alt="great"
                     fill
                     sizes="90px"
@@ -828,7 +819,7 @@ export function ContactPanelContent({
                 <span>something</span>
                 <span className="relative inline-flex h-[0.82em] w-[2.18em] translate-y-[0.08em] align-baseline">
                   <Image
-                    src="/portfolio/contact-great-word.png"
+                    src="/portfolio/contact-great-word-fire-v2.png"
                     alt="great"
                     fill
                     sizes="210px"
