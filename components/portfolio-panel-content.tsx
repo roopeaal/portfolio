@@ -256,7 +256,7 @@ const PROJECT_CARD_MEDIA: Record<
 };
 
 const CONTACT_GREAT_WORD_BACKGROUND =
-  "url('/portfolio/portfolio/contact-great-word-fire-v3.png?v=20260428-fire3'), url('/portfolio/contact-great-word-fire-v3.png?v=20260428-fire3')";
+  "url('/portfolio/portfolio/contact-great-word-fire-v4.png?v=20260428-fire4'), url('/portfolio/contact-great-word-fire-v4.png?v=20260428-fire4')";
 
 function extractUrls(text: string): string[] {
   return Array.from(text.matchAll(/https?:\/\/\S+/gi)).map((match) => match[0].replace(/[),.;]+$/, ""));
