@@ -508,51 +508,71 @@ export function ProjectsPanelContent({
       <div className="h-full w-full overflow-hidden bg-[linear-gradient(180deg,#d6edc3_0%,#cbe7b1_100%)] p-0 text-[#1d3658]">
         <div className="grid h-full min-h-0 gap-0 lg:grid-cols-[minmax(240px,0.62fr)_minmax(0,1.38fr)]">
           <section className="flex min-h-0 items-center px-5 py-8 md:px-6">
-            <div className="w-full max-w-[390px] -rotate-[2deg]">
+            <div className="w-full max-w-[390px] -rotate-[1deg]">
               <svg
-                viewBox="0 0 390 360"
+                viewBox="0 0 390 330"
                 role="img"
                 aria-label="Discover projects I have built"
                 className="block w-full overflow-visible"
               >
                 <defs>
-                  <filter id="projectsPlayfulShadow" x="-20%" y="-20%" width="140%" height="150%">
-                    <feDropShadow dx="0" dy="8" stdDeviation="0" floodColor="#061050" floodOpacity="0.95" />
-                    <feDropShadow dx="0" dy="14" stdDeviation="5" floodColor="#163f81" floodOpacity="0.22" />
+                  <filter id="projectsPolishedShadow" x="-20%" y="-20%" width="140%" height="150%">
+                    <feDropShadow dx="0" dy="7" stdDeviation="0" floodColor="#0f2f62" floodOpacity="0.18" />
+                    <feDropShadow dx="0" dy="18" stdDeviation="12" floodColor="#3d7f35" floodOpacity="0.12" />
                   </filter>
+                  <linearGradient id="projectsBadgeFill" x1="28" y1="20" x2="360" y2="310" gradientUnits="userSpaceOnUse">
+                    <stop stopColor="#f8fff0" />
+                    <stop offset="1" stopColor="#eaf8db" />
+                  </linearGradient>
                 </defs>
                 <path
-                  d="M30 36 C72 8 321 11 354 42 C386 73 365 294 331 321 C293 352 76 348 37 320 C2 294 0 69 30 36 Z"
-                  fill="#1264ff"
+                  d="M33 34 C79 12 318 13 354 43 C384 68 374 274 334 299 C288 328 77 322 38 298 C3 276 0 58 33 34 Z"
+                  fill="url(#projectsBadgeFill)"
+                  stroke="#8bcf74"
+                  strokeWidth="3"
+                  filter="url(#projectsPolishedShadow)"
                 />
                 <path
-                  d="M42 45 C96 21 295 20 344 50 C382 74 369 285 326 311 C280 339 88 338 42 309 C5 286 4 68 42 45 Z"
+                  d="M51 53 C96 33 294 31 338 55 C369 72 360 258 326 281 C283 309 93 305 54 281 C22 261 21 72 51 53 Z"
                   fill="none"
-                  stroke="#41a0ff"
-                  strokeWidth="3"
-                  opacity="0.38"
+                  stroke="#c6eba6"
+                  strokeWidth="2"
+                  strokeDasharray="7 10"
+                  opacity="0.75"
                 />
-                <ellipse cx="202" cy="154" rx="163" ry="70" fill="none" stroke="#05072f" strokeWidth="6" transform="rotate(-8 202 154)" />
+                <path
+                  d="M43 149 C97 106 292 95 344 132 C391 166 315 213 178 216 C77 218 15 188 43 149 Z"
+                  fill="#d7f56a"
+                  opacity="0.9"
+                />
+                <path
+                  d="M35 148 C89 101 299 92 349 130 C394 165 316 218 176 219 C73 219 7 189 35 148 Z"
+                  fill="none"
+                  stroke="#102f63"
+                  strokeWidth="4"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  opacity="0.9"
+                />
                 <g
-                  filter="url(#projectsPlayfulShadow)"
-                  fill="#e9ff19"
-                  stroke="#07103f"
-                  strokeWidth="2.3"
+                  fill="#102f63"
+                  stroke="#f8fff0"
+                  strokeWidth="1.7"
                   paintOrder="stroke fill"
-                  style={{ fontFamily: "'Cooper Black', 'Comic Sans MS', 'Arial Black', sans-serif", fontWeight: 900 }}
+                  style={{ fontFamily: "'Avenir Next', 'Trebuchet MS', sans-serif", fontWeight: 900 }}
                 >
-                  <text x="62" y="94" fontSize="56" letterSpacing="-1.5" transform="rotate(3 62 94)">
-                    Discover
+                  <text x="55" y="91" fontSize="34" letterSpacing="4" transform="rotate(1 55 91)">
+                    DISCOVER
                   </text>
-                  <text x="35" y="184" fontSize="72" letterSpacing="-4" textLength="320" lengthAdjust="spacingAndGlyphs" transform="rotate(-2 35 184)">
+                  <text x="40" y="183" fontSize="74" letterSpacing="-3.5" textLength="310" lengthAdjust="spacingAndGlyphs" transform="rotate(-1.4 40 183)">
                     projects
                   </text>
-                  <text x="50" y="247" fontSize="42" letterSpacing="-1" textLength="288" lengthAdjust="spacingAndGlyphs" transform="rotate(1 50 247)">
+                  <text x="58" y="254" fontSize="46" letterSpacing="-1.5" textLength="274" lengthAdjust="spacingAndGlyphs" transform="rotate(0.7 58 254)">
                     I have built
                   </text>
                 </g>
-                <path d="M74 266 C133 279 231 280 309 265" fill="none" stroke="#f8fff0" strokeWidth="6" strokeLinecap="round" />
-                <path d="M74 266 C133 279 231 280 309 265" fill="none" stroke="#07103f" strokeWidth="2" strokeLinecap="round" opacity="0.7" />
+                <path d="M67 269 C126 284 242 285 325 267" fill="none" stroke="#c9f25a" strokeWidth="8" strokeLinecap="round" />
+                <path d="M67 269 C126 284 242 285 325 267" fill="none" stroke="#102f63" strokeWidth="2" strokeLinecap="round" opacity="0.48" />
               </svg>
             </div>
           </section>
