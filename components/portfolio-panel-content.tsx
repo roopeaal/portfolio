@@ -229,10 +229,16 @@ const PROJECT_CARD_MEDIA: Record<
     mode: "cover",
     backdrop: "#050505",
   },
+  "portfolio-site": {
+    src: "/portfolio/portfolio/project-portfolio-site.png",
+    alt: "Interactive network topology portfolio homepage screenshot",
+    mode: "cover",
+    backdrop: "#f8fafc",
+  },
   "aircraft-game-python-react": {
     src: "/portfolio/portfolio/project-maanarvauspeli.png",
     alt: "Kristoffer Kolumbuksen jaljilla - maanarvauspeli screenshot",
-    mode: "contain",
+    mode: "cover",
     backdrop: "#f2ebdb",
   },
   "heart-rate-monitor": {
