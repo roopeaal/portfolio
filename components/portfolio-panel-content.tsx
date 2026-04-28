@@ -754,17 +754,20 @@ export function ContactPanelContent({
         <div className="relative grid h-full min-h-0 grid-cols-[1.02fr_0.98fr] overflow-hidden rounded-[10px] border border-white/20">
           <section className="relative flex min-h-0 flex-col bg-[linear-gradient(180deg,#ef6a24_0%,#e8591a_100%)] p-3 pb-0">
             <h3 className="relative z-[1] text-[18px] font-extrabold leading-[0.94] tracking-[-0.018em]">
-              Let&apos;s build something{" "}
-              <span className="relative inline-flex h-[0.92em] w-[2.95em] translate-y-[0.08em] align-baseline">
-                <Image
-                  src="/portfolio/contact-great-word.png"
-                  alt="great"
-                  fill
-                  sizes="110px"
-                  className="object-contain object-center"
-                />
-              </span>{" "}
-              together.
+              <span className="block">Let&apos;s build</span>
+              <span className="flex items-baseline gap-1.5">
+                <span>something</span>
+                <span className="relative inline-flex h-[0.74em] w-[2.38em] translate-y-[0.08em] align-baseline">
+                  <Image
+                    src="/portfolio/contact-great-word.png"
+                    alt="great"
+                    fill
+                    sizes="90px"
+                    className="object-contain object-center"
+                  />
+                </span>
+              </span>
+              <span className="block text-right text-[1em]">together.</span>
             </h3>
             <div className="relative z-[1] mt-1.5 space-y-0.5 text-[9.5px] text-white/96">
               <p>040 528 3008</p>
@@ -818,19 +821,22 @@ export function ContactPanelContent({
       <div className="relative grid h-full min-h-0 gap-0 lg:grid-cols-[minmax(0,1.03fr)_minmax(0,0.97fr)]">
         <section className="relative flex min-h-0 flex-col px-9 pb-0 pt-7 text-white">
             <h2 className="relative z-[2] max-w-[700px] text-[clamp(2rem,4.7vw,4.35rem)] font-extrabold leading-[0.88] tracking-[-0.03em] text-white [text-shadow:0_2px_0_rgba(118,48,20,0.22)]">
-              Let&apos;s build something{" "}
-              <span className="relative inline-flex h-[0.94em] w-[2.98em] translate-y-[0.08em] align-baseline">
-                <Image
-                  src="/portfolio/contact-great-word.png"
-                  alt="great"
-                  fill
-                  sizes="260px"
-                  className="object-contain object-center"
-                  priority={false}
-                  draggable={false}
-                />
-              </span>{" "}
-              together.
+              <span className="block">Let&apos;s build</span>
+              <span className="flex items-baseline gap-4">
+                <span>something</span>
+                <span className="relative inline-flex h-[0.7em] w-[2.24em] translate-y-[0.08em] align-baseline">
+                  <Image
+                    src="/portfolio/contact-great-word.png"
+                    alt="great"
+                    fill
+                    sizes="210px"
+                    className="object-contain object-center"
+                    priority={false}
+                    draggable={false}
+                  />
+                </span>
+              </span>
+              <span className="block text-right text-[1em]">together.</span>
             </h2>
 
           <div className="relative z-[2] mt-4 space-y-1 text-[clamp(18px,1.9vw,26px)] font-medium leading-[1.12] text-white/98">
