@@ -313,11 +313,11 @@ function ProjectMarqueeCard({
             </div>
           )}
           {size === "overview" ? (
-            <div className="pointer-events-none absolute bottom-2 left-2 z-[2] flex max-w-[calc(100%-1rem)] translate-y-1 items-center gap-2 rounded-[4px] border border-[#b8c0ca] bg-[#f6f7f8]/96 px-2.5 py-1.5 opacity-0 shadow-[0_6px_14px_rgba(15,23,42,0.16)] transition duration-200 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100">
-              <span className="h-2 w-2 shrink-0 rounded-full border border-[#37a04a] bg-[#58d36a] shadow-[0_0_6px_rgba(88,211,106,0.72)]" />
-              <span className="min-w-0">
-                <span className="block text-[8px] font-semibold uppercase tracking-[0.18em] text-[#687386]">Port label</span>
-                <span className="block truncate text-[12px] font-semibold leading-tight text-[#263241]">{project.title}</span>
+            <div className="pointer-events-none absolute bottom-2 left-2 z-[2] flex max-w-[calc(100%-1rem)] translate-y-1 items-center gap-2 rounded-[11px] border border-[#79c271] bg-[#edf8df]/96 px-3 py-2 opacity-0 shadow-[0_8px_18px_rgba(58,125,46,0.18)] transition duration-200 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100">
+              <span className="h-7 w-1 shrink-0 rounded-full bg-[#58b94f]" />
+              <span className="min-w-0 text-[#163f81]">
+                <span className="block text-[8px] font-semibold uppercase tracking-[0.2em] text-[#29528f]/75">Project</span>
+                <span className="block truncate text-[12px] font-semibold leading-tight">{project.title}</span>
               </span>
             </div>
           ) : null}
@@ -518,20 +518,23 @@ export function ProjectsPanelContent({
       ...selectedProject.evidence.flatMap(extractUrls),
     ]),
   );
+  const projectArticleClass = "rounded-[16px] border border-[#95cf83] bg-[#edf8df]/88 p-4 shadow-[0_10px_24px_rgba(58,125,46,0.08)]";
+  const projectHeadingClass = "text-[11px] font-semibold uppercase tracking-[0.16em] text-[#29528f]/82";
+  const projectBodyClass = "mt-2 text-[14px] leading-7 text-[#24405f]";
 
   return (
-    <div className="h-full w-full overflow-auto bg-[#f8fafd] text-[#111827]">
-      <article className="mx-auto max-w-[1040px] px-5 py-5 md:px-7 md:py-6">
-        <header className="flex flex-wrap items-center justify-between gap-2 border-b border-[#dbe4ef] pb-3">
+    <div className="h-full w-full overflow-auto bg-[linear-gradient(180deg,#d6edc3_0%,#cbe7b1_100%)] text-[#1d3658]">
+      <article className="mx-auto max-w-[1100px] px-5 py-5 md:px-7 md:py-6">
+        <header className="flex flex-wrap items-center justify-between gap-2 border-b border-[#89c97a]/70 pb-4">
           <div className="flex flex-wrap items-center gap-2">
             <button
               type="button"
               onClick={onShowOverview}
-              className="rounded border border-[#d3dce8] bg-white px-3 py-1.5 text-[12px] font-medium text-[#475569] transition hover:bg-[#f8fafc] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4b74ff]"
+              className="rounded-[10px] border border-[#79c271] bg-[#edf8df] px-3 py-1.5 text-[12px] font-semibold text-[#163f81] transition hover:bg-[#f8fff0] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3d7f35]"
             >
               ← Back to all projects
             </button>
-            <span className="rounded border border-[#d3dce8] bg-white px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.08em] text-[#5f6f85]">
+            <span className="rounded-[10px] border border-[#79c271] bg-[#edf8df]/88 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#29528f]/82">
               {selectedProject.category}
             </span>
           </div>
@@ -540,7 +543,7 @@ export function ProjectsPanelContent({
               <button
                 type="button"
                 onClick={() => onSelectProject?.(previous.slug)}
-                className="rounded border border-[#d3dce8] bg-white px-3 py-1.5 text-[12px] font-medium text-[#475569] transition hover:bg-[#f8fafc] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4b74ff]"
+                className="rounded-[10px] border border-[#79c271] bg-[#edf8df] px-3 py-1.5 text-[12px] font-semibold text-[#163f81] transition hover:bg-[#f8fff0] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3d7f35]"
               >
                 ← Previous
               </button>
@@ -549,7 +552,7 @@ export function ProjectsPanelContent({
               <button
                 type="button"
                 onClick={() => onSelectProject?.(next.slug)}
-                className="rounded border border-[#d3dce8] bg-white px-3 py-1.5 text-[12px] font-medium text-[#475569] transition hover:bg-[#f8fafc] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4b74ff]"
+                className="rounded-[10px] border border-[#79c271] bg-[#edf8df] px-3 py-1.5 text-[12px] font-semibold text-[#163f81] transition hover:bg-[#f8fff0] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3d7f35]"
               >
                 Next →
               </button>
@@ -557,12 +560,13 @@ export function ProjectsPanelContent({
           </div>
         </header>
 
-        <section className="pt-4">
-          <h2 className="text-[clamp(1.45rem,2.4vw,2.05rem)] font-semibold tracking-tight text-[#0f172a]">{selectedProject.title}</h2>
-          <p className="mt-2 max-w-[920px] text-[15px] leading-7 text-[#334155]">{selectedProject.summary}</p>
+        <section className="pt-5">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#29528f]/80">Project detail</p>
+          <h2 className="mt-2 max-w-[920px] text-[clamp(2rem,4vw,3.55rem)] font-semibold leading-[0.95] tracking-[-0.024em] text-[#163f81]">{selectedProject.title}</h2>
+          <p className="mt-3 max-w-[920px] text-[15px] leading-7 text-[#24405f]">{selectedProject.summary}</p>
         </section>
 
-        <figure className="mt-5 overflow-hidden rounded-[12px] border border-[#d9e2ee] bg-[#eff3f8]">
+        <figure className="mt-5 overflow-hidden rounded-[16px] border border-[#79c271] bg-[#edf8df] shadow-[0_14px_32px_rgba(58,125,46,0.12)]">
           <div className="relative aspect-[16/9] w-full overflow-hidden">
             {selectedProjectMedia && !heroImageFailed ? (
               <>
@@ -579,7 +583,7 @@ export function ProjectsPanelContent({
               </>
             ) : (
               <div className="absolute inset-0 z-[1] flex items-center justify-center px-6 text-center">
-                <span className="text-[clamp(1.2rem,2.8vw,2rem)] font-semibold tracking-tight text-[#1f3b6b]">{selectedProject.title}</span>
+                <span className="text-[clamp(1.2rem,2.8vw,2rem)] font-semibold tracking-tight text-[#163f81]">{selectedProject.title}</span>
               </div>
             )}
           </div>
@@ -587,41 +591,41 @@ export function ProjectsPanelContent({
 
         <section className="mt-6 grid gap-7 lg:grid-cols-[minmax(0,1.22fr)_minmax(0,0.78fr)]">
           <div className="space-y-5">
-            <article>
-              <h3 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#64748b]">Objective</h3>
-              <p className="mt-2 text-[14px] leading-7 text-[#1f2937]">{selectedProject.objective}</p>
+            <article className={projectArticleClass}>
+              <h3 className={projectHeadingClass}>Objective</h3>
+              <p className={projectBodyClass}>{selectedProject.objective}</p>
             </article>
-            <article className="border-t border-[#e7edf4] pt-5">
-              <h3 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#64748b]">Implementation</h3>
-              <p className="mt-2 text-[14px] leading-7 text-[#1f2937]">{selectedProject.implementation}</p>
+            <article className={projectArticleClass}>
+              <h3 className={projectHeadingClass}>Implementation</h3>
+              <p className={projectBodyClass}>{selectedProject.implementation}</p>
             </article>
-            <article className="border-t border-[#e7edf4] pt-5">
-              <h3 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#64748b]">Result</h3>
-              <p className="mt-2 text-[14px] leading-7 text-[#1f2937]">{selectedProject.result}</p>
+            <article className={projectArticleClass}>
+              <h3 className={projectHeadingClass}>Result</h3>
+              <p className={projectBodyClass}>{selectedProject.result}</p>
             </article>
-            <article className="border-t border-[#e7edf4] pt-5">
-              <h3 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#64748b]">What I learned</h3>
-              <p className="mt-2 text-[14px] leading-7 text-[#1f2937]">{selectedProject.learned}</p>
+            <article className={projectArticleClass}>
+              <h3 className={projectHeadingClass}>What I learned</h3>
+              <p className={projectBodyClass}>{selectedProject.learned}</p>
             </article>
           </div>
 
           <aside className="space-y-5">
-            <article>
-              <h3 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#64748b]">Technical scope</h3>
-              <p className="mt-2 text-[14px] leading-7 text-[#1f2937]">{selectedProject.technicalScope}</p>
+            <article className={projectArticleClass}>
+              <h3 className={projectHeadingClass}>Technical scope</h3>
+              <p className={projectBodyClass}>{selectedProject.technicalScope}</p>
             </article>
-            <article className="border-t border-[#e7edf4] pt-5">
-              <h3 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#64748b]">Environment / tools</h3>
-              <p className="mt-2 text-[14px] leading-7 text-[#1f2937]">{selectedProject.environment}</p>
+            <article className={projectArticleClass}>
+              <h3 className={projectHeadingClass}>Environment / tools</h3>
+              <p className={projectBodyClass}>{selectedProject.environment}</p>
             </article>
-            <article className="border-t border-[#e7edf4] pt-5">
-              <h3 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#64748b]">Validation / testing</h3>
-              <p className="mt-2 text-[14px] leading-7 text-[#1f2937]">{selectedProject.validation}</p>
+            <article className={projectArticleClass}>
+              <h3 className={projectHeadingClass}>Validation / testing</h3>
+              <p className={projectBodyClass}>{selectedProject.validation}</p>
             </article>
             {evidenceItems.length > 0 ? (
-              <article className="border-t border-[#e7edf4] pt-5">
-                <h3 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#64748b]">Evidence</h3>
-                <ul className="mt-2 list-disc space-y-1.5 pl-5 text-[14px] leading-7 text-[#334155]">
+              <article className={projectArticleClass}>
+                <h3 className={projectHeadingClass}>Evidence</h3>
+                <ul className="mt-2 list-disc space-y-1.5 pl-5 text-[14px] leading-7 text-[#24405f]">
                   {evidenceItems.map((item) => (
                     <li key={item}>{item}</li>
                   ))}
@@ -631,18 +635,20 @@ export function ProjectsPanelContent({
           </aside>
         </section>
 
-        <section className="mt-6 border-t border-[#dbe4ef] pt-4">
-          <h3 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#64748b]">Tech stack</h3>
+        <section className="mt-6 rounded-[16px] border border-[#95cf83] bg-[#edf8df]/88 p-4 shadow-[0_10px_24px_rgba(58,125,46,0.08)]">
+          <h3 className={projectHeadingClass}>Tech stack</h3>
           <div className="mt-2 flex flex-wrap gap-2">
             {selectedProject.stack.map((item) => (
-              <Tag key={item}>{item}</Tag>
+              <span key={item} className="rounded-full border border-[#79c271] bg-[#f8fff0] px-3 py-1 text-[11px] font-semibold text-[#163f81]">
+                {item}
+              </span>
             ))}
           </div>
         </section>
 
         {projectLinks.length > 0 ? (
-          <section className="mt-5 border-t border-[#dbe4ef] pt-4">
-            <h3 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#64748b]">Project links</h3>
+          <section className="mt-5 rounded-[16px] border border-[#95cf83] bg-[#edf8df]/88 p-4 shadow-[0_10px_24px_rgba(58,125,46,0.08)]">
+            <h3 className={projectHeadingClass}>Project links</h3>
             <div className="mt-2 flex flex-wrap gap-2">
               {projectLinks.map((url, linkIndex) => (
                 <a
@@ -650,7 +656,7 @@ export function ProjectsPanelContent({
                   href={url}
                   target="_blank"
                   rel="noreferrer"
-                  className="rounded border border-[#d3dce8] bg-white px-3 py-1.5 text-[12px] font-medium text-[#36507a] transition hover:bg-[#f8fbff]"
+                  className="rounded-full border border-[#79c271] bg-[#f8fff0] px-3 py-1.5 text-[12px] font-semibold text-[#163f81] transition hover:bg-white"
                 >
                   {linkIndex === 0 ? "Open live link" : `Reference ${linkIndex + 1}`}
                 </a>
