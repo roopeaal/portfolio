@@ -9,6 +9,7 @@ import { profile } from "@/content/profile";
 export interface PanelSidebarItem {
   id: string;
   label: string;
+  href?: string;
   active?: boolean;
   onSelect?: () => void;
 }
@@ -256,7 +257,13 @@ const PROJECT_CARD_MEDIA: Record<
 };
 
 const CONTACT_GREAT_WORD_BACKGROUND =
-  "url('/portfolio/portfolio/contact-great-word-fire-v4.png?v=20260428-fire4'), url('/portfolio/contact-great-word-fire-v4.png?v=20260428-fire4')";
+  "url('/portfolio/portfolio/contact-great-word-fire-v5.png?v=20260428-fire5'), url('/portfolio/contact-great-word-fire-v5.png?v=20260428-fire5')";
+
+export const PROJECTS_OVERVIEW_HREF = "/?panel=projects";
+
+export function getProjectHref(slug: string) {
+  return `${PROJECTS_OVERVIEW_HREF}&project=${encodeURIComponent(slug)}`;
+}
 
 function extractUrls(text: string): string[] {
   return Array.from(text.matchAll(/https?:\/\/\S+/gi)).map((match) => match[0].replace(/[),.;]+$/, ""));
@@ -284,8 +291,9 @@ function ProjectMarqueeCard({
   }, [project.slug, media?.src]);
 
   return (
-    <button
-      type="button"
+    <Link
+      href={getProjectHref(project.slug)}
+      scroll={false}
       onClick={() => onSelectProject?.(project.slug)}
       className="group block w-full rounded-[10px] text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3d7f35] focus-visible:ring-offset-2"
       aria-label={`Open project: ${project.title}`}
@@ -326,7 +334,7 @@ function ProjectMarqueeCard({
           ) : null}
         </div>
       </article>
-    </button>
+    </Link>
   );
 }
 
@@ -500,34 +508,51 @@ export function ProjectsPanelContent({
       <div className="h-full w-full overflow-hidden bg-[linear-gradient(180deg,#d6edc3_0%,#cbe7b1_100%)] p-0 text-[#1d3658]">
         <div className="grid h-full min-h-0 gap-0 lg:grid-cols-[minmax(240px,0.62fr)_minmax(0,1.38fr)]">
           <section className="flex min-h-0 items-center px-5 py-8 md:px-6">
-            <div className="w-full max-w-[360px]">
+            <div className="w-full max-w-[390px] -rotate-[2deg]">
               <svg
-                viewBox="0 0 360 330"
+                viewBox="0 0 390 360"
                 role="img"
                 aria-label="Discover projects I have built"
-                className="block w-full overflow-visible text-[#163f81]"
+                className="block w-full overflow-visible"
               >
-                {[
-                  ["Discover", 72],
-                  ["projects", 150],
-                  ["I have", 228],
-                  ["built", 306],
-                ].map(([line, y]) => (
-                  <text
-                    key={line}
-                    x="0"
-                    y={y}
-                    textLength="340"
-                    lengthAdjust="spacingAndGlyphs"
-                    fill="currentColor"
-                    fontSize="78"
-                    fontWeight="700"
-                    letterSpacing="-2.5"
-                    style={{ fontFamily: "inherit" }}
-                  >
-                    {line}
+                <defs>
+                  <filter id="projectsPlayfulShadow" x="-20%" y="-20%" width="140%" height="150%">
+                    <feDropShadow dx="0" dy="8" stdDeviation="0" floodColor="#061050" floodOpacity="0.95" />
+                    <feDropShadow dx="0" dy="14" stdDeviation="5" floodColor="#163f81" floodOpacity="0.22" />
+                  </filter>
+                </defs>
+                <path
+                  d="M30 36 C72 8 321 11 354 42 C386 73 365 294 331 321 C293 352 76 348 37 320 C2 294 0 69 30 36 Z"
+                  fill="#1264ff"
+                />
+                <path
+                  d="M42 45 C96 21 295 20 344 50 C382 74 369 285 326 311 C280 339 88 338 42 309 C5 286 4 68 42 45 Z"
+                  fill="none"
+                  stroke="#41a0ff"
+                  strokeWidth="3"
+                  opacity="0.38"
+                />
+                <ellipse cx="202" cy="154" rx="163" ry="70" fill="none" stroke="#05072f" strokeWidth="6" transform="rotate(-8 202 154)" />
+                <g
+                  filter="url(#projectsPlayfulShadow)"
+                  fill="#e9ff19"
+                  stroke="#07103f"
+                  strokeWidth="2.3"
+                  paintOrder="stroke fill"
+                  style={{ fontFamily: "'Cooper Black', 'Comic Sans MS', 'Arial Black', sans-serif", fontWeight: 900 }}
+                >
+                  <text x="62" y="94" fontSize="56" letterSpacing="-1.5" transform="rotate(3 62 94)">
+                    Discover
                   </text>
-                ))}
+                  <text x="35" y="184" fontSize="72" letterSpacing="-4" textLength="320" lengthAdjust="spacingAndGlyphs" transform="rotate(-2 35 184)">
+                    projects
+                  </text>
+                  <text x="50" y="247" fontSize="42" letterSpacing="-1" textLength="288" lengthAdjust="spacingAndGlyphs" transform="rotate(1 50 247)">
+                    I have built
+                  </text>
+                </g>
+                <path d="M74 266 C133 279 231 280 309 265" fill="none" stroke="#f8fff0" strokeWidth="6" strokeLinecap="round" />
+                <path d="M74 266 C133 279 231 280 309 265" fill="none" stroke="#07103f" strokeWidth="2" strokeLinecap="round" opacity="0.7" />
               </svg>
             </div>
           </section>
@@ -563,35 +588,38 @@ export function ProjectsPanelContent({
       <article className="mx-auto max-w-[1100px] px-5 py-5 md:px-7 md:py-6">
         <header className="flex flex-wrap items-center justify-between gap-2 border-b border-[#89c97a]/70 pb-4">
           <div className="flex flex-wrap items-center gap-2">
-            <button
-              type="button"
-              onClick={onShowOverview}
+            <Link
+              href={PROJECTS_OVERVIEW_HREF}
+              scroll={false}
+              onClick={() => onShowOverview?.()}
               className="rounded-[10px] border border-[#79c271] bg-[#edf8df] px-3 py-1.5 text-[12px] font-semibold text-[#163f81] transition hover:bg-[#f8fff0] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3d7f35]"
             >
               ← Back to all projects
-            </button>
+            </Link>
             <span className="rounded-[10px] border border-[#79c271] bg-[#edf8df]/88 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#29528f]/82">
               {selectedProject.category}
             </span>
           </div>
           <div className="flex flex-wrap gap-2">
             {previous ? (
-              <button
-                type="button"
+              <Link
+                href={getProjectHref(previous.slug)}
+                scroll={false}
                 onClick={() => onSelectProject?.(previous.slug)}
                 className="rounded-[10px] border border-[#79c271] bg-[#edf8df] px-3 py-1.5 text-[12px] font-semibold text-[#163f81] transition hover:bg-[#f8fff0] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3d7f35]"
               >
                 ← Previous
-              </button>
+              </Link>
             ) : null}
             {next ? (
-              <button
-                type="button"
+              <Link
+                href={getProjectHref(next.slug)}
+                scroll={false}
                 onClick={() => onSelectProject?.(next.slug)}
                 className="rounded-[10px] border border-[#79c271] bg-[#edf8df] px-3 py-1.5 text-[12px] font-semibold text-[#163f81] transition hover:bg-[#f8fff0] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3d7f35]"
               >
                 Next →
-              </button>
+              </Link>
             ) : null}
           </div>
         </header>

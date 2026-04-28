@@ -20,7 +20,9 @@ import {
   AboutPanelContent,
   ContactPanelContent,
   HomePanelContent,
+  PROJECTS_OVERVIEW_HREF,
   ProjectsPanelContent,
+  getProjectHref,
   type PanelSidebarItem,
 } from "@/components/portfolio-panel-content";
 import { projects } from "@/content/projects";
@@ -1039,10 +1041,11 @@ export function TopologyHero() {
 
   const projectsSidebarItems = useMemo<PanelSidebarItem[]>(
     () => [
-      { id: "overview", label: "Overview", active: !selectedProjectSlug, onSelect: showProjectOverview },
+      { id: "overview", label: "Overview", href: PROJECTS_OVERVIEW_HREF, active: !selectedProjectSlug, onSelect: showProjectOverview },
       ...projects.map((project) => ({
         id: project.slug,
         label: project.title,
+        href: getProjectHref(project.slug),
         active: selectedProjectSlug === project.slug,
         onSelect: () => openProject(project.slug),
       })),
@@ -1583,7 +1586,7 @@ export function TopologyHero() {
 
                 <motion.svg
                   viewBox={`0 0 ${VIEWBOX.width} ${VIEWBOX.height}`}
-                  className="pointer-events-none absolute inset-0 z-[30] h-full w-full"
+                  className={`pointer-events-none absolute inset-0 h-full w-full ${draggingNode === "projects" ? "z-[175]" : "z-[30]"}`}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.24 }}

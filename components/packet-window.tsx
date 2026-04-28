@@ -245,21 +245,36 @@ export function PacketWindow({
                     {sidebarTitle}
                   </div>
                   <div className="space-y-0 py-0.5 text-[12px]">
-                    {sidebarItems.map((item) => (
-                      <button
-                        key={item.id}
-                        type="button"
-                        onClick={item.onSelect}
-                        className={`flex w-full items-center border-b border-[#dfdfdf] px-3 py-1.5 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#4b74ff] ${
+                    {sidebarItems.map((item) => {
+                      const itemClassName = `flex w-full items-center border-b border-[#dfdfdf] px-3 py-1.5 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#4b74ff] ${
                           item.active
                             ? "bg-[#f7f7f7] text-[#374151]"
                             : "text-[#5b6778] hover:bg-[#f8f8f8] hover:text-[#374151]"
-                        }`}
-                        aria-current={item.active ? "true" : undefined}
-                      >
-                        {item.label}
-                      </button>
-                    ))}
+                        }`;
+
+                      return item.href ? (
+                        <Link
+                          key={item.id}
+                          href={item.href}
+                          scroll={false}
+                          onClick={item.onSelect}
+                          className={itemClassName}
+                          aria-current={item.active ? "true" : undefined}
+                        >
+                          {item.label}
+                        </Link>
+                      ) : (
+                        <button
+                          key={item.id}
+                          type="button"
+                          onClick={item.onSelect}
+                          className={itemClassName}
+                          aria-current={item.active ? "true" : undefined}
+                        >
+                          {item.label}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
 
