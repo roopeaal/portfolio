@@ -271,59 +271,51 @@ function stripUrls(text: string): string {
 }
 
 function GreatWordArt({ compact = false }: { compact?: boolean }) {
-  const rawId = useId().replace(/:/g, "");
-  const textId = `great-word-${rawId}`;
-  const clipId = `great-word-clip-${rawId}`;
-  const shadowId = `great-word-shadow-${rawId}`;
-
   return (
-    <svg
-      viewBox="0 0 640 232"
-      role="img"
-      aria-label="great"
-      className="block h-full w-full overflow-visible"
-      preserveAspectRatio="xMidYMid meet"
+    <span
+      className="relative inline-block align-baseline text-white"
+      style={{
+        font: "inherit",
+        letterSpacing: "inherit",
+        lineHeight: "inherit",
+        textShadow: compact
+          ? "0 1px 0 rgba(92, 32, 12, 0.24), 0 4px 5px rgba(92, 32, 12, 0.2)"
+          : "0 2px 0 rgba(118, 48, 20, 0.24), 0 7px 8px rgba(92, 32, 12, 0.22)",
+      }}
     >
-      <defs>
-        <filter id={shadowId} x="-12%" y="-18%" width="124%" height="140%">
-          <feDropShadow dx="0" dy={compact ? 5 : 8} stdDeviation={compact ? 2.8 : 4.2} floodColor="#8f2f0d" floodOpacity="0.48" />
-          <feDropShadow dx="0" dy={compact ? 1.6 : 2.4} stdDeviation="0" floodColor="#4a1707" floodOpacity="0.36" />
-        </filter>
-        <text
-          id={textId}
-          x="16"
-          y="172"
-          fontFamily="Arial Black, Impact, Haettenschweiler, sans-serif"
-          fontSize="202"
-          fontWeight="900"
-          letterSpacing="-16"
-        >
-          great
-        </text>
-        <clipPath id={clipId}>
-          <use href={`#${textId}`} />
-        </clipPath>
-      </defs>
-
-      <use href={`#${textId}`} fill="#fff" filter={`url(#${shadowId})`} />
-      <g clipPath={`url(#${clipId})`}>
-        <rect x="0" y="102" width="640" height="122" fill="#ef4b14" />
-        <path
-          fill="#ffcc12"
-          d="M20 224c32-64 22-86 12-116 38 32 32 74 62 91 18-46 3-66-3-91 48 40 49 85 82 110 30-58 11-90 4-124 51 45 53 100 95 126 24-42 14-71 1-103 45 32 49 80 84 102 31-63 10-94-5-126 55 39 56 99 102 128 23-45 12-76 0-104 45 32 50 77 88 103 24-44 10-72-2-102 43 31 49 77 82 104v22H20z"
-        />
-        <path
-          fill="#ff7b08"
-          d="M0 218c24-37 20-60 3-91 35 19 43 55 34 86 33-27 30-69 20-97 39 27 43 72 76 93 28-37 18-71 8-99 42 27 45 75 76 100 24-35 18-67 7-95 42 26 44 72 77 95 28-39 18-72 6-103 44 30 47 81 84 106 25-34 17-65 4-93 42 24 46 68 82 92 23-36 15-66 4-94 39 24 47 68 80 92 19-31 17-58 5-86 34 20 43 57 64 82v32H0z"
-        />
-        <path
-          fill="#ffffff"
-          d="M4 124c25 24 18 58 3 81 29-15 36-50 24-79 33 24 34 60 18 87 31-16 41-53 30-83 32 25 34 60 16 88 32-16 42-53 31-84 34 26 34 62 13 87 37-15 47-58 33-92 34 27 35 63 14 91 39-16 47-59 31-93 33 24 37 60 19 90 35-14 42-54 30-85 31 22 37 58 21 84 33-15 43-54 29-85 29 22 37 57 25 83 30-16 37-52 29-76 34 23 39 57 26 83 33-16 43-55 30-86 31 23 38 58 25 85 32-14 40-50 28-80 32 22 39 56 27 80 27-13 35-44 28-71 26 19 35 47 31 72h-634z"
-          opacity="0.98"
-        />
-      </g>
-      <use href={`#${textId}`} fill="none" stroke="rgba(255,255,255,0.92)" strokeWidth="1.8" />
-    </svg>
+      <span className="relative z-[1]">great</span>
+      <span
+        aria-hidden="true"
+        className="absolute inset-0 z-[2] text-transparent [-webkit-background-clip:text] [background-clip:text]"
+        style={{
+          backgroundImage: [
+            "linear-gradient(to top, #ffd313 0 15%, #ff8a06 15% 30%, #f04d15 30% 47%, transparent 47%)",
+            "radial-gradient(ellipse 16% 44% at 6% 82%, #ffd313 0 32%, #ff8a06 33% 45%, transparent 46%)",
+            "radial-gradient(ellipse 11% 48% at 17% 66%, #fff 0 22%, transparent 24%)",
+            "radial-gradient(ellipse 13% 54% at 31% 76%, #ffd313 0 31%, #ff8a06 32% 48%, transparent 49%)",
+            "radial-gradient(ellipse 9% 48% at 41% 61%, #fff 0 21%, transparent 23%)",
+            "radial-gradient(ellipse 16% 58% at 55% 77%, #ffd313 0 31%, #ff8a06 32% 46%, transparent 47%)",
+            "radial-gradient(ellipse 11% 50% at 67% 63%, #fff 0 23%, transparent 25%)",
+            "radial-gradient(ellipse 15% 56% at 81% 76%, #ffd313 0 30%, #ff8a06 31% 47%, transparent 48%)",
+            "radial-gradient(ellipse 10% 44% at 94% 66%, #fff 0 22%, transparent 24%)",
+          ].join(", "),
+          backgroundRepeat: "no-repeat",
+          backgroundSize: "100% 100%",
+          filter: compact ? "drop-shadow(0 0.05em 0 rgba(122, 42, 11, 0.3))" : "drop-shadow(0 0.045em 0 rgba(122, 42, 11, 0.34))",
+        }}
+      >
+        great
+      </span>
+      <span
+        aria-hidden="true"
+        className="absolute inset-0 z-[3] text-transparent [-webkit-background-clip:text] [background-clip:text]"
+        style={{
+          WebkitTextStroke: compact ? "0.035em rgba(255, 255, 255, 0.72)" : "0.026em rgba(255, 255, 255, 0.72)",
+        }}
+      >
+        great
+      </span>
+    </span>
   );
 }
 
@@ -935,13 +927,7 @@ export function ContactPanelContent({
               <span className="block">Let&apos;s build</span>
               <span className="flex items-baseline gap-1.5">
                 <span>something</span>
-                <span
-                  role="img"
-                  aria-label="great"
-                  className="relative inline-flex h-[0.82em] w-[2.28em] translate-y-[0.11em] align-baseline"
-                >
-                  <GreatWordArt compact />
-                </span>
+                <GreatWordArt compact />
               </span>
               <span className="block text-[1em]">together.</span>
             </h3>
@@ -998,15 +984,9 @@ export function ContactPanelContent({
         <section className="relative flex min-h-0 flex-col px-9 pb-0 pt-7 text-white">
             <h2 className="relative z-[2] max-w-[700px] text-[clamp(2rem,4.7vw,4.35rem)] font-extrabold leading-[0.88] tracking-[-0.03em] text-white [text-shadow:0_2px_0_rgba(118,48,20,0.22)]">
               <span className="block">Let&apos;s build</span>
-              <span className="flex items-baseline gap-4">
+              <span className="flex flex-wrap items-baseline gap-x-4 gap-y-0">
                 <span>something</span>
-                <span
-                  role="img"
-                  aria-label="great"
-                  className="relative inline-flex h-[0.86em] w-[2.42em] translate-y-[0.12em] align-baseline"
-                >
-                  <GreatWordArt />
-                </span>
+                <GreatWordArt />
               </span>
               <span className="block text-[1em]">together.</span>
             </h2>
