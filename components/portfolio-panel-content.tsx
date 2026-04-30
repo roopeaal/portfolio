@@ -328,95 +328,92 @@ function ProjectsOverviewWordmark() {
     <svg
       viewBox="0 0 430 338"
       role="img"
-      aria-label="discover PROJECTS I have built"
+      aria-label="Selected work projects"
       className="block w-full overflow-visible"
       preserveAspectRatio="xMidYMid meet"
     >
       <defs>
-        <linearGradient id={inkGradientId} x1="34" x2="380" y1="52" y2="286" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stopColor="#123f82" />
-          <stop offset="0.52" stopColor="#0b3671" />
-          <stop offset="1" stopColor="#12345f" />
+        <linearGradient id={inkGradientId} x1="36" x2="374" y1="84" y2="252" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor="#102f63" />
+          <stop offset="0.55" stopColor="#143f81" />
+          <stop offset="1" stopColor="#0c2b57" />
         </linearGradient>
-        <filter id={shadowId} x="-16%" y="-18%" width="132%" height="142%">
-          <feDropShadow dx="5" dy="7" stdDeviation="0" floodColor="#7fc766" floodOpacity="0.52" />
-          <feDropShadow dx="0" dy="16" stdDeviation="11" floodColor="#2d7c45" floodOpacity="0.13" />
-          <feDropShadow dx="0" dy="3" stdDeviation="0" floodColor="#0b2d5c" floodOpacity="0.16" />
+        <filter id={shadowId} x="-8%" y="-18%" width="116%" height="136%">
+          <feDropShadow dx="0" dy="12" stdDeviation="9" floodColor="#2a6d52" floodOpacity="0.12" />
+          <feDropShadow dx="0" dy="1" stdDeviation="0" floodColor="#eaf8df" floodOpacity="0.86" />
         </filter>
       </defs>
 
-      <g transform="rotate(-1.2 215 169)">
-        <path
-          d="M36 169 C112 117 302 112 392 158 C333 212 118 223 39 176"
-          fill="none"
-          stroke="#0b2f5f"
-          strokeLinecap="round"
-          strokeWidth="4"
-          opacity="0.14"
-        />
-        <path
-          d="M48 293 C132 314 274 315 366 286"
-          fill="none"
-          stroke="#74bd5a"
-          strokeLinecap="round"
-          strokeWidth="5"
-          opacity="0.62"
-        />
+      <g>
+        <path d="M40 47H390" stroke="#8fca7d" strokeWidth="1" opacity="0.62" />
+        <path d="M40 290H390" stroke="#8fca7d" strokeWidth="1" opacity="0.5" />
+        <path d="M40 48V290" stroke="#7fc766" strokeLinecap="round" strokeWidth="5" />
+        <path d="M55 218H361" stroke="#143f81" strokeLinecap="round" strokeWidth="2.5" opacity="0.12" />
+        <rect x="357" y="35" width="33" height="7" rx="3.5" fill="#7fc766" opacity="0.8" />
+        <rect x="55" y="297" width="62" height="7" rx="3.5" fill="#143f81" opacity="0.82" />
         <g
           filter={`url(#${shadowId})`}
-          paintOrder="stroke fill"
+          fill={`url(#${inkGradientId})`}
           style={{
-            fontFamily: "'Arial Rounded MT Bold', 'Avenir Next', 'Trebuchet MS', sans-serif",
-            fontWeight: 900,
+            fontFamily: "'Avenir Next', 'Helvetica Neue', sans-serif",
           }}
         >
           <text
-            x="42"
-            y="92"
-            fill={`url(#${inkGradientId})`}
-            stroke="#eaf8df"
-            strokeWidth="1.2"
-            fontSize="54"
-            letterSpacing="3.5"
-            textLength="336"
+            x="57"
+            y="82"
+            fontSize="15"
+            fontWeight="800"
+            letterSpacing="5.4"
+            textLength="210"
             lengthAdjust="spacingAndGlyphs"
           >
-            discover
+            SELECTED WORK
           </text>
           <text
-            x="23"
-            y="204"
-            fill={`url(#${inkGradientId})`}
-            stroke="#eaf8df"
-            strokeWidth="3.2"
-            fontSize="78"
-            letterSpacing="-3.4"
-            textLength="384"
+            x="52"
+            y="178"
+            fontSize="72"
+            fontWeight="900"
+            letterSpacing="-3.2"
+            textLength="326"
             lengthAdjust="spacingAndGlyphs"
           >
             PROJECTS
           </text>
           <text
-            x="43"
-            y="279"
-            fill={`url(#${inkGradientId})`}
-            stroke="#eaf8df"
-            strokeWidth="1.6"
-            fontSize="55"
-            letterSpacing="-1.3"
-            textLength="337"
+            x="57"
+            y="244"
+            fontSize="24"
+            fontWeight="700"
+            letterSpacing="-0.2"
+            textLength="299"
             lengthAdjust="spacingAndGlyphs"
           >
-            I have built
+            Network labs, web interfaces
+          </text>
+          <text
+            x="57"
+            y="275"
+            fontSize="24"
+            fontWeight="700"
+            letterSpacing="-0.2"
+            textLength="254"
+            lengthAdjust="spacingAndGlyphs"
+          >
+            and IoT systems.
           </text>
         </g>
-        <g fill="#235c8f" opacity="0.62">
-          <circle cx="32" cy="108" r="4" />
-          <circle cx="392" cy="228" r="5" />
-        </g>
-        <g fill="#74bd5a">
-          <circle cx="369" cy="91" r="6" opacity="0.62" />
-          <circle cx="58" cy="232" r="4" opacity="0.46" />
+        <g
+          fill="#29528f"
+          opacity="0.76"
+          style={{ fontFamily: "'Avenir Next', 'Helvetica Neue', sans-serif", fontWeight: 700 }}
+        >
+          <text x="287" y="82" fontSize="11" letterSpacing="2.6">
+            CASE STUDIES
+          </text>
+          <text x="57" y="319" fontSize="10" letterSpacing="2.4">
+            BUILT, TESTED, DOCUMENTED
+          </text>
         </g>
       </g>
     </svg>
@@ -640,8 +637,8 @@ export function ProjectsPanelContent({
   if (preview) {
     return (
       <div className="h-full overflow-hidden rounded-[12px] border border-[#bcd7a8] bg-[linear-gradient(180deg,#dff2ce_0%,#d4ecbf_100%)] p-3 text-[#16345e]">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#35587d]">Projects</p>
-        <h3 className="mt-1 text-[18px] font-semibold leading-[1.04] text-[#16345e]">Discover projects I have built</h3>
+        <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#35587d]">Selected work</p>
+        <h3 className="mt-1 text-[18px] font-semibold leading-[1.04] text-[#16345e]">Project case studies</h3>
         <div className="mt-3 grid h-[calc(100%-68px)] min-h-0 grid-cols-2 gap-2">
           {[...leftLaneProjects.slice(0, 2), ...rightLaneProjects.slice(0, 2)].slice(0, 4).map((project) => (
             <div key={project.slug} className="min-h-0">
