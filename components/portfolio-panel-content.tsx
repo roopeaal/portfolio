@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import { useEffect, useId, useMemo, useRef, useState, type FormEvent } from "react";
 import { projects } from "@/content/projects";
 import { profile } from "@/content/profile";
 
@@ -256,9 +256,6 @@ const PROJECT_CARD_MEDIA: Record<
   },
 };
 
-const CONTACT_GREAT_WORD_BACKGROUND =
-  "url('/portfolio/portfolio/contact-great-word-fire-v5.png?v=20260428-fire5'), url('/portfolio/contact-great-word-fire-v5.png?v=20260428-fire5')";
-
 export const PROJECTS_OVERVIEW_HREF = "/?panel=projects";
 
 export function getProjectHref(slug: string) {
@@ -271,6 +268,63 @@ function extractUrls(text: string): string[] {
 
 function stripUrls(text: string): string {
   return text.replace(/https?:\/\/\S+/gi, "").replace(/\s{2,}/g, " ").trim();
+}
+
+function GreatWordArt({ compact = false }: { compact?: boolean }) {
+  const rawId = useId().replace(/:/g, "");
+  const textId = `great-word-${rawId}`;
+  const clipId = `great-word-clip-${rawId}`;
+  const shadowId = `great-word-shadow-${rawId}`;
+
+  return (
+    <svg
+      viewBox="0 0 640 232"
+      role="img"
+      aria-label="great"
+      className="block h-full w-full overflow-visible"
+      preserveAspectRatio="xMidYMid meet"
+    >
+      <defs>
+        <filter id={shadowId} x="-12%" y="-18%" width="124%" height="140%">
+          <feDropShadow dx="0" dy={compact ? 5 : 8} stdDeviation={compact ? 2.8 : 4.2} floodColor="#8f2f0d" floodOpacity="0.48" />
+          <feDropShadow dx="0" dy={compact ? 1.6 : 2.4} stdDeviation="0" floodColor="#4a1707" floodOpacity="0.36" />
+        </filter>
+        <text
+          id={textId}
+          x="16"
+          y="172"
+          fontFamily="Arial Black, Impact, Haettenschweiler, sans-serif"
+          fontSize="202"
+          fontWeight="900"
+          letterSpacing="-16"
+        >
+          great
+        </text>
+        <clipPath id={clipId}>
+          <use href={`#${textId}`} />
+        </clipPath>
+      </defs>
+
+      <use href={`#${textId}`} fill="#fff" filter={`url(#${shadowId})`} />
+      <g clipPath={`url(#${clipId})`}>
+        <rect x="0" y="102" width="640" height="122" fill="#ef4b14" />
+        <path
+          fill="#ffcc12"
+          d="M20 224c32-64 22-86 12-116 38 32 32 74 62 91 18-46 3-66-3-91 48 40 49 85 82 110 30-58 11-90 4-124 51 45 53 100 95 126 24-42 14-71 1-103 45 32 49 80 84 102 31-63 10-94-5-126 55 39 56 99 102 128 23-45 12-76 0-104 45 32 50 77 88 103 24-44 10-72-2-102 43 31 49 77 82 104v22H20z"
+        />
+        <path
+          fill="#ff7b08"
+          d="M0 218c24-37 20-60 3-91 35 19 43 55 34 86 33-27 30-69 20-97 39 27 43 72 76 93 28-37 18-71 8-99 42 27 45 75 76 100 24-35 18-67 7-95 42 26 44 72 77 95 28-39 18-72 6-103 44 30 47 81 84 106 25-34 17-65 4-93 42 24 46 68 82 92 23-36 15-66 4-94 39 24 47 68 80 92 19-31 17-58 5-86 34 20 43 57 64 82v32H0z"
+        />
+        <path
+          fill="#ffffff"
+          d="M4 124c25 24 18 58 3 81 29-15 36-50 24-79 33 24 34 60 18 87 31-16 41-53 30-83 32 25 34 60 16 88 32-16 42-53 31-84 34 26 34 62 13 87 37-15 47-58 33-92 34 27 35 63 14 91 39-16 47-59 31-93 33 24 37 60 19 90 35-14 42-54 30-85 31 22 37 58 21 84 33-15 43-54 29-85 29 22 37 57 25 83 30-16 37-52 29-76 34 23 39 57 26 83 33-16 43-55 30-86 31 23 38 58 25 85 32-14 40-50 28-80 32 22 39 56 27 80 27-13 35-44 28-71 26 19 35 47 31 72h-634z"
+          opacity="0.98"
+        />
+      </g>
+      <use href={`#${textId}`} fill="none" stroke="rgba(255,255,255,0.92)" strokeWidth="1.8" />
+    </svg>
+  );
 }
 
 function ProjectMarqueeCard({
@@ -808,13 +862,9 @@ export function ContactPanelContent({
                 <span
                   role="img"
                   aria-label="great"
-                  className="relative inline-flex h-[0.78em] w-[2.08em] translate-y-[0.08em] align-baseline"
+                  className="relative inline-flex h-[0.82em] w-[2.28em] translate-y-[0.11em] align-baseline"
                 >
-                  <span
-                    aria-hidden="true"
-                    className="absolute inset-0 bg-contain bg-center bg-no-repeat"
-                    style={{ backgroundImage: CONTACT_GREAT_WORD_BACKGROUND }}
-                  />
+                  <GreatWordArt compact />
                 </span>
               </span>
               <span className="block text-[1em]">together.</span>
@@ -877,13 +927,9 @@ export function ContactPanelContent({
                 <span
                   role="img"
                   aria-label="great"
-                  className="relative inline-flex h-[0.82em] w-[2.18em] translate-y-[0.08em] align-baseline"
+                  className="relative inline-flex h-[0.86em] w-[2.42em] translate-y-[0.12em] align-baseline"
                 >
-                  <span
-                    aria-hidden="true"
-                    className="absolute inset-0 bg-contain bg-center bg-no-repeat"
-                    style={{ backgroundImage: CONTACT_GREAT_WORD_BACKGROUND }}
-                  />
+                  <GreatWordArt />
                 </span>
               </span>
               <span className="block text-[1em]">together.</span>
