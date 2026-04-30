@@ -327,6 +327,110 @@ function GreatWordArt({ compact = false }: { compact?: boolean }) {
   );
 }
 
+function ProjectsOverviewWordmark() {
+  const rawId = useId().replace(/:/g, "");
+  const inkGradientId = `projects-wordmark-ink-${rawId}`;
+  const shadowId = `projects-wordmark-shadow-${rawId}`;
+
+  return (
+    <svg
+      viewBox="0 0 430 338"
+      role="img"
+      aria-label="discover PROJECTS I have built"
+      className="block w-full overflow-visible"
+      preserveAspectRatio="xMidYMid meet"
+    >
+      <defs>
+        <linearGradient id={inkGradientId} x1="34" x2="380" y1="52" y2="286" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor="#123f82" />
+          <stop offset="0.52" stopColor="#0b3671" />
+          <stop offset="1" stopColor="#12345f" />
+        </linearGradient>
+        <filter id={shadowId} x="-16%" y="-18%" width="132%" height="142%">
+          <feDropShadow dx="5" dy="7" stdDeviation="0" floodColor="#7fc766" floodOpacity="0.52" />
+          <feDropShadow dx="0" dy="16" stdDeviation="11" floodColor="#2d7c45" floodOpacity="0.13" />
+          <feDropShadow dx="0" dy="3" stdDeviation="0" floodColor="#0b2d5c" floodOpacity="0.16" />
+        </filter>
+      </defs>
+
+      <g transform="rotate(-1.2 215 169)">
+        <path
+          d="M36 169 C112 117 302 112 392 158 C333 212 118 223 39 176"
+          fill="none"
+          stroke="#0b2f5f"
+          strokeLinecap="round"
+          strokeWidth="4"
+          opacity="0.14"
+        />
+        <path
+          d="M48 293 C132 314 274 315 366 286"
+          fill="none"
+          stroke="#74bd5a"
+          strokeLinecap="round"
+          strokeWidth="5"
+          opacity="0.62"
+        />
+        <g
+          filter={`url(#${shadowId})`}
+          paintOrder="stroke fill"
+          style={{
+            fontFamily: "'Arial Rounded MT Bold', 'Avenir Next', 'Trebuchet MS', sans-serif",
+            fontWeight: 900,
+          }}
+        >
+          <text
+            x="42"
+            y="92"
+            fill={`url(#${inkGradientId})`}
+            stroke="#eaf8df"
+            strokeWidth="1.2"
+            fontSize="54"
+            letterSpacing="3.5"
+            textLength="336"
+            lengthAdjust="spacingAndGlyphs"
+          >
+            discover
+          </text>
+          <text
+            x="23"
+            y="204"
+            fill={`url(#${inkGradientId})`}
+            stroke="#eaf8df"
+            strokeWidth="3.2"
+            fontSize="78"
+            letterSpacing="-3.4"
+            textLength="384"
+            lengthAdjust="spacingAndGlyphs"
+          >
+            PROJECTS
+          </text>
+          <text
+            x="43"
+            y="279"
+            fill={`url(#${inkGradientId})`}
+            stroke="#eaf8df"
+            strokeWidth="1.6"
+            fontSize="55"
+            letterSpacing="-1.3"
+            textLength="337"
+            lengthAdjust="spacingAndGlyphs"
+          >
+            I have built
+          </text>
+        </g>
+        <g fill="#235c8f" opacity="0.62">
+          <circle cx="32" cy="108" r="4" />
+          <circle cx="392" cy="228" r="5" />
+        </g>
+        <g fill="#74bd5a">
+          <circle cx="369" cy="91" r="6" opacity="0.62" />
+          <circle cx="58" cy="232" r="4" opacity="0.46" />
+        </g>
+      </g>
+    </svg>
+  );
+}
+
 function ProjectMarqueeCard({
   project,
   onSelectProject,
@@ -562,36 +666,8 @@ export function ProjectsPanelContent({
       <div className="h-full w-full overflow-hidden bg-[linear-gradient(180deg,#d6edc3_0%,#cbe7b1_100%)] p-0 text-[#1d3658]">
         <div className="grid h-full min-h-0 gap-0 lg:grid-cols-[minmax(240px,0.62fr)_minmax(0,1.38fr)]">
           <section className="flex min-h-0 items-center px-5 py-8 md:px-6">
-            <div className="w-full max-w-[390px] -rotate-[1deg]">
-              <svg
-                viewBox="0 0 390 285"
-                role="img"
-                aria-label="Discover projects I have built"
-                className="block w-full overflow-visible"
-              >
-                <defs>
-                  <filter id="projectsTextShadow" x="-20%" y="-20%" width="140%" height="150%">
-                    <feDropShadow dx="0" dy="5" stdDeviation="0" floodColor="#0f2f62" floodOpacity="0.14" />
-                    <feDropShadow dx="0" dy="14" stdDeviation="8" floodColor="#3d7f35" floodOpacity="0.10" />
-                  </filter>
-                </defs>
-                <g
-                  fill="#102f63"
-                  filter="url(#projectsTextShadow)"
-                  paintOrder="stroke fill"
-                  style={{ fontFamily: "'Avenir Next', 'Trebuchet MS', sans-serif", fontWeight: 900 }}
-                >
-                  <text x="55" y="91" fontSize="34" letterSpacing="4" transform="rotate(1 55 91)">
-                    DISCOVER
-                  </text>
-                  <text x="40" y="183" fontSize="74" letterSpacing="-3.5" textLength="310" lengthAdjust="spacingAndGlyphs" transform="rotate(-1.4 40 183)">
-                    projects
-                  </text>
-                  <text x="58" y="254" fontSize="46" letterSpacing="-1.5" textLength="274" lengthAdjust="spacingAndGlyphs" transform="rotate(0.7 58 254)">
-                    I have built
-                  </text>
-                </g>
-              </svg>
+            <div className="w-full max-w-[420px]">
+              <ProjectsOverviewWordmark />
             </div>
           </section>
 
