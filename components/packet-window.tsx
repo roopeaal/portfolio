@@ -147,7 +147,7 @@ export function PacketWindow({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 18 }}
             transition={windowTransition}
-            className="fixed inset-x-[1.6vw] top-[1.5vh] z-[510] mx-auto h-[calc(100dvh-3vh)] w-[min(1520px,96.8vw)] overflow-hidden rounded-[10px] bg-[#efefef] shadow-[0_26px_90px_rgba(15,23,42,0.26)] focus:outline-none"
+            className="fixed inset-x-[1.2vw] top-[1.2vh] z-[510] mx-auto h-[calc(100dvh-2.4vh)] w-[min(1520px,97.6vw)] overflow-hidden rounded-[10px] bg-[#efefef] shadow-[0_26px_90px_rgba(15,23,42,0.26)] focus:outline-none"
             role="dialog"
             aria-modal="true"
             aria-labelledby={titleId}
@@ -167,7 +167,7 @@ export function PacketWindow({
               </button>
             </div>
 
-            <div className="flex h-[30px] items-end justify-center gap-1 border-b border-[#d6d6d6] bg-[#f4f4f4] px-3 pt-1 text-[12px]">
+            <div className="flex h-[30px] items-end justify-start gap-1 overflow-x-auto border-b border-[#d6d6d6] bg-[#f4f4f4] px-3 pt-1 text-[12px] [scrollbar-width:none] sm:justify-center [&::-webkit-scrollbar]:hidden">
               {PANEL_NAV_ITEMS.map((item) => {
                 const isActive = item.panel === type;
 
@@ -237,9 +237,9 @@ export function PacketWindow({
                 </div>
               </div>
             ) : (
-              <div className="flex h-[calc(100%-60px)] bg-[#ededed] p-3 md:p-4">
+              <div className="flex h-[calc(100%-60px)] bg-[#ededed] p-2 md:p-3 xl:p-4">
                 <div
-                  className="mr-3 hidden w-[174px] shrink-0 overflow-hidden border border-[#a8a8a8] bg-[#efefef] md:block"
+                  className="mr-3 hidden w-[clamp(150px,13vw,174px)] shrink-0 overflow-hidden border border-[#a8a8a8] bg-[#efefef] lg:block"
                 >
                   <div className="border-b border-[#b4b4b4] bg-[#f2f2f2] px-3 py-2 text-center text-[12px] font-semibold tracking-wide text-[#666666]">
                     {sidebarTitle}

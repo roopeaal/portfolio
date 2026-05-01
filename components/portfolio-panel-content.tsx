@@ -16,14 +16,14 @@ export interface PanelSidebarItem {
 
 export function HomePanelContent() {
   return (
-    <div className="h-full overflow-auto bg-[#f5f7fb] p-4 md:p-6">
+    <div className="h-full overflow-auto bg-[#f5f7fb] p-3 sm:p-4 md:p-5 xl:p-6">
       <div className="mx-auto max-w-[1080px] overflow-hidden rounded-[24px] border border-[#d6deea] bg-white shadow-[0_16px_40px_rgba(15,23,42,0.08)]">
         <div className="border-b border-[#e5ebf3] bg-[linear-gradient(180deg,#f7faff_0%,#edf3fb_100%)] px-6 py-4 text-[12px] text-[#667085]">
           {profile.linkedinLabel}
         </div>
 
-        <div className="grid gap-6 p-5 lg:grid-cols-[220px_1fr] lg:p-6">
-          <div className="mx-auto w-full max-w-[220px]">
+        <div className="grid gap-5 p-4 md:grid-cols-[170px_minmax(0,1fr)] md:items-start lg:grid-cols-[190px_minmax(0,1fr)] lg:p-6 xl:grid-cols-[220px_minmax(0,1fr)]">
+          <div className="mx-auto w-full max-w-[180px] md:mx-0 xl:max-w-[220px]">
             <div className="relative aspect-square overflow-hidden rounded-full border border-[#dbe3eb] bg-[#f8fafc] shadow-[0_10px_28px_rgba(15,23,42,0.08)]">
               <Image
                 src={profile.portraitSrc}
@@ -136,7 +136,7 @@ export function AboutPanelContent({
 
   return (
     <div
-      className="relative h-full w-full overflow-hidden text-[#d5deea]"
+      className="relative h-full w-full overflow-y-auto text-[#d5deea] lg:overflow-hidden"
       style={{
         backgroundColor: "#1a2230",
       }}
@@ -152,7 +152,7 @@ export function AboutPanelContent({
         }}
       />
 
-      <div className="relative z-[1] flex h-full min-h-0 flex-col px-4 py-4 md:px-6 md:py-5">
+      <div className="relative z-[1] flex min-h-full flex-col px-4 py-4 md:px-6 md:py-5 lg:h-full lg:min-h-0">
         <header className="text-center">
           <p className="text-[11px] font-semibold uppercase tracking-[0.34em] text-[#c6d1df]" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
             <span className="block">{heroLineTop}</span>
@@ -165,16 +165,16 @@ export function AboutPanelContent({
           </div>
         </header>
 
-        <div className="mt-3 grid min-h-0 flex-1 items-center gap-4 lg:grid-cols-[1fr_400px_1fr]">
+        <div className="mt-4 grid flex-1 items-start gap-5 lg:min-h-0 lg:grid-cols-[minmax(0,1fr)_minmax(260px,400px)_minmax(0,1fr)] lg:items-center">
           <section
-            className="mx-auto max-w-[360px] px-4 text-center text-[13px] leading-8 text-[#d7e0eb]"
+            className="mx-auto w-full max-w-[680px] px-2 text-left text-[13px] leading-7 text-[#d7e0eb] lg:max-w-[360px] lg:px-4 lg:text-center lg:leading-8"
             style={{ fontFamily: "Georgia, 'Times New Roman', serif", textShadow: "0 1px 0 rgba(0,0,0,0.28)" }}
           >
             {leftCopy}
           </section>
 
-          <figure className="flex h-full min-h-0 flex-col items-center justify-center">
-            <div className="relative min-h-0 w-full max-w-[400px] flex-1 overflow-hidden">
+          <figure className="flex min-h-[300px] flex-col items-center justify-center lg:h-full lg:min-h-0">
+            <div className="relative h-[320px] w-full max-w-[360px] overflow-hidden lg:h-auto lg:min-h-0 lg:max-w-[400px] lg:flex-1">
               <Image
                 src={portraitSrc}
                 alt={`${profile.name} vintage portrait`}
@@ -204,7 +204,7 @@ export function AboutPanelContent({
           </figure>
 
           <section
-            className="mx-auto max-w-[360px] px-4 text-center text-[13px] leading-8 text-[#d7e0eb]"
+            className="mx-auto w-full max-w-[680px] px-2 text-left text-[13px] leading-7 text-[#d7e0eb] lg:max-w-[360px] lg:px-4 lg:text-center lg:leading-8"
             style={{ fontFamily: "Georgia, 'Times New Roman', serif", textShadow: "0 1px 0 rgba(0,0,0,0.28)" }}
           >
             {rightCopy}
@@ -341,36 +341,47 @@ function ProjectMarqueeLane({
   onSelectProject,
 }: {
   items: (typeof projects)[number][];
-  direction: "up" | "down";
+  direction: "up" | "down" | "left" | "right";
   onSelectProject?: (slug: string) => void;
 }) {
   const laneRef = useRef<HTMLDivElement>(null);
   const segmentRef = useRef<HTMLDivElement>(null);
   const isPausedRef = useRef(false);
+  const isHorizontal = direction === "left" || direction === "right";
 
   useEffect(() => {
     const lane = laneRef.current;
     const segment = segmentRef.current;
     if (!lane || !segment || items.length === 0) return;
 
-    let segmentHeight = 0;
+    let segmentSize = 0;
     let rafId = 0;
     let previousTime = 0;
-    const speedPxPerSecond = 20;
+    const speedPxPerSecond = isHorizontal ? 16 : 20;
 
     const normalizeScrollPosition = () => {
-      if (segmentHeight <= 0) return;
-      const min = segmentHeight * 0.5;
-      const max = segmentHeight * 1.5;
+      if (segmentSize <= 0) return;
+      const min = segmentSize * 0.5;
+      const max = segmentSize * 1.5;
 
-      while (lane.scrollTop < min) lane.scrollTop += segmentHeight;
-      while (lane.scrollTop > max) lane.scrollTop -= segmentHeight;
+      if (isHorizontal) {
+        while (lane.scrollLeft < min) lane.scrollLeft += segmentSize;
+        while (lane.scrollLeft > max) lane.scrollLeft -= segmentSize;
+        return;
+      }
+
+      while (lane.scrollTop < min) lane.scrollTop += segmentSize;
+      while (lane.scrollTop > max) lane.scrollTop -= segmentSize;
     };
 
     const setBaseline = () => {
-      segmentHeight = segment.scrollHeight;
-      if (segmentHeight > 0) {
-        lane.scrollTop = segmentHeight;
+      segmentSize = isHorizontal ? segment.scrollWidth : segment.scrollHeight;
+      if (segmentSize > 0) {
+        if (isHorizontal) {
+          lane.scrollLeft = segmentSize;
+        } else {
+          lane.scrollTop = segmentSize;
+        }
       }
     };
 
@@ -388,9 +399,16 @@ function ProjectMarqueeLane({
       const deltaTime = Math.min((time - previousTime) / 1000, 0.05);
       previousTime = time;
 
-      if (segmentHeight > 0 && !isPausedRef.current) {
-        const delta = (direction === "up" ? -1 : 1) * speedPxPerSecond * deltaTime;
-        lane.scrollTop += delta;
+      if (segmentSize > 0 && !isPausedRef.current) {
+        const delta =
+          (direction === "up" || direction === "left" ? -1 : 1) *
+          speedPxPerSecond *
+          deltaTime;
+        if (isHorizontal) {
+          lane.scrollLeft += delta;
+        } else {
+          lane.scrollTop += delta;
+        }
         normalizeScrollPosition();
       }
 
@@ -403,7 +421,19 @@ function ProjectMarqueeLane({
       lane.removeEventListener("scroll", handleScroll);
       observer.disconnect();
     };
-  }, [direction, items]);
+  }, [direction, isHorizontal, items]);
+
+  const segmentClassName = isHorizontal ? "flex h-full w-max items-center gap-4 pr-4" : "space-y-5 pb-5";
+  const cardWrapClassName = isHorizontal ? "w-[min(78vw,360px)] shrink-0" : "";
+  const renderSegment = (segmentName: string, hidden = false) => (
+    <div ref={hidden ? undefined : segmentRef} aria-hidden={hidden || undefined} className={segmentClassName}>
+      {items.map((project) => (
+        <div key={`${project.slug}-${segmentName}`} className={cardWrapClassName}>
+          <ProjectMarqueeCard project={project} onSelectProject={onSelectProject} />
+        </div>
+      ))}
+    </div>
+  );
 
   return (
     <div
@@ -425,23 +455,23 @@ function ProjectMarqueeLane({
     >
       <div
         ref={laneRef}
-        className="h-full overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className={`h-full [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${
+          isHorizontal ? "overflow-x-auto overflow-y-hidden" : "overflow-y-auto overflow-x-hidden"
+        }`}
       >
-        <div ref={segmentRef} className="space-y-5 pb-5">
-          {items.map((project) => (
-            <ProjectMarqueeCard key={`${project.slug}-segment-a`} project={project} onSelectProject={onSelectProject} />
-          ))}
-        </div>
-        <div aria-hidden className="space-y-5 pb-5">
-          {items.map((project) => (
-            <ProjectMarqueeCard key={`${project.slug}-segment-b`} project={project} onSelectProject={onSelectProject} />
-          ))}
-        </div>
-        <div aria-hidden className="space-y-5 pb-5">
-          {items.map((project) => (
-            <ProjectMarqueeCard key={`${project.slug}-segment-c`} project={project} onSelectProject={onSelectProject} />
-          ))}
-        </div>
+        {isHorizontal ? (
+          <div className="flex h-full w-max items-center">
+            {renderSegment("segment-a")}
+            {renderSegment("segment-b", true)}
+            {renderSegment("segment-c", true)}
+          </div>
+        ) : (
+          <>
+            {renderSegment("segment-a")}
+            {renderSegment("segment-b", true)}
+            {renderSegment("segment-c", true)}
+          </>
+        )}
       </div>
     </div>
   );
@@ -478,6 +508,10 @@ export function ProjectsPanelContent({
     const items = overviewProjectOrder.filter((_, index) => index % 2 === 1);
     return items.length > 0 ? items : overviewProjectOrder;
   }, [overviewProjectOrder]);
+  const mobileSecondLaneProjects = useMemo(
+    () => [...rightLaneProjects, ...leftLaneProjects],
+    [leftLaneProjects, rightLaneProjects],
+  );
   const [heroImageFailed, setHeroImageFailed] = useState(false);
 
   useEffect(() => {
@@ -502,9 +536,9 @@ export function ProjectsPanelContent({
 
   if (!selectedProject) {
     return (
-      <div className="h-full w-full overflow-hidden bg-[linear-gradient(180deg,#d6edc3_0%,#cbe7b1_100%)] p-0 text-[#1d3658]">
-        <div className="grid h-full min-h-0 gap-0 lg:grid-cols-[minmax(240px,0.62fr)_minmax(0,1.38fr)]">
-          <section className="flex min-h-0 items-center px-5 py-8 md:px-6">
+      <div className="h-full w-full overflow-y-auto bg-[linear-gradient(180deg,#d6edc3_0%,#cbe7b1_100%)] p-0 text-[#1d3658] lg:overflow-hidden">
+        <div className="grid min-h-full gap-0 lg:h-full lg:min-h-0 lg:grid-cols-[minmax(240px,0.62fr)_minmax(0,1.38fr)]">
+          <section className="flex items-center px-5 py-6 md:px-6 lg:min-h-0 lg:py-8">
             <div className="max-w-[360px]">
               <h2 className="text-[clamp(2.15rem,4.45vw,4.1rem)] font-semibold leading-[0.93] tracking-[-0.024em] text-[#163f81]">
                 Discover projects I have built
@@ -512,9 +546,19 @@ export function ProjectsPanelContent({
             </div>
           </section>
 
-          <section className="grid h-full min-h-0 gap-5 overflow-hidden px-4 py-0 md:grid-cols-2 md:px-5">
-            <ProjectMarqueeLane items={leftLaneProjects} direction="up" onSelectProject={onSelectProject} />
-            <ProjectMarqueeLane items={rightLaneProjects} direction="down" onSelectProject={onSelectProject} />
+          <section className="grid min-h-[520px] gap-4 overflow-hidden px-4 pb-5 md:px-5 lg:h-full lg:min-h-0 lg:grid-cols-2 lg:gap-5 lg:py-0">
+            <div className="h-[240px] lg:hidden">
+              <ProjectMarqueeLane items={overviewProjectOrder} direction="left" onSelectProject={onSelectProject} />
+            </div>
+            <div className="h-[240px] lg:hidden">
+              <ProjectMarqueeLane items={mobileSecondLaneProjects} direction="right" onSelectProject={onSelectProject} />
+            </div>
+            <div className="hidden h-full min-h-0 lg:block">
+              <ProjectMarqueeLane items={leftLaneProjects} direction="up" onSelectProject={onSelectProject} />
+            </div>
+            <div className="hidden h-full min-h-0 lg:block">
+              <ProjectMarqueeLane items={rightLaneProjects} direction="down" onSelectProject={onSelectProject} />
+            </div>
           </section>
         </div>
       </div>
@@ -828,9 +872,9 @@ export function ContactPanelContent({
   }
 
   return (
-    <div className="h-full w-full overflow-hidden rounded-none bg-[linear-gradient(180deg,#ef6620_0%,#e85517_100%)] text-[#1f120b]">
-      <div className="relative grid h-full min-h-0 gap-0 lg:grid-cols-[minmax(0,1.03fr)_minmax(0,0.97fr)]">
-        <section className="relative flex min-h-0 flex-col px-9 pb-0 pt-7 text-white">
+    <div className="h-full w-full overflow-y-auto rounded-none bg-[linear-gradient(180deg,#ef6620_0%,#e85517_100%)] text-[#1f120b] lg:overflow-hidden">
+      <div className="relative grid min-h-full gap-0 lg:h-full lg:min-h-0 lg:grid-cols-[minmax(0,1.03fr)_minmax(0,0.97fr)]">
+        <section className="relative flex min-h-[720px] flex-col px-5 pb-0 pt-6 text-white sm:px-7 lg:min-h-0 lg:px-9 lg:pt-7">
             <h2 className="relative z-[2] max-w-[700px] text-[clamp(2rem,4.7vw,4.35rem)] font-extrabold leading-[0.88] tracking-[-0.03em] text-white [text-shadow:0_2px_0_rgba(118,48,20,0.22)]">
               <span className="block">Let&apos;s build</span>
               <span className="flex flex-wrap items-baseline gap-x-4 gap-y-0">
@@ -846,7 +890,7 @@ export function ContactPanelContent({
             <p>Vantaa, Hämeenkylä</p>
           </div>
 
-          <div className="relative z-[2] mt-4 flex min-h-0 flex-1 items-end">
+          <div className="relative z-[2] mt-4 flex min-h-[300px] flex-1 items-end lg:min-h-0">
             <div className="relative h-full min-h-[320px] w-[88%] overflow-hidden border border-[#ecb8ce]/85 bg-[#f2e3ea]">
               <Image
                 src="/portfolio/contact-splash-cup.png"
@@ -861,8 +905,8 @@ export function ContactPanelContent({
           </div>
         </section>
 
-        <aside className="relative flex min-h-0 flex-col pl-0 pr-7 pt-0">
-          <div className="relative z-[2] flex min-h-0 flex-[0_0_80%] flex-col bg-[#f3e6eb] px-8 pb-7 pt-7 shadow-[0_14px_28px_rgba(76,28,15,0.1)]">
+        <aside className="relative flex min-h-[660px] flex-col px-5 pb-6 pt-0 sm:px-7 lg:min-h-0 lg:pl-0 lg:pr-7">
+          <div className="relative z-[2] flex min-h-[540px] flex-col bg-[#f3e6eb] px-5 pb-7 pt-7 shadow-[0_14px_28px_rgba(76,28,15,0.1)] sm:px-8 lg:min-h-0 lg:flex-[0_0_80%]">
             <h3 className="text-[clamp(2.05rem,3.7vw,3.25rem)] font-semibold leading-[1.03] text-[#8b3f1c]">Fill in your details</h3>
 
             <form onSubmit={handleContactSubmit} className="mt-5 flex min-h-0 flex-1 flex-col gap-3.5" autoComplete="off">
@@ -928,7 +972,7 @@ export function ContactPanelContent({
             </form>
           </div>
 
-          <div className="relative z-[2] grid w-full grid-cols-4 items-center justify-items-center gap-2 px-8 pb-5 pt-2">
+          <div className="relative z-[2] grid w-full grid-cols-4 items-center justify-items-center gap-2 px-4 pb-5 pt-3 sm:px-8 lg:pt-2">
             <SocialLogoLink href="https://www.linkedin.com/in/roope-aaltonen/" label="LinkedIn" className="!h-[clamp(72px,7.6vw,126px)] !w-[clamp(72px,7.6vw,126px)] !border-0 !bg-transparent !shadow-none hover:!translate-y-0">
               <LinkedInGlyph />
             </SocialLogoLink>
