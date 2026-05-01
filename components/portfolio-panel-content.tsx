@@ -270,80 +270,6 @@ function stripUrls(text: string): string {
   return text.replace(/https?:\/\/\S+/gi, "").replace(/\s{2,}/g, " ").trim();
 }
 
-function GreatWordArt({ compact = false }: { compact?: boolean }) {
-  const rawId = useId().replace(/:/g, "");
-  const textId = `great-word-text-${rawId}`;
-  const clipId = `great-word-clip-${rawId}`;
-  const shadowId = `great-word-shadow-${rawId}`;
-  const shineId = `great-word-shine-${rawId}`;
-
-  return (
-    <span
-      role="img"
-      aria-label="great"
-      className={`relative inline-flex shrink-0 align-baseline ${compact ? "h-[0.94em] w-[2.36em] translate-y-[0.12em]" : "h-[0.99em] w-[2.46em] translate-y-[0.13em]"}`}
-    >
-      <svg
-        viewBox="0 0 342 132"
-        aria-hidden="true"
-        className="block h-full w-full overflow-visible"
-        preserveAspectRatio="xMidYMid meet"
-      >
-        <defs>
-          <filter id={shadowId} x="-12%" y="-24%" width="124%" height="154%">
-            <feDropShadow dx="0" dy={compact ? 4 : 7} stdDeviation={compact ? 2 : 3.2} floodColor="#5e210d" floodOpacity="0.3" />
-            <feDropShadow dx="0" dy={compact ? 1.4 : 2.2} stdDeviation="0" floodColor="#7b2c12" floodOpacity="0.24" />
-          </filter>
-          <linearGradient id={shineId} x1="0" x2="0" y1="0" y2="132" gradientUnits="userSpaceOnUse">
-            <stop offset="0" stopColor="#ffffff" />
-            <stop offset="0.58" stopColor="#ffffff" />
-            <stop offset="1" stopColor="#fff3e4" />
-          </linearGradient>
-          <text
-            id={textId}
-            x="6"
-            y="99"
-            fontFamily="Arial Black, Avenir Next, Helvetica Neue, sans-serif"
-            fontSize="106"
-            fontWeight="900"
-            letterSpacing="-8"
-          >
-            great
-          </text>
-          <clipPath id={clipId}>
-            <use href={`#${textId}`} />
-          </clipPath>
-        </defs>
-
-        <use href={`#${textId}`} fill={`url(#${shineId})`} filter={`url(#${shadowId})`} />
-        <g clipPath={`url(#${clipId})`}>
-          <path
-            d="M4 70 C31 61 51 78 69 66 C94 50 118 71 143 61 C174 49 197 70 224 59 C253 47 279 70 338 58 L338 132 L4 132 Z"
-            fill="#ee4e13"
-            opacity="0.98"
-          />
-          <path
-            d="M-6 131 C6 101 -4 86 0 66 C19 82 21 104 35 116 C49 88 38 73 45 56 C64 78 64 106 82 121 C98 88 87 71 96 50 C116 76 116 106 135 122 C149 91 143 74 151 57 C171 81 172 108 193 122 C207 90 199 72 208 52 C229 80 229 108 251 122 C264 91 258 74 266 58 C286 82 287 107 307 122 C319 96 313 80 324 63 C344 91 343 113 353 131 Z"
-            fill="#ffce14"
-          />
-          <path
-            d="M3 131 C22 95 10 77 13 54 C35 79 33 111 56 125 C70 91 60 72 70 49 C91 80 91 110 114 126 C127 91 117 75 129 53 C150 82 151 112 175 126 C189 92 179 73 191 51 C214 82 214 111 239 126 C252 92 244 76 256 54 C277 83 278 113 302 126 C316 96 306 80 319 59 C338 85 342 110 347 131 Z"
-            fill="#ff7a08"
-            opacity="0.96"
-          />
-          <path
-            d="M-4 93 C18 104 21 122 13 132 H49 C34 112 39 91 57 76 C51 101 63 116 81 132 H113 C91 112 96 88 118 70 C111 99 127 116 146 132 H181 C158 112 163 88 185 69 C181 100 199 116 218 132 H254 C231 111 237 90 258 73 C253 101 270 116 290 132 H342 C326 113 328 93 344 78 L344 132 L-4 132 Z"
-            fill="#ffffff"
-            opacity="0.98"
-          />
-        </g>
-        <use href={`#${textId}`} fill="none" stroke="#ffffff" strokeLinejoin="round" strokeWidth="3.8" opacity="0.94" />
-        <use href={`#${textId}`} fill="none" stroke="#cf4618" strokeLinejoin="round" strokeWidth="1.15" opacity="0.36" />
-      </svg>
-    </span>
-  );
-}
-
 function ProjectsOverviewWordmark() {
   const rawId = useId().replace(/:/g, "");
   const inkGradientId = `projects-wordmark-ink-${rawId}`;
@@ -935,7 +861,7 @@ export function ContactPanelContent({
               <span className="block">Let&apos;s build</span>
               <span className="flex items-baseline gap-1.5">
                 <span>something</span>
-                <GreatWordArt compact />
+                <span>great</span>
               </span>
               <span className="block text-[1em]">together.</span>
             </h3>
@@ -994,7 +920,7 @@ export function ContactPanelContent({
               <span className="block">Let&apos;s build</span>
               <span className="flex flex-wrap items-baseline gap-x-4 gap-y-0">
                 <span>something</span>
-                <GreatWordArt />
+                <span>great</span>
               </span>
               <span className="block text-[1em]">together.</span>
             </h2>
