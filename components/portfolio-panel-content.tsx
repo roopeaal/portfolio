@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useId, useMemo, useRef, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { projects } from "@/content/projects";
 import { profile } from "@/content/profile";
 
@@ -270,93 +270,6 @@ function stripUrls(text: string): string {
   return text.replace(/https?:\/\/\S+/gi, "").replace(/\s{2,}/g, " ").trim();
 }
 
-function ProjectsOverviewWordmark() {
-  const rawId = useId().replace(/:/g, "");
-  const inkGradientId = `projects-wordmark-ink-${rawId}`;
-  const shadowId = `projects-wordmark-shadow-${rawId}`;
-
-  return (
-    <svg
-      viewBox="0 0 430 338"
-      role="img"
-      aria-label="discover PROJECTS I have built"
-      className="block w-full overflow-visible"
-      preserveAspectRatio="xMidYMid meet"
-    >
-      <defs>
-        <linearGradient id={inkGradientId} x1="54" x2="378" y1="82" y2="250" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stopColor="#0e356d" />
-          <stop offset="0.54" stopColor="#143f81" />
-          <stop offset="1" stopColor="#0b2b58" />
-        </linearGradient>
-        <filter id={shadowId} x="-8%" y="-16%" width="116%" height="132%">
-          <feDropShadow dx="0" dy="10" stdDeviation="10" floodColor="#1f6a4d" floodOpacity="0.08" />
-          <feDropShadow dx="0" dy="1" stdDeviation="0" floodColor="#eff9e8" floodOpacity="0.8" />
-        </filter>
-      </defs>
-
-      <g>
-        <path d="M52 64H377" stroke="#8fca7d" strokeWidth="1" opacity="0.52" />
-        <path d="M52 268H377" stroke="#8fca7d" strokeWidth="1" opacity="0.45" />
-        <path d="M52 64V268" stroke="#7fc766" strokeLinecap="round" strokeWidth="4" />
-        <path d="M72 203H334" stroke="#143f81" strokeLinecap="round" strokeWidth="2" opacity="0.1" />
-        <circle cx="52" cy="64" r="5" fill="#7fc766" opacity="0.82" />
-        <circle cx="52" cy="268" r="5" fill="#143f81" opacity="0.72" />
-        <g
-          filter={`url(#${shadowId})`}
-          fill={`url(#${inkGradientId})`}
-          style={{
-            fontFamily: "'Avenir Next', 'Helvetica Neue', sans-serif",
-          }}
-        >
-          <text
-            x="76"
-            y="105"
-            fontSize="21"
-            fontWeight="700"
-            letterSpacing="4.8"
-            textLength="185"
-            lengthAdjust="spacingAndGlyphs"
-          >
-            discover
-          </text>
-          <text
-            x="72"
-            y="184"
-            fontSize="66"
-            fontWeight="900"
-            letterSpacing="-2.7"
-            textLength="306"
-            lengthAdjust="spacingAndGlyphs"
-          >
-            PROJECTS
-          </text>
-          <text
-            x="76"
-            y="243"
-            fontSize="33"
-            fontWeight="650"
-            letterSpacing="0.2"
-            textLength="245"
-            lengthAdjust="spacingAndGlyphs"
-          >
-            I have built
-          </text>
-        </g>
-        <g
-          fill="#29528f"
-          opacity="0.58"
-          style={{ fontFamily: "'Avenir Next', 'Helvetica Neue', sans-serif", fontWeight: 700 }}
-        >
-          <text x="75" y="289" fontSize="10" letterSpacing="2.8">
-            CASE STUDIES / BUILT AND DOCUMENTED
-          </text>
-        </g>
-      </g>
-    </svg>
-  );
-}
-
 function ProjectMarqueeCard({
   project,
   onSelectProject,
@@ -592,8 +505,10 @@ export function ProjectsPanelContent({
       <div className="h-full w-full overflow-hidden bg-[linear-gradient(180deg,#d6edc3_0%,#cbe7b1_100%)] p-0 text-[#1d3658]">
         <div className="grid h-full min-h-0 gap-0 lg:grid-cols-[minmax(240px,0.62fr)_minmax(0,1.38fr)]">
           <section className="flex min-h-0 items-center px-5 py-8 md:px-6">
-            <div className="w-full max-w-[420px]">
-              <ProjectsOverviewWordmark />
+            <div className="max-w-[360px]">
+              <h2 className="text-[clamp(2.15rem,4.45vw,4.1rem)] font-semibold leading-[0.93] tracking-[-0.024em] text-[#163f81]">
+                Discover projects I have built
+              </h2>
             </div>
           </section>
 
