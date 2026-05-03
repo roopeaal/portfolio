@@ -111,6 +111,20 @@ const INITIAL_NODE_POSITIONS: Record<NodeKey, NodePosition> = {
   contact: { x: 958, y: 376 },
 };
 
+const MOBILE_TOPOLOGY_BREAKPOINT = 720;
+const MOBILE_DEVICE_SCALE: Record<NodeKey, number> = {
+  about: 0.72,
+  projects: 0.78,
+  home: 0.8,
+  contact: 0.8,
+};
+const MOBILE_LABEL_WIDTH: Record<NodeKey, number> = {
+  about: 184,
+  projects: 142,
+  home: 136,
+  contact: 164,
+};
+
 const NODE_POSITIONS_STORAGE_KEY = "portfolio-node-positions-v7";
 const SIM_CLOCK_START_STORAGE_KEY = "portfolio-simulation-clock-start-v1";
 const SIM_CLOCK_OFFSET_STORAGE_KEY = "portfolio-simulation-clock-offset-v1";
@@ -222,6 +236,30 @@ function clampNodePosition(node: NodeKey, position: NodePosition): NodePosition 
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);
+}
+
+function getMobileHomeNodePositions(metrics: { width: number; height: number }): Record<NodeKey, NodePosition> {
+  const sceneWidth = Math.max(metrics.width, 1);
+  const sceneHeight = Math.max(metrics.height, 1);
+  const sidePadding = clamp(sceneWidth * 0.04, 12, 18);
+
+  const visualWidth = (node: NodeKey) => UNIFIED_DEVICE_WIDTH * MOBILE_DEVICE_SCALE[node];
+  const pxToViewX = (visualLeft: number) => (visualLeft / sceneWidth) * VIEWBOX.width;
+  const pxToViewY = (visualTop: number) => (visualTop / sceneHeight) * VIEWBOX.height;
+
+  const topRow = clamp(sceneHeight * 0.07, 42, 62);
+  const bottomRow = clamp(sceneHeight - 306, 340, 430);
+  const aboutLeft = clamp(sceneWidth * 0.16, sidePadding + 42, 72);
+  const projectsLeft = Math.max(sidePadding + visualWidth("about") + 12, sceneWidth - visualWidth("projects") - sidePadding);
+  const homeLeft = clamp(sceneWidth * 0.14, sidePadding + 34, 70);
+  const contactLeft = Math.max(sidePadding + visualWidth("home") + 12, sceneWidth - visualWidth("contact") - sidePadding);
+
+  return {
+    about: { x: pxToViewX(aboutLeft), y: pxToViewY(topRow) },
+    projects: { x: pxToViewX(projectsLeft), y: pxToViewY(topRow + 8) },
+    home: { x: pxToViewX(homeLeft), y: pxToViewY(bottomRow) },
+    contact: { x: pxToViewX(contactLeft), y: pxToViewY(bottomRow + 2) },
+  };
 }
 
 function lerp(start: number, end: number, t: number) {
@@ -995,6 +1033,7 @@ export function TopologyHero() {
 
   const sceneRef = useRef<HTMLDivElement | null>(null);
   const sceneMetricsRef = useRef({ width: VIEWBOX.width, height: VIEWBOX.height });
+  const mobileTopologyRef = useRef(false);
 
   const nodePositionsRef = useRef<Record<NodeKey, NodePosition>>(INITIAL_NODE_POSITIONS);
   const nodeTargetPositionsRef = useRef<Record<NodeKey, NodePosition>>(INITIAL_NODE_POSITIONS);
@@ -1097,11 +1136,21 @@ export function TopologyHero() {
     [contactSection],
   );
 
-  const aboutCableAttach = getAnimatedDevicePoint("about", getRouterCableAttachPoint(nodePositions), nodePositions, active, draggingNode);
-  const homeAttach = getAnimatedDevicePoint("home", getAttachPoint("home", nodePositions), nodePositions, active, draggingNode);
-  const contactAttach = getAnimatedDevicePoint("contact", getAttachPoint("contact", nodePositions), nodePositions, active, draggingNode);
-  const switchLeftCableEnd = getAnimatedDevicePoint("projects", getSwitchCableStubEnd("left", nodePositions, sceneMetrics.width), nodePositions, active, draggingNode);
-  const switchRightCableEnd = getAnimatedDevicePoint("projects", getSwitchCableStubEnd("right", nodePositions, sceneMetrics.width), nodePositions, active, draggingNode);
+  const isMobileTopology = sceneMetrics.width < MOBILE_TOPOLOGY_BREAKPOINT;
+  const topologyNodePositions = useMemo(
+    () => (isMobileTopology ? getMobileHomeNodePositions(sceneMetrics) : nodePositions),
+    [isMobileTopology, nodePositions, sceneMetrics],
+  );
+
+  useEffect(() => {
+    mobileTopologyRef.current = isMobileTopology;
+  }, [isMobileTopology]);
+
+  const aboutCableAttach = getAnimatedDevicePoint("about", getRouterCableAttachPoint(topologyNodePositions), topologyNodePositions, active, draggingNode);
+  const homeAttach = getAnimatedDevicePoint("home", getAttachPoint("home", topologyNodePositions), topologyNodePositions, active, draggingNode);
+  const contactAttach = getAnimatedDevicePoint("contact", getAttachPoint("contact", topologyNodePositions), topologyNodePositions, active, draggingNode);
+  const switchLeftCableEnd = getAnimatedDevicePoint("projects", getSwitchCableStubEnd("left", topologyNodePositions, sceneMetrics.width), topologyNodePositions, active, draggingNode);
+  const switchRightCableEnd = getAnimatedDevicePoint("projects", getSwitchCableStubEnd("right", topologyNodePositions, sceneMetrics.width), topologyNodePositions, active, draggingNode);
 
   useEffect(() => {
     const timeoutIds = timeouts.current;
@@ -1342,6 +1391,7 @@ export function TopologyHero() {
       const scene = sceneRef.current;
 
       if (!state || !scene) return;
+      if (mobileTopologyRef.current) return;
 
       const rect = scene.getBoundingClientRect();
       const scaleX = VIEWBOX.width / rect.width;
@@ -1466,7 +1516,7 @@ export function TopologyHero() {
   const topIndicators = [0.32, 0.7].map((value) => pointOnCablePath(aboutCableAttach, switchLeftCableEnd, value, LEFT_CABLE_ROUTE_OFFSET_X));
   const diagIndicators = [0.4, 0.78].map((value) => pointOnCablePath(homeAttach, switchRightCableEnd, value, RIGHT_CABLE_ROUTE_OFFSET_X));
   const activePreview = active && !draggingNode ? getPreviewByNode(active) : null;
-  const previewStyle = active && !draggingNode ? getPreviewStyle(active, nodePositions) : undefined;
+  const previewStyle = active && !draggingNode && !isMobileTopology ? getPreviewStyle(active, topologyNodePositions) : undefined;
   const nodeStyle = useMemo(() => {
     if (!active || draggingNode) {
       return { about: 1, projects: 1, home: 1, contact: 1 };
@@ -1534,7 +1584,7 @@ export function TopologyHero() {
     <>
       <audio ref={phoneTapAudioRef} src="/phone-click.m4a?v=20260409-9" preload="auto" />
       <section
-        className="pt-ui relative h-[100dvh] overflow-hidden bg-[#fbfbfb]"
+        className="pt-ui relative h-[100dvh] overflow-hidden bg-[#fbfbfb] max-sm:bg-[radial-gradient(circle_at_50%_46%,#ffffff_0%,#fbfbfb_42%,#eef5fb_100%)]"
         onMouseMove={(event) => setMousePosition({ x: Math.round(event.clientX), y: Math.round(event.clientY) })}
       >
         <TopTitleBar />
@@ -1545,10 +1595,23 @@ export function TopologyHero() {
           onForward={forwardSimulationClock}
         />
 
-        <div className="absolute inset-x-0 bottom-[54px] top-[58px] px-1 pb-2 pt-2 sm:px-2 md:px-2 xl:px-1 2xl:px-0">
+        <div className="absolute inset-x-0 bottom-[50px] top-[58px] px-1 pb-2 pt-2 sm:bottom-[54px] sm:px-2 md:px-2 xl:px-1 2xl:px-0">
           <div className="relative h-full w-full">
             <div className="relative h-full w-full">
               <div ref={sceneRef} className="relative h-full w-full overflow-hidden">
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-0 z-[1] sm:hidden"
+                  style={{
+                    background:
+                      "linear-gradient(90deg, rgba(6,47,93,0.035) 1px, transparent 1px), linear-gradient(180deg, rgba(6,47,93,0.032) 1px, transparent 1px)",
+                    backgroundSize: "28px 28px",
+                    maskImage: "radial-gradient(circle at 50% 46%, black 0%, black 72%, transparent 100%)",
+                  }}
+                />
+                <div className="pointer-events-none absolute left-3 top-3 z-[35] rounded-full border border-[#cbd8e5] bg-white/88 px-3 py-1 text-[11px] font-medium text-[#54708e] shadow-[0_8px_20px_rgba(15,23,42,0.08)] backdrop-blur sm:hidden">
+                  Tap a device to open
+                </div>
                 <motion.svg
                   viewBox={`0 0 ${VIEWBOX.width} ${VIEWBOX.height}`}
                   className="pointer-events-none absolute inset-0 z-[24] h-full w-full"
@@ -1563,29 +1626,31 @@ export function TopologyHero() {
 
                 <NodeButton
                   node="about"
-                  position={nodePositions.about}
+                  position={topologyNodePositions.about}
                   active={active === "about"}
                   opacity={nodeStyle.about}
                   delay={0.06}
                   layer={40}
                   dragging={draggingNode === "about"}
+                  mobile={isMobileTopology}
                   onHover={() => { setActive("about"); triggerNodeAnimation("about"); }}
                   onLeave={() => setActive((current) => (current === "about" ? null : current))}
                   onPointerDown={handlePointerDown}
                   label={NODE_META.about.label}
                   deviceName={NODE_META.about.deviceName}
                 >
-                  <RouterIllustration networkMode={networkMode} glitchActive={routerGlitchActive} powerOn={routerPowerOn} signalLevel={routerSignalLevel} tick={motionTick} />
+                  <RouterIllustration compact={isMobileTopology} networkMode={networkMode} glitchActive={routerGlitchActive} powerOn={routerPowerOn} signalLevel={routerSignalLevel} tick={motionTick} />
                 </NodeButton>
 
                 <NodeButton
                   node="projects"
-                  position={nodePositions.projects}
+                  position={topologyNodePositions.projects}
                   active={active === "projects"}
                   opacity={nodeStyle.projects}
                   delay={0.1}
                   layer={10}
                   dragging={draggingNode === "projects"}
+                  mobile={isMobileTopology}
                   onHover={() => { setActive("projects"); triggerNodeAnimation("projects"); }}
                   onLeave={() => setActive((current) => (current === "projects" ? null : current))}
                   onPointerDown={handlePointerDown}
@@ -1593,6 +1658,7 @@ export function TopologyHero() {
                   deviceName={NODE_META.projects.deviceName}
                 >
                   <SwitchIllustration
+                    compact={isMobileTopology}
                     networkMode={networkMode}
                     tick={motionTick}
                     active={active === "projects"}
@@ -1603,36 +1669,38 @@ export function TopologyHero() {
 
                 <NodeButton
                   node="home"
-                  position={nodePositions.home}
+                  position={topologyNodePositions.home}
                   active={active === "home"}
                   opacity={nodeStyle.home}
                   delay={0.12}
                   layer={40}
                   dragging={draggingNode === "home"}
+                  mobile={isMobileTopology}
                   onHover={() => { setActive("home"); triggerNodeAnimation("home"); }}
                   onLeave={() => setActive((current) => (current === "home" ? null : current))}
                   onPointerDown={handlePointerDown}
                   label={NODE_META.home.label}
                   deviceName={NODE_META.home.deviceName}
                 >
-                  <PCIllustration typingStep={typingStep} typingActive={typingActive} />
+                  <PCIllustration compact={isMobileTopology} typingStep={typingStep} typingActive={typingActive} />
                 </NodeButton>
 
                 <NodeButton
                   node="contact"
-                  position={nodePositions.contact}
+                  position={topologyNodePositions.contact}
                   active={active === "contact"}
                   opacity={nodeStyle.contact}
                   delay={0.16}
                   layer={40}
                   dragging={draggingNode === "contact"}
+                  mobile={isMobileTopology}
                   onHover={() => { setActive("contact"); triggerNodeAnimation("contact"); }}
                   onLeave={() => setActive((current) => (current === "contact" ? null : current))}
                   onPointerDown={handlePointerDown}
                   label={NODE_META.contact.label}
                   deviceName={NODE_META.contact.deviceName}
                 >
-                  <SmartphoneIllustration ringing={phoneRinging} tick={motionTick} noWifi={!routerWifiReady} currentTime={currentTime} />
+                  <SmartphoneIllustration compact={isMobileTopology} ringing={phoneRinging} tick={motionTick} noWifi={!routerWifiReady} currentTime={currentTime} />
                 </NodeButton>
 
                 <motion.svg
@@ -1789,29 +1857,30 @@ export function TopologyHero() {
 
 function TopTitleBar() {
   return (
-    <div className="absolute inset-x-0 top-0 z-40 flex h-[30px] items-center justify-center border-b border-[#cfcfcf] bg-[linear-gradient(180deg,#f5f5f5_0%,#e9e9e9_100%)] px-4 text-[13px] font-medium text-[#565656] shadow-[inset_0_1px_0_rgba(255,255,255,0.75)]">
-      Roope Aaltonen - Interactive network-topology inspired portfolio homepage
+    <div className="absolute inset-x-0 top-0 z-40 flex h-[30px] items-center justify-center border-b border-[#cfcfcf] bg-[linear-gradient(180deg,#f5f5f5_0%,#e9e9e9_100%)] px-3 text-[12px] font-medium text-[#565656] shadow-[inset_0_1px_0_rgba(255,255,255,0.75)] sm:px-4 sm:text-[13px]">
+      <span className="hidden sm:inline">Roope Aaltonen - Interactive network-topology inspired portfolio homepage</span>
+      <span className="sm:hidden">Roope Aaltonen · Network Portfolio</span>
     </div>
   );
 }
 
 function TopBlueBar({ currentTime, mousePosition }: { currentTime: number | null; mousePosition: { x: number; y: number } }) {
   return (
-    <div className="absolute inset-x-0 top-[30px] z-40 flex h-[28px] items-center justify-between bg-[#062f5d] px-3 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
-      <div className="flex items-center gap-1.5 text-[12px]">
-        <span className="inline-flex h-[24px] items-center rounded-[14px] border border-[#8899b1] bg-[rgba(255,255,255,0.04)] px-3 font-medium text-white/56">Logical</span>
-        <span className="inline-flex h-[24px] items-center rounded-[14px] border border-[#8899b1] bg-[rgba(255,255,255,0.03)] px-3 font-medium text-white/52">Physical</span>
-        <span className="pl-1 text-[11px] text-white/62">x: {mousePosition.x}, y: {mousePosition.y}</span>
+    <div className="absolute inset-x-0 top-[30px] z-40 flex h-[28px] items-center justify-between bg-[#062f5d] px-2 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] sm:px-3">
+      <div className="flex min-w-0 items-center gap-1 text-[11px] sm:gap-1.5 sm:text-[12px]">
+        <span className="inline-flex h-[22px] items-center rounded-[14px] border border-[#8899b1] bg-[rgba(255,255,255,0.04)] px-2 font-medium text-white/62 sm:h-[24px] sm:px-3">Logical</span>
+        <span className="hidden h-[24px] items-center rounded-[14px] border border-[#8899b1] bg-[rgba(255,255,255,0.03)] px-3 font-medium text-white/52 min-[390px]:inline-flex">Physical</span>
+        <span className="hidden pl-1 text-[11px] text-white/62 sm:inline">x: {mousePosition.x}, y: {mousePosition.y}</span>
       </div>
 
-      <div className="flex items-center gap-1.5 text-[12px]">
-        <span className="mr-1 text-[11px] text-white/58">Root</span>
+      <div className="flex shrink-0 items-center gap-1 text-[11px] sm:gap-1.5 sm:text-[12px]">
+        <span className="mr-1 hidden text-[11px] text-white/58 sm:inline">Root</span>
         {["?", "✷", "✣", "△", "◎"].map((icon, index) => (
-          <span key={`${icon}-${index}`} className="inline-flex h-[26px] w-[26px] items-center justify-center rounded-full border border-[#8899b1] bg-[rgba(255,255,255,0.03)] text-[12px] text-white/48">
+          <span key={`${icon}-${index}`} className="hidden h-[26px] w-[26px] items-center justify-center rounded-full border border-[#8899b1] bg-[rgba(255,255,255,0.03)] text-[12px] text-white/48 sm:inline-flex">
             {icon}
           </span>
         ))}
-        <span className="rounded-full border border-[#8899b1] bg-[rgba(255,255,255,0.03)] px-3 py-1 text-[12px] font-medium text-white/64">
+        <span className="rounded-full border border-[#8899b1] bg-[rgba(255,255,255,0.03)] px-2.5 py-1 text-[11px] font-medium text-white/72 sm:px-3 sm:text-[12px]">
           {currentTime ? formatClock(new Date(currentTime)) : "00.00.00"}
         </span>
       </div>
@@ -1821,14 +1890,14 @@ function TopBlueBar({ currentTime, mousePosition }: { currentTime: number | null
 
 function BottomBlueBar({ elapsedSeconds, onReset, onForward }: { elapsedSeconds: number; onReset: () => void; onForward: () => void }) {
   return (
-    <div className="absolute inset-x-0 bottom-0 z-40 flex h-[54px] items-center justify-between bg-[#062f5d] px-3 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
-      <div className="flex items-center gap-2 text-[13px]">
-        <span className="min-w-[112px]">Time: {formatElapsed(elapsedSeconds)}</span>
+    <div className="absolute inset-x-0 bottom-0 z-40 flex h-[50px] items-center justify-between bg-[#062f5d] px-2 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] sm:h-[54px] sm:px-3">
+      <div className="flex items-center gap-1.5 text-[12px] sm:gap-2 sm:text-[13px]">
+        <span className="min-w-[92px] sm:min-w-[112px]">Time: {formatElapsed(elapsedSeconds)}</span>
 
         <button
           type="button"
           onClick={onReset}
-          className="inline-flex h-[30px] w-[30px] items-center justify-center rounded-[4px] border border-[#8394ab] bg-[rgba(255,255,255,0.04)] text-white/72 transition hover:bg-[rgba(255,255,255,0.08)]"
+          className="inline-flex h-[30px] w-[32px] items-center justify-center rounded-[6px] border border-[#8394ab] bg-[rgba(255,255,255,0.04)] text-white/72 transition hover:bg-[rgba(255,255,255,0.08)] sm:w-[30px] sm:rounded-[4px]"
           aria-label="Reset timer"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" className="block">
@@ -1845,7 +1914,7 @@ function BottomBlueBar({ elapsedSeconds, onReset, onForward }: { elapsedSeconds:
         <button
           type="button"
           onClick={onForward}
-          className="inline-flex h-[30px] w-[44px] items-center justify-center rounded-[4px] border border-[#8394ab] bg-[rgba(255,255,255,0.04)] text-white/72 transition hover:bg-[rgba(255,255,255,0.08)]"
+          className="inline-flex h-[30px] w-[44px] items-center justify-center rounded-[6px] border border-[#8394ab] bg-[rgba(255,255,255,0.04)] text-white/72 transition hover:bg-[rgba(255,255,255,0.08)] sm:rounded-[4px]"
           aria-label="Add 30 seconds"
         >
           <svg width="20" height="16" viewBox="0 0 20 16" fill="none" aria-hidden="true" className="block">
@@ -1855,7 +1924,7 @@ function BottomBlueBar({ elapsedSeconds, onReset, onForward }: { elapsedSeconds:
         </button>
       </div>
 
-      <div className="flex items-center gap-1.5 text-[13px] font-medium">
+      <div className="hidden items-center gap-1.5 text-[13px] font-medium sm:flex">
         <span className="inline-flex h-[30px] items-center rounded-[4px] border border-[#8394ab] bg-[rgba(255,255,255,0.03)] px-4 text-white/56">Realtime</span>
         <span className="inline-flex h-[30px] items-center rounded-[4px] border border-[#8394ab] bg-[rgba(255,255,255,0.03)] px-4 text-white/52">Simulation</span>
       </div>
@@ -1871,6 +1940,7 @@ function NodeButton({
   delay,
   layer = 30,
   dragging,
+  mobile = false,
   onHover,
   onLeave,
   onPointerDown,
@@ -1885,6 +1955,7 @@ function NodeButton({
   delay: number;
   layer?: number;
   dragging: boolean;
+  mobile?: boolean;
   onHover: () => void;
   onLeave: () => void;
   onPointerDown: (node: NodeKey, event: ReactPointerEvent<HTMLButtonElement>) => void;
@@ -1896,6 +1967,12 @@ function NodeButton({
   const haloSize = NODE_PROTECTIVE_HALO;
   const debugRects = DEBUG_NODE_HALOS ? getNodeCollisionRects(node, { x: 0, y: 0 }, haloSize) : [];
   const stackZIndex = dragging ? 180 : active ? layer + 12 : layer;
+  const mobileScale = MOBILE_DEVICE_SCALE[node];
+  const labelOffsetY = meta.labelOffsetY ?? 0;
+  const labelOffsetX = meta.labelOffsetX ?? 0;
+  const labelTop = mobile
+    ? meta.deviceHeight * mobileScale + NODE_LABEL_GAP + labelOffsetY * 0.7
+    : meta.deviceHeight + NODE_LABEL_GAP + labelOffsetY;
 
   return (
     <div
@@ -1919,7 +1996,7 @@ function NodeButton({
         onPointerDown={(event) => onPointerDown(node, event)}
         onContextMenu={(event) => event.preventDefault()}
         className="group relative isolate h-full w-full overflow-visible select-none text-left focus:outline-none"
-        style={{ touchAction: "none", cursor: dragging ? "grabbing" : "grab", userSelect: "none", zIndex: dragging ? 26 : active ? 18 : 12 }}
+        style={{ touchAction: mobile ? "manipulation" : "none", cursor: mobile ? "pointer" : dragging ? "grabbing" : "grab", userSelect: "none", zIndex: dragging ? 26 : active ? 18 : 12 }}
       >
         <motion.div
           animate={{
@@ -1959,12 +2036,16 @@ function NodeButton({
         <div
           className="absolute inset-x-0 z-[30] flex flex-col items-center justify-center text-center leading-tight"
           style={{
-            top: meta.deviceHeight + NODE_LABEL_GAP + (meta.labelOffsetY ?? 0),
-            transform: NODE_META[node].labelOffsetX ? `translateX(${NODE_META[node].labelOffsetX}px)` : undefined,
+            top: labelTop,
+            left: mobile ? "50%" : 0,
+            right: mobile ? "auto" : 0,
+            width: mobile ? MOBILE_LABEL_WIDTH[node] : undefined,
+            marginLeft: mobile ? labelOffsetX : undefined,
+            transform: mobile ? "translateX(-50%)" : labelOffsetX ? `translateX(${labelOffsetX}px)` : undefined,
           }}
         >
-          <p className="text-[12px] font-medium uppercase tracking-[0.18em] text-[#7f8b9d] drop-shadow-none [text-shadow:none]">{deviceName}</p>
-          <p className="mt-1 text-[18px] font-semibold tracking-[-0.02em] text-[#050505] drop-shadow-none [text-shadow:none]">{label}</p>
+          <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-[#7f8b9d] drop-shadow-none [text-shadow:none] sm:text-[12px] sm:tracking-[0.18em]">{deviceName}</p>
+          <p className="mt-1 text-[16px] font-semibold tracking-[-0.02em] text-[#050505] drop-shadow-none [text-shadow:none] sm:text-[18px]">{label}</p>
         </div>
       </button>
     </div>
@@ -2337,7 +2418,7 @@ function RouterIllustration({
   };
 
   return (
-    <div className={`relative ${compact ? "scale-[0.72]" : "scale-100"}`}>
+    <div className={`relative ${compact ? "origin-top-left scale-[0.72]" : "scale-100"}`}>
       <div className="relative" style={{ width: UNIFIED_DEVICE_WIDTH, height: UNIFIED_DEVICE_HEIGHT }}>
         <div className="absolute left-1/2 top-[27px] h-[136px] w-[200px] -translate-x-1/2 origin-top scale-[1.28]">
           <div className="pointer-events-none absolute left-[24px] top-[97px] h-[24px] w-[154px] rounded-full bg-[#0b1a30]/18 blur-[10px]" />
@@ -2591,7 +2672,7 @@ function SwitchIllustration({
 
   return (
     <motion.div
-      className={`${compact ? "scale-[0.78]" : "scale-100"}`}
+      className={`${compact ? "origin-top-left scale-[0.78]" : "scale-100"}`}
       animate={active ? { y: [0, -1, 0] } : { y: 0 }}
       transition={active ? { duration: 0.55, repeat: 1, ease: "easeInOut" } : { duration: 0.2 }}
     >
@@ -2878,7 +2959,7 @@ function SwitchIllustration({
 
 function PCIllustration({ compact = false, typingStep = 0, typingActive = false }: { compact?: boolean; typingStep?: number; typingActive?: boolean }) {
   return (
-    <div className={`relative origin-top -translate-x-[12px] ${compact ? "scale-[0.8]" : "scale-100"}`}>
+    <div className={`relative -translate-x-[12px] ${compact ? "origin-top-left scale-[0.8]" : "origin-top scale-100"}`}>
       <div className="relative" style={{ width: UNIFIED_DEVICE_WIDTH, height: UNIFIED_DEVICE_HEIGHT }}>
         <div className="pointer-events-none absolute left-1/2 top-[182px] h-[24px] w-[184px] -translate-x-1/2 rounded-full bg-[#0b1a30]/18 blur-[10px]" />
         <div
@@ -2945,7 +3026,7 @@ function SmartphoneIllustration({
 
   return (
     <motion.div
-      className={`relative ${compact ? "scale-[0.8]" : "scale-100"}`}
+      className={`relative ${compact ? "origin-top-left scale-[0.8]" : "scale-100"}`}
       animate={ringing ? { x: [0, -3, 3, -3, 3, 0], rotate: [2.3, 0.5, 4.2, 0.5, 4.2, 2.3] } : { x: 0, rotate: 2.3 }}
       transition={ringing ? { duration: 0.44, repeat: Infinity, ease: "linear" } : { duration: 0.24 }}
     >
