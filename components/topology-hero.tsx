@@ -112,6 +112,45 @@ const INITIAL_NODE_POSITIONS: Record<NodeKey, NodePosition> = {
 };
 
 const NODE_POSITIONS_STORAGE_KEY = "portfolio-node-positions-v7";
+const SIM_CLOCK_START_STORAGE_KEY = "portfolio-simulation-clock-start-v1";
+const SIM_CLOCK_OFFSET_STORAGE_KEY = "portfolio-simulation-clock-offset-v1";
+
+function readStoredNumber(key: string): number | null {
+  if (typeof window === "undefined") return null;
+
+  try {
+    const raw = window.sessionStorage.getItem(key);
+    if (!raw) return null;
+    const parsed = Number(raw);
+    return Number.isFinite(parsed) ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+function getStoredSimulationClockStart(now: number): number {
+  const stored = readStoredNumber(SIM_CLOCK_START_STORAGE_KEY);
+  if (stored !== null) return stored;
+
+  try {
+    window.sessionStorage.setItem(SIM_CLOCK_START_STORAGE_KEY, String(now));
+  } catch {}
+
+  return now;
+}
+
+function getStoredSimulationClockOffset(): number {
+  return readStoredNumber(SIM_CLOCK_OFFSET_STORAGE_KEY) ?? 0;
+}
+
+function storeSimulationClock(start: number, offset: number) {
+  if (typeof window === "undefined") return;
+
+  try {
+    window.sessionStorage.setItem(SIM_CLOCK_START_STORAGE_KEY, String(start));
+    window.sessionStorage.setItem(SIM_CLOCK_OFFSET_STORAGE_KEY, String(offset));
+  } catch {}
+}
 
 function getInitialNodePositions(): Record<NodeKey, NodePosition> {
   if (typeof window === "undefined") return INITIAL_NODE_POSITIONS;
@@ -1065,13 +1104,12 @@ export function TopologyHero() {
   const switchRightCableEnd = getAnimatedDevicePoint("projects", getSwitchCableStubEnd("right", nodePositions, sceneMetrics.width), nodePositions, active, draggingNode);
 
   useEffect(() => {
-    const start = Date.now();
+    const now = Date.now();
     const timeoutIds = timeouts.current;
 
-    const init = window.requestAnimationFrame(() => {
-      setBaseStart(start);
-      setCurrentTime(start);
-    });
+    setBaseStart(getStoredSimulationClockStart(now));
+    setManualOffset(getStoredSimulationClockOffset());
+    setCurrentTime(now);
 
     const clockTimer = window.setInterval(() => {
       setCurrentTime(Date.now());
@@ -1087,7 +1125,6 @@ export function TopologyHero() {
     }, 135);
 
     return () => {
-      window.cancelAnimationFrame(init);
       window.clearInterval(clockTimer);
       window.clearInterval(motionTimer);
       window.clearInterval(typingTimer);
@@ -1378,6 +1415,22 @@ export function TopologyHero() {
     ? Math.max(0, Math.floor((currentTime - baseStart) / 1000) + manualOffset)
     : 0;
 
+  const resetSimulationClock = useCallback(() => {
+    const now = Date.now();
+    storeSimulationClock(now, 0);
+    setBaseStart(now);
+    setCurrentTime(now);
+    setManualOffset(0);
+  }, []);
+
+  const forwardSimulationClock = useCallback(() => {
+    setManualOffset((value) => {
+      const next = value + 30;
+      storeSimulationClock(baseStart ?? Date.now(), next);
+      return next;
+    });
+  }, [baseStart]);
+
   const phaseTick = motionTick - networkModeStartTick;
   const looseEnd = networkMode === "repairing" && repairLooseEnd
     ? repairLooseEnd
@@ -1485,13 +1538,8 @@ export function TopologyHero() {
         <TopBlueBar currentTime={currentTime} mousePosition={mousePosition} />
         <BottomBlueBar
           elapsedSeconds={elapsedSeconds}
-          onReset={() => {
-            const now = Date.now();
-            setBaseStart(now);
-            setCurrentTime(now);
-            setManualOffset(0);
-          }}
-          onForward={() => setManualOffset((value) => value + 30)}
+          onReset={resetSimulationClock}
+          onForward={forwardSimulationClock}
         />
 
         <div className="absolute inset-x-0 bottom-[54px] top-[58px] px-1 pb-2 pt-2 sm:px-2 md:px-2 xl:px-1 2xl:px-0">
