@@ -1104,12 +1104,14 @@ export function TopologyHero() {
   const switchRightCableEnd = getAnimatedDevicePoint("projects", getSwitchCableStubEnd("right", nodePositions, sceneMetrics.width), nodePositions, active, draggingNode);
 
   useEffect(() => {
-    const now = Date.now();
     const timeoutIds = timeouts.current;
 
-    setBaseStart(getStoredSimulationClockStart(now));
-    setManualOffset(getStoredSimulationClockOffset());
-    setCurrentTime(now);
+    const initialClockFrame = window.requestAnimationFrame(() => {
+      const now = Date.now();
+      setBaseStart(getStoredSimulationClockStart(now));
+      setManualOffset(getStoredSimulationClockOffset());
+      setCurrentTime(now);
+    });
 
     const clockTimer = window.setInterval(() => {
       setCurrentTime(Date.now());
@@ -1125,6 +1127,7 @@ export function TopologyHero() {
     }, 135);
 
     return () => {
+      window.cancelAnimationFrame(initialClockFrame);
       window.clearInterval(clockTimer);
       window.clearInterval(motionTimer);
       window.clearInterval(typingTimer);

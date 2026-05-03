@@ -283,18 +283,19 @@ function ProjectMarqueeCard({
   size?: "overview" | "compact";
 }) {
   const media = PROJECT_CARD_MEDIA[project.slug];
-  const [mediaFailed, setMediaFailed] = useState(false);
+  const [failedMediaSrc, setFailedMediaSrc] = useState<string | null>(null);
+  const mediaFailed = Boolean(media?.src && failedMediaSrc === media.src);
   const mediaShapeClass = size === "compact" ? "aspect-[16/10]" : "aspect-[16/10]";
-
-  useEffect(() => {
-    setMediaFailed(false);
-  }, [project.slug, media?.src]);
 
   return (
     <Link
       href={getProjectHref(project.slug)}
       scroll={false}
-      onClick={() => onSelectProject?.(project.slug)}
+      onClick={(event) => {
+        if (!onSelectProject) return;
+        event.preventDefault();
+        onSelectProject(project.slug);
+      }}
       className="group block w-full rounded-[10px] text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3d7f35] focus-visible:ring-offset-2"
       aria-label={`Open project: ${project.title}`}
     >
@@ -310,7 +311,9 @@ function ProjectMarqueeCard({
                 draggable={false}
                 loading="lazy"
                 decoding="async"
-                onError={() => setMediaFailed(true)}
+                onError={() => {
+                  if (media?.src) setFailedMediaSrc(media.src);
+                }}
               />
             </>
           ) : (
@@ -515,11 +518,7 @@ export function ProjectsPanelContent({
     () => [...rightLaneProjects, ...leftLaneProjects],
     [leftLaneProjects, rightLaneProjects],
   );
-  const [heroImageFailed, setHeroImageFailed] = useState(false);
-
-  useEffect(() => {
-    setHeroImageFailed(false);
-  }, [selectedProject?.slug]);
+  const [failedHeroImageSrc, setFailedHeroImageSrc] = useState<string | null>(null);
 
   if (preview) {
     return (
@@ -569,6 +568,7 @@ export function ProjectsPanelContent({
   }
 
   const selectedProjectMedia = PROJECT_CARD_MEDIA[selectedProject.slug];
+  const heroImageFailed = Boolean(selectedProjectMedia?.src && failedHeroImageSrc === selectedProjectMedia.src);
   const overviewParagraphs = selectedProject.overview?.length ? selectedProject.overview : [selectedProject.objective];
   const resultParagraphs = splitParagraphs(selectedProject.result);
   const whatIDidItems = selectedProject.whatIDid?.length ? selectedProject.whatIDid : [selectedProject.implementation];
@@ -577,6 +577,7 @@ export function ProjectsPanelContent({
     : [selectedProject.technicalScope, selectedProject.environment, selectedProject.validation];
   const skillsItems = selectedProject.skillsDemonstrated?.length ? selectedProject.skillsDemonstrated : [selectedProject.learned];
   const employerPointItems = selectedProject.employerPoints ?? [];
+  const projectNotes = selectedProject.evidence.filter((item) => extractUrls(item).length === 0);
   const projectLinks = Array.from(new Set(selectedProject.evidence.flatMap(extractUrls)));
   const projectSectionClass = "border-t border-[#c7dda7] pt-5";
   const projectHeadingClass = "text-[13px] font-semibold uppercase tracking-[0.18em] text-[#244a73]";
@@ -606,7 +607,9 @@ export function ProjectsPanelContent({
                   draggable={false}
                   loading="lazy"
                   decoding="async"
-                  onError={() => setHeroImageFailed(true)}
+                  onError={() => {
+                    if (selectedProjectMedia?.src) setFailedHeroImageSrc(selectedProjectMedia.src);
+                  }}
                 />
               </>
             ) : (
@@ -691,6 +694,20 @@ export function ProjectsPanelContent({
           </section>
         ) : null}
 
+        {projectNotes.length > 0 ? (
+          <section className={`${projectSectionClass} mt-7`}>
+            <h3 className={projectHeadingClass}>Notes</h3>
+            <ul className={projectListClass}>
+              {projectNotes.map((item) => (
+                <li key={item} className="flex gap-3">
+                  <span className="mt-[0.72em] h-1.5 w-1.5 shrink-0 rounded-full bg-[#5faa51]" />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
+
         {projectLinks.length > 0 ? (
           <section className={`${projectSectionClass} mt-7`}>
             <h3 className={projectHeadingClass}>Relevant links</h3>
@@ -703,7 +720,7 @@ export function ProjectsPanelContent({
                   rel="noreferrer"
                   className="rounded-full border border-[#9cc47a] bg-[#f8fff0] px-3 py-1.5 text-[12px] font-semibold text-[#173b72] transition hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3d7f35]"
                 >
-                  {linkIndex === 0 ? "Open source" : `Reference ${linkIndex + 1}`}
+                  {url.includes("onrender.com") ? "Open live demo" : linkIndex === 0 ? "Open source" : `Reference ${linkIndex + 1}`}
                 </a>
               ))}
             </div>

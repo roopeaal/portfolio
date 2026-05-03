@@ -191,7 +191,10 @@ export const projects: Project[] = [
       "Used real geospatial calculations to provide distance and compass-direction feedback after each guess.",
       "Iterated the project from a simpler airport guessing game into a deployed browser-based application with an interactive map and polished theme.",
     ],
-    evidence: [],
+    evidence: [
+      "Live demo: https://lentokonepeli.onrender.com/",
+      "Render free tier note: the first load may take around 30-90 seconds because of cold start.",
+    ],
     cardAccent: "switch",
   },
   {

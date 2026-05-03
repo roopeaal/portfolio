@@ -257,7 +257,11 @@ export function PacketWindow({
                           key={item.id}
                           href={item.href}
                           scroll={false}
-                          onClick={item.onSelect}
+                          onClick={(event) => {
+                            if (!item.onSelect) return;
+                            event.preventDefault();
+                            item.onSelect();
+                          }}
                           className={itemClassName}
                           aria-current={item.active ? "true" : undefined}
                         >

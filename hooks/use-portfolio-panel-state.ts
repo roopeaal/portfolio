@@ -33,7 +33,8 @@ export function usePortfolioPanelState() {
 
   const updateUrlState = useCallback(
     (nextPanel: PortfolioPanel, nextProject?: string | null) => {
-      const params = new URLSearchParams(searchParams.toString());
+      const currentSearch = typeof window !== "undefined" ? window.location.search : searchParams.toString();
+      const params = new URLSearchParams(currentSearch);
 
       if (nextPanel) {
         params.set("panel", nextPanel);
@@ -74,7 +75,8 @@ export function usePortfolioPanelState() {
   }, [updateUrlState]);
 
   const closePanel = useCallback(() => {
-    const params = new URLSearchParams(searchParams.toString());
+    const currentSearch = typeof window !== "undefined" ? window.location.search : searchParams.toString();
+    const params = new URLSearchParams(currentSearch);
     params.delete("panel");
     params.delete("project");
 
