@@ -1044,7 +1044,7 @@ export function TopologyHero() {
       { id: "overview", label: "Overview", href: PROJECTS_OVERVIEW_HREF, active: !selectedProjectSlug, onSelect: showProjectOverview },
       ...projects.map((project) => ({
         id: project.slug,
-        label: project.title,
+        label: project.shortTitle ?? project.title,
         href: getProjectHref(project.slug),
         active: selectedProjectSlug === project.slug,
         onSelect: () => openProject(project.slug),

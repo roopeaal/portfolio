@@ -266,8 +266,11 @@ function extractUrls(text: string): string[] {
   return Array.from(text.matchAll(/https?:\/\/\S+/gi)).map((match) => match[0].replace(/[),.;]+$/, ""));
 }
 
-function stripUrls(text: string): string {
-  return text.replace(/https?:\/\/\S+/gi, "").replace(/\s{2,}/g, " ").trim();
+function splitParagraphs(text: string): string[] {
+  return text
+    .split(/(?<=\.)\s+(?=[A-Z])/)
+    .map((item) => item.trim())
+    .filter(Boolean);
 }
 
 function ProjectMarqueeCard({
@@ -316,7 +319,7 @@ function ProjectMarqueeCard({
                 className="text-[clamp(1.05rem,2.2vw,1.35rem)] font-semibold leading-[1.2] tracking-[0.01em] text-[#2a5b2b]"
                 style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
               >
-                {project.title}
+                {project.shortTitle ?? project.title}
               </span>
             </div>
           )}
@@ -325,7 +328,7 @@ function ProjectMarqueeCard({
               <span className="h-7 w-1 shrink-0 rounded-full bg-[#58b94f]" />
               <span className="min-w-0 text-[#163f81]">
                 <span className="block text-[8px] font-semibold uppercase tracking-[0.2em] text-[#29528f]/75">Project</span>
-                <span className="block truncate text-[12px] font-semibold leading-tight">{project.title}</span>
+                <span className="block truncate text-[12px] font-semibold leading-tight">{project.shortTitle ?? project.title}</span>
               </span>
             </div>
           ) : null}
@@ -565,71 +568,33 @@ export function ProjectsPanelContent({
     );
   }
 
-  const index = projects.findIndex((project) => project.slug === selectedProject.slug);
-  const previous = index > 0 ? projects[index - 1] : null;
-  const next = index < projects.length - 1 ? projects[index + 1] : null;
   const selectedProjectMedia = PROJECT_CARD_MEDIA[selectedProject.slug];
-  const evidenceItems = selectedProject.evidence.map(stripUrls).filter(Boolean);
-  const projectLinks = Array.from(
-    new Set([
-      ...extractUrls(selectedProject.summary),
-      ...extractUrls(selectedProject.objective),
-      ...extractUrls(selectedProject.environment),
-      ...selectedProject.evidence.flatMap(extractUrls),
-    ]),
-  );
-  const projectArticleClass = "rounded-[16px] border border-[#95cf83] bg-[#edf8df]/88 p-4 shadow-[0_10px_24px_rgba(58,125,46,0.08)]";
-  const projectHeadingClass = "text-[11px] font-semibold uppercase tracking-[0.16em] text-[#29528f]/82";
-  const projectBodyClass = "mt-2 text-[14px] leading-7 text-[#24405f]";
+  const overviewParagraphs = selectedProject.overview?.length ? selectedProject.overview : [selectedProject.objective];
+  const resultParagraphs = splitParagraphs(selectedProject.result);
+  const whatIDidItems = selectedProject.whatIDid?.length ? selectedProject.whatIDid : [selectedProject.implementation];
+  const technicalHighlightItems = selectedProject.technicalHighlights?.length
+    ? selectedProject.technicalHighlights
+    : [selectedProject.technicalScope, selectedProject.environment, selectedProject.validation];
+  const skillsItems = selectedProject.skillsDemonstrated?.length ? selectedProject.skillsDemonstrated : [selectedProject.learned];
+  const employerPointItems = selectedProject.employerPoints ?? [];
+  const projectLinks = Array.from(new Set(selectedProject.evidence.flatMap(extractUrls)));
+  const projectSectionClass = "border-t border-[#c7dda7] pt-5";
+  const projectHeadingClass = "text-[13px] font-semibold uppercase tracking-[0.18em] text-[#244a73]";
+  const projectParagraphClass = "mt-3 max-w-[76ch] text-[15px] leading-7 text-[#1f334a]";
+  const projectListClass = "mt-3 space-y-2.5 text-[15px] leading-7 text-[#1f334a]";
+  const projectChipClass = "rounded-full border border-[#b7d79b] bg-[#f8fff0] px-3 py-1.5 text-[12px] font-medium text-[#244a73]";
 
   return (
-    <div className="h-full w-full overflow-auto bg-[linear-gradient(180deg,#d6edc3_0%,#cbe7b1_100%)] text-[#1d3658]">
-      <article className="mx-auto max-w-[1100px] px-5 py-5 md:px-7 md:py-6">
-        <header className="flex flex-wrap items-center justify-between gap-2 border-b border-[#89c97a]/70 pb-4">
-          <div className="flex flex-wrap items-center gap-2">
-            <Link
-              href={PROJECTS_OVERVIEW_HREF}
-              scroll={false}
-              onClick={() => onShowOverview?.()}
-              className="rounded-[10px] border border-[#79c271] bg-[#edf8df] px-3 py-1.5 text-[12px] font-semibold text-[#163f81] transition hover:bg-[#f8fff0] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3d7f35]"
-            >
-              ← Back to all projects
-            </Link>
-            <span className="rounded-[10px] border border-[#79c271] bg-[#edf8df]/88 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#29528f]/82">
-              {selectedProject.category}
-            </span>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {previous ? (
-              <Link
-                href={getProjectHref(previous.slug)}
-                scroll={false}
-                onClick={() => onSelectProject?.(previous.slug)}
-                className="rounded-[10px] border border-[#79c271] bg-[#edf8df] px-3 py-1.5 text-[12px] font-semibold text-[#163f81] transition hover:bg-[#f8fff0] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3d7f35]"
-              >
-                ← Previous
-              </Link>
-            ) : null}
-            {next ? (
-              <Link
-                href={getProjectHref(next.slug)}
-                scroll={false}
-                onClick={() => onSelectProject?.(next.slug)}
-                className="rounded-[10px] border border-[#79c271] bg-[#edf8df] px-3 py-1.5 text-[12px] font-semibold text-[#163f81] transition hover:bg-[#f8fff0] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3d7f35]"
-              >
-                Next →
-              </Link>
-            ) : null}
-          </div>
+    <div className="h-full w-full overflow-auto bg-[#f5faed] text-[#1f334a]">
+      <article className="mx-auto max-w-[920px] px-5 py-6 md:px-8 md:py-8">
+        <header>
+          <h2 className="max-w-[820px] text-[clamp(2rem,4.2vw,3.45rem)] font-semibold leading-[0.98] tracking-[-0.028em] text-[#173b72]">
+            {selectedProject.title}
+          </h2>
+          <p className="mt-4 max-w-[76ch] text-[17px] leading-8 text-[#24405f]">{selectedProject.summary}</p>
         </header>
 
-        <section className="pt-5">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#29528f]/80">Project detail</p>
-          <h2 className="mt-2 max-w-[920px] text-[clamp(2rem,4vw,3.55rem)] font-semibold leading-[0.95] tracking-[-0.024em] text-[#163f81]">{selectedProject.title}</h2>
-          <p className="mt-3 max-w-[920px] text-[15px] leading-7 text-[#24405f]">{selectedProject.summary}</p>
-        </section>
-
-        <figure className="mt-5 overflow-hidden rounded-[16px] border border-[#79c271] bg-[#edf8df] shadow-[0_14px_32px_rgba(58,125,46,0.12)]">
+        <figure className="mt-6 overflow-hidden rounded-[14px] border border-[#a5ca86] bg-[#edf8df]">
           <div className="relative aspect-[16/9] w-full overflow-hidden">
             {selectedProjectMedia && !heroImageFailed ? (
               <>
@@ -652,76 +617,93 @@ export function ProjectsPanelContent({
           </div>
         </figure>
 
-        <section className="mt-6 grid gap-7 lg:grid-cols-[minmax(0,1.22fr)_minmax(0,0.78fr)]">
-          <div className="space-y-5">
-            <article className={projectArticleClass}>
-              <h3 className={projectHeadingClass}>Objective</h3>
-              <p className={projectBodyClass}>{selectedProject.objective}</p>
-            </article>
-            <article className={projectArticleClass}>
-              <h3 className={projectHeadingClass}>Implementation</h3>
-              <p className={projectBodyClass}>{selectedProject.implementation}</p>
-            </article>
-            <article className={projectArticleClass}>
-              <h3 className={projectHeadingClass}>Result</h3>
-              <p className={projectBodyClass}>{selectedProject.result}</p>
-            </article>
-            <article className={projectArticleClass}>
-              <h3 className={projectHeadingClass}>What I learned</h3>
-              <p className={projectBodyClass}>{selectedProject.learned}</p>
-            </article>
-          </div>
-
-          <aside className="space-y-5">
-            <article className={projectArticleClass}>
-              <h3 className={projectHeadingClass}>Technical scope</h3>
-              <p className={projectBodyClass}>{selectedProject.technicalScope}</p>
-            </article>
-            <article className={projectArticleClass}>
-              <h3 className={projectHeadingClass}>Environment / tools</h3>
-              <p className={projectBodyClass}>{selectedProject.environment}</p>
-            </article>
-            <article className={projectArticleClass}>
-              <h3 className={projectHeadingClass}>Validation / testing</h3>
-              <p className={projectBodyClass}>{selectedProject.validation}</p>
-            </article>
-            {evidenceItems.length > 0 ? (
-              <article className={projectArticleClass}>
-                <h3 className={projectHeadingClass}>Evidence</h3>
-                <ul className="mt-2 list-disc space-y-1.5 pl-5 text-[14px] leading-7 text-[#24405f]">
-                  {evidenceItems.map((item) => (
-                    <li key={item}>{item}</li>
-                  ))}
-                </ul>
-              </article>
-            ) : null}
-          </aside>
+        <section className={`${projectSectionClass} mt-7`}>
+          <h3 className={projectHeadingClass}>Overview</h3>
+          {overviewParagraphs.map((paragraph) => (
+            <p key={paragraph} className={projectParagraphClass}>{paragraph}</p>
+          ))}
         </section>
 
-        <section className="mt-6 rounded-[16px] border border-[#95cf83] bg-[#edf8df]/88 p-4 shadow-[0_10px_24px_rgba(58,125,46,0.08)]">
-          <h3 className={projectHeadingClass}>Tech stack</h3>
-          <div className="mt-2 flex flex-wrap gap-2">
-            {selectedProject.stack.map((item) => (
-              <span key={item} className="rounded-full border border-[#79c271] bg-[#f8fff0] px-3 py-1 text-[11px] font-semibold text-[#163f81]">
-                {item}
-              </span>
-            ))}
+        <section className="mt-7 grid gap-7 border-t border-[#c7dda7] pt-5 lg:grid-cols-2">
+          <div>
+            <h3 className={projectHeadingClass}>What I did</h3>
+            <ul className={projectListClass}>
+              {whatIDidItems.map((item) => (
+                <li key={item} className="flex gap-3">
+                  <span className="mt-[0.72em] h-1.5 w-1.5 shrink-0 rounded-full bg-[#5faa51]" />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h3 className={projectHeadingClass}>Technical highlights</h3>
+            <ul className={projectListClass}>
+              {technicalHighlightItems.map((item) => (
+                <li key={item} className="flex gap-3">
+                  <span className="mt-[0.72em] h-1.5 w-1.5 shrink-0 rounded-full bg-[#5faa51]" />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
           </div>
         </section>
+
+        <section className={`${projectSectionClass} mt-7`}>
+          <h3 className={projectHeadingClass}>Result</h3>
+          {resultParagraphs.map((paragraph) => (
+            <p key={paragraph} className={projectParagraphClass}>{paragraph}</p>
+          ))}
+        </section>
+
+        <section className="mt-7 grid gap-7 border-t border-[#c7dda7] pt-5 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+          <div>
+            <h3 className={projectHeadingClass}>Skills demonstrated</h3>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {skillsItems.map((item) => (
+                <span key={item} className={projectChipClass}>{item}</span>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <h3 className={projectHeadingClass}>Tech stack</h3>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {selectedProject.stack.map((item) => (
+                <span key={item} className={projectChipClass}>{item}</span>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {employerPointItems.length > 0 ? (
+          <section className={`${projectSectionClass} mt-7`}>
+            <h3 className={projectHeadingClass}>Employer-facing points</h3>
+            <ol className={projectListClass}>
+              {employerPointItems.map((item, itemIndex) => (
+                <li key={item} className="grid grid-cols-[2rem_1fr] gap-2">
+                  <span className="font-semibold text-[#5faa51]">{itemIndex + 1}.</span>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ol>
+          </section>
+        ) : null}
 
         {projectLinks.length > 0 ? (
-          <section className="mt-5 rounded-[16px] border border-[#95cf83] bg-[#edf8df]/88 p-4 shadow-[0_10px_24px_rgba(58,125,46,0.08)]">
-            <h3 className={projectHeadingClass}>Project links</h3>
-            <div className="mt-2 flex flex-wrap gap-2">
+          <section className={`${projectSectionClass} mt-7`}>
+            <h3 className={projectHeadingClass}>Relevant links</h3>
+            <div className="mt-3 flex flex-wrap gap-2">
               {projectLinks.map((url, linkIndex) => (
                 <a
                   key={url}
                   href={url}
                   target="_blank"
                   rel="noreferrer"
-                  className="rounded-full border border-[#79c271] bg-[#f8fff0] px-3 py-1.5 text-[12px] font-semibold text-[#163f81] transition hover:bg-white"
+                  className="rounded-full border border-[#9cc47a] bg-[#f8fff0] px-3 py-1.5 text-[12px] font-semibold text-[#173b72] transition hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3d7f35]"
                 >
-                  {linkIndex === 0 ? "Open live link" : `Reference ${linkIndex + 1}`}
+                  {linkIndex === 0 ? "Open source" : `Reference ${linkIndex + 1}`}
                 </a>
               ))}
             </div>
