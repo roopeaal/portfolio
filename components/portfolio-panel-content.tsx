@@ -371,15 +371,17 @@ function ProjectMarqueeLane({
       if (segmentSize <= 0) return;
       const min = segmentSize * 0.5;
       const max = segmentSize * 1.5;
+      const wrapPosition = (value: number) => {
+        if (value >= min && value <= max) return value;
+        return min + ((((value - min) % segmentSize) + segmentSize) % segmentSize);
+      };
 
       if (isHorizontal) {
-        while (lane.scrollLeft < min) lane.scrollLeft += segmentSize;
-        while (lane.scrollLeft > max) lane.scrollLeft -= segmentSize;
+        lane.scrollLeft = wrapPosition(lane.scrollLeft);
         return;
       }
 
-      while (lane.scrollTop < min) lane.scrollTop += segmentSize;
-      while (lane.scrollTop > max) lane.scrollTop -= segmentSize;
+      lane.scrollTop = wrapPosition(lane.scrollTop);
     };
 
     const setBaseline = () => {
