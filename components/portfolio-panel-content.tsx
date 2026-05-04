@@ -136,7 +136,7 @@ export function AboutPanelContent({
 
   return (
     <div
-      className="relative h-full w-full overflow-y-auto text-[#d5deea] lg:overflow-hidden"
+      className="relative h-full w-full overflow-hidden text-[#d5deea]"
       style={{
         backgroundColor: "#1a2230",
       }}
@@ -152,63 +152,65 @@ export function AboutPanelContent({
         }}
       />
 
-      <div className="relative z-[1] flex min-h-full flex-col px-4 py-4 md:px-6 md:py-5 lg:h-full lg:min-h-0">
-        <header className="text-center">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.34em] text-[#c6d1df]" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
-            <span className="block">{heroLineTop}</span>
-            <span className="mt-1 block">{heroLineBottom}</span>
-          </p>
-          <div className="mt-2 flex items-center gap-3">
-            <div className="h-px flex-1 bg-[#72829b]/40" />
-            <span className="text-[16px] text-[#b7c4d7]">❦</span>
-            <div className="h-px flex-1 bg-[#72829b]/40" />
-          </div>
-        </header>
-
-        <div className="mt-4 grid flex-1 items-start gap-5 lg:min-h-0 lg:grid-cols-[minmax(0,1fr)_minmax(260px,400px)_minmax(0,1fr)] lg:items-center">
-          <section
-            className="mx-auto w-full max-w-[680px] px-2 text-left text-[13px] leading-7 text-[#d7e0eb] lg:max-w-[360px] lg:px-4 lg:text-center lg:leading-8"
-            style={{ fontFamily: "Georgia, 'Times New Roman', serif", textShadow: "0 1px 0 rgba(0,0,0,0.28)" }}
-          >
-            {leftCopy}
-          </section>
-
-          <figure className="flex min-h-[300px] flex-col items-center justify-center lg:h-full lg:min-h-0">
-            <div className="relative h-[320px] w-full max-w-[360px] overflow-hidden lg:h-auto lg:min-h-0 lg:max-w-[400px] lg:flex-1">
-              <Image
-                src={portraitSrc}
-                alt={`${profile.name} vintage portrait`}
-                fill
-                sizes="400px"
-                className="object-contain object-center [filter:contrast(1.06)_brightness(0.99)]"
-                priority={false}
-              />
+      <div className="relative z-[1] h-full overflow-y-auto lg:overflow-hidden">
+        <div className="flex min-h-full flex-col px-4 py-4 md:px-6 md:py-5 lg:h-full lg:min-h-0">
+          <header className="text-center">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.34em] text-[#c6d1df]" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
+              <span className="block">{heroLineTop}</span>
+              <span className="mt-1 block">{heroLineBottom}</span>
+            </p>
+            <div className="mt-2 flex items-center gap-3">
+              <div className="h-px flex-1 bg-[#72829b]/40" />
+              <span className="text-[16px] text-[#b7c4d7]">❦</span>
+              <div className="h-px flex-1 bg-[#72829b]/40" />
             </div>
-            <figcaption
-              className="mt-2 text-center text-[#c7d3e4]"
-              style={{ textShadow: "0 1px 0 rgba(0,0,0,0.35)" }}
-            >
-              <span
-                className="block text-[20px] leading-[1.02] text-[#d9e2ef]"
-                style={{ fontFamily: "'Apple Chancery', 'Snell Roundhand', 'URW Chancery L', 'Brush Script MT', cursive" }}
-              >
-                Roope Aaltonen
-              </span>
-              <span
-                className="mt-0.5 block text-[16px] leading-[1.02] text-[#aebdd2]"
-                style={{ fontFamily: "'Apple Chancery', 'Snell Roundhand', 'URW Chancery L', 'Brush Script MT', cursive" }}
-              >
-                Student of Technology
-              </span>
-            </figcaption>
-          </figure>
+          </header>
 
-          <section
-            className="mx-auto w-full max-w-[680px] px-2 text-left text-[13px] leading-7 text-[#d7e0eb] lg:max-w-[360px] lg:px-4 lg:text-center lg:leading-8"
-            style={{ fontFamily: "Georgia, 'Times New Roman', serif", textShadow: "0 1px 0 rgba(0,0,0,0.28)" }}
-          >
-            {rightCopy}
-          </section>
+          <div className="mt-4 grid flex-1 items-start gap-5 lg:min-h-0 lg:grid-cols-[minmax(0,1fr)_minmax(260px,400px)_minmax(0,1fr)] lg:items-center">
+            <section
+              className="mx-auto w-full max-w-[680px] px-2 text-left text-[13px] leading-7 text-[#d7e0eb] lg:max-w-[360px] lg:px-4 lg:text-center lg:leading-8"
+              style={{ fontFamily: "Georgia, 'Times New Roman', serif", textShadow: "0 1px 0 rgba(0,0,0,0.28)" }}
+            >
+              {leftCopy}
+            </section>
+
+            <figure className="flex min-h-[300px] flex-col items-center justify-center lg:h-full lg:min-h-0">
+              <div className="relative h-[320px] w-full max-w-[360px] overflow-hidden lg:h-auto lg:min-h-0 lg:max-w-[400px] lg:flex-1">
+                <Image
+                  src={portraitSrc}
+                  alt={`${profile.name} vintage portrait`}
+                  fill
+                  sizes="400px"
+                  className="object-contain object-center [filter:contrast(1.06)_brightness(0.99)]"
+                  priority={false}
+                />
+              </div>
+              <figcaption
+                className="mt-2 text-center text-[#c7d3e4]"
+                style={{ textShadow: "0 1px 0 rgba(0,0,0,0.35)" }}
+              >
+                <span
+                  className="block text-[20px] leading-[1.02] text-[#d9e2ef]"
+                  style={{ fontFamily: "'Apple Chancery', 'Snell Roundhand', 'URW Chancery L', 'Brush Script MT', cursive" }}
+                >
+                  Roope Aaltonen
+                </span>
+                <span
+                  className="mt-0.5 block text-[16px] leading-[1.02] text-[#aebdd2]"
+                  style={{ fontFamily: "'Apple Chancery', 'Snell Roundhand', 'URW Chancery L', 'Brush Script MT', cursive" }}
+                >
+                  Student of Technology
+                </span>
+              </figcaption>
+            </figure>
+
+            <section
+              className="mx-auto w-full max-w-[680px] px-2 text-left text-[13px] leading-7 text-[#d7e0eb] lg:max-w-[360px] lg:px-4 lg:text-center lg:leading-8"
+              style={{ fontFamily: "Georgia, 'Times New Roman', serif", textShadow: "0 1px 0 rgba(0,0,0,0.28)" }}
+            >
+              {rightCopy}
+            </section>
+          </div>
         </div>
       </div>
     </div>
@@ -873,15 +875,15 @@ export function ContactPanelContent({
   return (
     <div className="h-full w-full overflow-y-auto rounded-none bg-[linear-gradient(180deg,#ef6620_0%,#e85517_100%)] text-[#1f120b] lg:overflow-hidden">
       <div className="relative grid min-h-full gap-0 lg:h-full lg:min-h-0 lg:grid-cols-[minmax(0,1.03fr)_minmax(0,0.97fr)]">
-        <section className="relative flex min-h-[720px] flex-col px-5 pb-0 pt-6 text-white sm:px-7 lg:min-h-0 lg:px-9 lg:pt-7">
-            <h2 className="relative z-[2] max-w-[700px] text-[clamp(2rem,4.7vw,4.35rem)] font-extrabold leading-[0.88] tracking-[-0.03em] text-white [text-shadow:0_2px_0_rgba(118,48,20,0.22)]">
-              <span className="block">Let&apos;s build</span>
-              <span className="flex flex-wrap items-baseline gap-x-4 gap-y-0">
-                <span>something</span>
-                <span>great</span>
-              </span>
-              <span className="block text-[1em]">together.</span>
-            </h2>
+        <section className="relative flex min-h-0 flex-col px-5 pb-0 pt-6 text-white sm:px-7 lg:min-h-0 lg:px-9 lg:pt-7">
+          <h2 className="relative z-[2] w-full max-w-none text-[clamp(2.45rem,14vw,4rem)] font-extrabold leading-[0.88] tracking-[-0.03em] text-white [text-shadow:0_2px_0_rgba(118,48,20,0.22)] lg:max-w-[700px] lg:text-[clamp(2rem,4.7vw,4.35rem)]">
+            <span className="block">Let&apos;s build</span>
+            <span className="flex flex-wrap items-baseline gap-x-4 gap-y-0">
+              <span>something</span>
+              <span>great</span>
+            </span>
+            <span className="block text-[1em]">together.</span>
+          </h2>
 
           <div className="relative z-[2] mt-4 space-y-1 text-[clamp(18px,1.9vw,26px)] font-medium leading-[1.12] text-white/98">
             <a href="tel:+358405283008" className="block w-fit transition hover:text-[#ffe9db]">040 528 3008</a>
@@ -889,8 +891,8 @@ export function ContactPanelContent({
             <p>Vantaa, Hämeenkylä</p>
           </div>
 
-          <div className="relative z-[2] mt-4 flex min-h-[300px] flex-1 items-end lg:min-h-0">
-            <div className="relative h-full min-h-[320px] w-[88%] overflow-hidden border border-[#ecb8ce]/85 bg-[#f2e3ea]">
+          <div className="relative z-[2] mt-5 flex min-h-0 flex-none items-end lg:mt-4 lg:min-h-0 lg:flex-1">
+            <div className="relative h-[320px] w-full overflow-hidden border border-b-0 border-[#ecb8ce]/85 bg-[#f3e6eb] sm:h-[380px] lg:h-full lg:min-h-[320px] lg:w-[88%] lg:border-b lg:bg-[#f2e3ea]">
               <Image
                 src="/portfolio/contact-splash-cup.png"
                 alt="3D splash cup"
@@ -904,9 +906,9 @@ export function ContactPanelContent({
           </div>
         </section>
 
-        <aside className="relative flex min-h-[660px] flex-col px-5 pb-6 pt-0 sm:px-7 lg:min-h-0 lg:pl-0 lg:pr-7">
-          <div className="relative z-[2] flex min-h-[540px] flex-col bg-[#f3e6eb] px-5 pb-7 pt-7 shadow-[0_14px_28px_rgba(76,28,15,0.1)] sm:px-8 lg:min-h-0 lg:flex-[0_0_80%]">
-            <h3 className="text-[clamp(2.05rem,3.7vw,3.25rem)] font-semibold leading-[1.03] text-[#8b3f1c]">Fill in your details</h3>
+        <aside className="relative -mt-px flex min-h-0 flex-col px-5 pb-6 pt-0 sm:px-7 lg:mt-0 lg:min-h-0 lg:pl-0 lg:pr-7">
+          <div className="relative z-[2] flex min-h-0 w-full flex-col border border-t-0 border-[#ecb8ce]/85 bg-[#f3e6eb] px-5 pb-7 pt-7 shadow-[0_14px_28px_rgba(76,28,15,0.1)] sm:px-8 lg:min-h-0 lg:flex-[0_0_80%] lg:border-0">
+            <h3 className="max-w-full text-[clamp(2.05rem,9.5vw,3.25rem)] font-semibold leading-[1.03] text-[#8b3f1c]">Fill in your details</h3>
 
             <form onSubmit={handleContactSubmit} className="mt-5 flex min-h-0 flex-1 flex-col gap-3.5" autoComplete="off">
               <input
@@ -920,7 +922,7 @@ export function ContactPanelContent({
                   setSendFeedback(null);
                 }}
                 aria-invalid={submitAttempted && missingFields.name}
-                className={`w-full rounded-full border bg-[#eb5f1f] px-5 py-3.5 text-[17px] text-white placeholder:text-[#ffd5be] outline-none transition focus:border-[#b84910] ${
+                className={`min-w-0 w-full rounded-full border bg-[#eb5f1f] px-5 py-3.5 text-[16px] text-white placeholder:text-[#ffd5be] outline-none transition focus:border-[#b84910] sm:text-[17px] ${
                   submitAttempted && missingFields.name ? "border-[#bb2d2d]" : "border-[#d1652c]"
                 }`}
               />
@@ -935,7 +937,7 @@ export function ContactPanelContent({
                   setSendFeedback(null);
                 }}
                 aria-invalid={submitAttempted && missingFields.email}
-                className={`w-full rounded-full border bg-[#eb5f1f] px-5 py-3.5 text-[17px] text-white placeholder:text-[#ffd5be] outline-none transition focus:border-[#b84910] ${
+                className={`min-w-0 w-full rounded-full border bg-[#eb5f1f] px-5 py-3.5 text-[16px] text-white placeholder:text-[#ffd5be] outline-none transition focus:border-[#b84910] sm:text-[17px] ${
                   submitAttempted && missingFields.email ? "border-[#bb2d2d]" : "border-[#d1652c]"
                 }`}
               />
@@ -949,7 +951,7 @@ export function ContactPanelContent({
                   setSendFeedback(null);
                 }}
                 aria-invalid={submitAttempted && missingFields.message}
-                className={`min-h-[180px] flex-1 rounded-[34px] border bg-[#eb5f1f] px-5 py-4 text-[17px] leading-7 text-white placeholder:text-[#ffd5be] outline-none transition focus:border-[#b84910] ${
+                className={`min-h-[168px] w-full min-w-0 flex-1 resize-y rounded-[28px] border bg-[#eb5f1f] px-5 py-4 text-[16px] leading-7 text-white placeholder:text-[#ffd5be] outline-none transition focus:border-[#b84910] sm:min-h-[180px] sm:rounded-[34px] sm:text-[17px] lg:resize-none ${
                   submitAttempted && missingFields.message ? "border-[#bb2d2d]" : "border-[#d1652c]"
                 }`}
               />

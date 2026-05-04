@@ -3148,7 +3148,7 @@ function LinkedInPopupScreenshotView() {
         <img
           src="/portfolio/linkedin-popup.png?v=20260409-6"
           alt="LinkedIn popup screenshot"
-          className="block h-full w-full object-cover object-top"
+          className="block h-full w-full object-cover object-left-top sm:object-top"
           draggable={false}
         />
       </a>
