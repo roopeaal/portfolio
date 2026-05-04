@@ -1,5 +1,5 @@
-import { redirect } from "next/navigation";
+import { PanelRouteRedirect } from "@/components/panel-route-redirect";
 
 export default function ContactPage() {
-  redirect("/?panel=contact");
+  return <PanelRouteRedirect panel="contact" label="Contact Me" />;
 }

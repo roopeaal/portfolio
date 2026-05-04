@@ -3,7 +3,7 @@ import type { MetadataRoute } from "next";
 export const dynamic = "force-static";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const base = "https://roopeaal.github.io/portfolio";
+  const base = "https://roopeaaltonen.fi";
   const lastModified = "2026-04-06";
 
   return ["", "/about", "/projects", "/contact"].map((path) => ({

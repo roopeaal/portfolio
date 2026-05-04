@@ -1,13 +1,14 @@
 "use client";
 
 import { useCallback, useMemo } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { projects } from "@/content/projects";
 
 export type PortfolioPanel = "home" | "about" | "projects" | "contact" | null;
 
 const VALID_PANELS = new Set<Exclude<PortfolioPanel, null>>(["home", "about", "projects", "contact"]);
 const VALID_PROJECTS = new Set(projects.map((project) => project.slug));
+const ROOT_PATH = "/";
 
 function parsePanel(panel: string | null): PortfolioPanel {
   if (panel && VALID_PANELS.has(panel as Exclude<PortfolioPanel, null>)) {
@@ -25,7 +26,6 @@ function parseProject(project: string | null) {
 
 export function usePortfolioPanelState() {
   const router = useRouter();
-  const pathname = usePathname();
   const searchParams = useSearchParams();
 
   const panel = parsePanel(searchParams.get("panel"));
@@ -50,10 +50,10 @@ export function usePortfolioPanelState() {
       }
 
       const query = params.toString();
-      const href = query ? `${pathname}?${query}` : pathname;
+      const href = query ? `${ROOT_PATH}?${query}` : ROOT_PATH;
       router.push(href, { scroll: false });
     },
-    [pathname, router, searchParams],
+    [router, searchParams],
   );
 
   const openPanel = useCallback(
@@ -81,8 +81,8 @@ export function usePortfolioPanelState() {
     params.delete("project");
 
     const next = params.toString();
-    router.replace(next ? `${pathname}?${next}` : pathname, { scroll: false });
-  }, [pathname, router, searchParams]);
+    router.replace(next ? `${ROOT_PATH}?${next}` : ROOT_PATH, { scroll: false });
+  }, [router, searchParams]);
 
   return useMemo(
     () => ({

@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useReducedMotion } from "framer-motion";
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { projects } from "@/content/projects";
 import { profile } from "@/content/profile";
@@ -13,6 +14,8 @@ export interface PanelSidebarItem {
   active?: boolean;
   onSelect?: () => void;
 }
+
+const INSTAGRAM_URL = "https://www.instagram.com/roope_aaltonen";
 
 export function HomePanelContent() {
   return (
@@ -103,7 +106,7 @@ export function AboutPanelContent({
 
   const heroLineTop = "ROOPE AALTONEN IS AN ICT ENGINEERING STUDENT";
   const heroLineBottom = "LIVING AND WORKING IN THE HELSINKI METROPOLITAN AREA";
-  const portraitSrc = "/portfolio/about-vintage-roope.png";
+  const portraitSrc = "/about-vintage-roope.png";
   const leftCopy =
     "Greetings, Dear Reader. I'm Roope Aaltonen, an ICT engineering student with a particular fondness for networking, Linux, cloud, IoT and the practical art of solving technical problems. I have long been drawn to the inner logic of systems, how they connect, how they fail, how they recover, and how they may be shaped into something dependable, orderly and fit for real use.";
   const rightCopy =
@@ -118,7 +121,7 @@ export function AboutPanelContent({
           aria-hidden="true"
           className="pointer-events-none absolute inset-0"
           style={{
-            backgroundImage: "url('/portfolio/about-vintage-wallpaper-v17.png')",
+            backgroundImage: "url('/about-vintage-wallpaper-v17.png')",
             backgroundSize: "cover",
             backgroundPosition: "center top",
           }}
@@ -146,7 +149,7 @@ export function AboutPanelContent({
         className="pointer-events-none absolute inset-0"
         style={{
           opacity: 1,
-          backgroundImage: "url('/portfolio/about-vintage-wallpaper-v17.png')",
+          backgroundImage: "url('/about-vintage-wallpaper-v17.png')",
           backgroundSize: "cover",
           backgroundPosition: "center top",
         }}
@@ -227,31 +230,31 @@ const PROJECT_CARD_MEDIA: Record<
   }
 > = {
   "multi-platform-iot-security-lab": {
-    src: "/portfolio/portfolio/project-iot-security-lab.png",
+    src: "/portfolio/project-iot-security-lab.png",
     alt: "Cisco Modeling Labs PwnHub lab demonstration screenshot",
     mode: "cover",
     backdrop: "#050505",
   },
   "portfolio-site": {
-    src: "/portfolio/portfolio/project-portfolio-site.png",
+    src: "/portfolio/project-portfolio-site.png",
     alt: "Interactive network topology portfolio homepage screenshot",
     mode: "cover",
     backdrop: "#f8fafc",
   },
   "aircraft-game-python-react": {
-    src: "/portfolio/portfolio/project-maanarvauspeli.png",
+    src: "/portfolio/project-maanarvauspeli.png",
     alt: "Kristoffer Kolumbuksen jaljilla - maanarvauspeli screenshot",
     mode: "cover",
     backdrop: "#f2ebdb",
   },
   "heart-rate-monitor": {
-    src: "/portfolio/portfolio/project-pulsemaster-hw.jpeg",
+    src: "/portfolio/project-pulsemaster-hw.jpeg",
     alt: "PulseMaster hardware setup with Raspberry Pi Pico and pulse sensor",
     mode: "cover",
     backdrop: "#1f2429",
   },
   "metropolia-login-ui": {
-    src: "/portfolio/portfolio/project-metropolia-login-demo.png",
+    src: "/portfolio/project-metropolia-login-demo.png",
     alt: "Phishing awareness login demo screenshot",
     mode: "cover",
     backdrop: "#eceff4",
@@ -306,13 +309,14 @@ function ProjectMarqueeCard({
           {media && !mediaFailed ? (
             <>
               <div className="absolute inset-0 z-0" style={{ background: media.backdrop ?? "#edf6df" }} />
-              <img
+              <Image
                 src={media.src}
                 alt={media.alt}
-                className={`relative z-[1] block h-full w-full opacity-100 transition duration-300 group-hover:scale-[1.02] ${media.mode === "cover" ? "object-cover object-center" : "object-contain object-center p-1"}`}
+                fill
+                sizes={size === "compact" ? "220px" : "(max-width: 1024px) 78vw, 420px"}
+                className={`relative z-[1] opacity-100 transition duration-300 group-hover:scale-[1.02] ${media.mode === "cover" ? "object-cover object-center" : "object-contain object-center p-1"}`}
                 draggable={false}
                 loading="lazy"
-                decoding="async"
                 onError={() => {
                   if (media?.src) setFailedMediaSrc(media.src);
                 }}
@@ -355,6 +359,7 @@ function ProjectMarqueeLane({
   const laneRef = useRef<HTMLDivElement>(null);
   const segmentRef = useRef<HTMLDivElement>(null);
   const isPausedRef = useRef(false);
+  const prefersReducedMotion = useReducedMotion();
   const isHorizontal = direction === "left" || direction === "right";
 
   useEffect(() => {
@@ -409,7 +414,7 @@ function ProjectMarqueeLane({
       const deltaTime = Math.min((time - previousTime) / 1000, 0.05);
       previousTime = time;
 
-      if (segmentSize > 0 && !isPausedRef.current) {
+      if (segmentSize > 0 && !isPausedRef.current && document.visibilityState === "visible") {
         const delta =
           (direction === "up" || direction === "left" ? -1 : 1) *
           speedPxPerSecond *
@@ -425,13 +430,16 @@ function ProjectMarqueeLane({
       rafId = window.requestAnimationFrame(loop);
     };
 
-    rafId = window.requestAnimationFrame(loop);
+    if (!prefersReducedMotion) {
+      rafId = window.requestAnimationFrame(loop);
+    }
+
     return () => {
-      window.cancelAnimationFrame(rafId);
+      if (rafId) window.cancelAnimationFrame(rafId);
       lane.removeEventListener("scroll", handleScroll);
       observer.disconnect();
     };
-  }, [direction, isHorizontal, items]);
+  }, [direction, isHorizontal, items, prefersReducedMotion]);
 
   const segmentClassName = isHorizontal ? "flex h-full w-max items-center gap-4 pr-4" : "space-y-5 pb-5";
   const cardWrapClassName = isHorizontal ? "w-[min(78vw,360px)] shrink-0" : "";
@@ -543,12 +551,18 @@ export function ProjectsPanelContent({
   if (!selectedProject) {
     return (
       <div className="h-full w-full overflow-y-auto bg-[linear-gradient(180deg,#d6edc3_0%,#cbe7b1_100%)] p-0 text-[#1d3658] lg:overflow-hidden">
-        <div className="grid min-h-full gap-0 lg:h-full lg:min-h-0 lg:grid-cols-[minmax(240px,0.62fr)_minmax(0,1.38fr)]">
-          <section className="flex items-center px-5 py-6 md:px-6 lg:min-h-0 lg:py-8">
-            <div className="max-w-[360px]">
-              <h2 className="text-[clamp(2.15rem,4.45vw,4.1rem)] font-semibold leading-[0.93] tracking-[-0.024em] text-[#163f81]">
-                Discover projects I have built
+        <div className="grid min-h-full gap-0 lg:h-full lg:min-h-0 lg:grid-cols-[minmax(230px,0.58fr)_minmax(0,1.42fr)] xl:grid-cols-[minmax(280px,0.62fr)_minmax(0,1.38fr)]">
+          <section className="flex items-center px-5 py-7 md:px-7 lg:min-h-0 lg:py-8 xl:px-8">
+            <div className="relative max-w-[390px] border-l-[5px] border-[#63bd58] pl-4 md:pl-5 lg:max-w-[340px] xl:max-w-[390px]">
+              <div aria-hidden="true" className="absolute -top-3 left-4 h-1.5 w-10 rounded-full bg-[#83cf73]" />
+              <p className="text-[11px] font-bold uppercase tracking-[0.42em] text-[#2e6d55]">Selected work</p>
+              <h2 className="mt-5 text-[clamp(3rem,7.4vw,5.5rem)] font-black leading-[0.82] tracking-[-0.055em] text-[#123f82]">
+                Projects
               </h2>
+              <p className="mt-5 max-w-[26ch] border-y border-[#9fd28e]/70 py-3 text-[clamp(1.05rem,2.25vw,1.45rem)] font-bold leading-[1.17] tracking-[-0.02em] text-[#123f82]">
+                Network labs, web interfaces and IoT systems.
+              </p>
+              <p className="mt-3 text-[10px] font-bold uppercase tracking-[0.34em] text-[#4f7fa7]">Built, tested, documented</p>
             </div>
           </section>
 
@@ -604,13 +618,14 @@ export function ProjectsPanelContent({
             {selectedProjectMedia && !heroImageFailed ? (
               <>
                 <div className="absolute inset-0 z-0" style={{ background: selectedProjectMedia.backdrop ?? "#edf2f7" }} />
-                <img
+                <Image
                   src={selectedProjectMedia.src}
                   alt={selectedProjectMedia.alt}
-                  className={`relative z-[1] block h-full w-full ${selectedProjectMedia.mode === "cover" ? "object-cover object-center" : "object-contain object-center p-4"}`}
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 920px"
+                  className={`relative z-[1] ${selectedProjectMedia.mode === "cover" ? "object-cover object-center" : "object-contain object-center p-4"}`}
                   draggable={false}
                   loading="lazy"
-                  decoding="async"
                   onError={() => {
                     if (selectedProjectMedia?.src) setFailedHeroImageSrc(selectedProjectMedia.src);
                   }}
@@ -835,7 +850,7 @@ export function ContactPanelContent({
             <div className="relative z-[1] mt-2 min-h-0 flex-1">
               <div className="relative h-full w-[88%] min-h-[120px] border border-[#e3bcc1]/90 bg-[#f2e5ea] p-1">
                 <Image
-                  src="/portfolio/contact-splash-cup.png"
+                  src="/contact-splash-cup.png"
                   alt="3D splash cup illustration"
                   fill
                   sizes="220px"
@@ -858,7 +873,7 @@ export function ContactPanelContent({
               <SocialLogoLink href="https://www.linkedin.com/in/roope-aaltonen/" label="LinkedIn" className="!h-10 !w-10 !border-0 !bg-transparent !shadow-none hover:!translate-y-0">
                 <LinkedInGlyph />
               </SocialLogoLink>
-              <SocialLogoLink href="https://facebook.com/roope_aaltonen" label="Instagram" className="!h-10 !w-10 !border-0 !bg-transparent !shadow-none hover:!translate-y-0">
+              <SocialLogoLink href={INSTAGRAM_URL} label="Instagram" className="!h-10 !w-10 !border-0 !bg-transparent !shadow-none hover:!translate-y-0">
                 <InstagramGlyph />
               </SocialLogoLink>
               <SocialLogoLink href="https://facebook.com/roope.aaltonen.5" label="Facebook" className="!h-10 !w-10 !border-0 !bg-transparent !shadow-none hover:!translate-y-0">
@@ -896,7 +911,7 @@ export function ContactPanelContent({
           <div className="relative z-[2] mt-5 flex min-h-0 flex-none items-end lg:mt-4 lg:min-h-0 lg:flex-1">
             <div className="relative h-[320px] w-full overflow-hidden border border-b-0 border-[#ecb8ce]/85 bg-[#f3e6eb] sm:h-[380px] lg:h-full lg:min-h-[320px] lg:w-[88%] lg:border-b lg:bg-[#f2e3ea]">
               <Image
-                src="/portfolio/contact-splash-cup.png"
+                src="/contact-splash-cup.png"
                 alt="3D splash cup"
                 fill
                 sizes="(max-width: 1024px) 100vw, 560px"
@@ -975,17 +990,17 @@ export function ContactPanelContent({
             </form>
           </div>
 
-          <div className="relative z-[2] grid w-full grid-cols-4 items-center justify-items-center gap-2 px-4 pb-5 pt-3 sm:px-8 lg:pt-2">
-            <SocialLogoLink href="https://www.linkedin.com/in/roope-aaltonen/" label="LinkedIn" className="!h-[clamp(72px,7.6vw,126px)] !w-[clamp(72px,7.6vw,126px)] !border-0 !bg-transparent !shadow-none hover:!translate-y-0">
+          <div className="relative z-[2] grid w-full grid-cols-4 items-center justify-items-center gap-2 px-3 pb-5 pt-3 sm:px-8 lg:pt-2">
+            <SocialLogoLink href="https://www.linkedin.com/in/roope-aaltonen/" label="LinkedIn" className="!h-[clamp(54px,7.6vw,126px)] !w-[clamp(54px,7.6vw,126px)] !border-0 !bg-transparent !shadow-none hover:!translate-y-0">
               <LinkedInGlyph />
             </SocialLogoLink>
-            <SocialLogoLink href="https://facebook.com/roope_aaltonen" label="Instagram" className="!h-[clamp(72px,7.6vw,126px)] !w-[clamp(72px,7.6vw,126px)] !border-0 !bg-transparent !shadow-none hover:!translate-y-0">
+            <SocialLogoLink href={INSTAGRAM_URL} label="Instagram" className="!h-[clamp(54px,7.6vw,126px)] !w-[clamp(54px,7.6vw,126px)] !border-0 !bg-transparent !shadow-none hover:!translate-y-0">
               <InstagramGlyph />
             </SocialLogoLink>
-            <SocialLogoLink href="https://facebook.com/roope.aaltonen.5" label="Facebook" className="!h-[clamp(72px,7.6vw,126px)] !w-[clamp(72px,7.6vw,126px)] !border-0 !bg-transparent !shadow-none hover:!translate-y-0">
+            <SocialLogoLink href="https://facebook.com/roope.aaltonen.5" label="Facebook" className="!h-[clamp(54px,7.6vw,126px)] !w-[clamp(54px,7.6vw,126px)] !border-0 !bg-transparent !shadow-none hover:!translate-y-0">
               <FacebookGlyph />
             </SocialLogoLink>
-            <SocialLogoLink href="https://github.com/roopeaal" label="GitHub" className="!h-[clamp(72px,7.6vw,126px)] !w-[clamp(72px,7.6vw,126px)] !border-0 !bg-transparent !shadow-none hover:!translate-y-0">
+            <SocialLogoLink href="https://github.com/roopeaal" label="GitHub" className="!h-[clamp(54px,7.6vw,126px)] !w-[clamp(54px,7.6vw,126px)] !border-0 !bg-transparent !shadow-none hover:!translate-y-0">
               <GitHubGlyph />
             </SocialLogoLink>
           </div>

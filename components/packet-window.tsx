@@ -5,20 +5,23 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useEffect, useId, useRef, type KeyboardEvent, type ReactNode, useCallback } from "react";
 import type { PanelSidebarItem } from "@/components/portfolio-panel-content";
 
+type PacketPanelType = "home" | "about" | "projects" | "contact";
+
 interface PacketWindowProps {
   open: boolean;
   onClose: () => void;
   title: string;
-  type: "home" | "about" | "projects" | "contact";
+  type: PacketPanelType;
   children: ReactNode;
   sidebarTitle?: string;
   sidebarItems?: PanelSidebarItem[];
   browserUrl?: string;
   browserLink?: string;
   shellTitle?: string;
+  onSelectPanel?: (panel: PacketPanelType) => void;
 }
 
-const PANEL_NAV_ITEMS: Array<{ panel: PacketWindowProps["type"]; label: string; href: string }> = [
+const PANEL_NAV_ITEMS: Array<{ panel: PacketPanelType; label: string; href: string }> = [
   { panel: "about", label: "About Me", href: "/?panel=about" },
   { panel: "projects", label: "Projects", href: "/?panel=projects" },
   { panel: "home", label: "LinkedIn", href: "/?panel=home" },
@@ -45,6 +48,7 @@ export function PacketWindow({
   browserUrl,
   browserLink,
   shellTitle,
+  onSelectPanel,
 }: PacketWindowProps) {
   const titleId = useId();
   const dialogRef = useRef<HTMLDivElement | null>(null);
@@ -116,16 +120,49 @@ export function PacketWindow({
   const isExpandedPanel = type === "about" || type === "contact" || type === "projects";
 
   const handleHardClose = useCallback(() => {
-    try {
-      onClose?.();
-    } catch {}
-
-    if (typeof window !== "undefined") {
-      const target = window.location.pathname || "/";
-      window.location.assign(target);
-    }
+    onClose?.();
   }, [onClose]);
 
+  const renderSidebarItem = (item: PanelSidebarItem, variant: "mobile" | "desktop") => {
+    const itemClassName =
+      variant === "mobile"
+        ? `inline-flex shrink-0 items-center whitespace-nowrap rounded-[4px] border px-3 py-1.5 text-[12px] font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4b74ff] ${
+            item.active
+              ? "border-[#c8c8c8] bg-white text-[#374151]"
+              : "border-[#d9d9d9] bg-[#f7f7f7] text-[#5b6778] hover:bg-white hover:text-[#374151]"
+          }`
+        : `flex w-full items-center border-b border-[#dfdfdf] px-3 py-1.5 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#4b74ff] ${
+            item.active
+              ? "bg-[#f7f7f7] text-[#374151]"
+              : "text-[#5b6778] hover:bg-[#f8f8f8] hover:text-[#374151]"
+          }`;
+
+    if (item.onSelect) {
+      return (
+        <button
+          key={item.id}
+          type="button"
+          onClick={item.onSelect}
+          className={itemClassName}
+          aria-current={item.active ? "true" : undefined}
+        >
+          {item.label}
+        </button>
+      );
+    }
+
+    return (
+      <Link
+        key={item.id}
+        href={item.href ?? "#"}
+        scroll={false}
+        className={itemClassName}
+        aria-current={item.active ? "true" : undefined}
+      >
+        {item.label}
+      </Link>
+    );
+  };
 
   return (
     <AnimatePresence>
@@ -147,7 +184,7 @@ export function PacketWindow({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 18 }}
             transition={windowTransition}
-            className="fixed inset-x-[1.2vw] top-[1.2vh] z-[510] mx-auto h-[calc(100dvh-2.4vh)] w-[min(1520px,97.6vw)] overflow-hidden rounded-[10px] bg-[#efefef] shadow-[0_26px_90px_rgba(15,23,42,0.26)] focus:outline-none"
+            className="fixed inset-x-2 top-2 z-[510] mx-auto h-[calc(100dvh-1rem)] w-[calc(100vw-1rem)] overflow-hidden rounded-[10px] bg-[#efefef] shadow-[0_26px_90px_rgba(15,23,42,0.26)] focus:outline-none sm:inset-x-[1.2vw] sm:top-[1.2vh] sm:h-[calc(100dvh-2.4vh)] sm:w-[min(1520px,97.6vw)]"
             role="dialog"
             aria-modal="true"
             aria-labelledby={titleId}
@@ -176,7 +213,7 @@ export function PacketWindow({
                     <span
                       key={item.panel}
                       aria-current="page"
-                      className="rounded-t-[2px] border border-b-0 border-[#c8c8c8] bg-[#f9f9f9] px-3 py-[5px] font-medium text-[#4a4a4a]"
+                      className="shrink-0 whitespace-nowrap rounded-t-[2px] border border-b-0 border-[#c8c8c8] bg-[#f9f9f9] px-3 py-[5px] font-medium text-[#4a4a4a]"
                     >
                       {item.label}
                     </span>
@@ -188,7 +225,12 @@ export function PacketWindow({
                     key={item.panel}
                     href={item.href}
                     scroll={false}
-                    className="rounded-t-[2px] border border-b-0 border-transparent px-3 py-[5px] text-[#7f8794] transition hover:border-[#d4d7dc] hover:bg-[#f8f8f8] hover:text-[#4a4a4a] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4b74ff]"
+                    onClick={(event) => {
+                      if (!onSelectPanel) return;
+                      event.preventDefault();
+                      onSelectPanel(item.panel);
+                    }}
+                    className="shrink-0 whitespace-nowrap rounded-t-[2px] border border-b-0 border-transparent px-3 py-[5px] text-[#7f8794] transition hover:border-[#d4d7dc] hover:bg-[#f8f8f8] hover:text-[#4a4a4a] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4b74ff]"
                   >
                     {item.label}
                   </Link>
@@ -197,7 +239,7 @@ export function PacketWindow({
             </div>
 
             {type === "home" ? (
-              <div className="flex h-[calc(100%-60px)] flex-col bg-[#ededed] p-3">
+              <div className="flex h-[calc(100%-60px)] flex-col bg-[#ededed] p-2 sm:p-3">
                 <div className="flex-1 overflow-hidden border border-[#c6c6c6] bg-[#f4f4f4]">
                   <div className="flex h-[36px] items-center bg-[#0d16ff] px-3 text-[16px] text-white">
                     <span>Web Browser</span>
@@ -211,23 +253,23 @@ export function PacketWindow({
                     </button>
                   </div>
 
-                  <div className="flex items-center gap-2 border-b border-[#cfcfcf] bg-[#efefef] px-3 py-1.5 text-[12px] text-[#6e6e6e]">
+                  <div className="flex min-w-0 items-center gap-1.5 overflow-hidden border-b border-[#cfcfcf] bg-[#efefef] px-2 py-1.5 text-[12px] text-[#6e6e6e] sm:gap-2 sm:px-3">
                     <span className="inline-flex h-7 w-7 items-center justify-center border border-[#c8c8c8] bg-[#f8f8f8] text-[#646464]">&lt;</span>
                     <span className="inline-flex h-7 w-7 items-center justify-center border border-[#c8c8c8] bg-[#f8f8f8] text-[#646464]">&gt;</span>
-                    <span>URL</span>
+                    <span className="hidden sm:inline">URL</span>
                     <div className="min-w-0 flex-1 border border-[#cfcfcf] bg-white px-2 py-[5px] text-[#565656]">{browserUrl ?? "identity.local/roope-aaltonen"}</div>
                     <a
                       href={browserLink ?? browserUrl ?? "#"}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex h-7 items-center justify-center border border-[#c8c8c8] bg-[#f8f8f8] px-4 text-[#575757] transition hover:bg-[#ececec] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4b74ff]"
+                      className="inline-flex h-7 shrink-0 items-center justify-center border border-[#c8c8c8] bg-[#f8f8f8] px-3 text-[#575757] transition hover:bg-[#ececec] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4b74ff] sm:px-4"
                     >
                       Go
                     </a>
                     <button
                       type="button"
                       onPointerDown={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleHardClose(); }}
-                      className="inline-flex h-7 items-center justify-center border border-[#c8c8c8] bg-[#f8f8f8] px-4 text-[#575757] transition hover:bg-[#ececec] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4b74ff]"
+                      className="hidden h-7 shrink-0 items-center justify-center border border-[#c8c8c8] bg-[#f8f8f8] px-4 text-[#575757] transition hover:bg-[#ececec] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4b74ff] sm:inline-flex"
                     >
                       Stop
                     </button>
@@ -237,7 +279,13 @@ export function PacketWindow({
                 </div>
               </div>
             ) : (
-              <div className="flex h-[calc(100%-60px)] bg-[#ededed] p-2 md:p-3 xl:p-4">
+              <div className="flex h-[calc(100%-60px)] flex-col bg-[#ededed] p-2 md:p-3 lg:flex-row xl:p-4">
+                {sidebarItems.length > 0 ? (
+                  <div className="mb-2 flex gap-1 overflow-x-auto border border-[#cacaca] bg-[#efefef] p-1 [scrollbar-width:none] lg:hidden [&::-webkit-scrollbar]:hidden">
+                    {sidebarItems.map((item) => renderSidebarItem(item, "mobile"))}
+                  </div>
+                ) : null}
+
                 <div
                   className="mr-3 hidden w-[clamp(150px,13vw,174px)] shrink-0 overflow-hidden border border-[#a8a8a8] bg-[#efefef] lg:block"
                 >
@@ -245,45 +293,12 @@ export function PacketWindow({
                     {sidebarTitle}
                   </div>
                   <div className="space-y-0 py-0.5 text-[12px]">
-                    {sidebarItems.map((item) => {
-                      const itemClassName = `flex w-full items-center border-b border-[#dfdfdf] px-3 py-1.5 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#4b74ff] ${
-                          item.active
-                            ? "bg-[#f7f7f7] text-[#374151]"
-                            : "text-[#5b6778] hover:bg-[#f8f8f8] hover:text-[#374151]"
-                        }`;
-
-                      return item.href ? (
-                        <Link
-                          key={item.id}
-                          href={item.href}
-                          scroll={false}
-                          onClick={(event) => {
-                            if (!item.onSelect) return;
-                            event.preventDefault();
-                            item.onSelect();
-                          }}
-                          className={itemClassName}
-                          aria-current={item.active ? "true" : undefined}
-                        >
-                          {item.label}
-                        </Link>
-                      ) : (
-                        <button
-                          key={item.id}
-                          type="button"
-                          onClick={item.onSelect}
-                          className={itemClassName}
-                          aria-current={item.active ? "true" : undefined}
-                        >
-                          {item.label}
-                        </button>
-                      );
-                    })}
+                    {sidebarItems.map((item) => renderSidebarItem(item, "desktop"))}
                   </div>
                 </div>
 
                 <div
-                  className={`min-w-0 flex-1 border border-[#c5c5c5] bg-[#f4f4f4] ${
+                  className={`min-h-0 min-w-0 flex-1 border border-[#c5c5c5] bg-[#f4f4f4] ${
                     isExpandedPanel ? "p-0" : "p-3 md:p-4"
                   }`}
                 >

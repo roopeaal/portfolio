@@ -35,7 +35,7 @@ type NetworkMode = "stable" | "dropping" | "grabbing" | "repairing" | "recoverin
 type CursorState = "pointer" | "open" | "closed";
 
 const VIEWBOX = { width: 1280, height: 760 };
-const ASSET_BASE = process.env.NODE_ENV === "production" ? "/portfolio" : "";
+const ASSET_BASE = "";
 const PREVIEW_WIDTH = 340;
 const PREVIEW_HEIGHT = 230;
 const PREVIEW_CONTENT_BLEED = 1.12;
@@ -1804,6 +1804,7 @@ export function TopologyHero() {
       <PacketWindow
         open={openWindow === "home"}
         onClose={closeWindowState}
+        onSelectPanel={openWindowState}
         type="home"
         title="LinkedIn · PC1"
         browserUrl="https://www.linkedin.com/in/roope-aaltonen/"
@@ -1815,6 +1816,7 @@ export function TopologyHero() {
       <PacketWindow
         open={openWindow === "about"}
         onClose={closeWindowState}
+        onSelectPanel={openWindowState}
         type="about"
         title="About Me · Wireless Router1"
         sidebarTitle={SIDEBAR_TITLE.about}
@@ -1827,6 +1829,7 @@ export function TopologyHero() {
       <PacketWindow
         open={openWindow === "projects"}
         onClose={closeWindowState}
+        onSelectPanel={openWindowState}
         type="projects"
         title="Projects · Switch0"
         sidebarTitle={SIDEBAR_TITLE.projects}
@@ -1843,6 +1846,7 @@ export function TopologyHero() {
       <PacketWindow
         open={openWindow === "contact"}
         onClose={closeWindowState}
+        onSelectPanel={openWindowState}
         type="contact"
         title="Contact Me · Smartphone0"
         sidebarTitle={SIDEBAR_TITLE.contact}
@@ -2353,10 +2357,12 @@ function ServiceMouse({ cursor }: { cursor: { x: number; y: number; state: Curso
         filter: "drop-shadow(0 1px 0 rgba(255,255,255,0.55)) drop-shadow(0 2px 3px rgba(0,0,0,0.18))",
       }}
     >
-      <img
+      <Image
         src={spriteSrc}
         alt=""
         aria-hidden="true"
+        width={visual.width}
+        height={visual.height}
         draggable={false}
         className="pointer-events-none select-none"
         style={{ width: `${visual.width}px`, height: `${visual.height}px` }}
@@ -3045,7 +3051,7 @@ function SmartphoneIllustration({
             <div className="pointer-events-none absolute left-[-18%] top-[-6%] h-[46%] w-[92%] rotate-[16deg] rounded-[999px] bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.11)_0%,rgba(255,255,255,0.042)_24%,rgba(255,255,255,0.010)_45%,transparent_72%)] blur-[1.5px]" />
             {ringing ? (
               <>
-                <Image src="/portfolio/iphone-call-screen.png" alt="iPhone call screen" fill draggable={false} className="pointer-events-none select-none object-cover object-center" sizes="176px" />
+                <Image src="/iphone-call-screen.png" alt="iPhone call screen" fill draggable={false} className="pointer-events-none select-none object-cover object-center" sizes="176px" />
                 <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(92,97,94,0.095)_0%,rgba(90,95,92,0.045)_11%,rgba(72,77,74,0.014)_20%,transparent_27%,transparent_74%,rgba(42,48,46,0.028)_86%,rgba(41,47,45,0.075)_100%)]" />
                 <div className="absolute inset-0 z-[4] shadow-[inset_0_1px_0_rgba(92,97,94,0.42),inset_0_-1px_0_rgba(41,47,45,0.48),inset_1px_0_0_rgba(64,70,67,0.18),inset_-1px_0_0_rgba(57,63,60,0.16)]" />
                 <div className="absolute inset-x-0 top-[-1px] z-[5] h-[8px] bg-[linear-gradient(180deg,rgba(92,97,94,0.98)_0%,rgba(91,96,93,0.95)_24%,rgba(90,95,92,0.78)_46%,rgba(89,94,91,0.34)_66%,rgba(88,93,90,0.06)_100%)]" />
@@ -3124,10 +3130,12 @@ function LinkedInMonitorView() {
   rel="noreferrer"
   className="block h-full w-full overflow-hidden cursor-pointer"
 >
-  <img
-    src="/portfolio/linkedin-profile.png?v=20260409-1"
+  <Image
+    src="/linkedin-profile.png?v=20260409-1"
     alt="LinkedIn profile preview"
-    className="block h-full w-full object-cover object-top"
+    fill
+    sizes="(max-width: 640px) 100vw, 780px"
+    className="object-cover object-top"
   />
 </a>
     </div>
@@ -3145,10 +3153,12 @@ function LinkedInPopupScreenshotView() {
         className="block h-full w-full overflow-hidden cursor-pointer"
         aria-label="Open Roope Aaltonen LinkedIn profile"
       >
-        <img
-          src="/portfolio/linkedin-popup.png?v=20260409-6"
+        <Image
+          src="/linkedin-popup.png?v=20260409-6"
           alt="LinkedIn popup screenshot"
-          className="block h-full w-full object-cover object-left-top sm:object-top"
+          fill
+          sizes="(max-width: 640px) 100vw, 1200px"
+          className="object-cover object-left-top sm:object-top"
           draggable={false}
         />
       </a>

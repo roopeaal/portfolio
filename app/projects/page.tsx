@@ -1,5 +1,5 @@
-import { redirect } from "next/navigation";
+import { PanelRouteRedirect } from "@/components/panel-route-redirect";
 
 export default function ProjectsPage() {
-  redirect("/?panel=projects");
+  return <PanelRouteRedirect panel="projects" label="Projects" />;
 }
