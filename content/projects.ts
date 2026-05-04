@@ -95,7 +95,7 @@ export const projects: Project[] = [
       "Configured static export, base path handling and GitHub Pages deployment through GitHub Actions.",
     ],
     technicalHighlights: [
-      "Next.js App Router static export configured for GitHub Pages with /portfolio base path.",
+      "Next.js App Router static export configured for GitHub Pages and the roopeaaltonen.fi custom domain.",
       "URL state management for popup panels and individual project views using search parameters.",
       "Packet Tracer-style window shell with focus handling, keyboard support and animated transitions.",
       "Framer Motion used for UI movement, popup animation and topology interaction.",
