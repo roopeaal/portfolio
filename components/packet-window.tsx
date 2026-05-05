@@ -279,9 +279,9 @@ export function PacketWindow({
                 </div>
               </div>
             ) : (
-              <div className="flex h-[calc(100%-60px)] flex-col bg-[#ededed] p-2 md:p-3 lg:flex-row xl:p-4">
+              <div className="flex h-[calc(100%-60px)] min-w-0 flex-col overflow-hidden bg-[#ededed] p-2 md:p-3 lg:flex-row xl:p-4">
                 {sidebarItems.length > 0 ? (
-                  <div className="mb-2 flex gap-1 overflow-x-auto border border-[#cacaca] bg-[#efefef] p-1 [scrollbar-width:none] lg:hidden [&::-webkit-scrollbar]:hidden">
+                  <div className="mb-2 flex max-w-full shrink-0 gap-1 overflow-x-auto border border-[#cacaca] bg-[#efefef] p-1 [scrollbar-width:none] lg:hidden [&::-webkit-scrollbar]:hidden">
                     {sidebarItems.map((item) => renderSidebarItem(item, "mobile"))}
                   </div>
                 ) : null}
@@ -298,7 +298,7 @@ export function PacketWindow({
                 </div>
 
                 <div
-                  className={`min-h-0 min-w-0 flex-1 border border-[#c5c5c5] bg-[#f4f4f4] ${
+                  className={`min-h-0 min-w-0 flex-1 overflow-hidden border border-[#c5c5c5] bg-[#f4f4f4] ${
                     isExpandedPanel ? "p-0" : "p-3 md:p-4"
                   }`}
                 >

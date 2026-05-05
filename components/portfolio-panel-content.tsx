@@ -155,10 +155,10 @@ export function AboutPanelContent({
         }}
       />
 
-      <div className="relative z-[1] h-full overflow-y-auto lg:overflow-hidden">
+      <div className="relative z-[1] h-full overflow-x-hidden overflow-y-auto lg:overflow-hidden">
         <div className="flex min-h-full flex-col px-4 py-4 md:px-6 md:py-5 lg:h-full lg:min-h-0">
           <header className="text-center">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.34em] text-[#c6d1df]" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
+            <p className="mx-auto max-w-[calc(100vw-3rem)] break-words text-[9px] font-semibold uppercase tracking-[0.2em] text-[#c6d1df] sm:max-w-full sm:text-[10px] sm:tracking-[0.28em] md:text-[11px] md:tracking-[0.34em]" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
               <span className="block">{heroLineTop}</span>
               <span className="mt-1 block">{heroLineBottom}</span>
             </p>
@@ -171,7 +171,7 @@ export function AboutPanelContent({
 
           <div className="mt-4 grid flex-1 items-start gap-5 lg:min-h-0 lg:grid-cols-[minmax(0,1fr)_minmax(260px,400px)_minmax(0,1fr)] lg:items-center">
             <section
-              className="mx-auto w-full max-w-[680px] px-2 text-left text-[13px] leading-7 text-[#d7e0eb] lg:max-w-[360px] lg:px-4 lg:text-center lg:leading-8"
+              className="mx-auto w-full max-w-[calc(100vw-3rem)] break-words px-2 text-left text-[13px] leading-7 text-[#d7e0eb] sm:max-w-[680px] lg:max-w-[360px] lg:px-4 lg:text-center lg:leading-8"
               style={{ fontFamily: "Georgia, 'Times New Roman', serif", textShadow: "0 1px 0 rgba(0,0,0,0.28)" }}
             >
               {leftCopy}
@@ -208,7 +208,7 @@ export function AboutPanelContent({
             </figure>
 
             <section
-              className="mx-auto w-full max-w-[680px] px-2 text-left text-[13px] leading-7 text-[#d7e0eb] lg:max-w-[360px] lg:px-4 lg:text-center lg:leading-8"
+              className="mx-auto w-full max-w-[calc(100vw-3rem)] break-words px-2 text-left text-[13px] leading-7 text-[#d7e0eb] sm:max-w-[680px] lg:max-w-[360px] lg:px-4 lg:text-center lg:leading-8"
               style={{ fontFamily: "Georgia, 'Times New Roman', serif", textShadow: "0 1px 0 rgba(0,0,0,0.28)" }}
             >
               {rightCopy}
@@ -599,21 +599,21 @@ export function ProjectsPanelContent({
   const projectLinks = Array.from(new Set(selectedProject.evidence.flatMap(extractUrls)));
   const projectSectionClass = "border-t border-[#c7dda7] pt-5";
   const projectHeadingClass = "text-[13px] font-semibold uppercase tracking-[0.18em] text-[#244a73]";
-  const projectParagraphClass = "mt-3 max-w-[76ch] text-[15px] leading-7 text-[#1f334a]";
-  const projectListClass = "mt-3 space-y-2.5 text-[15px] leading-7 text-[#1f334a]";
+  const projectParagraphClass = "mt-3 max-w-[calc(100vw-3.5rem)] break-words text-[15px] leading-7 text-[#1f334a] md:max-w-[76ch]";
+  const projectListClass = "mt-3 max-w-[calc(100vw-3.5rem)] space-y-2.5 break-words text-[15px] leading-7 text-[#1f334a] md:max-w-none";
   const projectChipClass = "rounded-full border border-[#b7d79b] bg-[#f8fff0] px-3 py-1.5 text-[12px] font-medium text-[#244a73]";
 
   return (
-    <div className="h-full w-full overflow-auto bg-[#f5faed] text-[#1f334a]">
-      <article className="mx-auto max-w-[920px] px-5 py-6 md:px-8 md:py-8">
+    <div className="h-full w-full overflow-x-hidden overflow-y-auto bg-[#f5faed] text-[#1f334a]">
+      <article className="mx-auto w-full max-w-[min(920px,calc(100vw-1rem))] overflow-hidden px-5 py-6 md:px-8 md:py-8">
         <header>
-          <h2 className="max-w-[820px] text-[clamp(2rem,4.2vw,3.45rem)] font-semibold leading-[0.98] tracking-[-0.028em] text-[#173b72]">
+          <h2 className="max-w-[calc(100vw-3.5rem)] break-words text-[clamp(1.45rem,7.8vw,3.45rem)] font-semibold leading-[0.98] tracking-[-0.028em] text-[#173b72] [overflow-wrap:anywhere] md:max-w-[820px] md:text-[clamp(2rem,4.2vw,3.45rem)]">
             {selectedProject.title}
           </h2>
-          <p className="mt-4 max-w-[76ch] text-[17px] leading-8 text-[#24405f]">{selectedProject.summary}</p>
+          <p className="mt-4 max-w-[calc(100vw-3.5rem)] break-words text-[16px] leading-7 text-[#24405f] md:max-w-[76ch] md:text-[17px] md:leading-8">{selectedProject.summary}</p>
         </header>
 
-        <figure className="mt-6 overflow-hidden rounded-[14px] border border-[#a5ca86] bg-[#edf8df]">
+        <figure className="mt-6 max-w-[calc(100vw-3.5rem)] overflow-hidden rounded-[14px] border border-[#a5ca86] bg-[#edf8df] md:max-w-none">
           <div className="relative aspect-[16/9] w-full overflow-hidden">
             {selectedProjectMedia && !heroImageFailed ? (
               <>
@@ -625,7 +625,7 @@ export function ProjectsPanelContent({
                   sizes="(max-width: 1024px) 100vw, 920px"
                   className={`relative z-[1] ${selectedProjectMedia.mode === "cover" ? "object-cover object-center" : "object-contain object-center p-4"}`}
                   draggable={false}
-                  loading="lazy"
+                  priority
                   onError={() => {
                     if (selectedProjectMedia?.src) setFailedHeroImageSrc(selectedProjectMedia.src);
                   }}

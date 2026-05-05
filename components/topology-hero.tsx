@@ -112,15 +112,16 @@ const INITIAL_NODE_POSITIONS: Record<NodeKey, NodePosition> = {
 };
 
 const MOBILE_TOPOLOGY_BREAKPOINT = 720;
+const COMPACT_TOPOLOGY_BREAKPOINT = 1100;
 const MOBILE_DEVICE_SCALE: Record<NodeKey, number> = {
-  about: 0.72,
-  projects: 0.78,
-  home: 0.8,
-  contact: 0.8,
+  about: 0.66,
+  projects: 0.67,
+  home: 0.7,
+  contact: 0.72,
 };
 const MOBILE_LABEL_WIDTH: Record<NodeKey, number> = {
   about: 184,
-  projects: 142,
+  projects: 116,
   home: 136,
   contact: 164,
 };
@@ -250,15 +251,43 @@ function getMobileHomeNodePositions(metrics: { width: number; height: number }):
   const topRow = clamp(sceneHeight * 0.07, 42, 62);
   const bottomRow = clamp(sceneHeight - 306, 340, 430);
   const aboutLeft = clamp(sceneWidth * 0.16, sidePadding + 42, 72);
-  const projectsLeft = Math.max(sidePadding + visualWidth("about") + 12, sceneWidth - visualWidth("projects") - sidePadding);
+  const nodeBoxWidth = sceneWidth * (UNIFIED_DEVICE_WIDTH / VIEWBOX.width);
+  const projectsOverflow = Math.max((visualWidth("projects") - nodeBoxWidth) / 2, 0);
+  const projectsLeft = sceneWidth - visualWidth("projects") - sidePadding + projectsOverflow;
   const homeLeft = clamp(sceneWidth * 0.14, sidePadding + 34, 70);
   const contactLeft = Math.max(sidePadding + visualWidth("home") + 12, sceneWidth - visualWidth("contact") - sidePadding);
 
   return {
     about: { x: pxToViewX(aboutLeft), y: pxToViewY(topRow) },
-    projects: { x: pxToViewX(projectsLeft), y: pxToViewY(topRow + 8) },
+    projects: { x: pxToViewX(projectsLeft), y: pxToViewY(topRow + 82) },
     home: { x: pxToViewX(homeLeft), y: pxToViewY(bottomRow) },
     contact: { x: pxToViewX(contactLeft), y: pxToViewY(bottomRow + 2) },
+  };
+}
+
+function getCompactHomeNodePositions(
+  base: Record<NodeKey, NodePosition>,
+  metrics: { width: number; height: number },
+): Record<NodeKey, NodePosition> {
+  const compactAmount = clamp((COMPACT_TOPOLOGY_BREAKPOINT - metrics.width) / 220, 0, 1);
+
+  return {
+    about: {
+      x: base.about.x,
+      y: lerp(base.about.y, 52, compactAmount),
+    },
+    projects: {
+      x: base.projects.x,
+      y: lerp(base.projects.y, 58, compactAmount),
+    },
+    home: {
+      x: base.home.x,
+      y: lerp(base.home.y, 424, compactAmount),
+    },
+    contact: {
+      x: base.contact.x,
+      y: lerp(base.contact.y, 326, compactAmount),
+    },
   };
 }
 
@@ -1138,7 +1167,11 @@ export function TopologyHero() {
 
   const isMobileTopology = sceneMetrics.width < MOBILE_TOPOLOGY_BREAKPOINT;
   const topologyNodePositions = useMemo(
-    () => (isMobileTopology ? getMobileHomeNodePositions(sceneMetrics) : nodePositions),
+    () => {
+      if (isMobileTopology) return getMobileHomeNodePositions(sceneMetrics);
+      if (sceneMetrics.width < COMPACT_TOPOLOGY_BREAKPOINT) return getCompactHomeNodePositions(nodePositions, sceneMetrics);
+      return nodePositions;
+    },
     [isMobileTopology, nodePositions, sceneMetrics],
   );
 
@@ -1974,8 +2007,10 @@ function NodeButton({
   const mobileScale = MOBILE_DEVICE_SCALE[node];
   const labelOffsetY = meta.labelOffsetY ?? 0;
   const labelOffsetX = meta.labelOffsetX ?? 0;
+  const mobileLabelOffsetY = node === "projects" ? 18 : node === "contact" ? 36 : labelOffsetY * 0.7;
+  const mobileLabelOffsetX = node === "projects" ? 16 : labelOffsetX;
   const labelTop = mobile
-    ? meta.deviceHeight * mobileScale + NODE_LABEL_GAP + labelOffsetY * 0.7
+    ? meta.deviceHeight * mobileScale + NODE_LABEL_GAP + mobileLabelOffsetY
     : meta.deviceHeight + NODE_LABEL_GAP + labelOffsetY;
 
   return (
@@ -2044,7 +2079,7 @@ function NodeButton({
             left: mobile ? "50%" : 0,
             right: mobile ? "auto" : 0,
             width: mobile ? MOBILE_LABEL_WIDTH[node] : undefined,
-            marginLeft: mobile ? labelOffsetX : undefined,
+            marginLeft: mobile ? mobileLabelOffsetX : undefined,
             transform: mobile ? "translateX(-50%)" : labelOffsetX ? `translateX(${labelOffsetX}px)` : undefined,
           }}
         >

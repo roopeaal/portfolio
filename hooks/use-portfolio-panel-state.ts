@@ -11,6 +11,10 @@ const VALID_PROJECTS = new Set(projects.map((project) => project.slug));
 const ROOT_PATH = "/";
 
 function parsePanel(panel: string | null): PortfolioPanel {
+  if (panel === "linkedin") {
+    return "home";
+  }
+
   if (panel && VALID_PANELS.has(panel as Exclude<PortfolioPanel, null>)) {
     return panel as Exclude<PortfolioPanel, null>;
   }
