@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { projects } from "@/content/projects";
 
@@ -9,6 +9,7 @@ export type PortfolioPanel = "home" | "about" | "projects" | "contact" | null;
 const VALID_PANELS = new Set<Exclude<PortfolioPanel, null>>(["home", "about", "projects", "contact"]);
 const VALID_PROJECTS = new Set(projects.map((project) => project.slug));
 const ROOT_PATH = "/";
+type PanelState = { panel: PortfolioPanel; project: string | null };
 
 function parsePanel(panel: string | null): PortfolioPanel {
   if (panel === "linkedin") {
@@ -32,8 +33,22 @@ export function usePortfolioPanelState() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const panel = parsePanel(searchParams.get("panel"));
-  const project = panel === "projects" ? parseProject(searchParams.get("project")) : null;
+  const urlState = useMemo<PanelState>(() => {
+    const nextPanel = parsePanel(searchParams.get("panel"));
+    return {
+      panel: nextPanel,
+      project: nextPanel === "projects" ? parseProject(searchParams.get("project")) : null,
+    };
+  }, [searchParams]);
+
+  const [optimisticState, setOptimisticState] = useState<PanelState>(urlState);
+
+  useEffect(() => {
+    setOptimisticState(urlState);
+  }, [urlState]);
+
+  const panel = optimisticState.panel;
+  const project = panel === "projects" ? optimisticState.project : null;
 
   const updateUrlState = useCallback(
     (nextPanel: PortfolioPanel, nextProject?: string | null) => {
@@ -47,6 +62,8 @@ export function usePortfolioPanelState() {
       }
 
       const safeProject = nextPanel === "projects" ? parseProject(nextProject ?? null) : null;
+      setOptimisticState({ panel: nextPanel, project: safeProject });
+
       if (safeProject) {
         params.set("project", safeProject);
       } else {
@@ -83,6 +100,7 @@ export function usePortfolioPanelState() {
     const params = new URLSearchParams(currentSearch);
     params.delete("panel");
     params.delete("project");
+    setOptimisticState({ panel: null, project: null });
 
     const next = params.toString();
     router.replace(next ? `${ROOT_PATH}?${next}` : ROOT_PATH, { scroll: false });

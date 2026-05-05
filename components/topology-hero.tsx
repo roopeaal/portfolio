@@ -242,26 +242,41 @@ function clamp(value: number, min: number, max: number) {
 function getMobileHomeNodePositions(metrics: { width: number; height: number }): Record<NodeKey, NodePosition> {
   const sceneWidth = Math.max(metrics.width, 1);
   const sceneHeight = Math.max(metrics.height, 1);
-  const sidePadding = clamp(sceneWidth * 0.04, 12, 18);
-
-  const visualWidth = (node: NodeKey) => UNIFIED_DEVICE_WIDTH * MOBILE_DEVICE_SCALE[node];
+  const rootWidthPx = sceneWidth * (UNIFIED_DEVICE_WIDTH / VIEWBOX.width);
   const pxToViewX = (visualLeft: number) => (visualLeft / sceneWidth) * VIEWBOX.width;
   const pxToViewY = (visualTop: number) => (visualTop / sceneHeight) * VIEWBOX.height;
 
-  const topRow = clamp(sceneHeight * 0.07, 42, 62);
-  const bottomRow = clamp(sceneHeight - 306, 340, 430);
-  const aboutLeft = clamp(sceneWidth * 0.16, sidePadding + 42, 72);
-  const nodeBoxWidth = sceneWidth * (UNIFIED_DEVICE_WIDTH / VIEWBOX.width);
-  const projectsOverflow = Math.max((visualWidth("projects") - nodeBoxWidth) / 2, 0);
-  const projectsLeft = sceneWidth - visualWidth("projects") - sidePadding + projectsOverflow;
-  const homeLeft = clamp(sceneWidth * 0.14, sidePadding + 34, 70);
-  const contactLeft = Math.max(sidePadding + visualWidth("home") + 12, sceneWidth - visualWidth("contact") - sidePadding);
+  const positionInCell = (
+    node: NodeKey,
+    column: 0 | 1,
+    row: 0 | 1,
+  ): NodePosition => {
+    const cellWidth = sceneWidth / 2;
+    const cellHeight = sceneHeight / 2;
+    const centerX = cellWidth * (column + 0.5);
+    const centerY = cellHeight * (row + 0.5);
+    const visualHeight = UNIFIED_DEVICE_HEIGHT * MOBILE_DEVICE_SCALE[node];
+    const labelReserve = node === "contact" ? 66 : node === "projects" ? 50 : 58;
+    const contentHeight = visualHeight + labelReserve;
+    const visualCenterOffsetX =
+      node === "projects" ? 10 :
+      node === "contact" ? 13 :
+      3;
+    const rowLift = row === 0 ? 28 : 4;
+    const topPx = clamp(centerY - contentHeight / 2 - rowLift, 10, Math.max(10, sceneHeight - contentHeight - 10));
+    const leftPx = clamp(centerX - visualCenterOffsetX, 4, Math.max(4, sceneWidth - rootWidthPx - 4));
+
+    return {
+      x: pxToViewX(leftPx),
+      y: pxToViewY(topPx),
+    };
+  };
 
   return {
-    about: { x: pxToViewX(aboutLeft), y: pxToViewY(topRow) },
-    projects: { x: pxToViewX(projectsLeft), y: pxToViewY(topRow + 82) },
-    home: { x: pxToViewX(homeLeft), y: pxToViewY(bottomRow) },
-    contact: { x: pxToViewX(contactLeft), y: pxToViewY(bottomRow + 2) },
+    about: positionInCell("about", 0, 0),
+    projects: positionInCell("projects", 1, 0),
+    home: positionInCell("home", 0, 1),
+    contact: positionInCell("contact", 1, 1),
   };
 }
 
@@ -1617,7 +1632,7 @@ export function TopologyHero() {
     <>
       <audio ref={phoneTapAudioRef} src="/phone-click.m4a?v=20260409-9" preload="auto" />
       <section
-        className="pt-ui relative h-[100dvh] overflow-hidden bg-[#fbfbfb] max-sm:bg-[radial-gradient(circle_at_50%_46%,#ffffff_0%,#fbfbfb_42%,#eef5fb_100%)]"
+        className="pt-ui relative h-[100dvh] overflow-hidden bg-[#fbfbfb]"
         onMouseMove={(event) => setMousePosition({ x: Math.round(event.clientX), y: Math.round(event.clientY) })}
       >
         <TopTitleBar />
@@ -1632,19 +1647,6 @@ export function TopologyHero() {
           <div className="relative h-full w-full">
             <div className="relative h-full w-full">
               <div ref={sceneRef} className="relative h-full w-full overflow-hidden">
-                <div
-                  aria-hidden="true"
-                  className="pointer-events-none absolute inset-0 z-[1] sm:hidden"
-                  style={{
-                    background:
-                      "linear-gradient(90deg, rgba(6,47,93,0.035) 1px, transparent 1px), linear-gradient(180deg, rgba(6,47,93,0.032) 1px, transparent 1px)",
-                    backgroundSize: "28px 28px",
-                    maskImage: "radial-gradient(circle at 50% 46%, black 0%, black 72%, transparent 100%)",
-                  }}
-                />
-                <div className="pointer-events-none absolute left-3 top-3 z-[35] rounded-full border border-[#cbd8e5] bg-white/88 px-3 py-1 text-[11px] font-medium text-[#54708e] shadow-[0_8px_20px_rgba(15,23,42,0.08)] backdrop-blur sm:hidden">
-                  Tap a device to open
-                </div>
                 <motion.svg
                   viewBox={`0 0 ${VIEWBOX.width} ${VIEWBOX.height}`}
                   className="pointer-events-none absolute inset-0 z-[24] h-full w-full"
@@ -1757,13 +1759,13 @@ export function TopologyHero() {
                   <CableSegment from={homeAttach} to={switchRightCableEnd} routeOffsetX={RIGHT_CABLE_ROUTE_OFFSET_X} />
 
                   {topLineStatus === "green"
-                    ? topIndicators.map((point, index) => <StatusTriangle key={`top-${index}`} {...point} />)
+                    ? topIndicators.map((point, index) => <StatusTriangle key={`top-${index}`} {...point} sceneMetrics={sceneMetrics} />)
                     : topLineStatus === "orange"
                       ? topIndicators.map((point, index) => <StatusOrb key={`top-${index}`} {...point} tick={motionTick + index * 2} />)
                       : null}
 
                   {diagIndicators.map((point, index) => (
-                    <StatusTriangle key={`diag-${index}`} {...point} />
+                    <StatusTriangle key={`diag-${index}`} {...point} sceneMetrics={sceneMetrics} />
                   ))}
 
                   {typingActive ? <TrafficPulse from={homeAttach} to={switchRightCableEnd} tick={motionTick} duration={64} delay={14} /> : null}
@@ -2008,7 +2010,10 @@ function NodeButton({
   const labelOffsetY = meta.labelOffsetY ?? 0;
   const labelOffsetX = meta.labelOffsetX ?? 0;
   const mobileLabelOffsetY = node === "projects" ? 18 : node === "contact" ? 36 : labelOffsetY * 0.7;
-  const mobileLabelOffsetX = node === "projects" ? 16 : labelOffsetX;
+  const mobileLabelOffsetX = labelOffsetX;
+  const nodeDropShadow = active
+    ? "drop-shadow(0 20px 24px rgba(15,23,42,0.11)) drop-shadow(0 5px 14px rgba(18,127,166,0.10))"
+    : "drop-shadow(0 12px 16px rgba(15,23,42,0.06)) drop-shadow(0 3px 8px rgba(18,127,166,0.05))";
   const labelTop = mobile
     ? meta.deviceHeight * mobileScale + NODE_LABEL_GAP + mobileLabelOffsetY
     : meta.deviceHeight + NODE_LABEL_GAP + labelOffsetY;
@@ -2041,15 +2046,12 @@ function NodeButton({
           animate={{
             scale: active ? 1.035 : 1,
             y: active && !dragging ? -4 : 0,
-            filter: active
-              ? "drop-shadow(0 20px 24px rgba(15,23,42,0.11)) drop-shadow(0 5px 14px rgba(18,127,166,0.10))"
-              : "drop-shadow(0 12px 16px rgba(15,23,42,0.06)) drop-shadow(0 3px 8px rgba(18,127,166,0.05))",
           }}
           transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
           className="pointer-events-none relative z-10 flex justify-center"
-          style={{ height: meta.deviceHeight }}
+          style={{ height: meta.deviceHeight, filter: nodeDropShadow }}
         >
-          
+
         {DEBUG_NODE_HALOS
           ? debugRects.map((rect, index) => (
               <div
@@ -2247,11 +2249,11 @@ function DetachedEthernetStub({
         top: `calc(${topPercent}% - ${anchorOffsetYPx}px)`,
         width: `${headWidth}px`,
         height: `${headHeight}px`,
+        filter: hoverActive ? activeShadow : baseShadow,
       }}
       animate={{
         scale: hoverActive ? 1.035 : 1,
         y: hoverActive ? -4 : 0,
-        filter: hoverActive ? activeShadow : baseShadow,
       }}
       transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
       aria-hidden="true"
@@ -2359,8 +2361,12 @@ function TrafficPulse({ from, to, tick, duration, delay, dotted = false, color =
   return <circle cx={x} cy={y} r={dotted ? 3.6 : 4.8} fill={color} opacity={0.9} />;
 }
 
-function StatusTriangle({ x, y }: { x: number; y: number }) {
-  return <polygon points={`${x},${y - 16} ${x - 14},${y + 12} ${x + 14},${y + 12}`} fill="#43c729" opacity={1} />;
+function StatusTriangle({ x, y, sceneMetrics }: { x: number; y: number; sceneMetrics: { width: number; height: number } }) {
+  const halfWidth = (16 / Math.max(sceneMetrics.width, 1)) * VIEWBOX.width;
+  const topHeight = (17 / Math.max(sceneMetrics.height, 1)) * VIEWBOX.height;
+  const bottomHeight = (13 / Math.max(sceneMetrics.height, 1)) * VIEWBOX.height;
+
+  return <polygon points={`${x},${y - topHeight} ${x - halfWidth},${y + bottomHeight} ${x + halfWidth},${y + bottomHeight}`} fill="#43c729" opacity={1} />;
 }
 
 function StatusOrb({ x, y, tick }: { x: number; y: number; tick: number }) {
@@ -3158,7 +3164,7 @@ function SmartphoneIllustration({
 
 function LinkedInMonitorView() {
   return (
-    <div className="relative h-full w-full bg-white">
+    <div className="relative h-full w-full overflow-hidden bg-white">
       <a
   href="https://www.linkedin.com/in/roope-aaltonen/"
   target="_blank"
@@ -3180,7 +3186,7 @@ function LinkedInMonitorView() {
 
 function LinkedInPopupScreenshotView() {
   return (
-    <div className="h-full w-full bg-white">
+    <div className="relative h-full w-full overflow-hidden bg-white">
       <a
         href="https://www.linkedin.com/in/roope-aaltonen/"
         target="_blank"
