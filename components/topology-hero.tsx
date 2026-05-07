@@ -43,6 +43,8 @@ const PREVIEW_GAP = 42;
 const PREVIEW_MARGIN = 18;
 const DEVICE_FLOAT_FILTER = "drop-shadow(0 16px 22px rgba(10,18,31,0.18)) drop-shadow(0 5px 12px rgba(24,79,113,0.10))";
 const DEVICE_FLOAT_FILTER_SOFT = "drop-shadow(0 12px 18px rgba(10,18,31,0.14)) drop-shadow(0 4px 10px rgba(24,79,113,0.08))";
+const WIRED_CABLE_STROKE = "#242424";
+const WIRELESS_CABLE_STROKE = "#2d2d2d";
 const UNIFIED_DEVICE_WIDTH = 232;
 const UNIFIED_DEVICE_HEIGHT = 198;
 const UNIFIED_NODE_HEIGHT = 268;
@@ -124,6 +126,19 @@ const MOBILE_LABEL_WIDTH: Record<NodeKey, number> = {
   projects: 116,
   home: 136,
   contact: 164,
+};
+const MOBILE_LABEL_VISUAL_NUDGE_X: Record<NodeKey, number> = {
+  about: 0,
+  projects: 0,
+  home: -9,
+  contact: 0,
+};
+const MOBILE_AUTO_ANIMATION_SEQUENCE: NodeKey[] = ["about", "projects", "home", "contact"];
+const MOBILE_AUTO_ANIMATION_DURATION: Record<NodeKey, number> = {
+  about: 3600,
+  projects: 6800,
+  home: 3600,
+  contact: 3900,
 };
 
 const NODE_POSITIONS_STORAGE_KEY = "portfolio-node-positions-v7";
@@ -1364,7 +1379,7 @@ export function TopologyHero() {
   }, [networkMode]);
 
 
-  const triggerNodeAnimation = (node: NodeKey) => {
+  const triggerNodeAnimation = useCallback((node: NodeKey) => {
     if (animationLocks.current[node]) return;
 
     const timeoutIds = timeouts.current;
@@ -1417,7 +1432,41 @@ export function TopologyHero() {
     const grab = window.setTimeout(() => setMode("grabbing"), 1600);
     const repair = window.setTimeout(() => setMode("repairing"), 3600);
     timeoutIds.push(grab, repair);
-  };
+  }, [setMode, switchLeftCableEnd.x, switchLeftCableEnd.y]);
+
+  useEffect(() => {
+    if (!isMobileTopology || openWindow || draggingNode) return;
+
+    let sequenceIndex = 0;
+    const timeoutIds: number[] = [];
+    const schedule = (callback: () => void, delay: number) => {
+      const id = window.setTimeout(callback, delay);
+      timeoutIds.push(id);
+      return id;
+    };
+
+    const runNext = () => {
+      const node = MOBILE_AUTO_ANIMATION_SEQUENCE[sequenceIndex % MOBILE_AUTO_ANIMATION_SEQUENCE.length];
+      const duration = MOBILE_AUTO_ANIMATION_DURATION[node];
+      sequenceIndex += 1;
+
+      setActive(node);
+      triggerNodeAnimation(node);
+
+      schedule(() => {
+        setActive((current) => (current === node ? null : current));
+      }, Math.max(1600, duration - 850));
+
+      schedule(runNext, duration);
+    };
+
+    schedule(runNext, 900);
+
+    return () => {
+      timeoutIds.forEach((id) => window.clearTimeout(id));
+      setActive((current) => (current && MOBILE_AUTO_ANIMATION_SEQUENCE.includes(current) ? null : current));
+    };
+  }, [draggingNode, isMobileTopology, openWindow, triggerNodeAnimation]);
 
   const playPhoneTapSound = useCallback(() => {
     const audio = phoneTapAudioRef.current;
@@ -1683,7 +1732,7 @@ export function TopologyHero() {
                   active={active === "projects"}
                   opacity={nodeStyle.projects}
                   delay={0.1}
-                  layer={10}
+                  layer={40}
                   dragging={draggingNode === "projects"}
                   mobile={isMobileTopology}
                   onHover={() => { setActive("projects"); triggerNodeAnimation("projects"); }}
@@ -2009,8 +2058,10 @@ function NodeButton({
   const mobileScale = MOBILE_DEVICE_SCALE[node];
   const labelOffsetY = meta.labelOffsetY ?? 0;
   const labelOffsetX = meta.labelOffsetX ?? 0;
-  const mobileLabelOffsetY = node === "projects" ? 18 : node === "contact" ? 36 : labelOffsetY * 0.7;
-  const mobileLabelOffsetX = labelOffsetX;
+  const mobileLabelOffsetY = node === "projects" ? 32 : node === "contact" ? 36 : labelOffsetY * 0.7;
+  const mobileVisualCenterOffsetX = -((1 - mobileScale) * UNIFIED_DEVICE_WIDTH) / 2;
+  const mobileLabelOffsetX = labelOffsetX + mobileVisualCenterOffsetX + MOBILE_LABEL_VISUAL_NUDGE_X[node];
+  const labelTextShadow = "0 1px 2px rgba(255,255,255,0.96), 0 0 7px rgba(255,255,255,0.88), 0 0 15px rgba(255,255,255,0.74)";
   const nodeDropShadow = active
     ? "drop-shadow(0 20px 24px rgba(15,23,42,0.11)) drop-shadow(0 5px 14px rgba(18,127,166,0.10))"
     : "drop-shadow(0 12px 16px rgba(15,23,42,0.06)) drop-shadow(0 3px 8px rgba(18,127,166,0.05))";
@@ -2083,10 +2134,11 @@ function NodeButton({
             width: mobile ? MOBILE_LABEL_WIDTH[node] : undefined,
             marginLeft: mobile ? mobileLabelOffsetX : undefined,
             transform: mobile ? "translateX(-50%)" : labelOffsetX ? `translateX(${labelOffsetX}px)` : undefined,
+            textShadow: labelTextShadow,
           }}
         >
-          <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-[#7f8b9d] drop-shadow-none [text-shadow:none] sm:text-[12px] sm:tracking-[0.18em]">{deviceName}</p>
-          <p className="mt-1 text-[16px] font-semibold tracking-[-0.02em] text-[#050505] drop-shadow-none [text-shadow:none] sm:text-[18px]">{label}</p>
+          <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#66758b] drop-shadow-none sm:text-[12px] sm:tracking-[0.18em]">{deviceName}</p>
+          <p className="mt-1 text-[16px] font-bold tracking-[-0.02em] text-[#050505] drop-shadow-none sm:text-[18px]">{label}</p>
         </div>
       </button>
     </div>
@@ -2277,8 +2329,9 @@ function DetachedEthernetStub({
         >
           <path
             fill={color}
-            stroke="#0a0a0c"
+            stroke={WIRED_CABLE_STROKE}
             strokeWidth="6"
+            vectorEffect="non-scaling-stroke"
             strokeLinejoin="round"
             d="M 83 16 L 75 20 L 72 29 L 68 34 L 49 34 L 42 38 L 38 45 L 38 153 L 32 156 L 27 163 L 27 242 L 36 291 L 42 314 L 42 320 L 46 331 L 53 339 L 64 345 L 64 355 L 57 360 L 56 368 L 60 373 L 66 377 L 59 383 L 58 393 L 68 402 L 62 406 L 59 414 L 62 421 L 66 423 L 82 423 L 84 425 L 142 425 L 144 423 L 161 423 L 167 418 L 168 412 L 165 406 L 161 404 L 159 401 L 166 397 L 169 393 L 169 385 L 161 377 L 167 373 L 171 368 L 171 362 L 163 354 L 163 345 L 175 338 L 183 327 L 200 242 L 200 163 L 195 156 L 189 153 L 189 45 L 187 41 L 178 34 L 159 34 L 156 31 L 152 20 L 144 16 Z"
           />
@@ -2324,10 +2377,11 @@ function CableSegment({
     <path
       d={path}
       fill="none"
-      stroke={disconnected ? "#101010" : "#111111"}
+      stroke={WIRED_CABLE_STROKE}
       strokeWidth={5.1}
       strokeLinecap="round"
       strokeLinejoin="round"
+      vectorEffect="non-scaling-stroke"
     />
   );
 }
@@ -2343,12 +2397,13 @@ function WirelessCable({ from, to, tick, online }: { from: { x: number; y: numbe
       <path
         d={wirelessPath}
         fill="none"
-        stroke="#111111"
+        stroke={WIRELESS_CABLE_STROKE}
         strokeWidth={2.8}
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeDasharray="2.4 7.4"
         opacity={0.98}
+        vectorEffect="non-scaling-stroke"
       />
     </>
   );
@@ -2362,9 +2417,9 @@ function TrafficPulse({ from, to, tick, duration, delay, dotted = false, color =
 }
 
 function StatusTriangle({ x, y, sceneMetrics }: { x: number; y: number; sceneMetrics: { width: number; height: number } }) {
-  const halfWidth = (16 / Math.max(sceneMetrics.width, 1)) * VIEWBOX.width;
-  const topHeight = (17 / Math.max(sceneMetrics.height, 1)) * VIEWBOX.height;
-  const bottomHeight = (13 / Math.max(sceneMetrics.height, 1)) * VIEWBOX.height;
+  const halfWidth = (9 / Math.max(sceneMetrics.width, 1)) * VIEWBOX.width;
+  const topHeight = (10 / Math.max(sceneMetrics.height, 1)) * VIEWBOX.height;
+  const bottomHeight = (8 / Math.max(sceneMetrics.height, 1)) * VIEWBOX.height;
 
   return <polygon points={`${x},${y - topHeight} ${x - halfWidth},${y + bottomHeight} ${x + halfWidth},${y + bottomHeight}`} fill="#43c729" opacity={1} />;
 }
