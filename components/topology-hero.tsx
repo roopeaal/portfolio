@@ -3199,7 +3199,7 @@ function LinkedInPopupScreenshotView() {
           alt="LinkedIn popup screenshot"
           fill
           sizes="(max-width: 640px) 100vw, 1200px"
-          className="object-cover object-left-top sm:object-top"
+          className="object-cover object-[15%_top] sm:object-top"
           draggable={false}
         />
       </a>

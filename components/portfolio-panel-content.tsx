@@ -370,7 +370,7 @@ function ProjectMarqueeLane({
     let segmentSize = 0;
     let rafId = 0;
     let previousTime = 0;
-    const speedPxPerSecond = isHorizontal ? 16 : 20;
+    const speedPxPerSecond = isHorizontal ? 22 : 20;
 
     const normalizeScrollPosition = () => {
       if (segmentSize <= 0) return;
@@ -442,7 +442,7 @@ function ProjectMarqueeLane({
   }, [direction, isHorizontal, items, prefersReducedMotion]);
 
   const segmentClassName = isHorizontal ? "flex h-full w-max items-center gap-4 pr-4" : "space-y-5 pb-5";
-  const cardWrapClassName = isHorizontal ? "w-[min(78vw,360px)] shrink-0" : "";
+  const cardWrapClassName = isHorizontal ? "w-[min(82vw,390px)] shrink-0 snap-start" : "";
   const renderSegment = (segmentName: string, hidden = false) => (
     <div ref={hidden ? undefined : segmentRef} aria-hidden={hidden || undefined} className={segmentClassName}>
       {items.map((project) => (
@@ -474,7 +474,7 @@ function ProjectMarqueeLane({
       <div
         ref={laneRef}
         className={`h-full [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${
-          isHorizontal ? "overflow-x-auto overflow-y-hidden" : "overflow-y-auto overflow-x-hidden"
+          isHorizontal ? "snap-x overflow-x-auto overflow-y-hidden overscroll-x-contain [touch-action:pan-x]" : "overflow-y-auto overflow-x-hidden"
         }`}
       >
         {isHorizontal ? (
@@ -553,16 +553,12 @@ export function ProjectsPanelContent({
       <div className="h-full w-full overflow-y-auto bg-[linear-gradient(180deg,#d6edc3_0%,#cbe7b1_100%)] p-0 text-[#1d3658] lg:overflow-hidden">
         <div className="grid min-h-full gap-0 lg:h-full lg:min-h-0 lg:grid-cols-[minmax(230px,0.58fr)_minmax(0,1.42fr)] xl:grid-cols-[minmax(280px,0.62fr)_minmax(0,1.38fr)]">
           <section className="flex items-center px-5 py-7 md:px-7 lg:min-h-0 lg:py-8 xl:px-8">
-            <div className="relative max-w-[390px] border-l-[5px] border-[#63bd58] pl-4 md:pl-5 lg:max-w-[340px] xl:max-w-[390px]">
-              <div aria-hidden="true" className="absolute -top-3 left-4 h-1.5 w-10 rounded-full bg-[#83cf73]" />
-              <p className="text-[11px] font-bold uppercase tracking-[0.42em] text-[#2e6d55]">Selected work</p>
-              <h2 className="mt-5 text-[clamp(3rem,7.4vw,5.5rem)] font-black leading-[0.82] tracking-[-0.055em] text-[#123f82]">
-                Projects
+            <div className="max-w-[390px] lg:max-w-[340px] xl:max-w-[390px]">
+              <h2 className="text-[clamp(3.5rem,8.4vw,6rem)] font-bold leading-[0.92] tracking-[-0.065em] text-[#123f82] md:text-[clamp(4.1rem,7.5vw,6.25rem)] lg:text-[clamp(3.6rem,5.8vw,5.75rem)]">
+                <span className="block">Discover</span>
+                <span className="block">projects I</span>
+                <span className="block">have built</span>
               </h2>
-              <p className="mt-5 max-w-[26ch] border-y border-[#9fd28e]/70 py-3 text-[clamp(1.05rem,2.25vw,1.45rem)] font-bold leading-[1.17] tracking-[-0.02em] text-[#123f82]">
-                Network labs, web interfaces and IoT systems.
-              </p>
-              <p className="mt-3 text-[10px] font-bold uppercase tracking-[0.34em] text-[#4f7fa7]">Built, tested, documented</p>
             </div>
           </section>
 

@@ -118,6 +118,9 @@ export function PacketWindow({
   const overlayTransition = prefersReducedMotion ? { duration: 0 } : { duration: 0.18 };
   const windowTransition = prefersReducedMotion ? { duration: 0 } : { duration: 0.24, ease: [0.22, 1, 0.36, 1] as const };
   const isExpandedPanel = type === "about" || type === "contact" || type === "projects";
+  const showMobileSidebar = sidebarItems.length > 1;
+  const browserDisplayUrl = browserUrl ?? "identity.local/roope-aaltonen";
+  const compactBrowserDisplayUrl = browserDisplayUrl.replace(/^https?:\/\/(www\.)?/, "");
 
   const handleHardClose = useCallback(() => {
     onClose?.();
@@ -253,16 +256,19 @@ export function PacketWindow({
                     </button>
                   </div>
 
-                  <div className="flex min-w-0 items-center gap-1.5 overflow-hidden border-b border-[#cfcfcf] bg-[#efefef] px-2 py-1.5 text-[12px] text-[#6e6e6e] sm:gap-2 sm:px-3">
+                  <div className="flex min-w-0 items-center gap-1 overflow-hidden border-b border-[#cfcfcf] bg-[#efefef] px-1.5 py-1.5 text-[12px] text-[#6e6e6e] sm:gap-2 sm:px-3">
                     <span className="inline-flex h-7 w-7 items-center justify-center border border-[#c8c8c8] bg-[#f8f8f8] text-[#646464]">&lt;</span>
                     <span className="inline-flex h-7 w-7 items-center justify-center border border-[#c8c8c8] bg-[#f8f8f8] text-[#646464]">&gt;</span>
                     <span className="hidden sm:inline">URL</span>
-                    <div className="min-w-0 flex-1 border border-[#cfcfcf] bg-white px-2 py-[5px] text-[#565656]">{browserUrl ?? "identity.local/roope-aaltonen"}</div>
+                    <div className="min-w-0 flex-1 truncate whitespace-nowrap border border-[#cfcfcf] bg-white px-1.5 py-[5px] text-[11px] leading-[17px] text-[#565656] sm:px-2 sm:text-[12px]">
+                      <span className="sm:hidden">{compactBrowserDisplayUrl}</span>
+                      <span className="hidden sm:inline">{browserDisplayUrl}</span>
+                    </div>
                     <a
                       href={browserLink ?? browserUrl ?? "#"}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex h-7 shrink-0 items-center justify-center border border-[#c8c8c8] bg-[#f8f8f8] px-3 text-[#575757] transition hover:bg-[#ececec] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4b74ff] sm:px-4"
+                      className="inline-flex h-7 shrink-0 items-center justify-center border border-[#c8c8c8] bg-[#f8f8f8] px-2.5 text-[#575757] transition hover:bg-[#ececec] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4b74ff] sm:px-4"
                     >
                       Go
                     </a>
@@ -280,7 +286,7 @@ export function PacketWindow({
               </div>
             ) : (
               <div className="flex h-[calc(100%-60px)] min-w-0 flex-col overflow-hidden bg-[#ededed] p-2 md:p-3 lg:flex-row xl:p-4">
-                {sidebarItems.length > 0 ? (
+                {showMobileSidebar ? (
                   <div className="mb-2 flex max-w-full shrink-0 gap-1 overflow-x-auto border border-[#cacaca] bg-[#efefef] p-1 [scrollbar-width:none] lg:hidden [&::-webkit-scrollbar]:hidden">
                     {sidebarItems.map((item) => renderSidebarItem(item, "mobile"))}
                   </div>
