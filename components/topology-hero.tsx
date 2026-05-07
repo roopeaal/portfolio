@@ -136,10 +136,11 @@ const MOBILE_LABEL_VISUAL_NUDGE_X: Record<NodeKey, number> = {
 const MOBILE_AUTO_ANIMATION_SEQUENCE: NodeKey[] = ["about", "projects", "home", "contact"];
 const MOBILE_AUTO_ANIMATION_DURATION: Record<NodeKey, number> = {
   about: 3600,
-  projects: 6800,
+  projects: 8200,
   home: 3600,
   contact: 3900,
 };
+const MOBILE_AUTO_ANIMATION_PAUSE = 1500;
 
 const NODE_POSITIONS_STORAGE_KEY = "portfolio-node-positions-v7";
 const SIM_CLOCK_START_STORAGE_KEY = "portfolio-simulation-clock-start-v1";
@@ -1457,7 +1458,7 @@ export function TopologyHero() {
         setActive((current) => (current === node ? null : current));
       }, Math.max(1600, duration - 850));
 
-      schedule(runNext, duration);
+      schedule(runNext, duration + MOBILE_AUTO_ANIMATION_PAUSE);
     };
 
     schedule(runNext, 900);
@@ -2329,9 +2330,8 @@ function DetachedEthernetStub({
         >
           <path
             fill={color}
-            stroke={WIRED_CABLE_STROKE}
+            stroke="#0a0a0c"
             strokeWidth="6"
-            vectorEffect="non-scaling-stroke"
             strokeLinejoin="round"
             d="M 83 16 L 75 20 L 72 29 L 68 34 L 49 34 L 42 38 L 38 45 L 38 153 L 32 156 L 27 163 L 27 242 L 36 291 L 42 314 L 42 320 L 46 331 L 53 339 L 64 345 L 64 355 L 57 360 L 56 368 L 60 373 L 66 377 L 59 383 L 58 393 L 68 402 L 62 406 L 59 414 L 62 421 L 66 423 L 82 423 L 84 425 L 142 425 L 144 423 L 161 423 L 167 418 L 168 412 L 165 406 L 161 404 L 159 401 L 166 397 L 169 393 L 169 385 L 161 377 L 167 373 L 171 368 L 171 362 L 163 354 L 163 345 L 175 338 L 183 327 L 200 242 L 200 163 L 195 156 L 189 153 L 189 45 L 187 41 L 178 34 L 159 34 L 156 31 L 152 20 L 144 16 Z"
           />

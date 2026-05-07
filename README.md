@@ -32,6 +32,10 @@ The homepage is the real application surface and the popup windows are the sourc
 - `content/profile.ts` — profile and contact content source
 - `content/projects.ts` — project case study content source
 
+## Documentation
+
+- [Academic implementation report](docs/portfolio-academic-report.md)
+
 ## Commands
 
 ```bash

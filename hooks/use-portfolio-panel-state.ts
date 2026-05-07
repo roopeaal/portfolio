@@ -96,15 +96,14 @@ export function usePortfolioPanelState() {
   }, [updateUrlState]);
 
   const closePanel = useCallback(() => {
-    const currentSearch = typeof window !== "undefined" ? window.location.search : searchParams.toString();
-    const params = new URLSearchParams(currentSearch);
-    params.delete("panel");
-    params.delete("project");
     setOptimisticState({ panel: null, project: null });
 
-    const next = params.toString();
-    router.replace(next ? `${ROOT_PATH}?${next}` : ROOT_PATH, { scroll: false });
-  }, [router, searchParams]);
+    if (typeof window !== "undefined") {
+      window.history.replaceState(window.history.state, "", ROOT_PATH);
+    }
+
+    router.replace(ROOT_PATH, { scroll: false });
+  }, [router]);
 
   return useMemo(
     () => ({

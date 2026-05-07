@@ -359,6 +359,7 @@ function ProjectMarqueeLane({
   const laneRef = useRef<HTMLDivElement>(null);
   const segmentRef = useRef<HTMLDivElement>(null);
   const isPausedRef = useRef(false);
+  const resumeTimeoutRef = useRef<number | null>(null);
   const prefersReducedMotion = useReducedMotion();
   const isHorizontal = direction === "left" || direction === "right";
 
@@ -370,7 +371,7 @@ function ProjectMarqueeLane({
     let segmentSize = 0;
     let rafId = 0;
     let previousTime = 0;
-    const speedPxPerSecond = isHorizontal ? 22 : 20;
+    const speedPxPerSecond = isHorizontal ? 34 : 20;
 
     const normalizeScrollPosition = () => {
       if (segmentSize <= 0) return;
@@ -441,8 +442,34 @@ function ProjectMarqueeLane({
     };
   }, [direction, isHorizontal, items, prefersReducedMotion]);
 
+  useEffect(() => {
+    return () => {
+      if (resumeTimeoutRef.current) {
+        window.clearTimeout(resumeTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const pauseForDrag = () => {
+    if (resumeTimeoutRef.current) {
+      window.clearTimeout(resumeTimeoutRef.current);
+      resumeTimeoutRef.current = null;
+    }
+    isPausedRef.current = true;
+  };
+
+  const resumeAfterDrag = () => {
+    if (resumeTimeoutRef.current) {
+      window.clearTimeout(resumeTimeoutRef.current);
+    }
+    resumeTimeoutRef.current = window.setTimeout(() => {
+      isPausedRef.current = false;
+      resumeTimeoutRef.current = null;
+    }, 450);
+  };
+
   const segmentClassName = isHorizontal ? "flex h-full w-max items-center gap-4 pr-4" : "space-y-5 pb-5";
-  const cardWrapClassName = isHorizontal ? "w-[min(82vw,390px)] shrink-0 snap-start" : "";
+  const cardWrapClassName = isHorizontal ? "w-[min(68vw,310px)] shrink-0" : "";
   const renderSegment = (segmentName: string, hidden = false) => (
     <div ref={hidden ? undefined : segmentRef} aria-hidden={hidden || undefined} className={segmentClassName}>
       {items.map((project) => (
@@ -455,13 +482,11 @@ function ProjectMarqueeLane({
 
   return (
     <div
-      className="relative h-full min-h-0 overflow-hidden"
-      onPointerEnter={() => {
-        isPausedRef.current = true;
-      }}
-      onPointerLeave={() => {
-        isPausedRef.current = false;
-      }}
+      className="relative h-full min-h-0 w-full max-w-full overflow-hidden"
+      onPointerDown={pauseForDrag}
+      onPointerUp={resumeAfterDrag}
+      onPointerCancel={resumeAfterDrag}
+      onPointerLeave={resumeAfterDrag}
       onFocusCapture={() => {
         isPausedRef.current = true;
       }}
@@ -473,8 +498,8 @@ function ProjectMarqueeLane({
     >
       <div
         ref={laneRef}
-        className={`h-full [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${
-          isHorizontal ? "snap-x overflow-x-auto overflow-y-hidden overscroll-x-contain [touch-action:pan-x]" : "overflow-y-auto overflow-x-hidden"
+        className={`h-full w-full min-w-0 max-w-full [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${
+          isHorizontal ? "overflow-x-auto overflow-y-hidden overscroll-x-contain [touch-action:pan-x]" : "overflow-y-auto overflow-x-hidden"
         }`}
       >
         {isHorizontal ? (
@@ -552,9 +577,9 @@ export function ProjectsPanelContent({
     return (
       <div className="h-full w-full overflow-y-auto bg-[linear-gradient(180deg,#d6edc3_0%,#cbe7b1_100%)] p-0 text-[#1d3658] lg:overflow-hidden">
         <div className="grid min-h-full gap-0 lg:h-full lg:min-h-0 lg:grid-cols-[minmax(230px,0.58fr)_minmax(0,1.42fr)] xl:grid-cols-[minmax(280px,0.62fr)_minmax(0,1.38fr)]">
-          <section className="flex items-center px-5 py-7 md:px-7 lg:min-h-0 lg:py-8 xl:px-8">
-            <div className="max-w-[390px] lg:max-w-[340px] xl:max-w-[390px]">
-              <h2 className="text-[clamp(3.5rem,8.4vw,6rem)] font-bold leading-[0.92] tracking-[-0.065em] text-[#123f82] md:text-[clamp(4.1rem,7.5vw,6.25rem)] lg:text-[clamp(3.6rem,5.8vw,5.75rem)]">
+          <section className="flex items-center px-5 py-5 md:px-7 lg:min-h-0 lg:py-8 xl:px-8">
+            <div className="max-w-[320px] lg:max-w-[340px] xl:max-w-[390px]">
+              <h2 className="text-[clamp(2.35rem,11vw,3.4rem)] font-bold leading-[0.92] tracking-[-0.065em] text-[#123f82] md:text-[clamp(4.1rem,7.5vw,6.25rem)] lg:text-[clamp(3.6rem,5.8vw,5.75rem)]">
                 <span className="block">Discover</span>
                 <span className="block">projects I</span>
                 <span className="block">have built</span>
@@ -562,11 +587,11 @@ export function ProjectsPanelContent({
             </div>
           </section>
 
-          <section className="grid min-h-[520px] gap-4 overflow-hidden px-4 pb-5 md:px-5 lg:h-full lg:min-h-0 lg:grid-cols-2 lg:gap-5 lg:py-0">
-            <div className="h-[240px] lg:hidden">
+          <section className="grid min-h-[390px] gap-3 overflow-hidden px-4 pb-5 md:px-5 lg:h-full lg:min-h-0 lg:grid-cols-2 lg:gap-5 lg:py-0">
+            <div className="h-[178px] min-w-0 overflow-hidden lg:hidden">
               <ProjectMarqueeLane items={overviewProjectOrder} direction="left" onSelectProject={onSelectProject} />
             </div>
-            <div className="h-[240px] lg:hidden">
+            <div className="h-[178px] min-w-0 overflow-hidden lg:hidden">
               <ProjectMarqueeLane items={mobileSecondLaneProjects} direction="right" onSelectProject={onSelectProject} />
             </div>
             <div className="hidden h-full min-h-0 lg:block">
@@ -987,16 +1012,16 @@ export function ContactPanelContent({
           </div>
 
           <div className="relative z-[2] grid w-full grid-cols-4 items-center justify-items-center gap-2 px-3 pb-5 pt-3 sm:px-8 lg:pt-2">
-            <SocialLogoLink href="https://www.linkedin.com/in/roope-aaltonen/" label="LinkedIn" className="!h-[clamp(54px,7.6vw,126px)] !w-[clamp(54px,7.6vw,126px)] !border-0 !bg-transparent !shadow-none hover:!translate-y-0">
+            <SocialLogoLink href="https://www.linkedin.com/in/roope-aaltonen/" label="LinkedIn" className="!h-[clamp(64px,7.6vw,126px)] !w-[clamp(64px,7.6vw,126px)] !border-0 !bg-transparent !shadow-none hover:!translate-y-0">
               <LinkedInGlyph />
             </SocialLogoLink>
-            <SocialLogoLink href={INSTAGRAM_URL} label="Instagram" className="!h-[clamp(54px,7.6vw,126px)] !w-[clamp(54px,7.6vw,126px)] !border-0 !bg-transparent !shadow-none hover:!translate-y-0">
+            <SocialLogoLink href={INSTAGRAM_URL} label="Instagram" className="!h-[clamp(64px,7.6vw,126px)] !w-[clamp(64px,7.6vw,126px)] !border-0 !bg-transparent !shadow-none hover:!translate-y-0">
               <InstagramGlyph />
             </SocialLogoLink>
-            <SocialLogoLink href="https://facebook.com/roope.aaltonen.5" label="Facebook" className="!h-[clamp(54px,7.6vw,126px)] !w-[clamp(54px,7.6vw,126px)] !border-0 !bg-transparent !shadow-none hover:!translate-y-0">
+            <SocialLogoLink href="https://facebook.com/roope.aaltonen.5" label="Facebook" className="!h-[clamp(64px,7.6vw,126px)] !w-[clamp(64px,7.6vw,126px)] !border-0 !bg-transparent !shadow-none hover:!translate-y-0">
               <FacebookGlyph />
             </SocialLogoLink>
-            <SocialLogoLink href="https://github.com/roopeaal" label="GitHub" className="!h-[clamp(54px,7.6vw,126px)] !w-[clamp(54px,7.6vw,126px)] !border-0 !bg-transparent !shadow-none hover:!translate-y-0">
+            <SocialLogoLink href="https://github.com/roopeaal" label="GitHub" className="!h-[clamp(64px,7.6vw,126px)] !w-[clamp(64px,7.6vw,126px)] !border-0 !bg-transparent !shadow-none hover:!translate-y-0">
               <GitHubGlyph />
             </SocialLogoLink>
           </div>
