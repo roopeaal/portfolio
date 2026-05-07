@@ -198,9 +198,9 @@ export function RetroComputer({
 
         <filter id="screenImageCrt" x="-12%" y="-12%" width="124%" height="124%">
           <feTurbulence type="fractalNoise" baseFrequency="0.004 0.013" numOctaves="1" seed="11" result="noise" />
-          <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.6" xChannelSelector="R" yChannelSelector="G" result="warp" />
-          <feGaussianBlur in="warp" stdDeviation="0.24" result="soft" />
-          <feColorMatrix in="soft" type="saturate" values="0.9" />
+          <feDisplacementMap in="SourceGraphic" in2="noise" scale="0.55" xChannelSelector="R" yChannelSelector="G" result="warp" />
+          <feGaussianBlur in="warp" stdDeviation="0.08" result="soft" />
+          <feColorMatrix in="soft" type="saturate" values="1.04" />
         </filter>
 
         <pattern id="scanLines" width="5" height="5" patternUnits="userSpaceOnUse">
@@ -275,7 +275,7 @@ export function RetroComputer({
               width={SCREEN_WIDTH}
               height={SCREEN_HEIGHT}
               preserveAspectRatio="xMidYMid slice"
-              opacity="0.9"
+              opacity="1"
               filter="url(#screenImageCrt)"
             />
             <image
@@ -285,16 +285,16 @@ export function RetroComputer({
               width={SCREEN_WIDTH + 20}
               height={SCREEN_HEIGHT + 18}
               preserveAspectRatio="xMidYMid slice"
-              opacity="0.24"
+              opacity="0.1"
               filter="url(#screenImageCrt)"
               mask="url(#crtLensMask)"
             />
           </>
         ) : null}
 
-        <path d={CRT_PATH} fill="url(#scanLines)" opacity="0.14" />
-        <path d={CRT_PATH} fill="url(#crtGlow)" opacity="0.28" />
-        <path d={CRT_PATH} fill="url(#crtVignette)" />
+        <path d={CRT_PATH} fill="url(#scanLines)" opacity="0.08" />
+        <path d={CRT_PATH} fill="url(#crtGlow)" opacity="0.18" />
+        <path d={CRT_PATH} fill="url(#crtVignette)" opacity="0.64" />
 
         <path
           d="M358 149 C506 132 718 132 862 148"

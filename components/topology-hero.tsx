@@ -45,6 +45,8 @@ const DEVICE_FLOAT_FILTER = "drop-shadow(0 16px 22px rgba(10,18,31,0.18)) drop-s
 const DEVICE_FLOAT_FILTER_SOFT = "drop-shadow(0 12px 18px rgba(10,18,31,0.14)) drop-shadow(0 4px 10px rgba(24,79,113,0.08))";
 const WIRED_CABLE_STROKE = "#242424";
 const WIRELESS_CABLE_STROKE = "#2d2d2d";
+const WIRED_CABLE_WIDTH = 4.6;
+const WIRELESS_CABLE_WIDTH = 2.5;
 const UNIFIED_DEVICE_WIDTH = 232;
 const UNIFIED_DEVICE_HEIGHT = 198;
 const UNIFIED_NODE_HEIGHT = 268;
@@ -129,7 +131,7 @@ const MOBILE_LABEL_WIDTH: Record<NodeKey, number> = {
 };
 const MOBILE_LABEL_VISUAL_NUDGE_X: Record<NodeKey, number> = {
   about: 0,
-  projects: 0,
+  projects: -15,
   home: -9,
   contact: 0,
 };
@@ -350,7 +352,7 @@ function getCablePathGeometry(
   routeOffsetX = 0,
 ) {
   const baseEnd = disconnected && looseEnd ? looseEnd : to;
-  const cableAttachDrop = disconnected ? 0 : CABLE_ATTACH_DROP;
+  const cableAttachDrop = CABLE_ATTACH_DROP;
   const end = { x: baseEnd.x, y: baseEnd.y + cableAttachDrop };
   const deltaX = end.x - from.x;
   const deltaY = end.y - from.y;
@@ -878,12 +880,12 @@ function getAttachPoint(node: NodeKey, positions: Record<NodeKey, NodePosition>)
   };
 }
 
-function getRouterCableAttachPoint(positions: Record<NodeKey, NodePosition>) {
+function getRouterCableAttachPoint(positions: Record<NodeKey, NodePosition>, mobile = false) {
   const { x, y } = positions.about;
   const { width } = NODE_META.about;
 
   return {
-    x: x + width * 0.74,
+    x: x + width * (mobile ? 0.5 : 0.74),
     y: y + 126,
   };
 }
@@ -1094,6 +1096,7 @@ export function TopologyHero() {
   const sceneRef = useRef<HTMLDivElement | null>(null);
   const sceneMetricsRef = useRef({ width: VIEWBOX.width, height: VIEWBOX.height });
   const mobileTopologyRef = useRef(false);
+  const networkModeRef = useRef<NetworkMode>("stable");
 
   const nodePositionsRef = useRef<Record<NodeKey, NodePosition>>(INITIAL_NODE_POSITIONS);
   const nodeTargetPositionsRef = useRef<Record<NodeKey, NodePosition>>(INITIAL_NODE_POSITIONS);
@@ -1210,7 +1213,11 @@ export function TopologyHero() {
     mobileTopologyRef.current = isMobileTopology;
   }, [isMobileTopology]);
 
-  const aboutCableAttach = getAnimatedDevicePoint("about", getRouterCableAttachPoint(topologyNodePositions), topologyNodePositions, active, draggingNode);
+  useEffect(() => {
+    networkModeRef.current = networkMode;
+  }, [networkMode]);
+
+  const aboutCableAttach = getAnimatedDevicePoint("about", getRouterCableAttachPoint(topologyNodePositions, isMobileTopology), topologyNodePositions, active, draggingNode);
   const homeAttach = getAnimatedDevicePoint("home", getAttachPoint("home", topologyNodePositions), topologyNodePositions, active, draggingNode);
   const contactAttach = getAnimatedDevicePoint("contact", getAttachPoint("contact", topologyNodePositions), topologyNodePositions, active, draggingNode);
   const switchLeftCableEnd = getAnimatedDevicePoint("projects", getSwitchCableStubEnd("left", topologyNodePositions, sceneMetrics.width), topologyNodePositions, active, draggingNode);
@@ -1447,6 +1454,12 @@ export function TopologyHero() {
     };
 
     const runNext = () => {
+      const animationBusy = Object.values(animationLocks.current).some(Boolean) || networkModeRef.current !== "stable";
+      if (animationBusy) {
+        schedule(runNext, MOBILE_AUTO_ANIMATION_PAUSE);
+        return;
+      }
+
       const node = MOBILE_AUTO_ANIMATION_SEQUENCE[sequenceIndex % MOBILE_AUTO_ANIMATION_SEQUENCE.length];
       const duration = MOBILE_AUTO_ANIMATION_DURATION[node];
       sequenceIndex += 1;
@@ -1697,6 +1710,12 @@ export function TopologyHero() {
           <div className="relative h-full w-full">
             <div className="relative h-full w-full">
               <div ref={sceneRef} className="relative h-full w-full overflow-hidden">
+                {isMobileTopology ? (
+                  <div className="pointer-events-none absolute inset-0 z-[6]" aria-hidden="true">
+                    <span className="absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-[#d7dbe0]/82" />
+                    <span className="absolute left-0 top-1/2 h-px w-full -translate-y-1/2 bg-[#d7dbe0]/82" />
+                  </div>
+                ) : null}
                 <motion.svg
                   viewBox={`0 0 ${VIEWBOX.width} ${VIEWBOX.height}`}
                   className="pointer-events-none absolute inset-0 z-[24] h-full w-full"
@@ -2059,7 +2078,7 @@ function NodeButton({
   const mobileScale = MOBILE_DEVICE_SCALE[node];
   const labelOffsetY = meta.labelOffsetY ?? 0;
   const labelOffsetX = meta.labelOffsetX ?? 0;
-  const mobileLabelOffsetY = node === "projects" ? 32 : node === "contact" ? 36 : labelOffsetY * 0.7;
+  const mobileLabelOffsetY = node === "projects" ? 48 : node === "contact" ? 36 : labelOffsetY * 0.7;
   const mobileVisualCenterOffsetX = -((1 - mobileScale) * UNIFIED_DEVICE_WIDTH) / 2;
   const mobileLabelOffsetX = labelOffsetX + mobileVisualCenterOffsetX + MOBILE_LABEL_VISUAL_NUDGE_X[node];
   const labelTextShadow = "0 1px 2px rgba(255,255,255,0.96), 0 0 7px rgba(255,255,255,0.88), 0 0 15px rgba(255,255,255,0.74)";
@@ -2378,7 +2397,7 @@ function CableSegment({
       d={path}
       fill="none"
       stroke={WIRED_CABLE_STROKE}
-      strokeWidth={5.1}
+      strokeWidth={WIRED_CABLE_WIDTH}
       strokeLinecap="round"
       strokeLinejoin="round"
       vectorEffect="non-scaling-stroke"
@@ -2398,7 +2417,7 @@ function WirelessCable({ from, to, tick, online }: { from: { x: number; y: numbe
         d={wirelessPath}
         fill="none"
         stroke={WIRELESS_CABLE_STROKE}
-        strokeWidth={2.8}
+        strokeWidth={WIRELESS_CABLE_WIDTH}
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeDasharray="2.4 7.4"

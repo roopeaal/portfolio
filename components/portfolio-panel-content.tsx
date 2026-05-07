@@ -333,7 +333,7 @@ function ProjectMarqueeCard({
             </div>
           )}
           {size === "overview" ? (
-            <div className="pointer-events-none absolute bottom-2 left-2 z-[2] flex max-w-[calc(100%-1rem)] translate-y-1 items-center gap-2 rounded-[11px] border border-[#79c271] bg-[#edf8df]/96 px-3 py-2 opacity-0 shadow-[0_8px_18px_rgba(58,125,46,0.18)] transition duration-200 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100">
+            <div className="pointer-events-none absolute bottom-2 left-2 z-[2] flex max-w-[calc(100%-1rem)] translate-y-0 items-center gap-2 rounded-[11px] border border-[#79c271] bg-[#edf8df]/96 px-3 py-2 opacity-100 shadow-[0_8px_18px_rgba(58,125,46,0.18)] transition duration-200 md:translate-y-1 md:opacity-0 md:group-hover:translate-y-0 md:group-hover:opacity-100 md:group-focus-visible:translate-y-0 md:group-focus-visible:opacity-100">
               <span className="h-7 w-1 shrink-0 rounded-full bg-[#58b94f]" />
               <span className="min-w-0 text-[#163f81]">
                 <span className="block text-[8px] font-semibold uppercase tracking-[0.2em] text-[#29528f]/75">Project</span>
@@ -360,8 +360,10 @@ function ProjectMarqueeLane({
   const segmentRef = useRef<HTMLDivElement>(null);
   const isPausedRef = useRef(false);
   const resumeTimeoutRef = useRef<number | null>(null);
+  const lastAutoScrollAtRef = useRef(0);
   const prefersReducedMotion = useReducedMotion();
   const isHorizontal = direction === "left" || direction === "right";
+  const resumeDelayMs = isHorizontal ? 2200 : 650;
 
   useEffect(() => {
     const lane = laneRef.current;
@@ -406,6 +408,16 @@ function ProjectMarqueeLane({
     observer.observe(segment);
 
     const handleScroll = () => {
+      if (isPausedRef.current || performance.now() - lastAutoScrollAtRef.current > 90) {
+        isPausedRef.current = true;
+        if (resumeTimeoutRef.current) {
+          window.clearTimeout(resumeTimeoutRef.current);
+        }
+        resumeTimeoutRef.current = window.setTimeout(() => {
+          isPausedRef.current = false;
+          resumeTimeoutRef.current = null;
+        }, resumeDelayMs);
+      }
       normalizeScrollPosition();
     };
     lane.addEventListener("scroll", handleScroll, { passive: true });
@@ -421,8 +433,10 @@ function ProjectMarqueeLane({
           speedPxPerSecond *
           deltaTime;
         if (isHorizontal) {
+          lastAutoScrollAtRef.current = performance.now();
           lane.scrollLeft += delta;
         } else {
+          lastAutoScrollAtRef.current = performance.now();
           lane.scrollTop += delta;
         }
         normalizeScrollPosition();
@@ -440,7 +454,7 @@ function ProjectMarqueeLane({
       lane.removeEventListener("scroll", handleScroll);
       observer.disconnect();
     };
-  }, [direction, isHorizontal, items, prefersReducedMotion]);
+  }, [direction, isHorizontal, items, prefersReducedMotion, resumeDelayMs]);
 
   useEffect(() => {
     return () => {
@@ -465,7 +479,7 @@ function ProjectMarqueeLane({
     resumeTimeoutRef.current = window.setTimeout(() => {
       isPausedRef.current = false;
       resumeTimeoutRef.current = null;
-    }, 450);
+    }, resumeDelayMs);
   };
 
   const segmentClassName = isHorizontal ? "flex h-full w-max items-center gap-4 pr-4" : "space-y-5 pb-5";
@@ -487,6 +501,9 @@ function ProjectMarqueeLane({
       onPointerUp={resumeAfterDrag}
       onPointerCancel={resumeAfterDrag}
       onPointerLeave={resumeAfterDrag}
+      onTouchStart={pauseForDrag}
+      onTouchEnd={resumeAfterDrag}
+      onWheelCapture={pauseForDrag}
       onFocusCapture={() => {
         isPausedRef.current = true;
       }}
