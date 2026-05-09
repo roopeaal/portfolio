@@ -403,6 +403,7 @@ function getDetachedCableWavePoints(
   end: { x: number; y: number },
   tick = 0,
   mode: NetworkMode = "stable",
+  mobile = false,
 ) {
   const dx = end.x - from.x;
   const dy = end.y - from.y;
@@ -412,17 +413,25 @@ function getDetachedCableWavePoints(
   const nx = -uy;
   const ny = ux;
 
-  const modeProfile = mode === "dropping"
-    ? { amp: clamp(length * 0.16, 18, 52), speed: 0.4, freq: 2.85, chaos: 0.42 }
-    : mode === "grabbing"
-      ? { amp: clamp(length * 0.13, 14, 42), speed: 0.35, freq: 2.45, chaos: 0.34 }
-      : mode === "repairing"
-        ? { amp: clamp(length * 0.09, 9, 28), speed: 0.3, freq: 2.05, chaos: 0.24 }
-        : { amp: clamp(length * 0.07, 8, 22), speed: 0.27, freq: 1.8, chaos: 0.2 };
+  const modeProfile = mobile
+    ? mode === "dropping"
+      ? { amp: clamp(length * 0.055, 7, 19), speed: 0.24, freq: 1.7, chaos: 0.18 }
+      : mode === "grabbing"
+        ? { amp: clamp(length * 0.048, 6, 16), speed: 0.22, freq: 1.55, chaos: 0.15 }
+        : mode === "repairing"
+          ? { amp: clamp(length * 0.035, 4, 11), speed: 0.2, freq: 1.35, chaos: 0.12 }
+          : { amp: clamp(length * 0.03, 3, 9), speed: 0.18, freq: 1.2, chaos: 0.1 }
+    : mode === "dropping"
+      ? { amp: clamp(length * 0.16, 18, 52), speed: 0.4, freq: 2.85, chaos: 0.42 }
+      : mode === "grabbing"
+        ? { amp: clamp(length * 0.13, 14, 42), speed: 0.35, freq: 2.45, chaos: 0.34 }
+        : mode === "repairing"
+          ? { amp: clamp(length * 0.09, 9, 28), speed: 0.3, freq: 2.05, chaos: 0.24 }
+          : { amp: clamp(length * 0.07, 8, 22), speed: 0.27, freq: 1.8, chaos: 0.2 };
 
   const phase = tick * modeProfile.speed + length * 0.014;
-  const baseSag = clamp(length * 0.09, 8, 26);
-  const downBias = clamp(4 + length * 0.018, 4, 14);
+  const baseSag = mobile ? clamp(length * 0.035, 4, 11) : clamp(length * 0.09, 8, 26);
+  const downBias = mobile ? clamp(2 + length * 0.007, 2, 6) : clamp(4 + length * 0.018, 4, 14);
   const samples = 8;
 
   const points = Array.from({ length: samples + 1 }, (_, index) => {
@@ -536,11 +545,12 @@ function getCableEndDirection(
   looseEnd?: { x: number; y: number },
   tick = 0,
   mode: NetworkMode = "stable",
+  mobile = false,
 ) {
   const geometry = getCablePathGeometry(from, to, disconnected, looseEnd);
 
   if (disconnected) {
-    const detachedPoints = getDetachedCableWavePoints(geometry.from, geometry.end, tick, mode);
+    const detachedPoints = getDetachedCableWavePoints(geometry.from, geometry.end, tick, mode, mobile);
     const penultimate = detachedPoints[Math.max(0, detachedPoints.length - 2)];
     return {
       x: geometry.end.x - penultimate.x,
@@ -558,6 +568,23 @@ function getCableEndDirection(
   return {
     x: geometry.end.x - geometry.from.x,
     y: geometry.end.y - geometry.from.y,
+  };
+}
+
+function getDetachedCablePlugEnd(
+  looseEnd: { x: number; y: number },
+  direction: { x: number; y: number },
+  mobile: boolean,
+) {
+  if (!mobile) return looseEnd;
+
+  const length = Math.hypot(direction.x, direction.y);
+  if (length <= 0.0001) return looseEnd;
+
+  const plugTailOffset = CABLE_ATTACH_DROP * 0.74;
+  return {
+    x: looseEnd.x - (direction.x / length) * plugTailOffset,
+    y: looseEnd.y - (direction.y / length) * plugTailOffset,
   };
 }
 
@@ -987,11 +1014,16 @@ function getLooseEnd(
   phaseTick: number,
   detachedOrigin: { x: number; y: number } | null,
   to: { x: number; y: number },
+  mobile = false,
 ) {
   const anchor = detachedOrigin ?? to;
   const base = {
-    x: anchor.x - 140 + Math.sin(tick / 2.2) * 38 + Math.cos(tick / 3.1) * 12,
-    y: anchor.y + 44 + Math.cos(tick / 1.8) * 22 + Math.sin(tick / 1.35) * 10,
+    x: mobile
+      ? anchor.x - 96 + Math.sin(tick / 3.8) * 13 + Math.cos(tick / 5.4) * 5
+      : anchor.x - 140 + Math.sin(tick / 2.2) * 38 + Math.cos(tick / 3.1) * 12,
+    y: mobile
+      ? anchor.y + 38 + Math.cos(tick / 3.5) * 7 + Math.sin(tick / 4.8) * 4
+      : anchor.y + 44 + Math.cos(tick / 1.8) * 22 + Math.sin(tick / 1.35) * 10,
   };
 
   if (mode === "repairing") {
@@ -1637,15 +1669,26 @@ export function TopologyHero() {
   const phaseTick = motionTick - networkModeStartTick;
   const looseEnd = networkMode === "repairing" && repairLooseEnd
     ? repairLooseEnd
-    : getLooseEnd(motionTick, networkMode, phaseTick, detachedOrigin, switchLeftCableEnd);
+    : getLooseEnd(motionTick, networkMode, phaseTick, detachedOrigin, switchLeftCableEnd, isMobileTopology);
   const serviceCursor = getServiceCursor(networkMode, phaseTick, looseEnd, switchLeftCableEnd);
-  const detachedCableEndDirection = getCableEndDirection(
+  const rawDetachedCableEndDirection = getCableEndDirection(
     aboutCableAttach,
     switchLeftCableEnd,
     true,
     looseEnd,
     motionTick,
     networkMode,
+    isMobileTopology,
+  );
+  const detachedCablePlugEnd = getDetachedCablePlugEnd(looseEnd, rawDetachedCableEndDirection, isMobileTopology);
+  const detachedCableEndDirection = getCableEndDirection(
+    aboutCableAttach,
+    switchLeftCableEnd,
+    true,
+    detachedCablePlugEnd,
+    motionTick,
+    networkMode,
+    isMobileTopology,
   );
   const detachedCableEndLength = Math.hypot(detachedCableEndDirection.x, detachedCableEndDirection.y);
   const detachedCableEndAngle = detachedCableEndLength > 0.0001
@@ -1859,10 +1902,11 @@ export function TopologyHero() {
                     from={aboutCableAttach}
                     to={switchLeftCableEnd}
                     disconnected={networkMode !== "stable" && networkMode !== "recovering"}
-                    looseEnd={looseEnd}
+                    looseEnd={detachedCablePlugEnd}
                     tick={motionTick}
                     mode={networkMode}
                     routeOffsetX={LEFT_CABLE_ROUTE_OFFSET_X}
+                    mobile={isMobileTopology}
                   />
                   <CableSegment from={homeAttach} to={switchRightCableEnd} routeOffsetX={RIGHT_CABLE_ROUTE_OFFSET_X} />
 
@@ -2411,6 +2455,7 @@ function CableSegment({
   tick = 0,
   mode = "stable",
   routeOffsetX = 0,
+  mobile = false,
 }: {
   from: { x: number; y: number };
   to: { x: number; y: number };
@@ -2419,12 +2464,13 @@ function CableSegment({
   tick?: number;
   mode?: NetworkMode;
   routeOffsetX?: number;
+  mobile?: boolean;
 }) {
   const geometry = getCablePathGeometry(from, to, disconnected, looseEnd, routeOffsetX);
   let path = `M ${geometry.from.x} ${geometry.from.y} L ${geometry.end.x} ${geometry.end.y}`;
 
   if (disconnected) {
-    const detachedPoints = getDetachedCableWavePoints(geometry.from, geometry.end, tick, mode);
+    const detachedPoints = getDetachedCableWavePoints(geometry.from, geometry.end, tick, mode, mobile);
     path = buildDetachedCableWavePath(detachedPoints);
   } else if (geometry.corner) {
     const { point, curveStart, curveEnd } = geometry.corner;
