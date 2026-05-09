@@ -45,8 +45,8 @@ const DEVICE_FLOAT_FILTER = "drop-shadow(0 16px 22px rgba(10,18,31,0.18)) drop-s
 const DEVICE_FLOAT_FILTER_SOFT = "drop-shadow(0 12px 18px rgba(10,18,31,0.14)) drop-shadow(0 4px 10px rgba(24,79,113,0.08))";
 const WIRED_CABLE_STROKE = "#242424";
 const WIRELESS_CABLE_STROKE = "#2d2d2d";
-const WIRED_CABLE_WIDTH = 4.6;
-const WIRELESS_CABLE_WIDTH = 2.5;
+const WIRED_CABLE_WIDTH = 4.2;
+const WIRELESS_CABLE_WIDTH = 2.3;
 const UNIFIED_DEVICE_WIDTH = 232;
 const UNIFIED_DEVICE_HEIGHT = 198;
 const UNIFIED_NODE_HEIGHT = 268;
@@ -123,26 +123,32 @@ const MOBILE_DEVICE_SCALE: Record<NodeKey, number> = {
   home: 0.7,
   contact: 0.72,
 };
+const MOBILE_DEVICE_VISUAL_SCALE: Record<NodeKey, number> = {
+  about: 0.72,
+  projects: 0.78,
+  home: 0.8,
+  contact: 0.8,
+};
 const MOBILE_LABEL_WIDTH: Record<NodeKey, number> = {
   about: 184,
   projects: 116,
   home: 136,
   contact: 164,
 };
-const MOBILE_LABEL_VISUAL_NUDGE_X: Record<NodeKey, number> = {
+const MOBILE_DEVICE_CENTER_NUDGE_X: Record<NodeKey, number> = {
   about: 0,
-  projects: -15,
-  home: -9,
+  projects: 0,
+  home: -10,
   contact: 0,
 };
-const MOBILE_AUTO_ANIMATION_SEQUENCE: NodeKey[] = ["about", "projects", "home", "contact"];
+const MOBILE_AUTO_ANIMATION_SEQUENCE: NodeKey[] = ["about", "projects", "contact", "home"];
 const MOBILE_AUTO_ANIMATION_DURATION: Record<NodeKey, number> = {
-  about: 3600,
-  projects: 8200,
-  home: 3600,
-  contact: 3900,
+  about: 3000,
+  projects: 5900,
+  home: 3000,
+  contact: 3200,
 };
-const MOBILE_AUTO_ANIMATION_PAUSE = 1500;
+const MOBILE_AUTO_ANIMATION_PAUSE = 2400;
 
 const NODE_POSITIONS_STORAGE_KEY = "portfolio-node-positions-v7";
 const SIM_CLOCK_START_STORAGE_KEY = "portfolio-simulation-clock-start-v1";
@@ -273,16 +279,14 @@ function getMobileHomeNodePositions(metrics: { width: number; height: number }):
     const cellHeight = sceneHeight / 2;
     const centerX = cellWidth * (column + 0.5);
     const centerY = cellHeight * (row + 0.5);
-    const visualHeight = UNIFIED_DEVICE_HEIGHT * MOBILE_DEVICE_SCALE[node];
+    const visualScale = MOBILE_DEVICE_VISUAL_SCALE[node];
+    const visualHeight = UNIFIED_DEVICE_HEIGHT * visualScale;
+    const visualCenterOffsetX = ((visualScale - 1) * UNIFIED_DEVICE_WIDTH) / 2 + MOBILE_DEVICE_CENTER_NUDGE_X[node];
     const labelReserve = node === "contact" ? 66 : node === "projects" ? 50 : 58;
     const contentHeight = visualHeight + labelReserve;
-    const visualCenterOffsetX =
-      node === "projects" ? 10 :
-      node === "contact" ? 13 :
-      3;
     const rowLift = row === 0 ? 28 : 4;
     const topPx = clamp(centerY - contentHeight / 2 - rowLift, 10, Math.max(10, sceneHeight - contentHeight - 10));
-    const leftPx = clamp(centerX - visualCenterOffsetX, 4, Math.max(4, sceneWidth - rootWidthPx - 4));
+    const leftPx = clamp(centerX - rootWidthPx / 2 - visualCenterOffsetX, 4, Math.max(4, sceneWidth - rootWidthPx - 4));
 
     return {
       x: pxToViewX(leftPx),
@@ -880,12 +884,18 @@ function getAttachPoint(node: NodeKey, positions: Record<NodeKey, NodePosition>)
   };
 }
 
-function getRouterCableAttachPoint(positions: Record<NodeKey, NodePosition>, mobile = false) {
+function getMobileDeviceCenterOffsetX(node: NodeKey, sceneWidth = VIEWBOX.width) {
+  const visualScale = MOBILE_DEVICE_VISUAL_SCALE[node];
+  const cssOffset = ((visualScale - 1) * UNIFIED_DEVICE_WIDTH) / 2 + MOBILE_DEVICE_CENTER_NUDGE_X[node];
+  return cssOffset * (VIEWBOX.width / Math.max(sceneWidth, 1));
+}
+
+function getRouterCableAttachPoint(positions: Record<NodeKey, NodePosition>, mobile = false, sceneWidth = VIEWBOX.width) {
   const { x, y } = positions.about;
   const { width } = NODE_META.about;
 
   return {
-    x: x + width * (mobile ? 0.5 : 0.74),
+    x: x + (mobile ? width / 2 + getMobileDeviceCenterOffsetX("about", sceneWidth) : width * 0.74),
     y: y + 126,
   };
 }
@@ -927,6 +937,7 @@ function getSwitchCableStubEnd(
   port: "left" | "right",
   positions: Record<NodeKey, NodePosition>,
   sceneWidth = VIEWBOX.width,
+  compact = false,
 ) {
   const { x, y } = positions.projects;
   const portIndex = port === "left" ? SWITCH_LEFT_CABLE_PORT_INDEX : SWITCH_RIGHT_CABLE_PORT_INDEX;
@@ -935,7 +946,7 @@ function getSwitchCableStubEnd(
   const baseOffset = portOffset + horizontalOffset;
   const projectNodeWidth = NODE_META.projects.width;
   const switchWidthPx = UNIFIED_DEVICE_WIDTH;
-  const renderedSwitchWidthInViewboxUnits = switchWidthPx * (VIEWBOX.width / Math.max(sceneWidth, 1));
+  const renderedSwitchWidthInViewboxUnits = switchWidthPx * (compact ? MOBILE_DEVICE_VISUAL_SCALE.projects : 1) * (VIEWBOX.width / Math.max(sceneWidth, 1));
   const relativeScale = renderedSwitchWidthInViewboxUnits / projectNodeWidth;
   const centeredOffset = projectNodeWidth / 2;
   const responsiveOffset = centeredOffset + (baseOffset - centeredOffset) * relativeScale;
@@ -1097,8 +1108,11 @@ export function TopologyHero() {
   const sceneMetricsRef = useRef({ width: VIEWBOX.width, height: VIEWBOX.height });
   const mobileTopologyRef = useRef(false);
   const networkModeRef = useRef<NetworkMode>("stable");
+  const openWindowRef = useRef<WindowType | null>(null);
+  const typingActiveRef = useRef(false);
 
   const nodePositionsRef = useRef<Record<NodeKey, NodePosition>>(INITIAL_NODE_POSITIONS);
+  const topologyNodePositionsRef = useRef<Record<NodeKey, NodePosition>>(INITIAL_NODE_POSITIONS);
   const nodeTargetPositionsRef = useRef<Record<NodeKey, NodePosition>>(INITIAL_NODE_POSITIONS);
   const nodeVelocityRef = useRef<Record<NodeKey, NodePosition>>({
     about: { x: 0, y: 0 },
@@ -1210,18 +1224,30 @@ export function TopologyHero() {
   );
 
   useEffect(() => {
+    topologyNodePositionsRef.current = topologyNodePositions;
+  }, [topologyNodePositions]);
+
+  useEffect(() => {
     mobileTopologyRef.current = isMobileTopology;
   }, [isMobileTopology]);
+
+  useEffect(() => {
+    openWindowRef.current = openWindow;
+  }, [openWindow]);
+
+  useEffect(() => {
+    typingActiveRef.current = typingActive;
+  }, [typingActive]);
 
   useEffect(() => {
     networkModeRef.current = networkMode;
   }, [networkMode]);
 
-  const aboutCableAttach = getAnimatedDevicePoint("about", getRouterCableAttachPoint(topologyNodePositions, isMobileTopology), topologyNodePositions, active, draggingNode);
+  const aboutCableAttach = getAnimatedDevicePoint("about", getRouterCableAttachPoint(topologyNodePositions, isMobileTopology, sceneMetrics.width), topologyNodePositions, active, draggingNode);
   const homeAttach = getAnimatedDevicePoint("home", getAttachPoint("home", topologyNodePositions), topologyNodePositions, active, draggingNode);
   const contactAttach = getAnimatedDevicePoint("contact", getAttachPoint("contact", topologyNodePositions), topologyNodePositions, active, draggingNode);
-  const switchLeftCableEnd = getAnimatedDevicePoint("projects", getSwitchCableStubEnd("left", topologyNodePositions, sceneMetrics.width), topologyNodePositions, active, draggingNode);
-  const switchRightCableEnd = getAnimatedDevicePoint("projects", getSwitchCableStubEnd("right", topologyNodePositions, sceneMetrics.width), topologyNodePositions, active, draggingNode);
+  const switchLeftCableEnd = getAnimatedDevicePoint("projects", getSwitchCableStubEnd("left", topologyNodePositions, sceneMetrics.width, isMobileTopology), topologyNodePositions, active, draggingNode);
+  const switchRightCableEnd = getAnimatedDevicePoint("projects", getSwitchCableStubEnd("right", topologyNodePositions, sceneMetrics.width, isMobileTopology), topologyNodePositions, active, draggingNode);
 
   useEffect(() => {
     const timeoutIds = timeouts.current;
@@ -1238,11 +1264,13 @@ export function TopologyHero() {
     }, 1000);
 
     const motionTimer = window.setInterval(() => {
+      if (mobileTopologyRef.current && openWindowRef.current) return;
       tickRef.current += 1;
       setMotionTick(tickRef.current);
     }, 40);
 
     const typingTimer = window.setInterval(() => {
+      if (!typingActiveRef.current || (mobileTopologyRef.current && openWindowRef.current)) return;
       setTypingStep((value) => value + 1);
     }, 135);
 
@@ -1267,6 +1295,11 @@ export function TopologyHero() {
     const animate = (now: number) => {
       const dt = Math.min((now - lastTime) / 1000, 0.032);
       lastTime = now;
+
+      if (mobileTopologyRef.current && openWindowRef.current && !dragRef.current) {
+        frameId = window.requestAnimationFrame(animate);
+        return;
+      }
 
       setNodePositions((current) => {
         let changed = false;
@@ -1348,12 +1381,12 @@ export function TopologyHero() {
   useEffect(() => {
     if (networkMode !== "repairing") return;
 
-    setRepairLooseEnd((current) => current ?? looseEndRef.current ?? detachedOrigin ?? getSwitchCableStubEnd("left", nodePositionsRef.current, sceneMetricsRef.current.width));
+    setRepairLooseEnd((current) => current ?? looseEndRef.current ?? detachedOrigin ?? getSwitchCableStubEnd("left", topologyNodePositionsRef.current, sceneMetricsRef.current.width, mobileTopologyRef.current));
   }, [networkMode, detachedOrigin]);
 
   useEffect(() => {
     if (networkMode === "repairing") {
-      const target = getSwitchCableStubEnd("left", nodePositionsRef.current, sceneMetricsRef.current.width);
+      const target = getSwitchCableStubEnd("left", topologyNodePositionsRef.current, sceneMetricsRef.current.width, mobileTopologyRef.current);
       setRepairLooseEnd((current) => {
         const next = stepToward(current ?? looseEndRef.current ?? detachedOrigin ?? target, target, 4.4);
         if (Math.hypot(next.x - target.x, next.y - target.y) < 0.5) {
@@ -1442,6 +1475,12 @@ export function TopologyHero() {
     timeoutIds.push(grab, repair);
   }, [setMode, switchLeftCableEnd.x, switchLeftCableEnd.y]);
 
+  const triggerNodeAnimationRef = useRef(triggerNodeAnimation);
+
+  useEffect(() => {
+    triggerNodeAnimationRef.current = triggerNodeAnimation;
+  }, [triggerNodeAnimation]);
+
   useEffect(() => {
     if (!isMobileTopology || openWindow || draggingNode) return;
 
@@ -1465,7 +1504,7 @@ export function TopologyHero() {
       sequenceIndex += 1;
 
       setActive(node);
-      triggerNodeAnimation(node);
+      triggerNodeAnimationRef.current(node);
 
       schedule(() => {
         setActive((current) => (current === node ? null : current));
@@ -1480,7 +1519,7 @@ export function TopologyHero() {
       timeoutIds.forEach((id) => window.clearTimeout(id));
       setActive((current) => (current && MOBILE_AUTO_ANIMATION_SEQUENCE.includes(current) ? null : current));
     };
-  }, [draggingNode, isMobileTopology, openWindow, triggerNodeAnimation]);
+  }, [draggingNode, isMobileTopology, openWindow]);
 
   const playPhoneTapSound = useCallback(() => {
     const audio = phoneTapAudioRef.current;
@@ -2075,12 +2114,12 @@ function NodeButton({
   const haloSize = NODE_PROTECTIVE_HALO;
   const debugRects = DEBUG_NODE_HALOS ? getNodeCollisionRects(node, { x: 0, y: 0 }, haloSize) : [];
   const stackZIndex = dragging ? 180 : active ? layer + 12 : layer;
-  const mobileScale = MOBILE_DEVICE_SCALE[node];
+  const mobileScale = MOBILE_DEVICE_VISUAL_SCALE[node];
   const labelOffsetY = meta.labelOffsetY ?? 0;
   const labelOffsetX = meta.labelOffsetX ?? 0;
-  const mobileLabelOffsetY = node === "projects" ? 48 : node === "contact" ? 36 : labelOffsetY * 0.7;
-  const mobileVisualCenterOffsetX = -((1 - mobileScale) * UNIFIED_DEVICE_WIDTH) / 2;
-  const mobileLabelOffsetX = labelOffsetX + mobileVisualCenterOffsetX + MOBILE_LABEL_VISUAL_NUDGE_X[node];
+  const mobileLabelOffsetY = node === "projects" ? 18 : node === "contact" ? 36 : labelOffsetY * 0.7;
+  const mobileVisualCenterOffsetX = ((mobileScale - 1) * UNIFIED_DEVICE_WIDTH) / 2 + MOBILE_DEVICE_CENTER_NUDGE_X[node];
+  const mobileLabelOffsetX = labelOffsetX + mobileVisualCenterOffsetX;
   const labelTextShadow = "0 1px 2px rgba(255,255,255,0.96), 0 0 7px rgba(255,255,255,0.88), 0 0 15px rgba(255,255,255,0.74)";
   const nodeDropShadow = active
     ? "drop-shadow(0 20px 24px rgba(15,23,42,0.11)) drop-shadow(0 5px 14px rgba(18,127,166,0.10))"

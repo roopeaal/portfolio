@@ -361,9 +361,10 @@ function ProjectMarqueeLane({
   const isPausedRef = useRef(false);
   const resumeTimeoutRef = useRef<number | null>(null);
   const lastAutoScrollAtRef = useRef(0);
+  const programmaticScrollUntilRef = useRef(0);
   const prefersReducedMotion = useReducedMotion();
   const isHorizontal = direction === "left" || direction === "right";
-  const resumeDelayMs = isHorizontal ? 2200 : 650;
+  const resumeDelayMs = isHorizontal ? 260 : 650;
 
   useEffect(() => {
     const lane = laneRef.current;
@@ -375,6 +376,10 @@ function ProjectMarqueeLane({
     let previousTime = 0;
     const speedPxPerSecond = isHorizontal ? 34 : 20;
 
+    const markProgrammaticScroll = () => {
+      programmaticScrollUntilRef.current = performance.now() + 140;
+    };
+
     const normalizeScrollPosition = () => {
       if (segmentSize <= 0) return;
       const min = segmentSize * 0.5;
@@ -385,16 +390,25 @@ function ProjectMarqueeLane({
       };
 
       if (isHorizontal) {
-        lane.scrollLeft = wrapPosition(lane.scrollLeft);
+        const next = wrapPosition(lane.scrollLeft);
+        if (Math.abs(next - lane.scrollLeft) > 0.5) {
+          markProgrammaticScroll();
+          lane.scrollLeft = next;
+        }
         return;
       }
 
-      lane.scrollTop = wrapPosition(lane.scrollTop);
+      const next = wrapPosition(lane.scrollTop);
+      if (Math.abs(next - lane.scrollTop) > 0.5) {
+        markProgrammaticScroll();
+        lane.scrollTop = next;
+      }
     };
 
     const setBaseline = () => {
       segmentSize = isHorizontal ? segment.scrollWidth : segment.scrollHeight;
       if (segmentSize > 0) {
+        markProgrammaticScroll();
         if (isHorizontal) {
           lane.scrollLeft = segmentSize;
         } else {
@@ -408,7 +422,13 @@ function ProjectMarqueeLane({
     observer.observe(segment);
 
     const handleScroll = () => {
-      if (isPausedRef.current || performance.now() - lastAutoScrollAtRef.current > 90) {
+      const now = performance.now();
+      if (now < programmaticScrollUntilRef.current || now - lastAutoScrollAtRef.current < 90) {
+        normalizeScrollPosition();
+        return;
+      }
+
+      if (isPausedRef.current || now - lastAutoScrollAtRef.current > 90) {
         isPausedRef.current = true;
         if (resumeTimeoutRef.current) {
           window.clearTimeout(resumeTimeoutRef.current);
@@ -433,9 +453,11 @@ function ProjectMarqueeLane({
           speedPxPerSecond *
           deltaTime;
         if (isHorizontal) {
+          markProgrammaticScroll();
           lastAutoScrollAtRef.current = performance.now();
           lane.scrollLeft += delta;
         } else {
+          markProgrammaticScroll();
           lastAutoScrollAtRef.current = performance.now();
           lane.scrollTop += delta;
         }
