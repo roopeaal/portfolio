@@ -352,7 +352,7 @@ function getCablePathGeometry(
   routeOffsetX = 0,
 ) {
   const baseEnd = disconnected && looseEnd ? looseEnd : to;
-  const cableAttachDrop = CABLE_ATTACH_DROP;
+  const cableAttachDrop = disconnected ? 0 : CABLE_ATTACH_DROP;
   const end = { x: baseEnd.x, y: baseEnd.y + cableAttachDrop };
   const deltaX = end.x - from.x;
   const deltaY = end.y - from.y;
