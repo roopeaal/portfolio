@@ -283,11 +283,13 @@ function ProjectMarqueeCard({
   onSelectProject,
   size = "overview",
   eager = false,
+  tabIndex,
 }: {
   project: (typeof projects)[number];
   onSelectProject?: (slug: string) => void;
   size?: "overview" | "compact";
   eager?: boolean;
+  tabIndex?: number;
 }) {
   const media = PROJECT_CARD_MEDIA[project.slug];
   const [failedMediaSrc, setFailedMediaSrc] = useState<string | null>(null);
@@ -305,6 +307,7 @@ function ProjectMarqueeCard({
       }}
       className="group block w-full rounded-[10px] text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3d7f35] focus-visible:ring-offset-2"
       aria-label={`Open project: ${project.title}`}
+      tabIndex={tabIndex}
     >
       <article className="overflow-hidden rounded-[12px] border border-[#79c271] bg-[#edf8df] transition duration-200 group-hover:border-[#4f9b47]">
         <div className={`relative overflow-hidden ${mediaShapeClass}`}>
@@ -401,6 +404,7 @@ function ProjectMarqueeLane({
     if (!lane || !segment || items.length === 0) return;
 
     let segmentSize = 0;
+    let initialized = false;
     let rafId = 0;
     let previousTime = 0;
     const speedPxPerSecond = isHorizontal ? 34 : 20;
@@ -408,15 +412,6 @@ function ProjectMarqueeLane({
     const markProgrammaticScroll = (durationMs = 160) => {
       programmaticScrollUntilRef.current = performance.now() + durationMs;
     };
-
-    const launchTimer = window.setTimeout(() => {
-      if (!userInteractingRef.current) {
-        markProgrammaticScroll(700);
-        lastAutoScrollAtRef.current = performance.now();
-        isPausedRef.current = false;
-        previousTime = 0;
-      }
-    }, 80);
 
     const normalizeScrollPosition = () => {
       if (segmentSize <= 0) return;
@@ -443,25 +438,55 @@ function ProjectMarqueeLane({
       }
     };
 
-    const setBaseline = () => {
-      segmentSize = isHorizontal ? segment.scrollWidth : segment.scrollHeight;
-      if (segmentSize > 0) {
-        const now = performance.now();
-        markProgrammaticScroll(700);
-        lastAutoScrollAtRef.current = now;
-        if (!userInteractingRef.current && now - lastUserScrollAtRef.current > userScrollIdleMs) {
-          isPausedRef.current = false;
-        }
-        if (isHorizontal) {
-          lane.scrollLeft = segmentSize;
-        } else {
-          lane.scrollTop = segmentSize;
-        }
+    const setScrollPosition = (value: number, durationMs = 260) => {
+      markProgrammaticScroll(durationMs);
+      if (isHorizontal) {
+        lane.scrollLeft = value;
+      } else {
+        lane.scrollTop = value;
       }
     };
 
-    setBaseline();
-    const observer = new ResizeObserver(() => setBaseline());
+    const readScrollPosition = () => (isHorizontal ? lane.scrollLeft : lane.scrollTop);
+
+    const syncSegmentSize = () => {
+      const nextSegmentSize = isHorizontal ? segment.scrollWidth : segment.scrollHeight;
+      if (nextSegmentSize <= 0) return;
+
+      const previousSegmentSize = segmentSize;
+      const currentPosition = readScrollPosition();
+      const now = performance.now();
+      segmentSize = nextSegmentSize;
+
+      if (!initialized || previousSegmentSize <= 0) {
+        initialized = true;
+        lastAutoScrollAtRef.current = now;
+        previousTime = 0;
+        if (!userInteractingRef.current && now - lastUserScrollAtRef.current > userScrollIdleMs) {
+          isPausedRef.current = false;
+        }
+        setScrollPosition(segmentSize, 700);
+        return;
+      }
+
+      const sizeDelta = nextSegmentSize - previousSegmentSize;
+      if (Math.abs(sizeDelta) > 0.5) {
+        // Images/fonts can finish after the panel opens. Keep the visible card
+        // position instead of snapping the lane back to the beginning.
+        setScrollPosition(currentPosition + sizeDelta, 260);
+        normalizeScrollPosition();
+      }
+    };
+
+    syncSegmentSize();
+    let resizeFrame = 0;
+    const observer = new ResizeObserver(() => {
+      if (resizeFrame) window.cancelAnimationFrame(resizeFrame);
+      resizeFrame = window.requestAnimationFrame(() => {
+        resizeFrame = 0;
+        syncSegmentSize();
+      });
+    });
     observer.observe(segment);
 
     const handleScroll = () => {
@@ -510,7 +535,7 @@ function ProjectMarqueeLane({
     }
 
     return () => {
-      window.clearTimeout(launchTimer);
+      if (resizeFrame) window.cancelAnimationFrame(resizeFrame);
       if (rafId) window.cancelAnimationFrame(rafId);
       lane.removeEventListener("scroll", handleScroll);
       observer.disconnect();
@@ -587,7 +612,7 @@ function ProjectMarqueeLane({
     >
       {items.map((project) => (
         <div key={`${project.slug}-${segmentName}`} className={cardWrapClassName}>
-          <ProjectMarqueeCard project={project} onSelectProject={onSelectProject} eager={eager} />
+          <ProjectMarqueeCard project={project} onSelectProject={onSelectProject} eager={eager} tabIndex={hidden ? -1 : undefined} />
         </div>
       ))}
     </div>
@@ -604,7 +629,9 @@ function ProjectMarqueeLane({
       onTouchCancel={resumeAfterTouch}
       onWheelCapture={pauseForWheel}
       onFocusCapture={() => {
-        isPausedRef.current = true;
+        if (!isHorizontal) {
+          isPausedRef.current = true;
+        }
       }}
       onBlurCapture={(event) => {
         if (!event.currentTarget.contains(event.relatedTarget)) {
