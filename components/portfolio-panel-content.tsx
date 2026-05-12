@@ -267,6 +267,17 @@ const PROJECT_CARD_MEDIA: Record<
 
 export const PROJECTS_OVERVIEW_HREF = "/?panel=projects";
 
+const PROJECT_HERO_ACTIONS: Record<string, { href: string; label: string }> = {
+  "multi-platform-iot-security-lab": {
+    href: "/portfolio/iot-security-lab-demonstration.mp4",
+    label: "Demonstration video",
+  },
+  "aircraft-game-python-react": {
+    href: "https://lentokonepeli.onrender.com/",
+    label: "Open live demo",
+  },
+};
+
 export function getProjectHref(slug: string) {
   return `${PROJECTS_OVERVIEW_HREF}&project=${encodeURIComponent(slug)}`;
 }
@@ -703,15 +714,15 @@ export function ProjectsPanelContent({
     [leftLaneProjects, rightLaneProjects],
   );
   const [failedHeroImageSrc, setFailedHeroImageSrc] = useState<string | null>(null);
-  const [heroDemoCue, setHeroDemoCue] = useState<{ x: number; y: number; slug: string } | null>(null);
+  const [heroActionCue, setHeroActionCue] = useState<{ x: number; y: number; slug: string } | null>(null);
 
-  const updateHeroDemoCue = useCallback((event: ReactMouseEvent<HTMLElement>, slug: string) => {
+  const updateHeroActionCue = useCallback((event: ReactMouseEvent<HTMLElement>, slug: string) => {
     const bounds = event.currentTarget.getBoundingClientRect();
-    const labelWidth = 142;
+    const labelWidth = 184;
     const labelHeight = 34;
     const x = clampNumber(event.clientX - bounds.left + 16, 10, Math.max(10, bounds.width - labelWidth));
     const y = clampNumber(event.clientY - bounds.top + 16, 10, Math.max(10, bounds.height - labelHeight));
-    setHeroDemoCue({ x, y, slug });
+    setHeroActionCue({ x, y, slug });
   }, []);
 
   if (preview) {
@@ -775,10 +786,8 @@ export function ProjectsPanelContent({
   const employerPointItems = selectedProject.employerPoints ?? [];
   const projectNotes = selectedProject.evidence.filter((item) => extractUrls(item).length === 0);
   const projectLinks = Array.from(new Set(selectedProject.evidence.flatMap(extractUrls)));
-  const heroDemoUrl = selectedProject.slug === "aircraft-game-python-react"
-    ? projectLinks.find((url) => url.includes("lentokonepeli.onrender.com")) ?? null
-    : null;
-  const activeHeroDemoCue = heroDemoCue?.slug === selectedProject.slug ? heroDemoCue : null;
+  const heroAction = PROJECT_HERO_ACTIONS[selectedProject.slug] ?? null;
+  const activeHeroActionCue = heroActionCue?.slug === selectedProject.slug ? heroActionCue : null;
   const projectSectionClass = "border-t border-[#c7dda7] pt-5";
   const projectHeadingClass = "text-[13px] font-semibold uppercase tracking-[0.18em] text-[#244a73]";
   const projectParagraphClass = "mt-3 max-w-[calc(100vw-3.5rem)] break-words text-[15px] leading-7 text-[#1f334a] md:max-w-[76ch]";
@@ -800,16 +809,16 @@ export function ProjectsPanelContent({
             {selectedProjectMedia && !heroImageFailed ? (
               <>
                 <div className="absolute inset-0 z-0" style={{ background: selectedProjectMedia.backdrop ?? "#edf2f7" }} />
-                {heroDemoUrl ? (
+                {heroAction ? (
                   <a
-                    href={heroDemoUrl}
+                    href={heroAction.href}
                     target="_blank"
                     rel="noreferrer"
-                    aria-label="Open live demo"
+                    aria-label={heroAction.label}
                     className="absolute inset-0 z-[1] block cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#3d7f35]"
-                    onMouseEnter={(event) => updateHeroDemoCue(event, selectedProject.slug)}
-                    onMouseMove={(event) => updateHeroDemoCue(event, selectedProject.slug)}
-                    onMouseLeave={() => setHeroDemoCue(null)}
+                    onMouseEnter={(event) => updateHeroActionCue(event, selectedProject.slug)}
+                    onMouseMove={(event) => updateHeroActionCue(event, selectedProject.slug)}
+                    onMouseLeave={() => setHeroActionCue(null)}
                   >
                     <Image
                       src={selectedProjectMedia.src}
@@ -826,12 +835,12 @@ export function ProjectsPanelContent({
                     <span
                       className="pointer-events-none absolute z-[3] hidden rounded-full border border-[#89bd68] bg-[#f8fff0]/96 px-3 py-1.5 text-[12px] font-semibold text-[#173b72] opacity-0 shadow-[0_10px_22px_rgba(36,74,38,0.18)] transition-opacity duration-150 md:inline-flex"
                       style={{
-                        left: activeHeroDemoCue ? `${activeHeroDemoCue.x}px` : "16px",
-                        top: activeHeroDemoCue ? `${activeHeroDemoCue.y}px` : "16px",
-                        opacity: activeHeroDemoCue ? 1 : 0,
+                        left: activeHeroActionCue ? `${activeHeroActionCue.x}px` : "16px",
+                        top: activeHeroActionCue ? `${activeHeroActionCue.y}px` : "16px",
+                        opacity: activeHeroActionCue ? 1 : 0,
                       }}
                     >
-                      Open live demo
+                      {heroAction.label}
                     </span>
                   </a>
                 ) : (
