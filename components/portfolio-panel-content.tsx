@@ -523,42 +523,68 @@ function ProjectMarqueeLane({
     };
   }, [clearResumeTimer]);
 
-  const pauseForPointer = () => {
+  const pauseForPointer = useCallback(() => {
     userInteractingRef.current = true;
     lastUserScrollAtRef.current = performance.now();
     clearResumeTimer();
     isPausedRef.current = true;
-  };
+  }, [clearResumeTimer]);
 
-  const resumeAfterPointer = () => {
+  const resumeAfterPointer = useCallback(() => {
     if (touchActiveRef.current) return;
     userInteractingRef.current = false;
     lastUserScrollAtRef.current = performance.now();
     scheduleResumeWhenIdle(resumeDelayMs);
-  };
+  }, [resumeDelayMs, scheduleResumeWhenIdle]);
 
-  const pauseForTouch = () => {
+  const pauseForTouch = useCallback(() => {
     touchActiveRef.current = true;
     pauseForPointer();
-  };
+  }, [pauseForPointer]);
 
-  const resumeAfterTouch = () => {
+  const resumeAfterTouch = useCallback(() => {
     touchActiveRef.current = false;
     resumeAfterPointer();
-  };
+  }, [resumeAfterPointer]);
 
-  const pauseForWheel = () => {
+  const pauseForWheel = useCallback(() => {
     userInteractingRef.current = false;
     lastUserScrollAtRef.current = performance.now();
     clearResumeTimer();
     isPausedRef.current = true;
     scheduleResumeWhenIdle(resumeDelayMs);
-  };
+  }, [clearResumeTimer, resumeDelayMs, scheduleResumeWhenIdle]);
+
+  useEffect(() => {
+    const forceResume = () => {
+      touchActiveRef.current = false;
+      userInteractingRef.current = false;
+      scheduleResumeWhenIdle(140);
+    };
+
+    window.addEventListener("pointerup", resumeAfterPointer, { passive: true });
+    window.addEventListener("pointercancel", resumeAfterPointer, { passive: true });
+    window.addEventListener("touchend", resumeAfterTouch, { passive: true });
+    window.addEventListener("touchcancel", forceResume, { passive: true });
+    window.addEventListener("blur", forceResume);
+
+    return () => {
+      window.removeEventListener("pointerup", resumeAfterPointer);
+      window.removeEventListener("pointercancel", resumeAfterPointer);
+      window.removeEventListener("touchend", resumeAfterTouch);
+      window.removeEventListener("touchcancel", forceResume);
+      window.removeEventListener("blur", forceResume);
+    };
+  }, [resumeAfterPointer, resumeAfterTouch, scheduleResumeWhenIdle]);
 
   const segmentClassName = isHorizontal ? "flex h-full w-max items-center gap-4 pr-4" : "space-y-5 pb-5";
   const cardWrapClassName = isHorizontal ? "w-[min(68vw,310px)] shrink-0" : "";
   const renderSegment = (segmentName: string, hidden = false, eager = false) => (
-    <div ref={hidden ? undefined : segmentRef} aria-hidden={hidden || undefined} className={segmentClassName}>
+    <div
+      ref={hidden ? undefined : segmentRef}
+      aria-hidden={hidden || undefined}
+      className={`${segmentClassName} ${hidden ? "pointer-events-none" : ""}`}
+    >
       {items.map((project) => (
         <div key={`${project.slug}-${segmentName}`} className={cardWrapClassName}>
           <ProjectMarqueeCard project={project} onSelectProject={onSelectProject} eager={eager} />
@@ -594,14 +620,14 @@ function ProjectMarqueeLane({
       >
         {isHorizontal ? (
           <div className="flex h-full w-max items-center">
-            {renderSegment("segment-a")}
-            {renderSegment("segment-b", true, true)}
+            {renderSegment("segment-a", true)}
+            {renderSegment("segment-b", false, true)}
             {renderSegment("segment-c", true)}
           </div>
         ) : (
           <>
-            {renderSegment("segment-a")}
-            {renderSegment("segment-b", true, true)}
+            {renderSegment("segment-a", true)}
+            {renderSegment("segment-b", false, true)}
             {renderSegment("segment-c", true)}
           </>
         )}
