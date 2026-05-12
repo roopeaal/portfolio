@@ -965,6 +965,7 @@ function getSwitchCableStubEnd(
   positions: Record<NodeKey, NodePosition>,
   sceneWidth = VIEWBOX.width,
   compact = false,
+  sceneHeight = VIEWBOX.height,
 ) {
   const { x, y } = positions.projects;
   const portIndex = port === "left" ? SWITCH_LEFT_CABLE_PORT_INDEX : SWITCH_RIGHT_CABLE_PORT_INDEX;
@@ -972,8 +973,22 @@ function getSwitchCableStubEnd(
   const horizontalOffset = port === "left" ? SWITCH_LEFT_STUB_X_OFFSET : SWITCH_RIGHT_STUB_X_OFFSET;
   const baseOffset = portOffset + horizontalOffset;
   const projectNodeWidth = NODE_META.projects.width;
+
+  if (compact) {
+    const switchScale = MOBILE_DEVICE_VISUAL_SCALE.projects;
+    const wrapperWidthPx = sceneWidth * (projectNodeWidth / VIEWBOX.width);
+    const centeredChildLeftPx = (wrapperWidthPx - projectNodeWidth) / 2;
+    const xOffsetPx = centeredChildLeftPx + baseOffset * switchScale;
+    const yOffsetPx = SWITCH_STUB_Y * switchScale;
+
+    return {
+      x: x + xOffsetPx * (VIEWBOX.width / Math.max(sceneWidth, 1)),
+      y: y + yOffsetPx * (VIEWBOX.height / Math.max(sceneHeight, 1)),
+    };
+  }
+
   const switchWidthPx = UNIFIED_DEVICE_WIDTH;
-  const renderedSwitchWidthInViewboxUnits = switchWidthPx * (compact ? MOBILE_DEVICE_VISUAL_SCALE.projects : 1) * (VIEWBOX.width / Math.max(sceneWidth, 1));
+  const renderedSwitchWidthInViewboxUnits = switchWidthPx * (VIEWBOX.width / Math.max(sceneWidth, 1));
   const relativeScale = renderedSwitchWidthInViewboxUnits / projectNodeWidth;
   const centeredOffset = projectNodeWidth / 2;
   const responsiveOffset = centeredOffset + (baseOffset - centeredOffset) * relativeScale;
@@ -1278,8 +1293,8 @@ export function TopologyHero() {
   const aboutCableAttach = getAnimatedDevicePoint("about", getRouterCableAttachPoint(topologyNodePositions, isMobileTopology, sceneMetrics.width), topologyNodePositions, active, draggingNode);
   const homeAttach = getAnimatedDevicePoint("home", getAttachPoint("home", topologyNodePositions), topologyNodePositions, active, draggingNode);
   const contactAttach = getAnimatedDevicePoint("contact", getAttachPoint("contact", topologyNodePositions), topologyNodePositions, active, draggingNode);
-  const switchLeftCableEnd = getAnimatedDevicePoint("projects", getSwitchCableStubEnd("left", topologyNodePositions, sceneMetrics.width, isMobileTopology), topologyNodePositions, active, draggingNode);
-  const switchRightCableEnd = getAnimatedDevicePoint("projects", getSwitchCableStubEnd("right", topologyNodePositions, sceneMetrics.width, isMobileTopology), topologyNodePositions, active, draggingNode);
+  const switchLeftCableEnd = getAnimatedDevicePoint("projects", getSwitchCableStubEnd("left", topologyNodePositions, sceneMetrics.width, isMobileTopology, sceneMetrics.height), topologyNodePositions, active, draggingNode);
+  const switchRightCableEnd = getAnimatedDevicePoint("projects", getSwitchCableStubEnd("right", topologyNodePositions, sceneMetrics.width, isMobileTopology, sceneMetrics.height), topologyNodePositions, active, draggingNode);
 
   useEffect(() => {
     const timeoutIds = timeouts.current;
@@ -1413,7 +1428,13 @@ export function TopologyHero() {
   useEffect(() => {
     if (networkMode !== "repairing") return;
 
-    setRepairLooseEnd((current) => current ?? looseEndRef.current ?? detachedOrigin ?? getSwitchCableStubEnd("left", topologyNodePositionsRef.current, sceneMetricsRef.current.width, mobileTopologyRef.current));
+    setRepairLooseEnd((current) => current ?? looseEndRef.current ?? detachedOrigin ?? getSwitchCableStubEnd(
+      "left",
+      topologyNodePositionsRef.current,
+      sceneMetricsRef.current.width,
+      mobileTopologyRef.current,
+      sceneMetricsRef.current.height,
+    ));
   }, [networkMode, detachedOrigin]);
 
   useEffect(() => {
@@ -1777,7 +1798,8 @@ export function TopologyHero() {
     <>
       <audio ref={phoneTapAudioRef} src="/phone-click.m4a?v=20260409-9" preload="auto" />
       <section
-        className="pt-ui relative h-[100dvh] overflow-hidden bg-[#fbfbfb]"
+        className="pt-ui relative h-[100dvh] w-screen max-w-[100vw] overflow-hidden bg-[#fbfbfb]"
+        style={{ visibility: isMobileTopology && openWindow ? "hidden" : "visible" }}
         onMouseMove={(event) => setMousePosition({ x: Math.round(event.clientX), y: Math.round(event.clientY) })}
       >
         <TopTitleBar />
@@ -2161,7 +2183,7 @@ function NodeButton({
   const mobileScale = MOBILE_DEVICE_VISUAL_SCALE[node];
   const labelOffsetY = meta.labelOffsetY ?? 0;
   const labelOffsetX = meta.labelOffsetX ?? 0;
-  const mobileLabelOffsetY = node === "projects" ? 18 : node === "contact" ? 36 : labelOffsetY * 0.7;
+  const mobileLabelOffsetY = node === "projects" ? -16 : node === "contact" ? 36 : labelOffsetY * 0.7;
   const mobileVisualCenterOffsetX = ((mobileScale - 1) * UNIFIED_DEVICE_WIDTH) / 2 + MOBILE_DEVICE_CENTER_NUDGE_X[node];
   const mobileLabelOffsetX = labelOffsetX + mobileVisualCenterOffsetX;
   const labelTextShadow = "0 1px 2px rgba(255,255,255,0.96), 0 0 7px rgba(255,255,255,0.88), 0 0 15px rgba(255,255,255,0.74)";

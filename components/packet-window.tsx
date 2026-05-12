@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { useEffect, useId, useRef, type KeyboardEvent, type ReactNode, useCallback } from "react";
+import { useEffect, useId, useRef, type KeyboardEvent, type ReactNode, useCallback, useState } from "react";
 import type { PanelSidebarItem } from "@/components/portfolio-panel-content";
 
 type PacketPanelType = "home" | "about" | "projects" | "contact";
@@ -54,6 +54,17 @@ export function PacketWindow({
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const lastFocusedElementRef = useRef<HTMLElement | null>(null);
   const prefersReducedMotion = useReducedMotion();
+  const [isMobileViewport, setIsMobileViewport] = useState(false);
+
+  useEffect(() => {
+    const query = window.matchMedia("(max-width: 720px)");
+    const sync = () => setIsMobileViewport(query.matches);
+
+    sync();
+    query.addEventListener("change", sync);
+
+    return () => query.removeEventListener("change", sync);
+  }, []);
 
   useEffect(() => {
     if (!open) return;
@@ -115,8 +126,11 @@ export function PacketWindow({
     }
   };
 
-  const overlayTransition = prefersReducedMotion ? { duration: 0 } : { duration: 0.18 };
-  const windowTransition = prefersReducedMotion ? { duration: 0 } : { duration: 0.24, ease: [0.22, 1, 0.36, 1] as const };
+  const useFastWindowMotion = prefersReducedMotion || isMobileViewport;
+  const overlayTransition = useFastWindowMotion ? { duration: 0 } : { duration: 0.18 };
+  const windowTransition = useFastWindowMotion ? { duration: 0.04 } : { duration: 0.24, ease: [0.22, 1, 0.36, 1] as const };
+  const windowInitial = useFastWindowMotion ? { opacity: 1, scale: 1, y: 0 } : { opacity: 0, scale: 0.9, y: 18 };
+  const windowExit = useFastWindowMotion ? { opacity: 0, scale: 1, y: 0 } : { opacity: 0, scale: 0.9, y: 18 };
   const isExpandedPanel = type === "about" || type === "contact" || type === "projects";
   const showMobileSidebar = sidebarItems.length > 1;
   const browserDisplayUrl = browserUrl ?? "identity.local/roope-aaltonen";
@@ -176,16 +190,16 @@ export function PacketWindow({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={overlayTransition}
-            className="fixed inset-0 z-[500] bg-black/18 backdrop-blur-[1px]"
+            className="fixed inset-0 z-[500] bg-black/18 backdrop-blur-[1px] max-sm:backdrop-blur-none"
             onPointerDown={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleHardClose(); }}
             aria-hidden="true"
           />
 
           <motion.div
             ref={dialogRef}
-            initial={{ opacity: 0, scale: 0.9, y: 18 }}
+            initial={windowInitial}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 18 }}
+            exit={windowExit}
             transition={windowTransition}
             className="fixed inset-x-2 top-2 z-[510] mx-auto h-[calc(100dvh-1rem)] w-[calc(100vw-1rem)] overflow-hidden rounded-[10px] bg-[#efefef] shadow-[0_26px_90px_rgba(15,23,42,0.26)] focus:outline-none sm:inset-x-[1.2vw] sm:top-[1.2vh] sm:h-[calc(100dvh-2.4vh)] sm:w-[min(1520px,97.6vw)]"
             role="dialog"
