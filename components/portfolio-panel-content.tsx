@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useReducedMotion } from "framer-motion";
-import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent, type MouseEvent as ReactMouseEvent } from "react";
 import { projects } from "@/content/projects";
 import { profile } from "@/content/profile";
 
@@ -16,6 +16,10 @@ export interface PanelSidebarItem {
 }
 
 const INSTAGRAM_URL = "https://www.instagram.com/roope_aaltonen";
+
+function clampNumber(value: number, min: number, max: number) {
+  return Math.min(Math.max(value, min), max);
+}
 
 export function HomePanelContent() {
   return (
@@ -699,6 +703,16 @@ export function ProjectsPanelContent({
     [leftLaneProjects, rightLaneProjects],
   );
   const [failedHeroImageSrc, setFailedHeroImageSrc] = useState<string | null>(null);
+  const [heroDemoCue, setHeroDemoCue] = useState<{ x: number; y: number; slug: string } | null>(null);
+
+  const updateHeroDemoCue = useCallback((event: ReactMouseEvent<HTMLElement>, slug: string) => {
+    const bounds = event.currentTarget.getBoundingClientRect();
+    const labelWidth = 142;
+    const labelHeight = 34;
+    const x = clampNumber(event.clientX - bounds.left + 16, 10, Math.max(10, bounds.width - labelWidth));
+    const y = clampNumber(event.clientY - bounds.top + 16, 10, Math.max(10, bounds.height - labelHeight));
+    setHeroDemoCue({ x, y, slug });
+  }, []);
 
   if (preview) {
     return (
@@ -761,6 +775,10 @@ export function ProjectsPanelContent({
   const employerPointItems = selectedProject.employerPoints ?? [];
   const projectNotes = selectedProject.evidence.filter((item) => extractUrls(item).length === 0);
   const projectLinks = Array.from(new Set(selectedProject.evidence.flatMap(extractUrls)));
+  const heroDemoUrl = selectedProject.slug === "aircraft-game-python-react"
+    ? projectLinks.find((url) => url.includes("lentokonepeli.onrender.com")) ?? null
+    : null;
+  const activeHeroDemoCue = heroDemoCue?.slug === selectedProject.slug ? heroDemoCue : null;
   const projectSectionClass = "border-t border-[#c7dda7] pt-5";
   const projectHeadingClass = "text-[13px] font-semibold uppercase tracking-[0.18em] text-[#244a73]";
   const projectParagraphClass = "mt-3 max-w-[calc(100vw-3.5rem)] break-words text-[15px] leading-7 text-[#1f334a] md:max-w-[76ch]";
@@ -782,18 +800,54 @@ export function ProjectsPanelContent({
             {selectedProjectMedia && !heroImageFailed ? (
               <>
                 <div className="absolute inset-0 z-0" style={{ background: selectedProjectMedia.backdrop ?? "#edf2f7" }} />
-                <Image
-                  src={selectedProjectMedia.src}
-                  alt={selectedProjectMedia.alt}
-                  fill
-                  sizes="(max-width: 1024px) 100vw, 920px"
-                  className={`relative z-[1] ${selectedProjectMedia.mode === "cover" ? "object-cover object-center" : "object-contain object-center p-4"}`}
-                  draggable={false}
-                  priority
-                  onError={() => {
-                    if (selectedProjectMedia?.src) setFailedHeroImageSrc(selectedProjectMedia.src);
-                  }}
-                />
+                {heroDemoUrl ? (
+                  <a
+                    href={heroDemoUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label="Open live demo"
+                    className="absolute inset-0 z-[1] block cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#3d7f35]"
+                    onMouseEnter={(event) => updateHeroDemoCue(event, selectedProject.slug)}
+                    onMouseMove={(event) => updateHeroDemoCue(event, selectedProject.slug)}
+                    onMouseLeave={() => setHeroDemoCue(null)}
+                  >
+                    <Image
+                      src={selectedProjectMedia.src}
+                      alt={selectedProjectMedia.alt}
+                      fill
+                      sizes="(max-width: 1024px) 100vw, 920px"
+                      className={selectedProjectMedia.mode === "cover" ? "object-cover object-center" : "object-contain object-center p-4"}
+                      draggable={false}
+                      priority
+                      onError={() => {
+                        if (selectedProjectMedia?.src) setFailedHeroImageSrc(selectedProjectMedia.src);
+                      }}
+                    />
+                    <span
+                      className="pointer-events-none absolute z-[3] hidden rounded-full border border-[#89bd68] bg-[#f8fff0]/96 px-3 py-1.5 text-[12px] font-semibold text-[#173b72] opacity-0 shadow-[0_10px_22px_rgba(36,74,38,0.18)] transition-opacity duration-150 md:inline-flex"
+                      style={{
+                        left: activeHeroDemoCue ? `${activeHeroDemoCue.x}px` : "16px",
+                        top: activeHeroDemoCue ? `${activeHeroDemoCue.y}px` : "16px",
+                        opacity: activeHeroDemoCue ? 1 : 0,
+                      }}
+                    >
+                      Open live demo
+                    </span>
+                  </a>
+                ) : (
+                  <Image
+                    src={selectedProjectMedia.src}
+                    alt={selectedProjectMedia.alt}
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 920px"
+                    className={`relative z-[1] ${selectedProjectMedia.mode === "cover" ? "object-cover object-center" : "object-contain object-center p-4"}`}
+                    draggable={false}
+                    priority
+                    onError={() => {
+                      if (selectedProjectMedia?.src) setFailedHeroImageSrc(selectedProjectMedia.src);
+                    }}
+                  />
+                )}
               </>
             ) : (
               <div className="absolute inset-0 z-[1] flex items-center justify-center px-6 text-center">
