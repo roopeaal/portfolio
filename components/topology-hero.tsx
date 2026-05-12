@@ -1952,6 +1952,7 @@ export function TopologyHero() {
                   <DetachedEthernetStub
                     bottom={switchLeftCableEnd}
                     zIndex={draggingNode === "projects" ? 186 : 90}
+                    scale={isMobileTopology ? MOBILE_DEVICE_VISUAL_SCALE.projects : 1}
                     nudgeY={-1}
                     hoverActive={switchHoverMotionActive}
                   />
@@ -1960,6 +1961,7 @@ export function TopologyHero() {
                   <DetachedEthernetStub
                     bottom={looseEnd}
                     zIndex={draggingNode === "projects" ? 186 : 90}
+                    scale={isMobileTopology ? MOBILE_DEVICE_VISUAL_SCALE.projects : 1}
                     rotationDeg={detachedStubRotationDeg}
                     nudgeY={-1}
                     hoverActive={false}
@@ -1968,6 +1970,7 @@ export function TopologyHero() {
                 <DetachedEthernetStub
                   bottom={switchRightCableEnd}
                   zIndex={draggingNode === "projects" ? 186 : 90}
+                  scale={isMobileTopology ? MOBILE_DEVICE_VISUAL_SCALE.projects : 1}
                   nudgeX={1}
                   nudgeY={-1}
                   hoverActive={switchHoverMotionActive}
@@ -2393,6 +2396,7 @@ function DetachedEthernetStub({
   bottom,
   zIndex = 90,
   rotationDeg = 0,
+  scale = 1,
   nudgeX = 0,
   nudgeY = 0,
   hoverActive = false,
@@ -2400,6 +2404,7 @@ function DetachedEthernetStub({
   bottom: { x: number; y: number };
   zIndex?: number;
   rotationDeg?: number;
+  scale?: number;
   nudgeX?: number;
   nudgeY?: number;
   hoverActive?: boolean;
@@ -2408,12 +2413,15 @@ function DetachedEthernetStub({
   const headWidth = 16.6;
   const headHeight = 16.0;
   const lowerNudge = 8.0;
+  const safeScale = Math.max(0.1, scale);
   const anchorX = bottom.x + nudgeX;
   const anchorY = bottom.y + nudgeY;
   const leftPercent = (anchorX / VIEWBOX.width) * 100;
   const topPercent = (anchorY / VIEWBOX.height) * 100;
-  const halfWidthPx = headWidth / 2;
-  const anchorOffsetYPx = headHeight - lowerNudge;
+  const visualWidth = headWidth * safeScale;
+  const visualHeight = headHeight * safeScale;
+  const halfWidthPx = visualWidth / 2;
+  const anchorOffsetYPx = (headHeight - lowerNudge) * safeScale;
   const baseShadow = "drop-shadow(0 12px 16px rgba(15,23,42,0.06)) drop-shadow(0 3px 8px rgba(18,127,166,0.05))";
   const activeShadow = "drop-shadow(0 20px 24px rgba(15,23,42,0.11)) drop-shadow(0 5px 14px rgba(18,127,166,0.10))";
 
@@ -2424,8 +2432,8 @@ function DetachedEthernetStub({
         zIndex,
         left: `calc(${leftPercent}% - ${halfWidthPx}px)`,
         top: `calc(${topPercent}% - ${anchorOffsetYPx}px)`,
-        width: `${headWidth}px`,
-        height: `${headHeight}px`,
+        width: `${visualWidth}px`,
+        height: `${visualHeight}px`,
         filter: hoverActive ? activeShadow : baseShadow,
       }}
       animate={{
@@ -2447,9 +2455,9 @@ function DetachedEthernetStub({
           preserveAspectRatio="xMidYMid meet"
           className="pointer-events-none h-full w-full overflow-visible"
           style={{
-        transform: rotationDeg ? `rotate(${rotationDeg}deg)` : undefined,
-        transformOrigin: `${halfWidthPx}px ${anchorOffsetYPx}px`,
-      }}
+            transform: rotationDeg ? `rotate(${rotationDeg}deg)` : undefined,
+            transformOrigin: `${halfWidthPx}px ${anchorOffsetYPx}px`,
+          }}
           aria-hidden="true"
         >
           <path
