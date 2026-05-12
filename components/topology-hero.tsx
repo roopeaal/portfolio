@@ -1312,9 +1312,9 @@ export function TopologyHero() {
 
     const motionTimer = window.setInterval(() => {
       if (mobileTopologyRef.current && openWindowRef.current) return;
-      tickRef.current += 1;
+      tickRef.current += 0.7;
       setMotionTick(tickRef.current);
-    }, 40);
+    }, 28);
 
     const typingTimer = window.setInterval(() => {
       if (!typingActiveRef.current || (mobileTopologyRef.current && openWindowRef.current)) return;
@@ -1972,7 +1972,7 @@ export function TopologyHero() {
                   nudgeY={-1}
                   hoverActive={switchHoverMotionActive}
                 />
-                {serviceCursor ? <ServiceMouse cursor={serviceCursor} /> : null}
+                {serviceCursor ? <ServiceMouse cursor={serviceCursor} sceneMetrics={sceneMetrics} /> : null}
 
                 <AnimatePresence>
                   {active && activePreview && previewStyle ? (
@@ -2555,12 +2555,21 @@ function StatusOrb({ x, y, tick }: { x: number; y: number; tick: number }) {
   return <circle cx={x} cy={y} r={11.5 * scale} fill="#e38b1a" opacity={0.98} />;
 }
 
-function ServiceMouse({ cursor }: { cursor: { x: number; y: number; state: CursorState } }) {
+function ServiceMouse({
+  cursor,
+  sceneMetrics,
+}: {
+  cursor: { x: number; y: number; state: CursorState };
+  sceneMetrics: { width: number; height: number };
+}) {
   const visual = cursor.state === "pointer"
     ? { width: 27, height: 40, gripOffset: { x: 4, y: 3 } }
     : cursor.state === "closed"
       ? { width: 32, height: 30, gripOffset: { x: 9, y: 5 } }
       : { width: 37, height: 46, gripOffset: { x: 9, y: 6 } };
+  const xPx = (cursor.x / VIEWBOX.width) * sceneMetrics.width - visual.gripOffset.x;
+  const yPx = (cursor.y / VIEWBOX.height) * sceneMetrics.height - visual.gripOffset.y;
+  const stateTransform = cursor.state === "closed" ? " translateY(1px) scale(0.985)" : "";
 
   const spriteSrc = cursor.state === "pointer"
     ? `${ASSET_BASE}/cursor-pointer-ref-svc.png?v=20260425-3`
@@ -2572,10 +2581,13 @@ function ServiceMouse({ cursor }: { cursor: { x: number; y: number; state: Curso
     <div
       className="pointer-events-none absolute z-[190]"
       style={{
-        left: `${((cursor.x - visual.gripOffset.x) / VIEWBOX.width) * 100}%`,
-        top: `${((cursor.y - visual.gripOffset.y) / VIEWBOX.height) * 100}%`,
-        willChange: "left, top",
-        transform: cursor.state === "closed" ? "translateY(1px) scale(0.985)" : undefined,
+        left: 0,
+        top: 0,
+        width: `${visual.width}px`,
+        height: `${visual.height}px`,
+        willChange: "transform",
+        transform: `translate3d(${xPx}px, ${yPx}px, 0)${stateTransform}`,
+        transition: "transform 28ms linear",
         filter: "drop-shadow(0 1px 0 rgba(255,255,255,0.55)) drop-shadow(0 2px 3px rgba(0,0,0,0.18))",
       }}
     >

@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useReducedMotion } from "framer-motion";
-import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { projects } from "@/content/projects";
 import { profile } from "@/content/profile";
 
@@ -282,10 +282,12 @@ function ProjectMarqueeCard({
   project,
   onSelectProject,
   size = "overview",
+  eager = false,
 }: {
   project: (typeof projects)[number];
   onSelectProject?: (slug: string) => void;
   size?: "overview" | "compact";
+  eager?: boolean;
 }) {
   const media = PROJECT_CARD_MEDIA[project.slug];
   const [failedMediaSrc, setFailedMediaSrc] = useState<string | null>(null);
@@ -316,7 +318,7 @@ function ProjectMarqueeCard({
                 sizes={size === "compact" ? "220px" : "(max-width: 1024px) 78vw, 420px"}
                 className={`relative z-[1] opacity-100 transition duration-300 group-hover:scale-[1.02] ${media.mode === "cover" ? "object-cover object-center" : "object-contain object-center p-1"}`}
                 draggable={false}
-                loading="lazy"
+                loading={eager ? "eager" : "lazy"}
                 onError={() => {
                   if (media?.src) setFailedMediaSrc(media.src);
                 }}
@@ -361,10 +363,37 @@ function ProjectMarqueeLane({
   const isPausedRef = useRef(false);
   const resumeTimeoutRef = useRef<number | null>(null);
   const lastAutoScrollAtRef = useRef(0);
+  const lastUserScrollAtRef = useRef(0);
   const programmaticScrollUntilRef = useRef(0);
+  const userInteractingRef = useRef(false);
+  const touchActiveRef = useRef(false);
   const prefersReducedMotion = useReducedMotion();
   const isHorizontal = direction === "left" || direction === "right";
-  const resumeDelayMs = isHorizontal ? 260 : 650;
+  const resumeDelayMs = isHorizontal ? 520 : 700;
+  const userScrollIdleMs = isHorizontal ? 420 : 560;
+
+  const clearResumeTimer = useCallback(() => {
+    if (resumeTimeoutRef.current) {
+      window.clearTimeout(resumeTimeoutRef.current);
+      resumeTimeoutRef.current = null;
+    }
+  }, []);
+
+  const scheduleResumeWhenIdle = useCallback(function scheduleResumeWhenIdle(delay = resumeDelayMs) {
+    clearResumeTimer();
+    resumeTimeoutRef.current = window.setTimeout(() => {
+      const now = performance.now();
+      const idleFor = now - lastUserScrollAtRef.current;
+
+      if (userInteractingRef.current || idleFor < userScrollIdleMs) {
+        scheduleResumeWhenIdle(Math.max(80, userScrollIdleMs - idleFor));
+        return;
+      }
+
+      isPausedRef.current = false;
+      resumeTimeoutRef.current = null;
+    }, delay);
+  }, [clearResumeTimer, resumeDelayMs, userScrollIdleMs]);
 
   useEffect(() => {
     const lane = laneRef.current;
@@ -376,9 +405,18 @@ function ProjectMarqueeLane({
     let previousTime = 0;
     const speedPxPerSecond = isHorizontal ? 34 : 20;
 
-    const markProgrammaticScroll = () => {
-      programmaticScrollUntilRef.current = performance.now() + 140;
+    const markProgrammaticScroll = (durationMs = 160) => {
+      programmaticScrollUntilRef.current = performance.now() + durationMs;
     };
+
+    const launchTimer = window.setTimeout(() => {
+      if (!userInteractingRef.current) {
+        markProgrammaticScroll(700);
+        lastAutoScrollAtRef.current = performance.now();
+        isPausedRef.current = false;
+        previousTime = 0;
+      }
+    }, 80);
 
     const normalizeScrollPosition = () => {
       if (segmentSize <= 0) return;
@@ -408,7 +446,12 @@ function ProjectMarqueeLane({
     const setBaseline = () => {
       segmentSize = isHorizontal ? segment.scrollWidth : segment.scrollHeight;
       if (segmentSize > 0) {
-        markProgrammaticScroll();
+        const now = performance.now();
+        markProgrammaticScroll(700);
+        lastAutoScrollAtRef.current = now;
+        if (!userInteractingRef.current && now - lastUserScrollAtRef.current > userScrollIdleMs) {
+          isPausedRef.current = false;
+        }
         if (isHorizontal) {
           lane.scrollLeft = segmentSize;
         } else {
@@ -428,15 +471,10 @@ function ProjectMarqueeLane({
         return;
       }
 
-      if (isPausedRef.current || now - lastAutoScrollAtRef.current > 90) {
-        isPausedRef.current = true;
-        if (resumeTimeoutRef.current) {
-          window.clearTimeout(resumeTimeoutRef.current);
-        }
-        resumeTimeoutRef.current = window.setTimeout(() => {
-          isPausedRef.current = false;
-          resumeTimeoutRef.current = null;
-        }, resumeDelayMs);
+      lastUserScrollAtRef.current = now;
+      isPausedRef.current = true;
+      if (!userInteractingRef.current) {
+        scheduleResumeWhenIdle(resumeDelayMs);
       }
       normalizeScrollPosition();
     };
@@ -472,45 +510,58 @@ function ProjectMarqueeLane({
     }
 
     return () => {
+      window.clearTimeout(launchTimer);
       if (rafId) window.cancelAnimationFrame(rafId);
       lane.removeEventListener("scroll", handleScroll);
       observer.disconnect();
     };
-  }, [direction, isHorizontal, items, prefersReducedMotion, resumeDelayMs]);
+  }, [direction, isHorizontal, items, prefersReducedMotion, resumeDelayMs, scheduleResumeWhenIdle, userScrollIdleMs]);
 
   useEffect(() => {
     return () => {
-      if (resumeTimeoutRef.current) {
-        window.clearTimeout(resumeTimeoutRef.current);
-      }
+      clearResumeTimer();
     };
-  }, []);
+  }, [clearResumeTimer]);
 
-  const pauseForDrag = () => {
-    if (resumeTimeoutRef.current) {
-      window.clearTimeout(resumeTimeoutRef.current);
-      resumeTimeoutRef.current = null;
-    }
+  const pauseForPointer = () => {
+    userInteractingRef.current = true;
+    lastUserScrollAtRef.current = performance.now();
+    clearResumeTimer();
     isPausedRef.current = true;
   };
 
-  const resumeAfterDrag = () => {
-    if (resumeTimeoutRef.current) {
-      window.clearTimeout(resumeTimeoutRef.current);
-    }
-    resumeTimeoutRef.current = window.setTimeout(() => {
-      isPausedRef.current = false;
-      resumeTimeoutRef.current = null;
-    }, resumeDelayMs);
+  const resumeAfterPointer = () => {
+    if (touchActiveRef.current) return;
+    userInteractingRef.current = false;
+    lastUserScrollAtRef.current = performance.now();
+    scheduleResumeWhenIdle(resumeDelayMs);
+  };
+
+  const pauseForTouch = () => {
+    touchActiveRef.current = true;
+    pauseForPointer();
+  };
+
+  const resumeAfterTouch = () => {
+    touchActiveRef.current = false;
+    resumeAfterPointer();
+  };
+
+  const pauseForWheel = () => {
+    userInteractingRef.current = false;
+    lastUserScrollAtRef.current = performance.now();
+    clearResumeTimer();
+    isPausedRef.current = true;
+    scheduleResumeWhenIdle(resumeDelayMs);
   };
 
   const segmentClassName = isHorizontal ? "flex h-full w-max items-center gap-4 pr-4" : "space-y-5 pb-5";
   const cardWrapClassName = isHorizontal ? "w-[min(68vw,310px)] shrink-0" : "";
-  const renderSegment = (segmentName: string, hidden = false) => (
+  const renderSegment = (segmentName: string, hidden = false, eager = false) => (
     <div ref={hidden ? undefined : segmentRef} aria-hidden={hidden || undefined} className={segmentClassName}>
       {items.map((project) => (
         <div key={`${project.slug}-${segmentName}`} className={cardWrapClassName}>
-          <ProjectMarqueeCard project={project} onSelectProject={onSelectProject} />
+          <ProjectMarqueeCard project={project} onSelectProject={onSelectProject} eager={eager} />
         </div>
       ))}
     </div>
@@ -519,19 +570,19 @@ function ProjectMarqueeLane({
   return (
     <div
       className="relative h-full min-h-0 w-full max-w-full overflow-hidden"
-      onPointerDown={pauseForDrag}
-      onPointerUp={resumeAfterDrag}
-      onPointerCancel={resumeAfterDrag}
-      onPointerLeave={resumeAfterDrag}
-      onTouchStart={pauseForDrag}
-      onTouchEnd={resumeAfterDrag}
-      onWheelCapture={pauseForDrag}
+      onPointerDown={pauseForPointer}
+      onPointerUp={resumeAfterPointer}
+      onPointerCancel={resumeAfterPointer}
+      onTouchStart={pauseForTouch}
+      onTouchEnd={resumeAfterTouch}
+      onTouchCancel={resumeAfterTouch}
+      onWheelCapture={pauseForWheel}
       onFocusCapture={() => {
         isPausedRef.current = true;
       }}
       onBlurCapture={(event) => {
         if (!event.currentTarget.contains(event.relatedTarget)) {
-          isPausedRef.current = false;
+          resumeAfterPointer();
         }
       }}
     >
@@ -544,13 +595,13 @@ function ProjectMarqueeLane({
         {isHorizontal ? (
           <div className="flex h-full w-max items-center">
             {renderSegment("segment-a")}
-            {renderSegment("segment-b", true)}
+            {renderSegment("segment-b", true, true)}
             {renderSegment("segment-c", true)}
           </div>
         ) : (
           <>
             {renderSegment("segment-a")}
-            {renderSegment("segment-b", true)}
+            {renderSegment("segment-b", true, true)}
             {renderSegment("segment-c", true)}
           </>
         )}
@@ -1051,16 +1102,16 @@ export function ContactPanelContent({
           </div>
 
           <div className="relative z-[2] grid w-full grid-cols-4 items-center justify-items-center gap-2 px-3 pb-5 pt-3 sm:px-8 lg:pt-2">
-            <SocialLogoLink href="https://www.linkedin.com/in/roope-aaltonen/" label="LinkedIn" className="!h-[clamp(64px,7.6vw,126px)] !w-[clamp(64px,7.6vw,126px)] !border-0 !bg-transparent !shadow-none hover:!translate-y-0">
+            <SocialLogoLink href="https://www.linkedin.com/in/roope-aaltonen/" label="LinkedIn" className="!h-[clamp(76px,8vw,132px)] !w-[clamp(76px,8vw,132px)] !border-0 !bg-transparent !shadow-none hover:!translate-y-0">
               <LinkedInGlyph />
             </SocialLogoLink>
-            <SocialLogoLink href={INSTAGRAM_URL} label="Instagram" className="!h-[clamp(64px,7.6vw,126px)] !w-[clamp(64px,7.6vw,126px)] !border-0 !bg-transparent !shadow-none hover:!translate-y-0">
+            <SocialLogoLink href={INSTAGRAM_URL} label="Instagram" className="!h-[clamp(76px,8vw,132px)] !w-[clamp(76px,8vw,132px)] !border-0 !bg-transparent !shadow-none hover:!translate-y-0">
               <InstagramGlyph />
             </SocialLogoLink>
-            <SocialLogoLink href="https://facebook.com/roope.aaltonen.5" label="Facebook" className="!h-[clamp(64px,7.6vw,126px)] !w-[clamp(64px,7.6vw,126px)] !border-0 !bg-transparent !shadow-none hover:!translate-y-0">
+            <SocialLogoLink href="https://facebook.com/roope.aaltonen.5" label="Facebook" className="!h-[clamp(76px,8vw,132px)] !w-[clamp(76px,8vw,132px)] !border-0 !bg-transparent !shadow-none hover:!translate-y-0">
               <FacebookGlyph />
             </SocialLogoLink>
-            <SocialLogoLink href="https://github.com/roopeaal" label="GitHub" className="!h-[clamp(64px,7.6vw,126px)] !w-[clamp(64px,7.6vw,126px)] !border-0 !bg-transparent !shadow-none hover:!translate-y-0">
+            <SocialLogoLink href="https://github.com/roopeaal" label="GitHub" className="!h-[clamp(76px,8vw,132px)] !w-[clamp(76px,8vw,132px)] !border-0 !bg-transparent !shadow-none hover:!translate-y-0">
               <GitHubGlyph />
             </SocialLogoLink>
           </div>
