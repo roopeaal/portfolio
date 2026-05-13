@@ -402,6 +402,9 @@ type ProjectMarqueeLaneProps = {
   onSelectProject?: (slug: string) => void;
 };
 
+const HORIZONTAL_MARQUEE_SEGMENT_COUNT = 6;
+const HORIZONTAL_MARQUEE_CENTER_SEGMENT = 2;
+
 function ProjectMarqueeLane(props: ProjectMarqueeLaneProps) {
   if (props.direction === "left" || props.direction === "right") {
     return <ProjectHorizontalMarqueeLane {...props} />;
@@ -415,8 +418,14 @@ function ProjectHorizontalMarqueeLane({
   direction,
   onSelectProject,
 }: ProjectMarqueeLaneProps) {
+  const laneRef = useRef<HTMLDivElement>(null);
+  const segmentRef = useRef<HTMLDivElement>(null);
   const [paused, setPaused] = useState(false);
   const resumeTimeoutRef = useRef<number | null>(null);
+  const wrapFrameRef = useRef<number | null>(null);
+  const segmentWidthRef = useRef(0);
+  const initializedRef = useRef(false);
+  const programmaticScrollUntilRef = useRef(0);
   const pointerActiveRef = useRef(false);
   const touchActiveRef = useRef(false);
   const prefersReducedMotion = useReducedMotion();
@@ -449,7 +458,84 @@ function ProjectHorizontalMarqueeLane({
     resumeTimeoutRef.current = window.setTimeout(resumeWhenReleased, delay);
   }, [clearResumeTimer]);
 
-  useEffect(() => clearResumeTimer, [clearResumeTimer]);
+  const normalizeScrollPosition = useCallback(() => {
+    const lane = laneRef.current;
+    const segmentWidth = segmentWidthRef.current;
+    if (!lane || segmentWidth <= 0) return;
+
+    const center = segmentWidth * HORIZONTAL_MARQUEE_CENTER_SEGMENT;
+    const min = segmentWidth * 1.5;
+    const max = segmentWidth * (HORIZONTAL_MARQUEE_SEGMENT_COUNT - 2.5);
+    const current = lane.scrollLeft;
+    if (current >= min && current <= max) return;
+
+    const offset = ((((current - center) % segmentWidth) + segmentWidth) % segmentWidth);
+    programmaticScrollUntilRef.current = performance.now() + 120;
+    lane.scrollLeft = center + offset;
+  }, []);
+
+  const scheduleNormalizeScrollPosition = useCallback(() => {
+    if (wrapFrameRef.current) return;
+    wrapFrameRef.current = window.requestAnimationFrame(() => {
+      wrapFrameRef.current = null;
+      normalizeScrollPosition();
+    });
+  }, [normalizeScrollPosition]);
+
+  useEffect(() => {
+    const lane = laneRef.current;
+    const segment = segmentRef.current;
+    if (!lane || !segment || items.length === 0) return;
+
+    const syncSegmentWidth = () => {
+      const nextWidth = segment.scrollWidth;
+      if (nextWidth <= 0) return;
+
+      const previousWidth = segmentWidthRef.current;
+      segmentWidthRef.current = nextWidth;
+
+      if (!initializedRef.current || previousWidth <= 0) {
+        initializedRef.current = true;
+        programmaticScrollUntilRef.current = performance.now() + 180;
+        lane.scrollLeft = nextWidth * HORIZONTAL_MARQUEE_CENTER_SEGMENT;
+        return;
+      }
+
+      if (Math.abs(nextWidth - previousWidth) > 0.5) {
+        const ratio = lane.scrollLeft / previousWidth;
+        programmaticScrollUntilRef.current = performance.now() + 180;
+        lane.scrollLeft = ratio * nextWidth;
+        scheduleNormalizeScrollPosition();
+      }
+    };
+
+    syncSegmentWidth();
+
+    let resizeFrame = 0;
+    const observer = new ResizeObserver(() => {
+      if (resizeFrame) window.cancelAnimationFrame(resizeFrame);
+      resizeFrame = window.requestAnimationFrame(() => {
+        resizeFrame = 0;
+        syncSegmentWidth();
+      });
+    });
+    observer.observe(segment);
+
+    return () => {
+      if (resizeFrame) window.cancelAnimationFrame(resizeFrame);
+      observer.disconnect();
+    };
+  }, [items.length, scheduleNormalizeScrollPosition]);
+
+  useEffect(() => {
+    return () => {
+      clearResumeTimer();
+      if (wrapFrameRef.current) {
+        window.cancelAnimationFrame(wrapFrameRef.current);
+        wrapFrameRef.current = null;
+      }
+    };
+  }, [clearResumeTimer]);
 
   const pauseForPointer = useCallback(() => {
     pointerActiveRef.current = true;
@@ -471,11 +557,22 @@ function ProjectHorizontalMarqueeLane({
     resumeSoon(280);
   }, [resumeSoon]);
 
-  const repeatedItems = useMemo(() => [...items, ...items], [items]);
+  const segmentIndexes = useMemo(() => Array.from({ length: HORIZONTAL_MARQUEE_SEGMENT_COUNT }, (_, index) => index), []);
   const shouldPauseMotion = paused || prefersReducedMotion;
+  const handleScroll = useCallback(() => {
+    scheduleNormalizeScrollPosition();
+
+    if (performance.now() < programmaticScrollUntilRef.current) return;
+
+    pause();
+    if (!pointerActiveRef.current && !touchActiveRef.current) {
+      resumeSoon(360);
+    }
+  }, [pause, resumeSoon, scheduleNormalizeScrollPosition]);
 
   return (
     <div
+      ref={laneRef}
       className="project-marquee-lane h-full w-full min-w-0 max-w-full overflow-x-auto overflow-y-hidden overscroll-x-contain [scrollbar-width:none] [touch-action:pan-x] [&::-webkit-scrollbar]:hidden"
       data-paused={shouldPauseMotion ? "true" : "false"}
       onPointerDown={pauseForPointer}
@@ -484,25 +581,29 @@ function ProjectHorizontalMarqueeLane({
       onTouchStart={pauseForTouch}
       onTouchEnd={resumeAfterTouch}
       onTouchCancel={resumeAfterTouch}
-      onScroll={() => {
-        pause();
-        if (!pointerActiveRef.current && !touchActiveRef.current) {
-          resumeSoon(360);
-        }
-      }}
+      onScroll={handleScroll}
       onWheelCapture={() => {
         pause();
         resumeSoon(360);
+        scheduleNormalizeScrollPosition();
       }}
     >
-      <div className="project-marquee-track flex h-full w-max items-center gap-4 pr-4" data-direction={direction}>
-        {repeatedItems.map((project, index) => (
-          <div key={`${project.slug}-${index}`} className="w-[min(68vw,310px)] shrink-0">
-            <ProjectMarqueeCard
-              project={project}
-              onSelectProject={onSelectProject}
-              tabIndex={index >= items.length ? -1 : undefined}
-            />
+      <div className="project-marquee-track flex h-full w-max items-center" data-direction={direction}>
+        {segmentIndexes.map((segmentIndex) => (
+          <div
+            key={`segment-${segmentIndex}`}
+            ref={segmentIndex === HORIZONTAL_MARQUEE_CENTER_SEGMENT ? segmentRef : undefined}
+            className="flex h-full w-max items-center gap-4 pr-4"
+          >
+            {items.map((project) => (
+              <div key={`${project.slug}-${segmentIndex}`} className="w-[min(68vw,310px)] shrink-0">
+                <ProjectMarqueeCard
+                  project={project}
+                  onSelectProject={onSelectProject}
+                  tabIndex={segmentIndex === HORIZONTAL_MARQUEE_CENTER_SEGMENT ? undefined : -1}
+                />
+              </div>
+            ))}
           </div>
         ))}
       </div>
