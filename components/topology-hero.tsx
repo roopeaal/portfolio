@@ -141,6 +141,8 @@ const MOBILE_DEVICE_CENTER_NUDGE_X: Record<NodeKey, number> = {
   home: -10,
   contact: 0,
 };
+const MOBILE_SWITCH_ALIGNMENT_NUDGE_X = 4;
+const MOBILE_SWITCH_LABEL_NUDGE_Y = 24;
 const MOBILE_AUTO_ANIMATION_SEQUENCE: NodeKey[] = ["about", "projects", "contact", "home"];
 const MOBILE_AUTO_ANIMATION_DURATION: Record<NodeKey, number> = {
   about: 3000,
@@ -978,7 +980,7 @@ function getSwitchCableStubEnd(
     const switchScale = MOBILE_DEVICE_VISUAL_SCALE.projects;
     const wrapperWidthPx = sceneWidth * (projectNodeWidth / VIEWBOX.width);
     const centeredChildLeftPx = (wrapperWidthPx - projectNodeWidth) / 2;
-    const xOffsetPx = centeredChildLeftPx + baseOffset * switchScale;
+    const xOffsetPx = centeredChildLeftPx + baseOffset * switchScale + MOBILE_SWITCH_ALIGNMENT_NUDGE_X;
     const yOffsetPx = SWITCH_STUB_Y * switchScale;
 
     return {
@@ -2201,7 +2203,10 @@ function NodeButton({
   const labelOffsetY = meta.labelOffsetY ?? 0;
   const labelOffsetX = meta.labelOffsetX ?? 0;
   const mobileLabelOffsetY = node === "projects" ? -16 : node === "contact" ? 36 : labelOffsetY * 0.7;
-  const mobileVisualCenterOffsetX = ((mobileScale - 1) * UNIFIED_DEVICE_WIDTH) / 2 + MOBILE_DEVICE_CENTER_NUDGE_X[node];
+  const mobileVisualCenterOffsetX =
+    ((mobileScale - 1) * UNIFIED_DEVICE_WIDTH) / 2 +
+    MOBILE_DEVICE_CENTER_NUDGE_X[node] +
+    (node === "projects" ? MOBILE_SWITCH_ALIGNMENT_NUDGE_X : 0);
   const mobileLabelOffsetX = labelOffsetX + mobileVisualCenterOffsetX;
   const desktopLabelTop = meta.deviceHeight + NODE_LABEL_GAP + labelOffsetY;
   const labelTextShadow = "0 1px 2px rgba(255,255,255,0.96), 0 0 7px rgba(255,255,255,0.88), 0 0 15px rgba(255,255,255,0.74)";
@@ -2210,7 +2215,7 @@ function NodeButton({
     : "drop-shadow(0 12px 16px rgba(15,23,42,0.06)) drop-shadow(0 3px 8px rgba(18,127,166,0.05))";
   const labelTop = mobile
     ? node === "projects"
-      ? desktopLabelTop * mobileScale + 12
+      ? desktopLabelTop * mobileScale + MOBILE_SWITCH_LABEL_NUDGE_Y
       : meta.deviceHeight * mobileScale + NODE_LABEL_GAP + mobileLabelOffsetY
     : desktopLabelTop;
 
