@@ -3,6 +3,7 @@
 import Image from "next/image";
 
 import {
+  memo,
   useCallback,
   useEffect,
   useId,
@@ -1159,6 +1160,9 @@ export function TopologyHero() {
   const networkModeRef = useRef<NetworkMode>("stable");
   const openWindowRef = useRef<WindowType | null>(null);
   const typingActiveRef = useRef(false);
+  const activeRef = useRef<ActiveNode>(null);
+  const routerGlitchActiveRef = useRef(false);
+  const phoneRingingRef = useRef(false);
 
   const nodePositionsRef = useRef<Record<NodeKey, NodePosition>>(INITIAL_NODE_POSITIONS);
   const topologyNodePositionsRef = useRef<Record<NodeKey, NodePosition>>(INITIAL_NODE_POSITIONS);
@@ -1292,6 +1296,18 @@ export function TopologyHero() {
     networkModeRef.current = networkMode;
   }, [networkMode]);
 
+  useEffect(() => {
+    activeRef.current = active;
+  }, [active]);
+
+  useEffect(() => {
+    routerGlitchActiveRef.current = routerGlitchActive;
+  }, [routerGlitchActive]);
+
+  useEffect(() => {
+    phoneRingingRef.current = phoneRinging;
+  }, [phoneRinging]);
+
   const aboutCableAttach = getAnimatedDevicePoint("about", getRouterCableAttachPoint(topologyNodePositions, isMobileTopology, sceneMetrics.width), topologyNodePositions, active, draggingNode);
   const homeAttach = getAnimatedDevicePoint("home", getAttachPoint("home", topologyNodePositions), topologyNodePositions, active, draggingNode);
   const contactAttach = getAnimatedDevicePoint("contact", getAttachPoint("contact", topologyNodePositions), topologyNodePositions, active, draggingNode);
@@ -1312,11 +1328,43 @@ export function TopologyHero() {
       setCurrentTime(Date.now());
     }, 1000);
 
-    const motionTimer = window.setInterval(() => {
-      if (mobileTopologyRef.current && openWindowRef.current) return;
-      tickRef.current += 0.7;
-      setMotionTick(tickRef.current);
-    }, 28);
+    let lastMotionFrame = 0;
+    let motionFrame = 0;
+
+    const animateMotion = (time: number) => {
+      const isMobile = mobileTopologyRef.current;
+      const needsMotionFrame = !isMobile
+        || networkModeRef.current !== "stable"
+        || typingActiveRef.current
+        || routerGlitchActiveRef.current
+        || phoneRingingRef.current
+        || activeRef.current !== null;
+
+      if (isMobile && openWindowRef.current) {
+        lastMotionFrame = time;
+        motionFrame = window.requestAnimationFrame(animateMotion);
+        return;
+      }
+
+      if (!needsMotionFrame) {
+        lastMotionFrame = time;
+        motionFrame = window.requestAnimationFrame(animateMotion);
+        return;
+      }
+
+      const targetFrameMs = isMobile ? 32 : 28;
+      const elapsed = lastMotionFrame ? time - lastMotionFrame : targetFrameMs;
+
+      if (elapsed >= targetFrameMs) {
+        lastMotionFrame = time;
+        tickRef.current += (elapsed / targetFrameMs) * (isMobile ? 0.62 : 0.7);
+        setMotionTick(tickRef.current);
+      }
+
+      motionFrame = window.requestAnimationFrame(animateMotion);
+    };
+
+    motionFrame = window.requestAnimationFrame(animateMotion);
 
     const typingTimer = window.setInterval(() => {
       if (!typingActiveRef.current || (mobileTopologyRef.current && openWindowRef.current)) return;
@@ -1326,7 +1374,7 @@ export function TopologyHero() {
     return () => {
       window.cancelAnimationFrame(initialClockFrame);
       window.clearInterval(clockTimer);
-      window.clearInterval(motionTimer);
+      window.cancelAnimationFrame(motionFrame);
       window.clearInterval(typingTimer);
       timeoutIds.forEach((id) => window.clearTimeout(id));
     };
@@ -1845,7 +1893,7 @@ export function TopologyHero() {
                   aria-hidden="true"
                   preserveAspectRatio="none"
                 >
-                  <WirelessCable from={aboutCableAttach} to={contactAttach} tick={motionTick} online={routerWifiReady} />
+                  <WirelessCable from={aboutCableAttach} to={contactAttach} online={routerWifiReady} />
                 </motion.svg>
 
                 <NodeButton
@@ -1863,7 +1911,14 @@ export function TopologyHero() {
                   label={NODE_META.about.label}
                   deviceName={NODE_META.about.deviceName}
                 >
-                  <RouterIllustration compact={isMobileTopology} networkMode={networkMode} glitchActive={routerGlitchActive} powerOn={routerPowerOn} signalLevel={routerSignalLevel} tick={motionTick} />
+                  <RouterIllustration
+                    compact={isMobileTopology}
+                    networkMode={networkMode}
+                    glitchActive={routerGlitchActive}
+                    powerOn={routerPowerOn}
+                    signalLevel={routerSignalLevel}
+                    tick={routerGlitchActive || !routerPowerOn || routerSignalLevel < 2 ? motionTick : 0}
+                  />
                 </NodeButton>
 
                 <NodeButton
@@ -1884,7 +1939,7 @@ export function TopologyHero() {
                   <SwitchIllustration
                     compact={isMobileTopology}
                     networkMode={networkMode}
-                    tick={motionTick}
+                    tick={0}
                     active={active === "projects"}
                     uplinkConnected={networkMode === "stable" || networkMode === "recovering"}
                     pcConnected
@@ -1924,7 +1979,7 @@ export function TopologyHero() {
                   label={NODE_META.contact.label}
                   deviceName={NODE_META.contact.deviceName}
                 >
-                  <SmartphoneIllustration compact={isMobileTopology} ringing={phoneRinging} tick={motionTick} noWifi={!routerWifiReady} currentTime={currentTime} />
+                  <SmartphoneIllustration compact={isMobileTopology} ringing={phoneRinging} tick={phoneRinging ? motionTick : 0} noWifi={!routerWifiReady} currentTime={currentTime} />
                 </NodeButton>
 
                 <motion.svg
@@ -2499,7 +2554,7 @@ function DetachedEthernetStub({
   );
 }
 
-function CableSegment({
+const CableSegment = memo(function CableSegment({
   from,
   to,
   disconnected = false,
@@ -2540,11 +2595,10 @@ function CableSegment({
       vectorEffect="non-scaling-stroke"
     />
   );
-}
+});
 
-function WirelessCable({ from, to, tick, online }: { from: { x: number; y: number }; to: { x: number; y: number }; tick: number; online: boolean }) {
+const WirelessCable = memo(function WirelessCable({ from, to, online }: { from: { x: number; y: number }; to: { x: number; y: number }; online: boolean }) {
   if (!online) return null;
-  void tick;
 
   const wirelessPath = `M ${from.x} ${from.y} L ${to.x} ${to.y}`;
 
@@ -2563,29 +2617,29 @@ function WirelessCable({ from, to, tick, online }: { from: { x: number; y: numbe
       />
     </>
   );
-}
+});
 
-function TrafficPulse({ from, to, tick, duration, delay, dotted = false, color = "#e7f9ff" }: { from: { x: number; y: number }; to: { x: number; y: number }; tick: number; duration: number; delay: number; dotted?: boolean; color?: string }) {
+const TrafficPulse = memo(function TrafficPulse({ from, to, tick, duration, delay, dotted = false, color = "#e7f9ff" }: { from: { x: number; y: number }; to: { x: number; y: number }; tick: number; duration: number; delay: number; dotted?: boolean; color?: string }) {
   const progress = ((tick + delay) % duration) / duration;
   const x = lerp(from.x, to.x, progress);
   const y = lerp(from.y, to.y, progress);
   return <circle cx={x} cy={y} r={dotted ? 3.6 : 4.8} fill={color} opacity={0.9} />;
-}
+});
 
-function StatusTriangle({ x, y, sceneMetrics }: { x: number; y: number; sceneMetrics: { width: number; height: number } }) {
+const StatusTriangle = memo(function StatusTriangle({ x, y, sceneMetrics }: { x: number; y: number; sceneMetrics: { width: number; height: number } }) {
   const halfWidth = (9 / Math.max(sceneMetrics.width, 1)) * VIEWBOX.width;
   const topHeight = (10 / Math.max(sceneMetrics.height, 1)) * VIEWBOX.height;
   const bottomHeight = (8 / Math.max(sceneMetrics.height, 1)) * VIEWBOX.height;
 
   return <polygon points={`${x},${y - topHeight} ${x - halfWidth},${y + bottomHeight} ${x + halfWidth},${y + bottomHeight}`} fill="#43c729" opacity={1} />;
-}
+});
 
-function StatusOrb({ x, y, tick }: { x: number; y: number; tick: number }) {
+const StatusOrb = memo(function StatusOrb({ x, y, tick }: { x: number; y: number; tick: number }) {
   const scale = 1 + Math.sin(tick / 2) * 0.06;
   return <circle cx={x} cy={y} r={11.5 * scale} fill="#e38b1a" opacity={0.98} />;
-}
+});
 
-function ServiceMouse({
+const ServiceMouse = memo(function ServiceMouse({
   cursor,
   sceneMetrics,
 }: {
@@ -2617,7 +2671,7 @@ function ServiceMouse({
         height: `${visual.height}px`,
         willChange: "transform",
         transform: `translate3d(${xPx}px, ${yPx}px, 0)${stateTransform}`,
-        transition: "transform 28ms linear",
+        transition: "transform 36ms linear",
         filter: "drop-shadow(0 1px 0 rgba(255,255,255,0.55)) drop-shadow(0 2px 3px rgba(0,0,0,0.18))",
       }}
     >
@@ -2633,9 +2687,9 @@ function ServiceMouse({
       />
     </div>
   );
-}
+});
 
-function RouterIllustration({
+const RouterIllustration = memo(function RouterIllustration({
   compact = false,
   networkMode = "stable",
   glitchActive = false,
@@ -2904,9 +2958,9 @@ function RouterIllustration({
       </div>
     </div>
   );
-}
+});
 
-function SwitchIllustration({
+const SwitchIllustration = memo(function SwitchIllustration({
   compact = false,
   networkMode = "stable",
   tick = 0,
@@ -3224,10 +3278,10 @@ function SwitchIllustration({
       </div>
     </motion.div>
   );
-}
+});
 
 
-function PCIllustration({ compact = false, typingStep = 0, typingActive = false }: { compact?: boolean; typingStep?: number; typingActive?: boolean }) {
+const PCIllustration = memo(function PCIllustration({ compact = false, typingStep = 0, typingActive = false }: { compact?: boolean; typingStep?: number; typingActive?: boolean }) {
   return (
     <div className={`relative -translate-x-[12px] ${compact ? "origin-top-left scale-[0.8]" : "origin-top scale-100"}`}>
       <div className="relative" style={{ width: UNIFIED_DEVICE_WIDTH, height: UNIFIED_DEVICE_HEIGHT }}>
@@ -3247,7 +3301,7 @@ function PCIllustration({ compact = false, typingStep = 0, typingActive = false 
       </div>
     </div>
   );
-}
+});
 
 
 function PhoneStatusBar({ className = "", showWifi = false }: { className?: string; showWifi?: boolean }) {
@@ -3277,7 +3331,7 @@ function PhoneStatusBar({ className = "", showWifi = false }: { className?: stri
   );
 }
 
-function SmartphoneIllustration({
+const SmartphoneIllustration = memo(function SmartphoneIllustration({
   compact = false,
   ringing = false,
   tick = 0,
@@ -3290,7 +3344,7 @@ function SmartphoneIllustration({
   noWifi?: boolean;
   currentTime?: number | null;
 }) {
-  const idleGlow = Math.sin(tick / 6) * 0.5 + 0.5;
+  const idleGlow = ringing ? Math.sin(tick / 6) * 0.5 + 0.5 : 0.68;
   const lockscreenTime = currentTime ? formatPhoneClock(new Date(currentTime)) : "";
   const lockscreenDate = currentTime ? formatPhoneDate(new Date(currentTime)) : "";
 
@@ -3383,7 +3437,7 @@ function SmartphoneIllustration({
       </div>
     </motion.div>
   );
-}
+});
 
 function LinkedInMonitorView() {
   return (
