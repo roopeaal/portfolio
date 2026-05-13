@@ -841,6 +841,7 @@ const SWITCH_PORT_CENTERS = [73, 90, 108, 125, 143, 160] as const;
 const SWITCH_LEFT_CABLE_PORT_INDEX = 0;
 const SWITCH_RIGHT_CABLE_PORT_INDEX = 5;
 const SWITCH_STUB_Y = 136.0;
+const MOBILE_SWITCH_INLINE_STUB_Y = 106.0;
 const SWITCH_LEFT_STUB_X_OFFSET = 31.0;
 const SWITCH_RIGHT_STUB_X_OFFSET = -21.0;
 const LEFT_CABLE_ROUTE_OFFSET_X = -1;
@@ -994,7 +995,7 @@ function getSwitchCableStubEnd(
     const wrapperWidthPx = sceneWidth * (projectNodeWidth / VIEWBOX.width);
     const centeredChildLeftPx = (wrapperWidthPx - projectNodeWidth) / 2;
     const xOffsetPx = centeredChildLeftPx + baseOffset * switchScale + MOBILE_SWITCH_PLUG_NUDGE_X;
-    const yOffsetPx = (SWITCH_STUB_Y + MOBILE_SWITCH_PLUG_NUDGE_Y) * switchScale;
+    const yOffsetPx = (MOBILE_SWITCH_INLINE_STUB_Y + MOBILE_SWITCH_PLUG_NUDGE_Y) * switchScale;
 
     return {
       x: x + xOffsetPx * (VIEWBOX.width / Math.max(sceneWidth, 1)),
@@ -3350,13 +3351,13 @@ const SwitchIllustration = memo(function SwitchIllustration({
         {showInlineLeftPlug ? (
           <InlineEthernetStub
             anchorX={SWITCH_PORT_CENTERS[SWITCH_LEFT_CABLE_PORT_INDEX] + SWITCH_LEFT_STUB_X_OFFSET}
-            anchorY={SWITCH_STUB_Y}
+            anchorY={MOBILE_SWITCH_INLINE_STUB_Y}
           />
         ) : null}
         {showInlineRightPlug ? (
           <InlineEthernetStub
             anchorX={SWITCH_PORT_CENTERS[SWITCH_RIGHT_CABLE_PORT_INDEX] + SWITCH_RIGHT_STUB_X_OFFSET}
-            anchorY={SWITCH_STUB_Y}
+            anchorY={MOBILE_SWITCH_INLINE_STUB_Y}
             nudgeX={1}
           />
         ) : null}
