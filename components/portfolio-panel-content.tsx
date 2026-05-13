@@ -272,6 +272,10 @@ const PROJECT_HERO_ACTIONS: Record<string, { href: string; label: string }> = {
     href: "/portfolio/iot-security-lab-demonstration.mp4",
     label: "Demonstration video",
   },
+  "heart-rate-monitor": {
+    href: "/portfolio/pulsemaster-demonstration.mp4",
+    label: "Demonstration video",
+  },
   "aircraft-game-python-react": {
     href: "https://lentokonepeli.onrender.com/",
     label: "Open live demo",
