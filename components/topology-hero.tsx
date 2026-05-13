@@ -2203,13 +2203,16 @@ function NodeButton({
   const mobileLabelOffsetY = node === "projects" ? -16 : node === "contact" ? 36 : labelOffsetY * 0.7;
   const mobileVisualCenterOffsetX = ((mobileScale - 1) * UNIFIED_DEVICE_WIDTH) / 2 + MOBILE_DEVICE_CENTER_NUDGE_X[node];
   const mobileLabelOffsetX = labelOffsetX + mobileVisualCenterOffsetX;
+  const desktopLabelTop = meta.deviceHeight + NODE_LABEL_GAP + labelOffsetY;
   const labelTextShadow = "0 1px 2px rgba(255,255,255,0.96), 0 0 7px rgba(255,255,255,0.88), 0 0 15px rgba(255,255,255,0.74)";
   const nodeDropShadow = active
     ? "drop-shadow(0 20px 24px rgba(15,23,42,0.11)) drop-shadow(0 5px 14px rgba(18,127,166,0.10))"
     : "drop-shadow(0 12px 16px rgba(15,23,42,0.06)) drop-shadow(0 3px 8px rgba(18,127,166,0.05))";
   const labelTop = mobile
-    ? meta.deviceHeight * mobileScale + NODE_LABEL_GAP + mobileLabelOffsetY
-    : meta.deviceHeight + NODE_LABEL_GAP + labelOffsetY;
+    ? node === "projects"
+      ? desktopLabelTop * mobileScale + 12
+      : meta.deviceHeight * mobileScale + NODE_LABEL_GAP + mobileLabelOffsetY
+    : desktopLabelTop;
 
   return (
     <div

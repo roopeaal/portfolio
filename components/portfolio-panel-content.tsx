@@ -1011,6 +1011,11 @@ export function ProjectsPanelContent({
               </div>
             )}
           </div>
+          {heroAction ? (
+            <figcaption className="border-t border-[#b7d79b] bg-[#f8fff0] px-3 py-2 text-[12px] font-semibold text-[#173b72] md:hidden">
+              Tap image: {heroAction.label}
+            </figcaption>
+          ) : null}
         </figure>
 
         <section className={`${projectSectionClass} mt-7`}>
