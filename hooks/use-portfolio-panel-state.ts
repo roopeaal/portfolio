@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { projects } from "@/content/projects";
 
@@ -32,6 +32,7 @@ function parseProject(project: string | null) {
 export function usePortfolioPanelState() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const closeRequestedRef = useRef(false);
 
   const urlState = useMemo<PanelState>(() => {
     const nextPanel = parsePanel(searchParams.get("panel"));
@@ -44,7 +45,20 @@ export function usePortfolioPanelState() {
   const [optimisticState, setOptimisticState] = useState<PanelState>(urlState);
 
   useEffect(() => {
-    setOptimisticState(urlState);
+    if (closeRequestedRef.current && urlState.panel) {
+      return;
+    }
+
+    const syncId = window.setTimeout(() => {
+      if (closeRequestedRef.current && urlState.panel) {
+        return;
+      }
+
+      closeRequestedRef.current = false;
+      setOptimisticState(urlState);
+    }, 0);
+
+    return () => window.clearTimeout(syncId);
   }, [urlState]);
 
   const panel = optimisticState.panel;
@@ -52,6 +66,8 @@ export function usePortfolioPanelState() {
 
   const updateUrlState = useCallback(
     (nextPanel: PortfolioPanel, nextProject?: string | null) => {
+      closeRequestedRef.current = false;
+
       const currentSearch = typeof window !== "undefined" ? window.location.search : searchParams.toString();
       const params = new URLSearchParams(currentSearch);
 
@@ -72,9 +88,14 @@ export function usePortfolioPanelState() {
 
       const query = params.toString();
       const href = query ? `${ROOT_PATH}?${query}` : ROOT_PATH;
-      router.push(href, { scroll: false });
+
+      if (panel) {
+        router.replace(href, { scroll: false });
+      } else {
+        router.push(href, { scroll: false });
+      }
     },
-    [router, searchParams],
+    [panel, router, searchParams],
   );
 
   const openPanel = useCallback(
@@ -96,11 +117,8 @@ export function usePortfolioPanelState() {
   }, [updateUrlState]);
 
   const closePanel = useCallback(() => {
+    closeRequestedRef.current = true;
     setOptimisticState({ panel: null, project: null });
-
-    if (typeof window !== "undefined") {
-      window.history.replaceState(window.history.state, "", ROOT_PATH);
-    }
 
     router.replace(ROOT_PATH, { scroll: false });
   }, [router]);
