@@ -142,8 +142,14 @@ const MOBILE_DEVICE_CENTER_NUDGE_X: Record<NodeKey, number> = {
   home: -10,
   contact: 0,
 };
+const MOBILE_DEVICE_CENTER_NUDGE_Y: Record<NodeKey, number> = {
+  about: 0,
+  projects: 24,
+  home: 0,
+  contact: 0,
+};
 const MOBILE_SWITCH_ALIGNMENT_NUDGE_X = 0;
-const MOBILE_SWITCH_LABEL_NUDGE_Y = 24;
+const MOBILE_SWITCH_LABEL_NUDGE_Y = 0;
 const MOBILE_AUTO_ANIMATION_SEQUENCE: NodeKey[] = ["about", "projects", "contact", "home"];
 const MOBILE_AUTO_ANIMATION_DURATION: Record<NodeKey, number> = {
   about: 3000,
@@ -288,7 +294,11 @@ function getMobileHomeNodePositions(metrics: { width: number; height: number }):
     const labelReserve = node === "contact" ? 66 : node === "projects" ? 50 : 58;
     const contentHeight = visualHeight + labelReserve;
     const rowLift = row === 0 ? 28 : 4;
-    const topPx = clamp(centerY - contentHeight / 2 - rowLift, 10, Math.max(10, sceneHeight - contentHeight - 10));
+    const topPx = clamp(
+      centerY - contentHeight / 2 - rowLift + MOBILE_DEVICE_CENTER_NUDGE_Y[node],
+      10,
+      Math.max(10, sceneHeight - contentHeight - 10),
+    );
     const leftPx = clamp(centerX - rootWidthPx / 2 - visualCenterOffsetX, 4, Math.max(4, sceneWidth - rootWidthPx - 4));
 
     return {
