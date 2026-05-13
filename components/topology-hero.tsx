@@ -1337,14 +1337,27 @@ export function TopologyHero() {
 
   useEffect(() => {
     let frameId = 0;
+    let idleTimeoutId = 0;
     let lastTime = performance.now();
+
+    const scheduleNextFrame = (delay = 0) => {
+      if (delay > 0) {
+        idleTimeoutId = window.setTimeout(() => {
+          idleTimeoutId = 0;
+          frameId = window.requestAnimationFrame(animate);
+        }, delay);
+        return;
+      }
+
+      frameId = window.requestAnimationFrame(animate);
+    };
 
     const animate = (now: number) => {
       const dt = Math.min((now - lastTime) / 1000, 0.032);
       lastTime = now;
 
       if (mobileTopologyRef.current && openWindowRef.current && !dragRef.current) {
-        frameId = window.requestAnimationFrame(animate);
+        scheduleNextFrame(180);
         return;
       }
 
@@ -1382,13 +1395,14 @@ export function TopologyHero() {
         return changed ? next : current;
       });
 
-      frameId = window.requestAnimationFrame(animate);
+      scheduleNextFrame();
     };
 
-    frameId = window.requestAnimationFrame(animate);
+    scheduleNextFrame();
 
     return () => {
       window.cancelAnimationFrame(frameId);
+      if (idleTimeoutId) window.clearTimeout(idleTimeoutId);
     };
   }, []);
 

@@ -21,6 +21,24 @@ function clampNumber(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);
 }
 
+function useMediaQuery(query: string) {
+  const [matches, setMatches] = useState(false);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia(query);
+    const updateMatches = () => setMatches(mediaQuery.matches);
+
+    updateMatches();
+    mediaQuery.addEventListener("change", updateMatches);
+
+    return () => {
+      mediaQuery.removeEventListener("change", updateMatches);
+    };
+  }, [query]);
+
+  return matches;
+}
+
 export function HomePanelContent() {
   return (
     <div className="h-full overflow-auto bg-[#f5f7fb] p-3 sm:p-4 md:p-5 xl:p-6">
@@ -228,6 +246,7 @@ const PROJECT_CARD_MEDIA: Record<
   string,
   {
     src: string;
+    cardSrc?: string;
     alt: string;
     mode?: "contain" | "cover";
     backdrop?: string;
@@ -235,30 +254,35 @@ const PROJECT_CARD_MEDIA: Record<
 > = {
   "multi-platform-iot-security-lab": {
     src: "/portfolio/project-iot-security-lab.png",
+    cardSrc: "/portfolio/thumbs/project-iot-security-lab.webp",
     alt: "Cisco Modeling Labs PwnHub lab demonstration screenshot",
     mode: "cover",
     backdrop: "#050505",
   },
   "portfolio-site": {
     src: "/portfolio/project-portfolio-site.png",
+    cardSrc: "/portfolio/thumbs/project-portfolio-site.webp",
     alt: "Interactive network topology portfolio homepage screenshot",
     mode: "cover",
     backdrop: "#f8fafc",
   },
   "aircraft-game-python-react": {
     src: "/portfolio/project-maanarvauspeli.png",
+    cardSrc: "/portfolio/thumbs/project-maanarvauspeli.webp",
     alt: "Kristoffer Kolumbuksen jaljilla - maanarvauspeli screenshot",
     mode: "cover",
     backdrop: "#f2ebdb",
   },
   "heart-rate-monitor": {
     src: "/portfolio/project-pulsemaster-hw.jpeg",
+    cardSrc: "/portfolio/thumbs/project-pulsemaster-hw.webp",
     alt: "PulseMaster hardware setup with Raspberry Pi Pico and pulse sensor",
     mode: "cover",
     backdrop: "#1f2429",
   },
   "metropolia-login-ui": {
     src: "/portfolio/project-metropolia-login-demo.png",
+    cardSrc: "/portfolio/thumbs/project-metropolia-login-demo.webp",
     alt: "Phishing awareness login demo screenshot",
     mode: "cover",
     backdrop: "#eceff4",
@@ -301,18 +325,17 @@ function ProjectMarqueeCard({
   project,
   onSelectProject,
   size = "overview",
-  eager = false,
   tabIndex,
 }: {
   project: (typeof projects)[number];
   onSelectProject?: (slug: string) => void;
   size?: "overview" | "compact";
-  eager?: boolean;
   tabIndex?: number;
 }) {
   const media = PROJECT_CARD_MEDIA[project.slug];
+  const cardMediaSrc = media?.cardSrc ?? media?.src;
   const [failedMediaSrc, setFailedMediaSrc] = useState<string | null>(null);
-  const mediaFailed = Boolean(media?.src && failedMediaSrc === media.src);
+  const mediaFailed = Boolean(cardMediaSrc && failedMediaSrc === cardMediaSrc);
   const mediaShapeClass = size === "compact" ? "aspect-[16/10]" : "aspect-[16/10]";
 
   return (
@@ -330,19 +353,19 @@ function ProjectMarqueeCard({
     >
       <article className="overflow-hidden rounded-[12px] border border-[#79c271] bg-[#edf8df] transition duration-200 group-hover:border-[#4f9b47]">
         <div className={`relative overflow-hidden ${mediaShapeClass}`}>
-          {media && !mediaFailed ? (
+          {media && cardMediaSrc && !mediaFailed ? (
             <>
               <div className="absolute inset-0 z-0" style={{ background: media.backdrop ?? "#edf6df" }} />
               <Image
-                src={media.src}
+                src={cardMediaSrc}
                 alt={media.alt}
                 fill
                 sizes={size === "compact" ? "220px" : "(max-width: 1024px) 78vw, 420px"}
                 className={`relative z-[1] opacity-100 transition duration-300 group-hover:scale-[1.02] ${media.mode === "cover" ? "object-cover object-center" : "object-contain object-center p-1"}`}
                 draggable={false}
-                loading={eager ? "eager" : "lazy"}
+                loading="lazy"
                 onError={() => {
-                  if (media?.src) setFailedMediaSrc(media.src);
+                  setFailedMediaSrc(cardMediaSrc);
                 }}
               />
             </>
@@ -371,15 +394,127 @@ function ProjectMarqueeCard({
   );
 }
 
-function ProjectMarqueeLane({
+type ProjectMarqueeLaneDirection = "up" | "down" | "left" | "right";
+
+type ProjectMarqueeLaneProps = {
+  items: (typeof projects)[number][];
+  direction: ProjectMarqueeLaneDirection;
+  onSelectProject?: (slug: string) => void;
+};
+
+function ProjectMarqueeLane(props: ProjectMarqueeLaneProps) {
+  if (props.direction === "left" || props.direction === "right") {
+    return <ProjectHorizontalMarqueeLane {...props} />;
+  }
+
+  return <ProjectVerticalMarqueeLane {...props} />;
+}
+
+function ProjectHorizontalMarqueeLane({
   items,
   direction,
   onSelectProject,
-}: {
-  items: (typeof projects)[number][];
-  direction: "up" | "down" | "left" | "right";
-  onSelectProject?: (slug: string) => void;
-}) {
+}: ProjectMarqueeLaneProps) {
+  const [paused, setPaused] = useState(false);
+  const resumeTimeoutRef = useRef<number | null>(null);
+  const pointerActiveRef = useRef(false);
+  const touchActiveRef = useRef(false);
+  const prefersReducedMotion = useReducedMotion();
+
+  const clearResumeTimer = useCallback(() => {
+    if (resumeTimeoutRef.current) {
+      window.clearTimeout(resumeTimeoutRef.current);
+      resumeTimeoutRef.current = null;
+    }
+  }, []);
+
+  const pause = useCallback(() => {
+    clearResumeTimer();
+    setPaused(true);
+  }, [clearResumeTimer]);
+
+  const resumeSoon = useCallback((delay = 420) => {
+    clearResumeTimer();
+
+    const resumeWhenReleased = () => {
+      if (pointerActiveRef.current || touchActiveRef.current) {
+        resumeTimeoutRef.current = window.setTimeout(resumeWhenReleased, 120);
+        return;
+      }
+
+      setPaused(false);
+      resumeTimeoutRef.current = null;
+    };
+
+    resumeTimeoutRef.current = window.setTimeout(resumeWhenReleased, delay);
+  }, [clearResumeTimer]);
+
+  useEffect(() => clearResumeTimer, [clearResumeTimer]);
+
+  const pauseForPointer = useCallback(() => {
+    pointerActiveRef.current = true;
+    pause();
+  }, [pause]);
+
+  const resumeAfterPointer = useCallback(() => {
+    pointerActiveRef.current = false;
+    resumeSoon(280);
+  }, [resumeSoon]);
+
+  const pauseForTouch = useCallback(() => {
+    touchActiveRef.current = true;
+    pause();
+  }, [pause]);
+
+  const resumeAfterTouch = useCallback(() => {
+    touchActiveRef.current = false;
+    resumeSoon(280);
+  }, [resumeSoon]);
+
+  const repeatedItems = useMemo(() => [...items, ...items], [items]);
+  const shouldPauseMotion = paused || prefersReducedMotion;
+
+  return (
+    <div
+      className="project-marquee-lane h-full w-full min-w-0 max-w-full overflow-x-auto overflow-y-hidden overscroll-x-contain [scrollbar-width:none] [touch-action:pan-x] [&::-webkit-scrollbar]:hidden"
+      data-paused={shouldPauseMotion ? "true" : "false"}
+      onPointerDown={pauseForPointer}
+      onPointerUp={resumeAfterPointer}
+      onPointerCancel={resumeAfterPointer}
+      onTouchStart={pauseForTouch}
+      onTouchEnd={resumeAfterTouch}
+      onTouchCancel={resumeAfterTouch}
+      onScroll={() => {
+        pause();
+        if (!pointerActiveRef.current && !touchActiveRef.current) {
+          resumeSoon(360);
+        }
+      }}
+      onWheelCapture={() => {
+        pause();
+        resumeSoon(360);
+      }}
+    >
+      <div className="project-marquee-track flex h-full w-max items-center gap-4 pr-4" data-direction={direction}>
+        {repeatedItems.map((project, index) => (
+          <div key={`${project.slug}-${index}`} className="w-[min(68vw,310px)] shrink-0">
+            <ProjectMarqueeCard
+              project={project}
+              onSelectProject={onSelectProject}
+              tabIndex={index >= items.length ? -1 : undefined}
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ProjectVerticalMarqueeLane({
+  items,
+  direction,
+  onSelectProject,
+}: ProjectMarqueeLaneProps) {
   const laneRef = useRef<HTMLDivElement>(null);
   const segmentRef = useRef<HTMLDivElement>(null);
   const isPausedRef = useRef(false);
@@ -623,7 +758,7 @@ function ProjectMarqueeLane({
 
   const segmentClassName = isHorizontal ? "flex h-full w-max items-center gap-4 pr-4" : "space-y-5 pb-5";
   const cardWrapClassName = isHorizontal ? "w-[min(68vw,310px)] shrink-0" : "";
-  const renderSegment = (segmentName: string, hidden = false, eager = false) => (
+  const renderSegment = (segmentName: string, hidden = false) => (
     <div
       ref={hidden ? undefined : segmentRef}
       aria-hidden={hidden || undefined}
@@ -631,7 +766,7 @@ function ProjectMarqueeLane({
     >
       {items.map((project) => (
         <div key={`${project.slug}-${segmentName}`} className={cardWrapClassName}>
-          <ProjectMarqueeCard project={project} onSelectProject={onSelectProject} eager={eager} tabIndex={hidden ? -1 : undefined} />
+          <ProjectMarqueeCard project={project} onSelectProject={onSelectProject} tabIndex={hidden ? -1 : undefined} />
         </div>
       ))}
     </div>
@@ -667,13 +802,13 @@ function ProjectMarqueeLane({
         {isHorizontal ? (
           <div className="flex h-full w-max items-center">
             {renderSegment("segment-a", true)}
-            {renderSegment("segment-b", false, true)}
+            {renderSegment("segment-b", false)}
             {renderSegment("segment-c", true)}
           </div>
         ) : (
           <>
             {renderSegment("segment-a", true)}
-            {renderSegment("segment-b", false, true)}
+            {renderSegment("segment-b", false)}
             {renderSegment("segment-c", true)}
           </>
         )}
@@ -717,6 +852,7 @@ export function ProjectsPanelContent({
     () => [...rightLaneProjects, ...leftLaneProjects],
     [leftLaneProjects, rightLaneProjects],
   );
+  const isLargeProjectLayout = useMediaQuery("(min-width: 1024px)");
   const [failedHeroImageSrc, setFailedHeroImageSrc] = useState<string | null>(null);
   const [heroActionCue, setHeroActionCue] = useState<{ x: number; y: number; slug: string } | null>(null);
 
@@ -760,18 +896,25 @@ export function ProjectsPanelContent({
           </section>
 
           <section className="grid min-h-[390px] gap-3 overflow-hidden px-4 pb-5 md:px-5 lg:h-full lg:min-h-0 lg:grid-cols-2 lg:gap-5 lg:py-0">
-            <div className="h-[178px] min-w-0 overflow-hidden lg:hidden">
-              <ProjectMarqueeLane items={overviewProjectOrder} direction="left" onSelectProject={onSelectProject} />
-            </div>
-            <div className="h-[178px] min-w-0 overflow-hidden lg:hidden">
-              <ProjectMarqueeLane items={mobileSecondLaneProjects} direction="right" onSelectProject={onSelectProject} />
-            </div>
-            <div className="hidden h-full min-h-0 lg:block">
-              <ProjectMarqueeLane items={leftLaneProjects} direction="up" onSelectProject={onSelectProject} />
-            </div>
-            <div className="hidden h-full min-h-0 lg:block">
-              <ProjectMarqueeLane items={rightLaneProjects} direction="down" onSelectProject={onSelectProject} />
-            </div>
+            {isLargeProjectLayout ? (
+              <>
+                <div className="h-full min-h-0">
+                  <ProjectMarqueeLane items={leftLaneProjects} direction="up" onSelectProject={onSelectProject} />
+                </div>
+                <div className="h-full min-h-0">
+                  <ProjectMarqueeLane items={rightLaneProjects} direction="down" onSelectProject={onSelectProject} />
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="h-[178px] min-w-0 overflow-hidden">
+                  <ProjectMarqueeLane items={overviewProjectOrder} direction="left" onSelectProject={onSelectProject} />
+                </div>
+                <div className="h-[178px] min-w-0 overflow-hidden">
+                  <ProjectMarqueeLane items={mobileSecondLaneProjects} direction="right" onSelectProject={onSelectProject} />
+                </div>
+              </>
+            )}
           </section>
         </div>
       </div>
