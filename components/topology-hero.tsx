@@ -142,8 +142,8 @@ const MOBILE_DEVICE_CENTER_NUDGE_X: Record<NodeKey, number> = {
   home: -10,
   contact: 0,
 };
-const MOBILE_SWITCH_ALIGNMENT_NUDGE_X = 4;
-const MOBILE_SWITCH_LABEL_NUDGE_Y = 24;
+const MOBILE_SWITCH_ALIGNMENT_NUDGE_X = 0;
+const MOBILE_SWITCH_LABEL_NUDGE_Y = 0;
 const MOBILE_AUTO_ANIMATION_SEQUENCE: NodeKey[] = ["about", "projects", "contact", "home"];
 const MOBILE_AUTO_ANIMATION_DURATION: Record<NodeKey, number> = {
   about: 3000,
