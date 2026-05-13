@@ -148,7 +148,9 @@ const MOBILE_DEVICE_CENTER_NUDGE_Y: Record<NodeKey, number> = {
   home: 0,
   contact: 0,
 };
-const MOBILE_SWITCH_ALIGNMENT_NUDGE_X = 0;
+const MOBILE_SWITCH_LABEL_NUDGE_X = 0;
+const MOBILE_SWITCH_PLUG_NUDGE_X = 4;
+const MOBILE_SWITCH_PLUG_NUDGE_Y = -8;
 const MOBILE_SWITCH_LABEL_NUDGE_Y = 0;
 const MOBILE_AUTO_ANIMATION_SEQUENCE: NodeKey[] = ["about", "projects", "contact", "home"];
 const MOBILE_AUTO_ANIMATION_DURATION: Record<NodeKey, number> = {
@@ -991,8 +993,8 @@ function getSwitchCableStubEnd(
     const switchScale = MOBILE_DEVICE_VISUAL_SCALE.projects;
     const wrapperWidthPx = sceneWidth * (projectNodeWidth / VIEWBOX.width);
     const centeredChildLeftPx = (wrapperWidthPx - projectNodeWidth) / 2;
-    const xOffsetPx = centeredChildLeftPx + baseOffset * switchScale + MOBILE_SWITCH_ALIGNMENT_NUDGE_X;
-    const yOffsetPx = SWITCH_STUB_Y * switchScale;
+    const xOffsetPx = centeredChildLeftPx + baseOffset * switchScale + MOBILE_SWITCH_PLUG_NUDGE_X;
+    const yOffsetPx = (SWITCH_STUB_Y + MOBILE_SWITCH_PLUG_NUDGE_Y) * switchScale;
 
     return {
       x: x + xOffsetPx * (VIEWBOX.width / Math.max(sceneWidth, 1)),
@@ -2271,7 +2273,7 @@ function NodeButton({
   const mobileVisualCenterOffsetX =
     ((mobileScale - 1) * UNIFIED_DEVICE_WIDTH) / 2 +
     MOBILE_DEVICE_CENTER_NUDGE_X[node] +
-    (node === "projects" ? MOBILE_SWITCH_ALIGNMENT_NUDGE_X : 0);
+    (node === "projects" ? MOBILE_SWITCH_LABEL_NUDGE_X : 0);
   const mobileLabelOffsetX = labelOffsetX + mobileVisualCenterOffsetX;
   const desktopLabelTop = meta.deviceHeight + NODE_LABEL_GAP + labelOffsetY;
   const labelTextShadow = "0 1px 2px rgba(255,255,255,0.96), 0 0 7px rgba(255,255,255,0.88), 0 0 15px rgba(255,255,255,0.74)";
