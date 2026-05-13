@@ -149,8 +149,8 @@ const MOBILE_DEVICE_CENTER_NUDGE_Y: Record<NodeKey, number> = {
   contact: 0,
 };
 const MOBILE_SWITCH_LABEL_NUDGE_X = 0;
-const MOBILE_SWITCH_PLUG_NUDGE_X = 4;
-const MOBILE_SWITCH_PLUG_NUDGE_Y = -8;
+const MOBILE_SWITCH_PLUG_NUDGE_X = 0;
+const MOBILE_SWITCH_PLUG_NUDGE_Y = 0;
 const MOBILE_SWITCH_LABEL_NUDGE_Y = 0;
 const MOBILE_AUTO_ANIMATION_SEQUENCE: NodeKey[] = ["about", "projects", "contact", "home"];
 const MOBILE_AUTO_ANIMATION_DURATION: Record<NodeKey, number> = {
@@ -2032,13 +2032,15 @@ export function TopologyHero() {
                 </motion.svg>
 
                 {networkMode === "stable" || networkMode === "recovering" ? (
-                  <DetachedEthernetStub
-                    bottom={switchLeftCableEnd}
-                    zIndex={draggingNode === "projects" ? 186 : 90}
-                    scale={isMobileTopology ? MOBILE_DEVICE_VISUAL_SCALE.projects : 1}
-                    nudgeY={-1}
-                    hoverActive={switchHoverMotionActive}
-                  />
+                  !isMobileTopology ? (
+                    <DetachedEthernetStub
+                      bottom={switchLeftCableEnd}
+                      zIndex={draggingNode === "projects" ? 186 : 90}
+                      scale={1}
+                      nudgeY={-1}
+                      hoverActive={switchHoverMotionActive}
+                    />
+                  ) : null
                 ) : null}
                 {networkMode !== "stable" && networkMode !== "recovering" ? (
                   <DetachedEthernetStub
@@ -2050,14 +2052,16 @@ export function TopologyHero() {
                     hoverActive={false}
                   />
                 ) : null}
-                <DetachedEthernetStub
-                  bottom={switchRightCableEnd}
-                  zIndex={draggingNode === "projects" ? 186 : 90}
-                  scale={isMobileTopology ? MOBILE_DEVICE_VISUAL_SCALE.projects : 1}
-                  nudgeX={1}
-                  nudgeY={-1}
-                  hoverActive={switchHoverMotionActive}
-                />
+                {!isMobileTopology ? (
+                  <DetachedEthernetStub
+                    bottom={switchRightCableEnd}
+                    zIndex={draggingNode === "projects" ? 186 : 90}
+                    scale={1}
+                    nudgeX={1}
+                    nudgeY={-1}
+                    hoverActive={switchHoverMotionActive}
+                  />
+                ) : null}
                 {serviceCursor ? <ServiceMouse cursor={serviceCursor} sceneMetrics={sceneMetrics} /> : null}
 
                 <AnimatePresence>
@@ -2566,6 +2570,61 @@ function DetachedEthernetStub({
   );
 }
 
+function InlineEthernetStub({
+  anchorX,
+  anchorY,
+  nudgeX = 0,
+  nudgeY = 0,
+}: {
+  anchorX: number;
+  anchorY: number;
+  nudgeX?: number;
+  nudgeY?: number;
+}) {
+  const color = "#111111";
+  const headWidth = 16.6;
+  const headHeight = 16.0;
+  const lowerNudge = 8.0;
+  const halfWidthPx = headWidth / 2;
+  const anchorOffsetYPx = headHeight - lowerNudge;
+
+  return (
+    <div
+      className="pointer-events-none absolute overflow-visible"
+      style={{
+        zIndex: 12,
+        left: anchorX + nudgeX - halfWidthPx,
+        top: anchorY + nudgeY - anchorOffsetYPx,
+        width: headWidth,
+        height: headHeight,
+        filter: "drop-shadow(0 12px 16px rgba(15,23,42,0.06)) drop-shadow(0 3px 8px rgba(18,127,166,0.05))",
+      }}
+      aria-hidden="true"
+    >
+      <svg
+        viewBox="32 14 170 170"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        preserveAspectRatio="xMidYMid meet"
+        className="pointer-events-none h-full w-full overflow-visible"
+        aria-hidden="true"
+      >
+        <path
+          fill={color}
+          stroke="#0a0a0c"
+          strokeWidth="6"
+          strokeLinejoin="round"
+          d="M 83 16 L 75 20 L 72 29 L 68 34 L 49 34 L 42 38 L 38 45 L 38 153 L 32 156 L 27 163 L 27 242 L 36 291 L 42 314 L 42 320 L 46 331 L 53 339 L 64 345 L 64 355 L 57 360 L 56 368 L 60 373 L 66 377 L 59 383 L 58 393 L 68 402 L 62 406 L 59 414 L 62 421 L 66 423 L 82 423 L 84 425 L 142 425 L 144 423 L 161 423 L 167 418 L 168 412 L 165 406 L 161 404 L 159 401 L 166 397 L 169 393 L 169 385 L 161 377 L 167 373 L 171 368 L 171 362 L 163 354 L 163 345 L 175 338 L 183 327 L 200 242 L 200 163 L 195 156 L 189 153 L 189 45 L 187 41 L 178 34 L 159 34 L 156 31 L 152 20 L 144 16 Z"
+        />
+        <path
+          fill="#d9d9d9"
+          d="M 51 50 L 54 47 L 58 49 L 59 83 L 69 83 L 70 48 L 72 49 L 73 83 L 83 83 L 83 49 L 85 47 L 87 49 L 87 82 L 97 83 L 97 49 L 99 47 L 101 49 L 101 82 L 111 83 L 112 48 L 114 47 L 115 80 L 116 83 L 125 83 L 126 49 L 128 47 L 130 49 L 130 83 L 139 83 L 140 49 L 142 47 L 144 49 L 144 83 L 153 83 L 155 80 L 155 49 L 157 48 L 158 82 L 167 83 L 169 81 L 169 49 L 173 47 L 176 50 L 176 152 L 174 154 L 53 154 L 51 152 Z"
+        />
+      </svg>
+    </div>
+  );
+}
+
 const CableSegment = memo(function CableSegment({
   from,
   to,
@@ -2985,8 +3044,9 @@ const SwitchIllustration = memo(function SwitchIllustration({
   uplinkConnected?: boolean;
   pcConnected?: boolean;
 }) {
-  void networkMode;
   void tick;
+  const showInlineLeftPlug = compact && (networkMode === "stable" || networkMode === "recovering");
+  const showInlineRightPlug = compact;
 
   const uid = useId().replace(/:/g, "");
 
@@ -3287,6 +3347,19 @@ const SwitchIllustration = memo(function SwitchIllustration({
           </g>
           </svg>
         </div>
+        {showInlineLeftPlug ? (
+          <InlineEthernetStub
+            anchorX={SWITCH_PORT_CENTERS[SWITCH_LEFT_CABLE_PORT_INDEX] + SWITCH_LEFT_STUB_X_OFFSET}
+            anchorY={SWITCH_STUB_Y}
+          />
+        ) : null}
+        {showInlineRightPlug ? (
+          <InlineEthernetStub
+            anchorX={SWITCH_PORT_CENTERS[SWITCH_RIGHT_CABLE_PORT_INDEX] + SWITCH_RIGHT_STUB_X_OFFSET}
+            anchorY={SWITCH_STUB_Y}
+            nudgeX={1}
+          />
+        ) : null}
       </div>
     </motion.div>
   );
