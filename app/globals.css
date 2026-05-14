@@ -83,7 +83,7 @@ select {
 }
 
 .project-marquee-track {
-  animation-duration: 22s;
+  animation-duration: var(--project-marquee-duration, 22s);
   animation-iteration-count: infinite;
   animation-timing-function: linear;
   transform: translate3d(0, 0, 0);

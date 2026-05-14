@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useReducedMotion } from "framer-motion";
-import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent, type MouseEvent as ReactMouseEvent } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type FormEvent, type MouseEvent as ReactMouseEvent } from "react";
 import { projects } from "@/content/projects";
 import { profile } from "@/content/profile";
 
@@ -404,6 +404,8 @@ type ProjectMarqueeLaneProps = {
 
 const HORIZONTAL_MARQUEE_SEGMENT_COUNT = 6;
 const HORIZONTAL_MARQUEE_CENTER_SEGMENT = 2;
+const HORIZONTAL_MARQUEE_BASE_DURATION_SECONDS = 22;
+const HORIZONTAL_MARQUEE_DURATION_SECONDS = HORIZONTAL_MARQUEE_BASE_DURATION_SECONDS * (HORIZONTAL_MARQUEE_SEGMENT_COUNT / 2);
 
 function ProjectMarqueeLane(props: ProjectMarqueeLaneProps) {
   if (props.direction === "left" || props.direction === "right") {
@@ -559,6 +561,10 @@ function ProjectHorizontalMarqueeLane({
 
   const segmentIndexes = useMemo(() => Array.from({ length: HORIZONTAL_MARQUEE_SEGMENT_COUNT }, (_, index) => index), []);
   const shouldPauseMotion = paused || prefersReducedMotion;
+  const marqueeTrackStyle = useMemo(
+    () => ({ "--project-marquee-duration": `${HORIZONTAL_MARQUEE_DURATION_SECONDS}s` }) as CSSProperties,
+    [],
+  );
   const handleScroll = useCallback(() => {
     scheduleNormalizeScrollPosition();
 
@@ -588,7 +594,7 @@ function ProjectHorizontalMarqueeLane({
         scheduleNormalizeScrollPosition();
       }}
     >
-      <div className="project-marquee-track flex h-full w-max items-center" data-direction={direction}>
+      <div className="project-marquee-track flex h-full w-max items-center" data-direction={direction} style={marqueeTrackStyle}>
         {segmentIndexes.map((segmentIndex) => (
           <div
             key={`segment-${segmentIndex}`}
