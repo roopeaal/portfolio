@@ -405,7 +405,7 @@ type ProjectMarqueeLaneProps = {
 const HORIZONTAL_MARQUEE_SEGMENT_COUNT = 6;
 const HORIZONTAL_MARQUEE_CENTER_SEGMENT = 2;
 const HORIZONTAL_MARQUEE_BASE_DURATION_SECONDS = 22;
-const HORIZONTAL_MARQUEE_DURATION_SECONDS = HORIZONTAL_MARQUEE_BASE_DURATION_SECONDS * (HORIZONTAL_MARQUEE_SEGMENT_COUNT / 2);
+const HORIZONTAL_MARQUEE_SEGMENT_SHIFT_PERCENT = -(100 / HORIZONTAL_MARQUEE_SEGMENT_COUNT);
 
 function ProjectMarqueeLane(props: ProjectMarqueeLaneProps) {
   if (props.direction === "left" || props.direction === "right") {
@@ -562,7 +562,10 @@ function ProjectHorizontalMarqueeLane({
   const segmentIndexes = useMemo(() => Array.from({ length: HORIZONTAL_MARQUEE_SEGMENT_COUNT }, (_, index) => index), []);
   const shouldPauseMotion = paused || prefersReducedMotion;
   const marqueeTrackStyle = useMemo(
-    () => ({ "--project-marquee-duration": `${HORIZONTAL_MARQUEE_DURATION_SECONDS}s` }) as CSSProperties,
+    () => ({
+      "--project-marquee-duration": `${HORIZONTAL_MARQUEE_BASE_DURATION_SECONDS}s`,
+      "--project-marquee-shift": `${HORIZONTAL_MARQUEE_SEGMENT_SHIFT_PERCENT}%`,
+    }) as CSSProperties,
     [],
   );
   const handleScroll = useCallback(() => {

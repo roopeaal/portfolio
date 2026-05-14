@@ -88,6 +88,7 @@ select {
   animation-timing-function: linear;
   transform: translate3d(0, 0, 0);
   will-change: transform;
+  --project-marquee-shift: -50%;
 }
 
 .project-marquee-track[data-direction="left"] {
@@ -96,7 +97,7 @@ select {
 
 .project-marquee-track[data-direction="right"] {
   animation-name: project-marquee-right;
-  transform: translate3d(-50%, 0, 0);
+  transform: translate3d(var(--project-marquee-shift), 0, 0);
 }
 
 .project-marquee-lane[data-paused="true"] .project-marquee-track {
@@ -109,13 +110,13 @@ select {
   }
 
   to {
-    transform: translate3d(-50%, 0, 0);
+    transform: translate3d(var(--project-marquee-shift), 0, 0);
   }
 }
 
 @keyframes project-marquee-right {
   from {
-    transform: translate3d(-50%, 0, 0);
+    transform: translate3d(var(--project-marquee-shift), 0, 0);
   }
 
   to {
