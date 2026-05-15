@@ -553,53 +553,30 @@ function pointOnCablePath(from: { x: number; y: number }, to: { x: number; y: nu
   return pointOnLine(curveEnd, geometry.end, localT);
 }
 
-function getCableEndDirection(
+function getDetachedCableTailGeometry(
   from: { x: number; y: number },
-  to: { x: number; y: number },
-  disconnected = false,
-  looseEnd?: { x: number; y: number },
-  tick = 0,
-  mode: NetworkMode = "stable",
-  mobile = false,
-) {
-  const geometry = getCablePathGeometry(from, to, disconnected, looseEnd);
-
-  if (disconnected) {
-    const detachedPoints = getDetachedCableWavePoints(geometry.from, geometry.end, tick, mode, mobile);
-    const penultimate = detachedPoints[Math.max(0, detachedPoints.length - 2)];
-    return {
-      x: geometry.end.x - penultimate.x,
-      y: geometry.end.y - penultimate.y,
-    };
-  }
-
-  if (geometry.corner) {
-    return {
-      x: geometry.end.x - geometry.corner.curveEnd.x,
-      y: geometry.end.y - geometry.corner.curveEnd.y,
-    };
-  }
-
-  return {
-    x: geometry.end.x - geometry.from.x,
-    y: geometry.end.y - geometry.from.y,
-  };
-}
-
-function getDetachedCablePlugEnd(
-  looseEnd: { x: number; y: number },
-  direction: { x: number; y: number },
+  plugEnd: { x: number; y: number },
   mobile: boolean,
 ) {
-  if (!mobile) return looseEnd;
+  const dx = plugEnd.x - from.x;
+  const dy = plugEnd.y - from.y;
+  const length = Math.hypot(dx, dy);
+  const direction = length > 0.0001
+    ? { x: dx / length, y: dy / length }
+    : { x: 0, y: 1 };
+  const tailLength = CABLE_ATTACH_DROP * (mobile ? 0.92 : 1.02);
+  const cableEnd = {
+    x: plugEnd.x - direction.x * tailLength,
+    y: plugEnd.y - direction.y * tailLength,
+  };
 
-  const length = Math.hypot(direction.x, direction.y);
-  if (length <= 0.0001) return looseEnd;
-
-  const plugTailOffset = CABLE_ATTACH_DROP * 0.74;
   return {
-    x: looseEnd.x - (direction.x / length) * plugTailOffset,
-    y: looseEnd.y - (direction.y / length) * plugTailOffset,
+    cableEnd,
+    plugEnd,
+    direction: {
+      x: plugEnd.x - cableEnd.x,
+      y: plugEnd.y - cableEnd.y,
+    },
   };
 }
 
@@ -1769,31 +1746,18 @@ export function TopologyHero() {
     ? repairLooseEnd
     : getLooseEnd(motionTick, networkMode, phaseTick, detachedOrigin, switchLeftCableEnd, isMobileTopology);
   const serviceCursor = getServiceCursor(networkMode, phaseTick, looseEnd, switchLeftCableEnd);
-  const rawDetachedCableEndDirection = getCableEndDirection(
-    aboutCableAttach,
-    switchLeftCableEnd,
-    true,
-    looseEnd,
-    motionTick,
-    networkMode,
-    isMobileTopology,
-  );
-  const detachedCablePlugEnd = getDetachedCablePlugEnd(looseEnd, rawDetachedCableEndDirection, isMobileTopology);
-  const detachedCableEndDirection = getCableEndDirection(
-    aboutCableAttach,
-    switchLeftCableEnd,
-    true,
-    detachedCablePlugEnd,
-    motionTick,
-    networkMode,
-    isMobileTopology,
-  );
+  const detachedCableTail = getDetachedCableTailGeometry(aboutCableAttach, looseEnd, isMobileTopology);
+  const detachedCableEndDirection = detachedCableTail.direction;
   const detachedCableEndLength = Math.hypot(detachedCableEndDirection.x, detachedCableEndDirection.y);
   const detachedCableEndAngle = detachedCableEndLength > 0.0001
     ? (Math.atan2(detachedCableEndDirection.y, detachedCableEndDirection.x) * 180) / Math.PI
     : -90;
   const detachedStubRotationDeg = detachedCableEndAngle + 90;
   const switchHoverMotionActive = active === "projects" && draggingNode !== "projects";
+  const switchCableDetached = networkMode !== "stable" && networkMode !== "recovering";
+  const switchCableLayerRaised = draggingNode === "projects" || (isMobileTopology && switchCableDetached);
+  const switchCableLayerClass = switchCableLayerRaised ? "z-[175]" : "z-[30]";
+  const switchStubZIndex = switchCableLayerRaised ? 186 : 90;
 
   useEffect(() => {
     looseEndRef.current = looseEnd;
@@ -1997,7 +1961,7 @@ export function TopologyHero() {
 
                 <motion.svg
                   viewBox={`0 0 ${VIEWBOX.width} ${VIEWBOX.height}`}
-                  className={`pointer-events-none absolute inset-0 h-full w-full ${draggingNode === "projects" ? "z-[175]" : "z-[30]"}`}
+                  className={`pointer-events-none absolute inset-0 h-full w-full ${switchCableLayerClass}`}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.24 }}
@@ -2007,8 +1971,9 @@ export function TopologyHero() {
                   <CableSegment
                     from={aboutCableAttach}
                     to={switchLeftCableEnd}
-                    disconnected={networkMode !== "stable" && networkMode !== "recovering"}
-                    looseEnd={detachedCablePlugEnd}
+                    disconnected={switchCableDetached}
+                    looseEnd={detachedCableTail.cableEnd}
+                    detachedTailEnd={detachedCableTail.plugEnd}
                     tick={motionTick}
                     mode={networkMode}
                     routeOffsetX={LEFT_CABLE_ROUTE_OFFSET_X}
@@ -2036,7 +2001,7 @@ export function TopologyHero() {
                   !isMobileTopology ? (
                     <DetachedEthernetStub
                       bottom={switchLeftCableEnd}
-                      zIndex={draggingNode === "projects" ? 186 : 90}
+                      zIndex={switchStubZIndex}
                       scale={1}
                       nudgeY={-1}
                       hoverActive={switchHoverMotionActive}
@@ -2046,7 +2011,7 @@ export function TopologyHero() {
                 {networkMode !== "stable" && networkMode !== "recovering" ? (
                   <DetachedEthernetStub
                     bottom={looseEnd}
-                    zIndex={draggingNode === "projects" ? 186 : 90}
+                    zIndex={switchStubZIndex}
                     scale={isMobileTopology ? MOBILE_DEVICE_VISUAL_SCALE.projects : 1}
                     rotationDeg={detachedStubRotationDeg}
                     nudgeY={-1}
@@ -2056,7 +2021,7 @@ export function TopologyHero() {
                 {!isMobileTopology ? (
                   <DetachedEthernetStub
                     bottom={switchRightCableEnd}
-                    zIndex={draggingNode === "projects" ? 186 : 90}
+                    zIndex={switchStubZIndex}
                     scale={1}
                     nudgeX={1}
                     nudgeY={-1}
@@ -2631,6 +2596,7 @@ const CableSegment = memo(function CableSegment({
   to,
   disconnected = false,
   looseEnd,
+  detachedTailEnd,
   tick = 0,
   mode = "stable",
   routeOffsetX = 0,
@@ -2640,6 +2606,7 @@ const CableSegment = memo(function CableSegment({
   to: { x: number; y: number };
   disconnected?: boolean;
   looseEnd?: { x: number; y: number };
+  detachedTailEnd?: { x: number; y: number };
   tick?: number;
   mode?: NetworkMode;
   routeOffsetX?: number;
@@ -2651,6 +2618,9 @@ const CableSegment = memo(function CableSegment({
   if (disconnected) {
     const detachedPoints = getDetachedCableWavePoints(geometry.from, geometry.end, tick, mode, mobile);
     path = buildDetachedCableWavePath(detachedPoints);
+    if (detachedTailEnd) {
+      path += ` L ${detachedTailEnd.x} ${detachedTailEnd.y}`;
+    }
   } else if (geometry.corner) {
     const { point, curveStart, curveEnd } = geometry.corner;
     path = `M ${geometry.from.x} ${geometry.from.y} L ${curveStart.x} ${curveStart.y} Q ${point.x} ${point.y} ${curveEnd.x} ${curveEnd.y} L ${geometry.end.x} ${geometry.end.y}`;
