@@ -1105,6 +1105,7 @@ function getServiceCursor(
 }
 
 export function TopologyHero() {
+  const switchCableClipId = useId().replace(/:/g, "");
   const [active, setActive] = useState<ActiveNode>(null);
   const {
     panel: openWindow,
@@ -1755,9 +1756,16 @@ export function TopologyHero() {
   const detachedStubRotationDeg = detachedCableEndAngle + 90;
   const switchHoverMotionActive = active === "projects" && draggingNode !== "projects";
   const switchCableDetached = networkMode !== "stable" && networkMode !== "recovering";
-  const switchCableLayerRaised = draggingNode === "projects" || (isMobileTopology && switchCableDetached);
+  const switchCableLayerRaised = draggingNode === "projects";
+  const switchCableOverlayActive = switchCableDetached && draggingNode !== "projects";
   const switchCableLayerClass = switchCableLayerRaised ? "z-[175]" : "z-[30]";
-  const switchStubZIndex = switchCableLayerRaised ? 186 : 90;
+  const switchStubZIndex = switchCableLayerRaised || switchCableOverlayActive ? 186 : 90;
+  const switchCableOverlayClip = {
+    x: topologyNodePositions.projects.x - (isMobileTopology ? 52 : 70),
+    y: topologyNodePositions.projects.y - (isMobileTopology ? 18 : 26),
+    width: NODE_META.projects.width + (isMobileTopology ? 104 : 140),
+    height: isMobileTopology ? 190 : 230,
+  };
 
   useEffect(() => {
     looseEndRef.current = looseEnd;
@@ -1996,6 +2004,43 @@ export function TopologyHero() {
                     <TrafficPulse from={aboutCableAttach} to={contactAttach} tick={motionTick} duration={86} delay={20} dotted color="#a8e6ff" />
                   ) : null}
                 </motion.svg>
+
+                {switchCableOverlayActive ? (
+                  <motion.svg
+                    viewBox={`0 0 ${VIEWBOX.width} ${VIEWBOX.height}`}
+                    className="pointer-events-none absolute inset-0 z-[175] h-full w-full"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.12 }}
+                    aria-hidden="true"
+                    preserveAspectRatio="none"
+                  >
+                    <defs>
+                      <clipPath id={switchCableClipId} clipPathUnits="userSpaceOnUse">
+                        <rect
+                          x={switchCableOverlayClip.x}
+                          y={switchCableOverlayClip.y}
+                          width={switchCableOverlayClip.width}
+                          height={switchCableOverlayClip.height}
+                        />
+                      </clipPath>
+                    </defs>
+                    <g clipPath={`url(#${switchCableClipId})`}>
+                      <CableSegment
+                        from={aboutCableAttach}
+                        to={switchLeftCableEnd}
+                        disconnected={switchCableDetached}
+                        looseEnd={detachedCableTail.cableEnd}
+                        detachedTailEnd={detachedCableTail.plugEnd}
+                        tick={motionTick}
+                        mode={networkMode}
+                        routeOffsetX={LEFT_CABLE_ROUTE_OFFSET_X}
+                        mobile={isMobileTopology}
+                      />
+                      <CableSegment from={homeAttach} to={switchRightCableEnd} routeOffsetX={RIGHT_CABLE_ROUTE_OFFSET_X} />
+                    </g>
+                  </motion.svg>
+                ) : null}
 
                 {networkMode === "stable" || networkMode === "recovering" ? (
                   !isMobileTopology ? (
