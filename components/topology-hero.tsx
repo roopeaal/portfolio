@@ -1105,7 +1105,6 @@ function getServiceCursor(
 }
 
 export function TopologyHero() {
-  const switchCableClipId = useId().replace(/:/g, "");
   const [active, setActive] = useState<ActiveNode>(null);
   const {
     panel: openWindow,
@@ -1757,7 +1756,7 @@ export function TopologyHero() {
   const switchHoverMotionActive = active === "projects" && draggingNode !== "projects";
   const switchCableDetached = networkMode !== "stable" && networkMode !== "recovering";
   const switchCableLayerRaised = draggingNode === "projects";
-  const switchCableOverlayActive = switchCableDetached && draggingNode !== "projects";
+  const switchCableOverlayActive = draggingNode !== "projects" && (isMobileTopology || switchCableDetached);
   const switchCableLayerClass = switchCableLayerRaised ? "z-[175]" : "z-[30]";
   const switchStubZIndex = switchCableLayerRaised || switchCableOverlayActive ? 186 : 90;
   const switchCableOverlayClip = {
@@ -1765,6 +1764,18 @@ export function TopologyHero() {
     y: topologyNodePositions.projects.y - (isMobileTopology ? 18 : 26),
     width: NODE_META.projects.width + (isMobileTopology ? 104 : 140),
     height: isMobileTopology ? 190 : 230,
+  };
+  const switchCableOverlayStyle: CSSProperties = {
+    left: `${(switchCableOverlayClip.x / VIEWBOX.width) * 100}%`,
+    top: `${(switchCableOverlayClip.y / VIEWBOX.height) * 100}%`,
+    width: `${(switchCableOverlayClip.width / VIEWBOX.width) * 100}%`,
+    height: `${(switchCableOverlayClip.height / VIEWBOX.height) * 100}%`,
+  };
+  const switchCableOverlaySvgStyle: CSSProperties = {
+    left: `${-(switchCableOverlayClip.x / Math.max(switchCableOverlayClip.width, 1)) * 100}%`,
+    top: `${-(switchCableOverlayClip.y / Math.max(switchCableOverlayClip.height, 1)) * 100}%`,
+    width: `${(VIEWBOX.width / Math.max(switchCableOverlayClip.width, 1)) * 100}%`,
+    height: `${(VIEWBOX.height / Math.max(switchCableOverlayClip.height, 1)) * 100}%`,
   };
 
   useEffect(() => {
@@ -2006,26 +2017,20 @@ export function TopologyHero() {
                 </motion.svg>
 
                 {switchCableOverlayActive ? (
-                  <motion.svg
-                    viewBox={`0 0 ${VIEWBOX.width} ${VIEWBOX.height}`}
-                    className="pointer-events-none absolute inset-0 z-[175] h-full w-full"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.12 }}
+                  <div
+                    className="pointer-events-none absolute z-[175] overflow-hidden"
+                    style={switchCableOverlayStyle}
                     aria-hidden="true"
-                    preserveAspectRatio="none"
                   >
-                    <defs>
-                      <clipPath id={switchCableClipId} clipPathUnits="userSpaceOnUse">
-                        <rect
-                          x={switchCableOverlayClip.x}
-                          y={switchCableOverlayClip.y}
-                          width={switchCableOverlayClip.width}
-                          height={switchCableOverlayClip.height}
-                        />
-                      </clipPath>
-                    </defs>
-                    <g clipPath={`url(#${switchCableClipId})`}>
+                    <motion.svg
+                      viewBox={`0 0 ${VIEWBOX.width} ${VIEWBOX.height}`}
+                      className="pointer-events-none absolute"
+                      style={switchCableOverlaySvgStyle}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.12 }}
+                      preserveAspectRatio="none"
+                    >
                       <CableSegment
                         from={aboutCableAttach}
                         to={switchLeftCableEnd}
@@ -2038,8 +2043,8 @@ export function TopologyHero() {
                         mobile={isMobileTopology}
                       />
                       <CableSegment from={homeAttach} to={switchRightCableEnd} routeOffsetX={RIGHT_CABLE_ROUTE_OFFSET_X} />
-                    </g>
-                  </motion.svg>
+                    </motion.svg>
+                  </div>
                 ) : null}
 
                 {networkMode === "stable" || networkMode === "recovering" ? (
