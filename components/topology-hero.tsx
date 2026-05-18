@@ -1755,10 +1755,11 @@ export function TopologyHero() {
   const detachedStubRotationDeg = detachedCableEndAngle + 90;
   const switchHoverMotionActive = active === "projects" && draggingNode !== "projects";
   const switchCableDetached = networkMode !== "stable" && networkMode !== "recovering";
-  const switchCableLayerRaised = draggingNode === "projects";
-  const switchCableOverlayActive = draggingNode !== "projects" && (isMobileTopology || switchCableDetached);
+  const switchCableLayerRaised = draggingNode === "projects" && !isMobileTopology;
+  const switchCableOverlayActive = isMobileTopology || (switchCableDetached && draggingNode !== "projects");
   const switchCableLayerClass = switchCableLayerRaised ? "z-[175]" : "z-[30]";
-  const switchStubZIndex = switchCableLayerRaised || switchCableOverlayActive ? 186 : 90;
+  const switchCableOverlayZIndex = draggingNode === "projects" && isMobileTopology ? 184 : 175;
+  const switchStubZIndex = switchCableLayerRaised || switchCableOverlayActive ? switchCableOverlayZIndex + 12 : 90;
   const switchCableOverlayClip = {
     x: topologyNodePositions.projects.x - (isMobileTopology ? 52 : 70),
     y: topologyNodePositions.projects.y - (isMobileTopology ? 18 : 26),
@@ -1770,6 +1771,7 @@ export function TopologyHero() {
     top: `${(switchCableOverlayClip.y / VIEWBOX.height) * 100}%`,
     width: `${(switchCableOverlayClip.width / VIEWBOX.width) * 100}%`,
     height: `${(switchCableOverlayClip.height / VIEWBOX.height) * 100}%`,
+    zIndex: switchCableOverlayZIndex,
   };
   const switchCableOverlaySvgStyle: CSSProperties = {
     left: `${-(switchCableOverlayClip.x / Math.max(switchCableOverlayClip.width, 1)) * 100}%`,
@@ -1937,6 +1939,7 @@ export function TopologyHero() {
                     networkMode={networkMode}
                     tick={0}
                     active={active === "projects"}
+                    showInlinePlugs={!isMobileTopology}
                     uplinkConnected={networkMode === "stable" || networkMode === "recovering"}
                     pcConnected
                   />
@@ -2048,15 +2051,13 @@ export function TopologyHero() {
                 ) : null}
 
                 {networkMode === "stable" || networkMode === "recovering" ? (
-                  !isMobileTopology ? (
-                    <DetachedEthernetStub
-                      bottom={switchLeftCableEnd}
-                      zIndex={switchStubZIndex}
-                      scale={1}
-                      nudgeY={-1}
-                      hoverActive={switchHoverMotionActive}
-                    />
-                  ) : null
+                  <DetachedEthernetStub
+                    bottom={switchLeftCableEnd}
+                    zIndex={switchStubZIndex}
+                    scale={isMobileTopology ? MOBILE_DEVICE_VISUAL_SCALE.projects : 1}
+                    nudgeY={-1}
+                    hoverActive={!isMobileTopology && switchHoverMotionActive}
+                  />
                 ) : null}
                 {networkMode !== "stable" && networkMode !== "recovering" ? (
                   <DetachedEthernetStub
@@ -2068,16 +2069,14 @@ export function TopologyHero() {
                     hoverActive={false}
                   />
                 ) : null}
-                {!isMobileTopology ? (
-                  <DetachedEthernetStub
-                    bottom={switchRightCableEnd}
-                    zIndex={switchStubZIndex}
-                    scale={1}
-                    nudgeX={1}
-                    nudgeY={-1}
-                    hoverActive={switchHoverMotionActive}
-                  />
-                ) : null}
+                <DetachedEthernetStub
+                  bottom={switchRightCableEnd}
+                  zIndex={switchStubZIndex}
+                  scale={isMobileTopology ? MOBILE_DEVICE_VISUAL_SCALE.projects : 1}
+                  nudgeX={1}
+                  nudgeY={-1}
+                  hoverActive={!isMobileTopology && switchHoverMotionActive}
+                />
                 {serviceCursor ? <ServiceMouse cursor={serviceCursor} sceneMetrics={sceneMetrics} /> : null}
 
                 <AnimatePresence>
@@ -3057,17 +3056,19 @@ const SwitchIllustration = memo(function SwitchIllustration({
   networkMode = "stable",
   tick = 0,
   active = false,
+  showInlinePlugs = true,
 }: {
   compact?: boolean;
   networkMode?: NetworkMode;
   tick?: number;
   active?: boolean;
+  showInlinePlugs?: boolean;
   uplinkConnected?: boolean;
   pcConnected?: boolean;
 }) {
   void tick;
-  const showInlineLeftPlug = compact && (networkMode === "stable" || networkMode === "recovering");
-  const showInlineRightPlug = compact;
+  const showInlineLeftPlug = showInlinePlugs && compact && (networkMode === "stable" || networkMode === "recovering");
+  const showInlineRightPlug = showInlinePlugs && compact;
 
   const uid = useId().replace(/:/g, "");
 
