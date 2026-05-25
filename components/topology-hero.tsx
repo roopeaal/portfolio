@@ -150,7 +150,7 @@ const MOBILE_DEVICE_CENTER_NUDGE_Y: Record<NodeKey, number> = {
 };
 const MOBILE_SWITCH_LABEL_NUDGE_X = 0;
 const MOBILE_SWITCH_PLUG_NUDGE_X = 0;
-const MOBILE_SWITCH_PLUG_NUDGE_Y = 0;
+const MOBILE_SWITCH_PLUG_NUDGE_Y = 4;
 const MOBILE_SWITCH_LABEL_NUDGE_Y = 0;
 const MOBILE_AUTO_ANIMATION_SEQUENCE: NodeKey[] = ["about", "projects", "contact", "home"];
 const MOBILE_AUTO_ANIMATION_DURATION: Record<NodeKey, number> = {
