@@ -413,6 +413,57 @@ function getCablePathGeometry(
   };
 }
 
+type CablePathOptions = {
+  from: { x: number; y: number };
+  to: { x: number; y: number };
+  disconnected?: boolean;
+  looseEnd?: { x: number; y: number };
+  detachedTailEnd?: { x: number; y: number };
+  tick?: number;
+  mode?: NetworkMode;
+  routeOffsetX?: number;
+  mobile?: boolean;
+};
+
+function getCableSegmentPath(
+  {
+    from,
+    to,
+    disconnected = false,
+    looseEnd,
+    detachedTailEnd,
+    tick = 0,
+    mode = "stable",
+    routeOffsetX = 0,
+    mobile = false,
+  }: CablePathOptions,
+  mapPoint: (point: { x: number; y: number }) => { x: number; y: number } = (point) => point,
+) {
+  const geometry = getCablePathGeometry(from, to, disconnected, looseEnd, routeOffsetX);
+  const mappedFrom = mapPoint(geometry.from);
+  const mappedEnd = mapPoint(geometry.end);
+
+  if (disconnected) {
+    const detachedPoints = getDetachedCableWavePoints(geometry.from, geometry.end, tick, mode, mobile).map(mapPoint);
+    let path = buildDetachedCableWavePath(detachedPoints);
+    if (detachedTailEnd) {
+      const mappedTailEnd = mapPoint(detachedTailEnd);
+      path += ` L ${mappedTailEnd.x} ${mappedTailEnd.y}`;
+    }
+    return path;
+  }
+
+  if (geometry.corner) {
+    const { point, curveStart, curveEnd } = geometry.corner;
+    const mappedCurveStart = mapPoint(curveStart);
+    const mappedPoint = mapPoint(point);
+    const mappedCurveEnd = mapPoint(curveEnd);
+    return `M ${mappedFrom.x} ${mappedFrom.y} L ${mappedCurveStart.x} ${mappedCurveStart.y} Q ${mappedPoint.x} ${mappedPoint.y} ${mappedCurveEnd.x} ${mappedCurveEnd.y} L ${mappedEnd.x} ${mappedEnd.y}`;
+  }
+
+  return `M ${mappedFrom.x} ${mappedFrom.y} L ${mappedEnd.x} ${mappedEnd.y}`;
+}
+
 function getDetachedCableWavePoints(
   from: { x: number; y: number },
   end: { x: number; y: number },
@@ -989,6 +1040,24 @@ function getSwitchCableStubEnd(
   return {
     x: x + responsiveOffset,
     y: y + SWITCH_STUB_Y,
+  };
+}
+
+function mapWorldPointToMobileSwitchLocal(
+  point: { x: number; y: number },
+  switchPosition: NodePosition,
+  sceneWidth = VIEWBOX.width,
+  sceneHeight = VIEWBOX.height,
+) {
+  const switchScale = MOBILE_DEVICE_VISUAL_SCALE.projects;
+  const wrapperWidthPx = sceneWidth * (NODE_META.projects.width / VIEWBOX.width);
+  const centeredChildLeftPx = (wrapperWidthPx - NODE_META.projects.width) / 2;
+  const pointXPx = ((point.x - switchPosition.x) / VIEWBOX.width) * sceneWidth;
+  const pointYPx = ((point.y - switchPosition.y) / VIEWBOX.height) * sceneHeight;
+
+  return {
+    x: (pointXPx - centeredChildLeftPx) / switchScale,
+    y: pointYPx / switchScale,
   };
 }
 
@@ -1756,10 +1825,10 @@ export function TopologyHero() {
   const switchHoverMotionActive = active === "projects" && draggingNode !== "projects";
   const switchCableDetached = networkMode !== "stable" && networkMode !== "recovering";
   const switchCableLayerRaised = draggingNode === "projects" && !isMobileTopology;
-  const switchCableOverlayActive = isMobileTopology || (switchCableDetached && draggingNode !== "projects");
+  const switchCableOverlayActive = !isMobileTopology && switchCableDetached && draggingNode !== "projects";
   const switchCableLayerClass = switchCableLayerRaised ? "z-[175]" : "z-[30]";
   const switchCableOverlayZIndex = draggingNode === "projects" && isMobileTopology ? 184 : 175;
-  const switchStubZIndex = switchCableLayerRaised || switchCableOverlayActive ? switchCableOverlayZIndex + 12 : 90;
+  const switchStubZIndex = switchCableLayerRaised || switchCableOverlayActive || isMobileTopology ? switchCableOverlayZIndex + 12 : 90;
   const switchCableOverlayClip = {
     x: topologyNodePositions.projects.x - (isMobileTopology ? 52 : 70),
     y: topologyNodePositions.projects.y - (isMobileTopology ? 18 : 26),
@@ -1779,6 +1848,29 @@ export function TopologyHero() {
     width: `${(VIEWBOX.width / Math.max(switchCableOverlayClip.width, 1)) * 100}%`,
     height: `${(VIEWBOX.height / Math.max(switchCableOverlayClip.height, 1)) * 100}%`,
   };
+  const mapSwitchLocalPoint = (point: { x: number; y: number }) => (
+    mapWorldPointToMobileSwitchLocal(point, topologyNodePositions.projects, sceneMetrics.width, sceneMetrics.height)
+  );
+  const mobileSwitchLeftSurfacePath = isMobileTopology
+    ? getCableSegmentPath({
+      from: aboutCableAttach,
+      to: switchLeftCableEnd,
+      disconnected: switchCableDetached,
+      looseEnd: detachedCableTail.cableEnd,
+      detachedTailEnd: detachedCableTail.plugEnd,
+      tick: motionTick,
+      mode: networkMode,
+      routeOffsetX: LEFT_CABLE_ROUTE_OFFSET_X,
+      mobile: true,
+    }, mapSwitchLocalPoint)
+    : null;
+  const mobileSwitchRightSurfacePath = isMobileTopology
+    ? getCableSegmentPath({
+      from: homeAttach,
+      to: switchRightCableEnd,
+      routeOffsetX: RIGHT_CABLE_ROUTE_OFFSET_X,
+    }, mapSwitchLocalPoint)
+    : null;
 
   useEffect(() => {
     looseEndRef.current = looseEnd;
@@ -1940,6 +2032,11 @@ export function TopologyHero() {
                     tick={0}
                     active={active === "projects"}
                     showInlinePlugs={!isMobileTopology}
+                    surfaceCablePaths={
+                      isMobileTopology && mobileSwitchLeftSurfacePath && mobileSwitchRightSurfacePath
+                        ? { left: mobileSwitchLeftSurfacePath, right: mobileSwitchRightSurfacePath }
+                        : undefined
+                    }
                     uplinkConnected={networkMode === "stable" || networkMode === "recovering"}
                     pcConnected
                   />
@@ -2661,19 +2758,17 @@ const CableSegment = memo(function CableSegment({
   routeOffsetX?: number;
   mobile?: boolean;
 }) {
-  const geometry = getCablePathGeometry(from, to, disconnected, looseEnd, routeOffsetX);
-  let path = `M ${geometry.from.x} ${geometry.from.y} L ${geometry.end.x} ${geometry.end.y}`;
-
-  if (disconnected) {
-    const detachedPoints = getDetachedCableWavePoints(geometry.from, geometry.end, tick, mode, mobile);
-    path = buildDetachedCableWavePath(detachedPoints);
-    if (detachedTailEnd) {
-      path += ` L ${detachedTailEnd.x} ${detachedTailEnd.y}`;
-    }
-  } else if (geometry.corner) {
-    const { point, curveStart, curveEnd } = geometry.corner;
-    path = `M ${geometry.from.x} ${geometry.from.y} L ${curveStart.x} ${curveStart.y} Q ${point.x} ${point.y} ${curveEnd.x} ${curveEnd.y} L ${geometry.end.x} ${geometry.end.y}`;
-  }
+  const path = getCableSegmentPath({
+    from,
+    to,
+    disconnected,
+    looseEnd,
+    detachedTailEnd,
+    tick,
+    mode,
+    routeOffsetX,
+    mobile,
+  });
 
   return (
     <path
@@ -3057,12 +3152,14 @@ const SwitchIllustration = memo(function SwitchIllustration({
   tick = 0,
   active = false,
   showInlinePlugs = true,
+  surfaceCablePaths,
 }: {
   compact?: boolean;
   networkMode?: NetworkMode;
   tick?: number;
   active?: boolean;
   showInlinePlugs?: boolean;
+  surfaceCablePaths?: { left: string; right: string };
   uplinkConnected?: boolean;
   pcConnected?: boolean;
 }) {
@@ -3095,7 +3192,7 @@ const SwitchIllustration = memo(function SwitchIllustration({
       transition={active ? { duration: 0.55, repeat: 1, ease: "easeInOut" } : { duration: 0.2 }}
     >
       <div className="relative" style={{ width: UNIFIED_DEVICE_WIDTH, height: UNIFIED_DEVICE_HEIGHT }}>
-        <div className="absolute left-1/2 top-[23px] h-[86px] w-[176px] origin-top -translate-x-1/2 scale-[1.14]">
+        <div className="absolute left-1/2 top-[23px] z-10 h-[86px] w-[176px] origin-top -translate-x-1/2 scale-[1.14]">
           <div className="pointer-events-none absolute left-[25px] top-[92px] h-[24px] w-[168px] rounded-full bg-[#0b1a30]/18 blur-[10px]" />
 
           <svg
@@ -3369,6 +3466,37 @@ const SwitchIllustration = memo(function SwitchIllustration({
           </g>
           </svg>
         </div>
+        {surfaceCablePaths ? (
+          <div
+            className="pointer-events-none absolute inset-0 z-20 overflow-hidden"
+            aria-hidden="true"
+          >
+            <svg
+              viewBox={`0 0 ${UNIFIED_DEVICE_WIDTH} ${UNIFIED_DEVICE_HEIGHT}`}
+              className="pointer-events-none absolute inset-0 h-full w-full"
+              preserveAspectRatio="none"
+            >
+              <path
+                d={surfaceCablePaths.left}
+                fill="none"
+                stroke={WIRED_CABLE_STROKE}
+                strokeWidth={WIRED_CABLE_WIDTH / MOBILE_DEVICE_VISUAL_SCALE.projects}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                vectorEffect="non-scaling-stroke"
+              />
+              <path
+                d={surfaceCablePaths.right}
+                fill="none"
+                stroke={WIRED_CABLE_STROKE}
+                strokeWidth={WIRED_CABLE_WIDTH / MOBILE_DEVICE_VISUAL_SCALE.projects}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                vectorEffect="non-scaling-stroke"
+              />
+            </svg>
+          </div>
+        ) : null}
         {showInlineLeftPlug ? (
           <InlineEthernetStub
             anchorX={SWITCH_PORT_CENTERS[SWITCH_LEFT_CABLE_PORT_INDEX] + SWITCH_LEFT_STUB_X_OFFSET}
