@@ -280,6 +280,13 @@ const PROJECT_CARD_MEDIA: Record<
     mode: "cover",
     backdrop: "#1f2429",
   },
+  "pill-dispenser-pico": {
+    src: "/portfolio/project-pill-dispenser-report.png",
+    cardSrc: "/portfolio/thumbs/project-pill-dispenser-report.webp",
+    alt: "Pill dispenser project report cover preview",
+    mode: "cover",
+    backdrop: "#eef4fa",
+  },
   "metropolia-login-ui": {
     src: "/portfolio/project-metropolia-login-demo.png",
     cardSrc: "/portfolio/thumbs/project-metropolia-login-demo.webp",

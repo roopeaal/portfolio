@@ -258,6 +258,71 @@ export const projects: Project[] = [
     cardAccent: "switch",
   },
   {
+    slug: "pill-dispenser-pico",
+    title: "Raspberry Pi Pico Pill Dispenser Controller",
+    shortTitle: "Pico Pill Dispenser",
+    category: "Embedded Systems / IoT Device Control",
+    summary:
+      "I built a Raspberry Pi Pico based pill dispenser controller that combines stepper motor control, opto fork calibration, piezo drop detection, EEPROM recovery state and LoRaWAN status messaging.",
+    overview: [
+      "This was a second-year Embedded Systems Programming course project where the goal was to build a working controller for an eight-position pill dispenser wheel. The system starts with calibration, waits for a schedule start, and then advances one compartment every 30 seconds.",
+      "The hardware setup used a Raspberry Pi Pico, a stepper motor, an opto fork reference sensor, a piezo sensor for pill-drop detection, AT24C256 EEPROM for persistent state and a LoRa-E5 module for status messages.",
+      "For an employer, this project shows practical C-based embedded development, hardware integration, sensor-driven calibration, recovery logic and structured technical documentation.",
+    ],
+    whatIDid: [
+      "Implemented the dispenser firmware in C with the Raspberry Pi Pico SDK.",
+      "Built half-step motor control for the four-wire stepper driving the dispenser wheel.",
+      "Implemented opto fork based calibration by detecting the reference opening and measuring one full wheel revolution.",
+      "Used a GPIO interrupt for piezo drop detection while keeping the interrupt handler minimal.",
+      "Stored operating mode, remaining pills, measured steps per revolution and turn-in-progress state in EEPROM with checksum validation.",
+      "Added LoRa-E5 AT command setup and short status messages for boot, calibration, dispensing, missing pill and empty states.",
+    ],
+    technicalHighlights: [
+      "Three saved operating modes: waiting for calibration, ready to start and running.",
+      "Calibration measures the opto opening width and centers the wheel instead of stopping on the first sensor edge.",
+      "EEPROM recovery detects if power was lost during motor movement and restores the wheel from the opto reference position.",
+      "The dispenser records turn_in_progress before the motor starts and clears it only after movement is complete.",
+      "LoRaWAN messaging is non-blocking for core dispenser behavior: motor control continues even if network joining fails.",
+    ],
+    objective:
+      "Build a dependable embedded controller for an eight-position dispenser wheel that can calibrate itself, dispense on schedule and recover correctly after a reset during motor movement.",
+    technicalScope:
+      "C firmware, Raspberry Pi Pico SDK, stepper motor half-step control, opto fork reference detection, GPIO interrupt handling, piezo drop sensing, I2C EEPROM state persistence and LoRa-E5 UART communication.",
+    environment:
+      "Raspberry Pi Pico, second-year embedded systems board, Pico C/C++ SDK, CMake, CLion, OpenOCD debug probe, AT24C256 EEPROM, LoRa-E5 module, stepper motor, opto fork sensor and piezo sensor.",
+    implementation:
+      "The firmware uses a saved state machine and hardware-specific helper functions for EEPROM, GPIO, stepper movement, calibration and LoRa messaging. Before each dispense movement, the program saves that a motor turn is in progress so the next boot can recover safely if power is lost.",
+    validation:
+      "Validated through build and flash checks, serial monitor output, calibration tests, 30-second dispensing cadence checks, piezo detected and no-pill paths, EEPROM restore checks and reset-during-turn recovery testing.",
+    result:
+      "The final project produced a working dispenser controller and a 13-page project report. The system can calibrate the wheel, start a timed dispense schedule, detect missing pill drops, send status events and recover from an interrupted motor turn by returning to the opto reference before completing the dispense.",
+    learned:
+      "Improved C-based embedded programming, hardware-software integration, interrupt design, persistent state handling, motor calibration, LoRa module communication and practical debugging with real mechanical tolerances.",
+    skillsDemonstrated: [
+      "Embedded C development",
+      "Raspberry Pi Pico SDK",
+      "Stepper motor control",
+      "Sensor-based calibration",
+      "GPIO interrupt handling",
+      "I2C EEPROM persistence",
+      "UART AT command communication",
+      "Recovery-state design",
+      "Technical documentation",
+    ],
+    stack: ["Raspberry Pi Pico", "C", "Pico SDK", "CMake", "CLion", "OpenOCD", "AT24C256 EEPROM", "LoRa-E5", "Stepper motor", "Opto fork sensor", "Piezo sensor"],
+    recruiterKeywords: ["Embedded systems", "Raspberry Pi Pico", "C", "Pico SDK", "Stepper motor", "EEPROM", "LoRaWAN", "GPIO interrupts", "IoT device control"],
+    employerPoints: [
+      "Built firmware that coordinates real hardware components instead of only simulating logic.",
+      "Implemented persistent recovery behavior for the most failure-prone moment: reset or power loss during motor movement.",
+      "Documented the design, testing process and practical limitations clearly in a full course project report.",
+    ],
+    evidence: [
+      "Project report completed: Pill Dispenser Project, Metropolia Embedded Systems Programming (May 2026).",
+      "Recovery behavior tested by restarting during motor movement and restoring from EEPROM state.",
+    ],
+    cardAccent: "switch",
+  },
+  {
     slug: "metropolia-login-ui",
     title: "Safe Phishing Simulation for Metropolia CAS / OMA Login",
     shortTitle: "Safe CAS Login Phishing Simulation",
