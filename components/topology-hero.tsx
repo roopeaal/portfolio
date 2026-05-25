@@ -34,6 +34,7 @@ type NodeKey = Exclude<ActiveNode, null>;
 type WindowType = ActiveNode;
 type NetworkMode = "stable" | "dropping" | "grabbing" | "repairing" | "recovering";
 type CursorState = "pointer" | "open" | "closed";
+type SceneMetrics = { width: number; height: number };
 
 const VIEWBOX = { width: 1280, height: 760 };
 const ASSET_BASE = "";
@@ -274,6 +275,13 @@ function clampNodePosition(node: NodeKey, position: NodePosition): NodePosition 
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);
+}
+
+function getResponsiveSvgRadius(radius: number, sceneMetrics: SceneMetrics) {
+  return {
+    rx: (radius / Math.max(sceneMetrics.width, 1)) * VIEWBOX.width,
+    ry: (radius / Math.max(sceneMetrics.height, 1)) * VIEWBOX.height,
+  };
 }
 
 function isChromeLikeBrowser() {
@@ -2078,9 +2086,9 @@ export function TopologyHero() {
                     <StatusTriangle key={`diag-${index}`} {...point} sceneMetrics={sceneMetrics} />
                   ))}
 
-                  {typingActive ? <TrafficPulse from={homeAttach} to={switchRightCablePathEnd} tick={motionTick} duration={64} delay={14} /> : null}
+                  {typingActive ? <TrafficPulse from={homeAttach} to={switchRightCablePathEnd} tick={motionTick} duration={64} delay={14} sceneMetrics={sceneMetrics} /> : null}
                   {!routerGlitchActive && active === "about" ? (
-                    <TrafficPulse from={aboutCableAttach} to={contactAttach} tick={motionTick} duration={86} delay={20} dotted color="#a8e6ff" />
+                    <TrafficPulse from={aboutCableAttach} to={contactAttach} tick={motionTick} duration={86} delay={20} dotted color="#a8e6ff" sceneMetrics={sceneMetrics} />
                   ) : null}
                 </motion.svg>
 
@@ -2817,14 +2825,15 @@ const WirelessCable = memo(function WirelessCable({ from, to, online }: { from: 
   );
 });
 
-const TrafficPulse = memo(function TrafficPulse({ from, to, tick, duration, delay, dotted = false, color = "#e7f9ff" }: { from: { x: number; y: number }; to: { x: number; y: number }; tick: number; duration: number; delay: number; dotted?: boolean; color?: string }) {
+const TrafficPulse = memo(function TrafficPulse({ from, to, tick, duration, delay, dotted = false, color = "#e7f9ff", sceneMetrics }: { from: { x: number; y: number }; to: { x: number; y: number }; tick: number; duration: number; delay: number; dotted?: boolean; color?: string; sceneMetrics: SceneMetrics }) {
   const progress = ((tick + delay) % duration) / duration;
   const x = lerp(from.x, to.x, progress);
   const y = lerp(from.y, to.y, progress);
-  return <circle cx={x} cy={y} r={dotted ? 3.6 : 4.8} fill={color} opacity={0.9} />;
+  const { rx, ry } = getResponsiveSvgRadius(dotted ? 3.6 : 4.8, sceneMetrics);
+  return <ellipse cx={x} cy={y} rx={rx} ry={ry} fill={color} opacity={0.9} />;
 });
 
-const StatusTriangle = memo(function StatusTriangle({ x, y, sceneMetrics }: { x: number; y: number; sceneMetrics: { width: number; height: number } }) {
+const StatusTriangle = memo(function StatusTriangle({ x, y, sceneMetrics }: { x: number; y: number; sceneMetrics: SceneMetrics }) {
   const halfWidth = (9 / Math.max(sceneMetrics.width, 1)) * VIEWBOX.width;
   const topHeight = (10 / Math.max(sceneMetrics.height, 1)) * VIEWBOX.height;
   const bottomHeight = (8 / Math.max(sceneMetrics.height, 1)) * VIEWBOX.height;
@@ -2832,12 +2841,11 @@ const StatusTriangle = memo(function StatusTriangle({ x, y, sceneMetrics }: { x:
   return <polygon points={`${x},${y - topHeight} ${x - halfWidth},${y + bottomHeight} ${x + halfWidth},${y + bottomHeight}`} fill="#43c729" opacity={1} />;
 });
 
-const StatusOrb = memo(function StatusOrb({ x, y, tick, sceneMetrics }: { x: number; y: number; tick: number; sceneMetrics: { width: number; height: number } }) {
+const StatusOrb = memo(function StatusOrb({ x, y, tick, sceneMetrics }: { x: number; y: number; tick: number; sceneMetrics: SceneMetrics }) {
   const scale = 1 + Math.sin(tick / 2) * 0.06;
   const radius = 11.5 * scale;
-  const radiusX = (radius / Math.max(sceneMetrics.width, 1)) * VIEWBOX.width;
-  const radiusY = (radius / Math.max(sceneMetrics.height, 1)) * VIEWBOX.height;
-  return <ellipse cx={x} cy={y} rx={radiusX} ry={radiusY} fill="#e38b1a" opacity={0.98} />;
+  const { rx, ry } = getResponsiveSvgRadius(radius, sceneMetrics);
+  return <ellipse cx={x} cy={y} rx={rx} ry={ry} fill="#e38b1a" opacity={0.98} />;
 });
 
 const ServiceMouse = memo(function ServiceMouse({
@@ -2845,7 +2853,7 @@ const ServiceMouse = memo(function ServiceMouse({
   sceneMetrics,
 }: {
   cursor: { x: number; y: number; state: CursorState };
-  sceneMetrics: { width: number; height: number };
+  sceneMetrics: SceneMetrics;
 }) {
   const visual = cursor.state === "pointer"
     ? { width: 27, height: 40, gripOffset: { x: 4, y: 3 } }
