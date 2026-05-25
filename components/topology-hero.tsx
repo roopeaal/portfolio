@@ -53,6 +53,7 @@ const UNIFIED_DEVICE_HEIGHT = 198;
 const UNIFIED_NODE_HEIGHT = 268;
 const NODE_LABEL_GAP = 12;
 const CABLE_ATTACH_DROP = 29;
+const CHROME_MOBILE_SWITCH_CABLE_NUDGE_Y_PX = 2.5;
 
 type NodePosition = { x: number; y: number };
 type NodeMeta = {
@@ -272,6 +273,15 @@ function clampNodePosition(node: NodeKey, position: NodePosition): NodePosition 
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);
+}
+
+function isChromeLikeBrowser() {
+  if (typeof navigator === "undefined") return false;
+
+  const ua = navigator.userAgent;
+  const chromeLike = /\b(?:Chrome|CriOS|Chromium)\//.test(ua);
+  const excluded = /\b(?:Edg|OPR|Opera|SamsungBrowser|Firefox|FxiOS)\//.test(ua);
+  return chromeLike && !excluded;
 }
 
 function getMobileHomeNodePositions(metrics: { width: number; height: number }): Record<NodeKey, NodePosition> {
@@ -1142,6 +1152,7 @@ export function TopologyHero() {
   const [routerWifiReady, setRouterWifiReady] = useState(true);
   const [contactSection, setContactSection] = useState<"overview">("overview");
   const [sceneMetrics, setSceneMetrics] = useState({ width: VIEWBOX.width, height: VIEWBOX.height });
+  const useChromeMobileCableAlignment = useMemo(() => isChromeLikeBrowser(), []);
 
   const sceneRef = useRef<HTMLDivElement | null>(null);
   const sceneMetricsRef = useRef({ width: VIEWBOX.width, height: VIEWBOX.height });
@@ -1163,6 +1174,7 @@ export function TopologyHero() {
     contact: { x: 0, y: 0 },
   });
   const looseEndRef = useRef<{ x: number; y: number } | null>(null);
+  const switchLeftCableEndRef = useRef<{ x: number; y: number }>(INITIAL_NODE_POSITIONS.projects);
   const timeouts = useRef<number[]>([]);
   const tickRef = useRef(0);
   const dragRef = useRef<{
@@ -1302,6 +1314,19 @@ export function TopologyHero() {
   const contactAttach = getAnimatedDevicePoint("contact", getAttachPoint("contact", topologyNodePositions), topologyNodePositions, active, draggingNode);
   const switchLeftCableEnd = getAnimatedDevicePoint("projects", getSwitchCableStubEnd("left", topologyNodePositions, sceneMetrics.width, isMobileTopology, sceneMetrics.height), topologyNodePositions, active, draggingNode);
   const switchRightCableEnd = getAnimatedDevicePoint("projects", getSwitchCableStubEnd("right", topologyNodePositions, sceneMetrics.width, isMobileTopology, sceneMetrics.height), topologyNodePositions, active, draggingNode);
+  const chromeMobileSwitchCableNudgeY = isMobileTopology && useChromeMobileCableAlignment
+    ? (CHROME_MOBILE_SWITCH_CABLE_NUDGE_Y_PX * VIEWBOX.height) / Math.max(sceneMetrics.height, 1)
+    : 0;
+  const switchLeftCablePathEnd = chromeMobileSwitchCableNudgeY
+    ? { ...switchLeftCableEnd, y: switchLeftCableEnd.y + chromeMobileSwitchCableNudgeY }
+    : switchLeftCableEnd;
+  const switchRightCablePathEnd = chromeMobileSwitchCableNudgeY
+    ? { ...switchRightCableEnd, y: switchRightCableEnd.y + chromeMobileSwitchCableNudgeY }
+    : switchRightCableEnd;
+
+  useEffect(() => {
+    switchLeftCableEndRef.current = switchLeftCableEnd;
+  }, [switchLeftCableEnd]);
 
   useEffect(() => {
     const timeoutIds = timeouts.current;
@@ -1526,6 +1551,7 @@ export function TopologyHero() {
   }, [networkMode]);
 
 
+  /* eslint-disable react-hooks/preserve-manual-memoization */
   const triggerNodeAnimation = useCallback((node: NodeKey) => {
     if (animationLocks.current[node]) return;
 
@@ -1573,13 +1599,14 @@ export function TopologyHero() {
       return;
     }
 
-    setDetachedOrigin({ x: switchLeftCableEnd.x, y: switchLeftCableEnd.y });
+    setDetachedOrigin({ ...switchLeftCableEndRef.current });
     setRepairLooseEnd(null);
     setMode("dropping");
     const grab = window.setTimeout(() => setMode("grabbing"), 1600);
     const repair = window.setTimeout(() => setMode("repairing"), 3600);
     timeoutIds.push(grab, repair);
-  }, [setMode, switchLeftCableEnd.x, switchLeftCableEnd.y]);
+  }, [setMode]);
+  /* eslint-enable react-hooks/preserve-manual-memoization */
 
   const triggerNodeAnimationRef = useRef(triggerNodeAnimation);
 
@@ -1789,8 +1816,8 @@ export function TopologyHero() {
       : "none";
   const topIndicatorStops = isMobileTopology ? [0.42, 0.6] : [0.32, 0.7];
   const diagIndicatorStops = isMobileTopology ? [0.38, 0.7] : [0.4, 0.78];
-  const topIndicators = topIndicatorStops.map((value) => pointOnCablePath(aboutCableAttach, switchLeftCableEnd, value, LEFT_CABLE_ROUTE_OFFSET_X));
-  const diagIndicators = diagIndicatorStops.map((value) => pointOnCablePath(homeAttach, switchRightCableEnd, value, RIGHT_CABLE_ROUTE_OFFSET_X));
+  const topIndicators = topIndicatorStops.map((value) => pointOnCablePath(aboutCableAttach, switchLeftCablePathEnd, value, LEFT_CABLE_ROUTE_OFFSET_X));
+  const diagIndicators = diagIndicatorStops.map((value) => pointOnCablePath(homeAttach, switchRightCablePathEnd, value, RIGHT_CABLE_ROUTE_OFFSET_X));
   const activePreview = active && !draggingNode ? getPreviewByNode(active) : null;
   const previewStyle = active && !draggingNode && !isMobileTopology ? getPreviewStyle(active, topologyNodePositions) : undefined;
   const nodeStyle = useMemo(() => {
@@ -1992,7 +2019,7 @@ export function TopologyHero() {
                 >
                   <CableSegment
                     from={aboutCableAttach}
-                    to={switchLeftCableEnd}
+                    to={switchLeftCablePathEnd}
                     disconnected={switchCableDetached}
                     looseEnd={detachedCableTail.cableEnd}
                     detachedTailEnd={detachedCableTail.plugEnd}
@@ -2001,7 +2028,7 @@ export function TopologyHero() {
                     routeOffsetX={LEFT_CABLE_ROUTE_OFFSET_X}
                     mobile={isMobileTopology}
                   />
-                  <CableSegment from={homeAttach} to={switchRightCableEnd} routeOffsetX={RIGHT_CABLE_ROUTE_OFFSET_X} />
+                  <CableSegment from={homeAttach} to={switchRightCablePathEnd} routeOffsetX={RIGHT_CABLE_ROUTE_OFFSET_X} />
 
                   {topLineStatus === "green"
                     ? topIndicators.map((point, index) => <StatusTriangle key={`top-${index}`} {...point} sceneMetrics={sceneMetrics} />)
@@ -2013,7 +2040,7 @@ export function TopologyHero() {
                     <StatusTriangle key={`diag-${index}`} {...point} sceneMetrics={sceneMetrics} />
                   ))}
 
-                  {typingActive ? <TrafficPulse from={homeAttach} to={switchRightCableEnd} tick={motionTick} duration={64} delay={14} /> : null}
+                  {typingActive ? <TrafficPulse from={homeAttach} to={switchRightCablePathEnd} tick={motionTick} duration={64} delay={14} /> : null}
                   {!routerGlitchActive && active === "about" ? (
                     <TrafficPulse from={aboutCableAttach} to={contactAttach} tick={motionTick} duration={86} delay={20} dotted color="#a8e6ff" />
                   ) : null}
@@ -2036,7 +2063,7 @@ export function TopologyHero() {
                     >
                       <CableSegment
                         from={aboutCableAttach}
-                        to={switchLeftCableEnd}
+                        to={switchLeftCablePathEnd}
                         disconnected={switchCableDetached}
                         looseEnd={detachedCableTail.cableEnd}
                         detachedTailEnd={detachedCableTail.plugEnd}
@@ -2045,7 +2072,7 @@ export function TopologyHero() {
                         routeOffsetX={LEFT_CABLE_ROUTE_OFFSET_X}
                         mobile={isMobileTopology}
                       />
-                      <CableSegment from={homeAttach} to={switchRightCableEnd} routeOffsetX={RIGHT_CABLE_ROUTE_OFFSET_X} />
+                      <CableSegment from={homeAttach} to={switchRightCablePathEnd} routeOffsetX={RIGHT_CABLE_ROUTE_OFFSET_X} />
                     </motion.svg>
                   </div>
                 ) : null}
