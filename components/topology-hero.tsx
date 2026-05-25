@@ -2071,7 +2071,7 @@ export function TopologyHero() {
                   {topLineStatus === "green"
                     ? topIndicators.map((point, index) => <StatusTriangle key={`top-${index}`} {...point} sceneMetrics={sceneMetrics} />)
                     : topLineStatus === "orange"
-                      ? topIndicators.map((point, index) => <StatusOrb key={`top-${index}`} {...point} tick={motionTick + index * 2} />)
+                      ? topIndicators.map((point, index) => <StatusOrb key={`top-${index}`} {...point} tick={motionTick + index * 2} sceneMetrics={sceneMetrics} />)
                       : null}
 
                   {diagIndicators.map((point, index) => (
@@ -2832,9 +2832,12 @@ const StatusTriangle = memo(function StatusTriangle({ x, y, sceneMetrics }: { x:
   return <polygon points={`${x},${y - topHeight} ${x - halfWidth},${y + bottomHeight} ${x + halfWidth},${y + bottomHeight}`} fill="#43c729" opacity={1} />;
 });
 
-const StatusOrb = memo(function StatusOrb({ x, y, tick }: { x: number; y: number; tick: number }) {
+const StatusOrb = memo(function StatusOrb({ x, y, tick, sceneMetrics }: { x: number; y: number; tick: number; sceneMetrics: { width: number; height: number } }) {
   const scale = 1 + Math.sin(tick / 2) * 0.06;
-  return <circle cx={x} cy={y} r={11.5 * scale} fill="#e38b1a" opacity={0.98} />;
+  const radius = 11.5 * scale;
+  const radiusX = (radius / Math.max(sceneMetrics.width, 1)) * VIEWBOX.width;
+  const radiusY = (radius / Math.max(sceneMetrics.height, 1)) * VIEWBOX.height;
+  return <ellipse cx={x} cy={y} rx={radiusX} ry={radiusY} fill="#e38b1a" opacity={0.98} />;
 });
 
 const ServiceMouse = memo(function ServiceMouse({
