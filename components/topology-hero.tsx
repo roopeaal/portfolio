@@ -1787,8 +1787,10 @@ export function TopologyHero() {
     : networkMode === "recovering"
       ? "orange"
       : "none";
-  const topIndicators = [0.32, 0.7].map((value) => pointOnCablePath(aboutCableAttach, switchLeftCableEnd, value, LEFT_CABLE_ROUTE_OFFSET_X));
-  const diagIndicators = [0.4, 0.78].map((value) => pointOnCablePath(homeAttach, switchRightCableEnd, value, RIGHT_CABLE_ROUTE_OFFSET_X));
+  const topIndicatorStops = isMobileTopology ? [0.42, 0.6] : [0.32, 0.7];
+  const diagIndicatorStops = isMobileTopology ? [0.46, 0.62] : [0.4, 0.78];
+  const topIndicators = topIndicatorStops.map((value) => pointOnCablePath(aboutCableAttach, switchLeftCableEnd, value, LEFT_CABLE_ROUTE_OFFSET_X));
+  const diagIndicators = diagIndicatorStops.map((value) => pointOnCablePath(homeAttach, switchRightCableEnd, value, RIGHT_CABLE_ROUTE_OFFSET_X));
   const activePreview = active && !draggingNode ? getPreviewByNode(active) : null;
   const previewStyle = active && !draggingNode && !isMobileTopology ? getPreviewStyle(active, topologyNodePositions) : undefined;
   const nodeStyle = useMemo(() => {
