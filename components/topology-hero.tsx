@@ -44,6 +44,7 @@ const PREVIEW_GAP = 42;
 const PREVIEW_MARGIN = 18;
 const DEVICE_FLOAT_FILTER = "drop-shadow(0 16px 22px rgba(10,18,31,0.18)) drop-shadow(0 5px 12px rgba(24,79,113,0.10))";
 const DEVICE_FLOAT_FILTER_SOFT = "drop-shadow(0 12px 18px rgba(10,18,31,0.14)) drop-shadow(0 4px 10px rgba(24,79,113,0.08))";
+const NODE_LABEL_TEXT_SHADOW = "0 1px 2px rgba(255,255,255,0.96), 0 0 7px rgba(255,255,255,0.88), 0 0 15px rgba(255,255,255,0.74)";
 const WIRED_CABLE_STROKE = "#242424";
 const WIRELESS_CABLE_STROKE = "#2d2d2d";
 const WIRED_CABLE_WIDTH = 4.2;
@@ -1025,6 +1026,31 @@ function getPreviewStyle(node: NodeKey, positions: Record<NodeKey, NodePosition>
   };
 }
 
+function getNodeLabelLayout(node: NodeKey, mobile = false) {
+  const meta = NODE_META[node];
+  const mobileScale = MOBILE_DEVICE_VISUAL_SCALE[node];
+  const labelOffsetY = meta.labelOffsetY ?? 0;
+  const labelOffsetX = meta.labelOffsetX ?? 0;
+  const mobileLabelOffsetY = node === "projects" ? -16 : node === "contact" ? 36 : labelOffsetY * 0.7;
+  const mobileVisualCenterOffsetX =
+    ((mobileScale - 1) * UNIFIED_DEVICE_WIDTH) / 2 +
+    MOBILE_DEVICE_CENTER_NUDGE_X[node] +
+    (node === "projects" ? MOBILE_SWITCH_LABEL_NUDGE_X : 0);
+  const mobileLabelOffsetX = labelOffsetX + mobileVisualCenterOffsetX;
+  const desktopLabelTop = meta.deviceHeight + NODE_LABEL_GAP + labelOffsetY;
+  const labelTop = mobile
+    ? node === "projects"
+      ? desktopLabelTop * mobileScale + MOBILE_SWITCH_LABEL_NUDGE_Y
+      : meta.deviceHeight * mobileScale + NODE_LABEL_GAP + mobileLabelOffsetY
+    : desktopLabelTop;
+
+  return {
+    labelTop,
+    labelOffsetX,
+    mobileLabelOffsetX,
+  };
+}
+
 function getLooseEnd(
   tick: number,
   mode: NetworkMode,
@@ -1960,6 +1986,7 @@ export function TopologyHero() {
                   onPointerDown={handlePointerDown}
                   label={NODE_META.projects.label}
                   deviceName={NODE_META.projects.deviceName}
+                  visuallyHideLabel={isMobileTopology}
                 >
                   <SwitchIllustration
                     compact={isMobileTopology}
@@ -1971,6 +1998,17 @@ export function TopologyHero() {
                     pcConnected
                   />
                 </NodeButton>
+
+                {isMobileTopology ? (
+                  <NodeLabelOverlay
+                    node="projects"
+                    position={topologyNodePositions.projects}
+                    opacity={nodeStyle.projects}
+                    layer={48}
+                    label={NODE_META.projects.label}
+                    deviceName={NODE_META.projects.deviceName}
+                  />
+                ) : null}
 
                 <NodeButton
                   node="home"
@@ -2291,6 +2329,7 @@ function NodeButton({
   onPointerDown,
   label,
   deviceName,
+  visuallyHideLabel = false,
   children,
 }: {
   node: NodeKey;
@@ -2306,31 +2345,16 @@ function NodeButton({
   onPointerDown: (node: NodeKey, event: ReactPointerEvent<HTMLButtonElement>) => void;
   label: string;
   deviceName: string;
+  visuallyHideLabel?: boolean;
   children: ReactNode;
 }) {
   const meta = NODE_META[node];
   const haloSize = NODE_PROTECTIVE_HALO;
   const debugRects = DEBUG_NODE_HALOS ? getNodeCollisionRects(node, { x: 0, y: 0 }, haloSize) : [];
   const stackZIndex = dragging ? 180 : active ? layer + 12 : layer;
-  const mobileScale = MOBILE_DEVICE_VISUAL_SCALE[node];
-  const labelOffsetY = meta.labelOffsetY ?? 0;
-  const labelOffsetX = meta.labelOffsetX ?? 0;
-  const mobileLabelOffsetY = node === "projects" ? -16 : node === "contact" ? 36 : labelOffsetY * 0.7;
-  const mobileVisualCenterOffsetX =
-    ((mobileScale - 1) * UNIFIED_DEVICE_WIDTH) / 2 +
-    MOBILE_DEVICE_CENTER_NUDGE_X[node] +
-    (node === "projects" ? MOBILE_SWITCH_LABEL_NUDGE_X : 0);
-  const mobileLabelOffsetX = labelOffsetX + mobileVisualCenterOffsetX;
-  const desktopLabelTop = meta.deviceHeight + NODE_LABEL_GAP + labelOffsetY;
-  const labelTextShadow = "0 1px 2px rgba(255,255,255,0.96), 0 0 7px rgba(255,255,255,0.88), 0 0 15px rgba(255,255,255,0.74)";
   const nodeDropShadow = active
     ? "drop-shadow(0 20px 24px rgba(15,23,42,0.11)) drop-shadow(0 5px 14px rgba(18,127,166,0.10))"
     : "drop-shadow(0 12px 16px rgba(15,23,42,0.06)) drop-shadow(0 3px 8px rgba(18,127,166,0.05))";
-  const labelTop = mobile
-    ? node === "projects"
-      ? desktopLabelTop * mobileScale + MOBILE_SWITCH_LABEL_NUDGE_Y
-      : meta.deviceHeight * mobileScale + NODE_LABEL_GAP + mobileLabelOffsetY
-    : desktopLabelTop;
 
   return (
     <div
@@ -2388,22 +2412,78 @@ function NodeButton({
         {children}
         </motion.div>
 
-        <div
-          className="absolute inset-x-0 z-[30] flex flex-col items-center justify-center text-center leading-tight"
-          style={{
-            top: labelTop,
-            left: mobile ? "50%" : 0,
-            right: mobile ? "auto" : 0,
-            width: mobile ? MOBILE_LABEL_WIDTH[node] : undefined,
-            marginLeft: mobile ? mobileLabelOffsetX : undefined,
-            transform: mobile ? "translateX(-50%)" : labelOffsetX ? `translateX(${labelOffsetX}px)` : undefined,
-            textShadow: labelTextShadow,
-          }}
-        >
-          <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#66758b] drop-shadow-none sm:text-[12px] sm:tracking-[0.18em]">{deviceName}</p>
-          <p className="mt-1 text-[16px] font-bold tracking-[-0.02em] text-[#050505] drop-shadow-none sm:text-[18px]">{label}</p>
-        </div>
+        <NodeLabel node={node} mobile={mobile} label={label} deviceName={deviceName} visuallyHidden={visuallyHideLabel} />
       </button>
+    </div>
+  );
+}
+
+function NodeLabel({
+  node,
+  mobile = false,
+  label,
+  deviceName,
+  visuallyHidden = false,
+}: {
+  node: NodeKey;
+  mobile?: boolean;
+  label: string;
+  deviceName: string;
+  visuallyHidden?: boolean;
+}) {
+  const { labelTop, labelOffsetX, mobileLabelOffsetX } = getNodeLabelLayout(node, mobile);
+
+  return (
+    <div
+      className="absolute inset-x-0 z-[30] flex flex-col items-center justify-center text-center leading-tight"
+      style={{
+        top: labelTop,
+        left: mobile ? "50%" : 0,
+        right: mobile ? "auto" : 0,
+        width: mobile ? MOBILE_LABEL_WIDTH[node] : undefined,
+        marginLeft: mobile ? mobileLabelOffsetX : undefined,
+        transform: mobile ? "translateX(-50%)" : labelOffsetX ? `translateX(${labelOffsetX}px)` : undefined,
+        textShadow: NODE_LABEL_TEXT_SHADOW,
+        opacity: visuallyHidden ? 0 : undefined,
+      }}
+    >
+      <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#66758b] drop-shadow-none sm:text-[12px] sm:tracking-[0.18em]">{deviceName}</p>
+      <p className="mt-1 text-[16px] font-bold tracking-[-0.02em] text-[#050505] drop-shadow-none sm:text-[18px]">{label}</p>
+    </div>
+  );
+}
+
+function NodeLabelOverlay({
+  node,
+  position,
+  opacity,
+  layer,
+  label,
+  deviceName,
+}: {
+  node: NodeKey;
+  position: NodePosition;
+  opacity: number;
+  layer: number;
+  label: string;
+  deviceName: string;
+}) {
+  const meta = NODE_META[node];
+
+  return (
+    <div
+      className="pointer-events-none absolute overflow-visible"
+      aria-hidden="true"
+      style={{
+        zIndex: layer,
+        left: `${(position.x / VIEWBOX.width) * 100}%`,
+        top: `${(position.y / VIEWBOX.height) * 100}%`,
+        width: `${(meta.width / VIEWBOX.width) * 100}%`,
+        height: `${(meta.height / VIEWBOX.height) * 100}%`,
+        opacity,
+      }}
+    >
+      <NodeLabel node={node} mobile label={label} deviceName={deviceName} />
     </div>
   );
 }
