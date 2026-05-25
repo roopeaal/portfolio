@@ -1788,7 +1788,7 @@ export function TopologyHero() {
       ? "orange"
       : "none";
   const topIndicatorStops = isMobileTopology ? [0.42, 0.6] : [0.32, 0.7];
-  const diagIndicatorStops = isMobileTopology ? [0.46, 0.62] : [0.4, 0.78];
+  const diagIndicatorStops = isMobileTopology ? [0.38, 0.7] : [0.4, 0.78];
   const topIndicators = topIndicatorStops.map((value) => pointOnCablePath(aboutCableAttach, switchLeftCableEnd, value, LEFT_CABLE_ROUTE_OFFSET_X));
   const diagIndicators = diagIndicatorStops.map((value) => pointOnCablePath(homeAttach, switchRightCableEnd, value, RIGHT_CABLE_ROUTE_OFFSET_X));
   const activePreview = active && !draggingNode ? getPreviewByNode(active) : null;
