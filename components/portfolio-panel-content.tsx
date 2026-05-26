@@ -284,7 +284,7 @@ const PROJECT_CARD_MEDIA: Record<
     src: "/portfolio/project-pill-dispenser-hardware.jpg",
     cardSrc: "/portfolio/thumbs/project-pill-dispenser-hardware.webp",
     alt: "Raspberry Pi Pico pill dispenser hardware setup with dispenser wheel, sensors and wiring",
-    mode: "contain",
+    mode: "cover",
     backdrop: "#3a2416",
   },
   "metropolia-login-ui": {
