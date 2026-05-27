@@ -308,7 +308,7 @@ const PROJECT_HERO_ACTIONS: Record<string, { href: string; label: string }> = {
     label: "Demonstration video",
   },
   "aircraft-game-python-react": {
-    href: "https://lentokonepeli.onrender.com/",
+    href: "https://maanarvauspeli-loader.onrender.com/",
     label: "Open live demo",
   },
 };

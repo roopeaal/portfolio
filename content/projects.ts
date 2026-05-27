@@ -192,7 +192,7 @@ export const projects: Project[] = [
       "Iterated the project from a simpler airport guessing game into a deployed browser-based application with an interactive map and polished theme.",
     ],
     evidence: [
-      "Live demo: https://lentokonepeli.onrender.com/",
+      "Live demo: https://maanarvauspeli-loader.onrender.com/",
       "Render free tier note: the first load may take around 30-90 seconds because of cold start.",
     ],
     cardAccent: "switch",
