@@ -1386,10 +1386,10 @@ export function ContactPanelContent({
   }
 
   return (
-    <div className="contact-panel h-full w-full rounded-none bg-[linear-gradient(180deg,#ef6620_0%,#e85517_100%)] text-[#1f120b]">
-      <div className="contact-panel-layout relative">
-        <section className="contact-panel-intro relative text-white">
-          <h2 className="contact-panel-heading relative z-[2] w-full max-w-none font-extrabold leading-[0.88] tracking-[-0.03em] text-white [text-shadow:0_2px_0_rgba(118,48,20,0.22)]">
+    <div className="contact-page h-full w-full overflow-y-auto rounded-none bg-[linear-gradient(180deg,#ef6620_0%,#e85517_100%)] text-[#1f120b] lg:overflow-hidden">
+      <div className="contact-page-layout relative grid min-h-full gap-0 lg:h-full lg:min-h-0 lg:grid-cols-[minmax(0,1.03fr)_minmax(0,0.97fr)]">
+        <section className="contact-page-intro relative flex min-h-0 flex-col px-5 pb-0 pt-6 text-white sm:px-7 lg:min-h-0 lg:px-9 lg:pt-7">
+          <h2 className="contact-page-heading relative z-[2] w-full max-w-none text-[clamp(2.45rem,14vw,4rem)] font-extrabold leading-[0.88] tracking-[-0.03em] text-white [text-shadow:0_2px_0_rgba(118,48,20,0.22)] lg:max-w-[700px] lg:text-[clamp(2rem,4.7vw,4.35rem)]">
             <span className="block">Let&apos;s build</span>
             <span className="flex flex-wrap items-baseline gap-x-4 gap-y-0">
               <span>something</span>
@@ -1398,14 +1398,14 @@ export function ContactPanelContent({
             <span className="block text-[1em]">together.</span>
           </h2>
 
-          <div className="contact-panel-details relative z-[2] space-y-1 font-medium leading-[1.12] text-white/98">
+          <div className="contact-page-details relative z-[2] mt-4 space-y-1 text-[clamp(18px,1.9vw,26px)] font-medium leading-[1.12] text-white/98">
             <a href="tel:+358405283008" className="block w-fit transition hover:text-[#ffe9db]">040 528 3008</a>
             <a href="mailto:roope.aa@hotmail.com" className="block w-fit transition hover:text-[#ffe9db]">roope.aa@hotmail.com</a>
             <p>Vantaa, Hämeenkylä</p>
           </div>
 
-          <div className="contact-panel-art relative z-[2] min-h-0">
-            <div className="contact-panel-art-frame relative overflow-hidden border border-[#ecb8ce]/85 bg-[#f2e3ea]">
+          <div className="contact-page-art relative z-[2] mt-5 flex min-h-0 flex-none items-end lg:mt-4 lg:min-h-0 lg:flex-1">
+            <div className="contact-page-art-frame relative h-[320px] w-full overflow-hidden border border-b-0 border-[#ecb8ce]/85 bg-[#f3e6eb] sm:h-[380px] lg:h-full lg:min-h-[320px] lg:w-[88%] lg:border-b lg:bg-[#f2e3ea]">
               <Image
                 src="/contact-splash-cup.png"
                 alt="3D splash cup"
@@ -1419,11 +1419,11 @@ export function ContactPanelContent({
           </div>
         </section>
 
-        <aside className="contact-panel-form-column relative min-h-0">
-          <div className="contact-panel-form-card relative z-[2] min-h-0 w-full border border-[#ecb8ce]/85 bg-[#f3e6eb] shadow-[0_14px_28px_rgba(76,28,15,0.1)]">
-            <h3 className="contact-panel-form-title max-w-full font-semibold leading-[1.03] text-[#8b3f1c]">Fill in your details</h3>
+        <aside className="contact-page-form-column relative -mt-px flex min-h-0 flex-col px-5 pb-6 pt-0 sm:px-7 lg:mt-0 lg:min-h-0 lg:pl-0 lg:pr-7">
+          <div className="contact-page-form-card relative z-[2] flex min-h-0 w-full flex-col border border-t-0 border-[#ecb8ce]/85 bg-[#f3e6eb] px-5 pb-7 pt-7 shadow-[0_14px_28px_rgba(76,28,15,0.1)] sm:px-8 lg:min-h-0 lg:flex-[0_0_80%] lg:border-0">
+            <h3 className="contact-page-form-title max-w-full text-[clamp(2.05rem,9.5vw,3.25rem)] font-semibold leading-[1.03] text-[#8b3f1c]">Fill in your details</h3>
 
-            <form onSubmit={handleContactSubmit} className="contact-panel-form min-h-0" autoComplete="off">
+            <form onSubmit={handleContactSubmit} className="contact-page-form mt-5 flex min-h-0 flex-1 flex-col gap-3.5" autoComplete="off">
               <input
                 name="Name"
                 type="text"
@@ -1435,7 +1435,7 @@ export function ContactPanelContent({
                   setSendFeedback(null);
                 }}
                 aria-invalid={submitAttempted && missingFields.name}
-                className={`min-w-0 w-full rounded-full border bg-[#eb5f1f] px-5 py-3.5 text-[16px] text-white placeholder:text-[#ffd5be] outline-none transition focus:border-[#b84910] sm:text-[17px] ${
+                className={`contact-page-input min-w-0 w-full rounded-full border bg-[#eb5f1f] px-5 py-3.5 text-[16px] text-white placeholder:text-[#ffd5be] outline-none transition focus:border-[#b84910] sm:text-[17px] ${
                   submitAttempted && missingFields.name ? "border-[#bb2d2d]" : "border-[#d1652c]"
                 }`}
               />
@@ -1450,7 +1450,7 @@ export function ContactPanelContent({
                   setSendFeedback(null);
                 }}
                 aria-invalid={submitAttempted && missingFields.email}
-                className={`min-w-0 w-full rounded-full border bg-[#eb5f1f] px-5 py-3.5 text-[16px] text-white placeholder:text-[#ffd5be] outline-none transition focus:border-[#b84910] sm:text-[17px] ${
+                className={`contact-page-input min-w-0 w-full rounded-full border bg-[#eb5f1f] px-5 py-3.5 text-[16px] text-white placeholder:text-[#ffd5be] outline-none transition focus:border-[#b84910] sm:text-[17px] ${
                   submitAttempted && missingFields.email ? "border-[#bb2d2d]" : "border-[#d1652c]"
                 }`}
               />
@@ -1464,12 +1464,12 @@ export function ContactPanelContent({
                   setSendFeedback(null);
                 }}
                 aria-invalid={submitAttempted && missingFields.message}
-                className={`contact-panel-message w-full min-w-0 resize-y rounded-[28px] border bg-[#eb5f1f] px-5 py-4 text-[16px] leading-7 text-white placeholder:text-[#ffd5be] outline-none transition focus:border-[#b84910] sm:rounded-[34px] sm:text-[17px] ${
+                className={`contact-page-message min-h-[168px] w-full min-w-0 flex-1 resize-y rounded-[28px] border bg-[#eb5f1f] px-5 py-4 text-[16px] leading-7 text-white placeholder:text-[#ffd5be] outline-none transition focus:border-[#b84910] sm:min-h-[180px] sm:rounded-[34px] sm:text-[17px] lg:resize-none ${
                   submitAttempted && missingFields.message ? "border-[#bb2d2d]" : "border-[#d1652c]"
                 }`}
               />
 
-              <div className="pt-1">
+              <div className="contact-page-submit pt-1">
                 <button
                   type="submit"
                   disabled={isSending}
@@ -1486,17 +1486,17 @@ export function ContactPanelContent({
             </form>
           </div>
 
-          <div className="contact-panel-socials relative z-[2] grid w-full grid-cols-4 items-center justify-items-center">
-            <SocialLogoLink href="https://www.linkedin.com/in/roope-aaltonen/" label="LinkedIn" className="contact-panel-social-link !border-0 !bg-transparent !shadow-none hover:!translate-y-0">
+          <div className="contact-page-socials relative z-[2] grid w-full grid-cols-4 items-center justify-items-center gap-2 px-3 pb-5 pt-3 sm:px-8 lg:pt-2">
+            <SocialLogoLink href="https://www.linkedin.com/in/roope-aaltonen/" label="LinkedIn" className="contact-page-social-link !h-[clamp(76px,8vw,132px)] !w-[clamp(76px,8vw,132px)] !border-0 !bg-transparent !shadow-none hover:!translate-y-0">
               <LinkedInGlyph />
             </SocialLogoLink>
-            <SocialLogoLink href={INSTAGRAM_URL} label="Instagram" className="contact-panel-social-link !border-0 !bg-transparent !shadow-none hover:!translate-y-0">
+            <SocialLogoLink href={INSTAGRAM_URL} label="Instagram" className="contact-page-social-link !h-[clamp(76px,8vw,132px)] !w-[clamp(76px,8vw,132px)] !border-0 !bg-transparent !shadow-none hover:!translate-y-0">
               <InstagramGlyph />
             </SocialLogoLink>
-            <SocialLogoLink href="https://facebook.com/roope.aaltonen.5" label="Facebook" className="contact-panel-social-link !border-0 !bg-transparent !shadow-none hover:!translate-y-0">
+            <SocialLogoLink href="https://facebook.com/roope.aaltonen.5" label="Facebook" className="contact-page-social-link !h-[clamp(76px,8vw,132px)] !w-[clamp(76px,8vw,132px)] !border-0 !bg-transparent !shadow-none hover:!translate-y-0">
               <FacebookGlyph />
             </SocialLogoLink>
-            <SocialLogoLink href="https://github.com/roopeaal" label="GitHub" className="contact-panel-social-link !border-0 !bg-transparent !shadow-none hover:!translate-y-0">
+            <SocialLogoLink href="https://github.com/roopeaal" label="GitHub" className="contact-page-social-link !h-[clamp(76px,8vw,132px)] !w-[clamp(76px,8vw,132px)] !border-0 !bg-transparent !shadow-none hover:!translate-y-0">
               <GitHubGlyph />
             </SocialLogoLink>
           </div>
