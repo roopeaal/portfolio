@@ -163,6 +163,10 @@ const MOBILE_AUTO_ANIMATION_DURATION: Record<NodeKey, number> = {
   contact: 3200,
 };
 const MOBILE_AUTO_ANIMATION_PAUSE = 2400;
+const DESKTOP_NODE_EDGE_GAP = 10;
+const DESKTOP_NODE_ROW_GAP = 24;
+const DESKTOP_LABEL_BLOCK_HEIGHT = 58;
+const MIN_DESKTOP_TOPOLOGY_SCALE = 0.74;
 
 const NODE_POSITIONS_STORAGE_KEY = "portfolio-node-positions-v7";
 const SIM_CLOCK_START_STORAGE_KEY = "portfolio-simulation-clock-start-v1";
@@ -360,6 +364,67 @@ function getCompactHomeNodePositions(
       y: lerp(base.contact.y, 326, compactAmount),
     },
   };
+}
+
+function getDesktopNodeContentHeight(node: NodeKey) {
+  const meta = NODE_META[node];
+  const labelTop = meta.deviceHeight + NODE_LABEL_GAP + (meta.labelOffsetY ?? 0);
+  return Math.max(meta.deviceHeight, labelTop + DESKTOP_LABEL_BLOCK_HEIGHT);
+}
+
+function getDesktopTopologyScale(metrics: SceneMetrics) {
+  const tallestColumnHeight = Math.max(
+    getDesktopNodeContentHeight("about") + getDesktopNodeContentHeight("home"),
+    getDesktopNodeContentHeight("projects") + getDesktopNodeContentHeight("contact"),
+  );
+  const availableHeight = metrics.height - DESKTOP_NODE_EDGE_GAP * 2 - DESKTOP_NODE_ROW_GAP;
+
+  return clamp(availableHeight / tallestColumnHeight, MIN_DESKTOP_TOPOLOGY_SCALE, 1);
+}
+
+function getHeightSafeHomeNodePositions(
+  base: Record<NodeKey, NodePosition>,
+  metrics: SceneMetrics,
+  nodeScale: number,
+): Record<NodeKey, NodePosition> {
+  const sceneHeight = Math.max(metrics.height, 1);
+  const toPixels = (value: number) => (value / VIEWBOX.height) * sceneHeight;
+  const toViewbox = (value: number) => (value / sceneHeight) * VIEWBOX.height;
+  const result = {
+    about: { ...base.about },
+    projects: { ...base.projects },
+    home: { ...base.home },
+    contact: { ...base.contact },
+  };
+
+  const fitColumn = (topNode: NodeKey, bottomNode: NodeKey) => {
+    const topHeight = getDesktopNodeContentHeight(topNode) * nodeScale;
+    const bottomHeight = getDesktopNodeContentHeight(bottomNode) * nodeScale;
+    const topMax = Math.max(DESKTOP_NODE_EDGE_GAP, sceneHeight - topHeight - DESKTOP_NODE_EDGE_GAP);
+    const bottomMax = Math.max(DESKTOP_NODE_EDGE_GAP, sceneHeight - bottomHeight - DESKTOP_NODE_EDGE_GAP);
+    let topY = clamp(toPixels(base[topNode].y), DESKTOP_NODE_EDGE_GAP, topMax);
+    let bottomY = clamp(toPixels(base[bottomNode].y), DESKTOP_NODE_EDGE_GAP, bottomMax);
+    const requiredBottomY = topY + topHeight + DESKTOP_NODE_ROW_GAP;
+
+    if (bottomY < requiredBottomY) {
+      bottomY = Math.min(requiredBottomY, bottomMax);
+    }
+
+    if (bottomY < topY + topHeight + DESKTOP_NODE_ROW_GAP) {
+      topY = Math.max(
+        DESKTOP_NODE_EDGE_GAP,
+        bottomY - topHeight - DESKTOP_NODE_ROW_GAP,
+      );
+    }
+
+    result[topNode].y = toViewbox(topY);
+    result[bottomNode].y = toViewbox(bottomY);
+  };
+
+  fitColumn("about", "home");
+  fitColumn("projects", "contact");
+
+  return result;
 }
 
 function lerp(start: number, end: number, t: number) {
@@ -956,6 +1021,7 @@ function getAnimatedDevicePoint(
   positions: Record<NodeKey, NodePosition>,
   activeNode: NodeKey | null,
   draggingNode: NodeKey | null,
+  layoutScale = 1,
 ) {
   if (activeNode !== node || draggingNode === node) {
     return point;
@@ -963,12 +1029,30 @@ function getAnimatedDevicePoint(
 
   const { width, deviceHeight } = NODE_META[node];
   const centerX = positions[node].x + width / 2;
-  const centerY = positions[node].y + deviceHeight / 2;
+  const centerY = positions[node].y + (deviceHeight * layoutScale) / 2;
   const scale = 1.035;
 
   return {
     x: centerX + (point.x - centerX) * scale,
-    y: centerY + (point.y - centerY) * scale - 4,
+    y: centerY + (point.y - centerY) * scale - 4 * layoutScale,
+  };
+}
+
+function scalePointAroundNode(
+  node: NodeKey,
+  point: { x: number; y: number },
+  positions: Record<NodeKey, NodePosition>,
+  layoutScale: number,
+) {
+  if (layoutScale === 1) return point;
+
+  const { width } = NODE_META[node];
+  const originX = positions[node].x + width / 2;
+  const originY = positions[node].y;
+
+  return {
+    x: originX + (point.x - originX) * layoutScale,
+    y: originY + (point.y - originY) * layoutScale,
   };
 }
 
@@ -1302,13 +1386,16 @@ export function TopologyHero() {
   );
 
   const isMobileTopology = sceneMetrics.width < MOBILE_TOPOLOGY_BREAKPOINT;
+  const desktopTopologyScale = isMobileTopology ? 1 : getDesktopTopologyScale(sceneMetrics);
   const topologyNodePositions = useMemo(
     () => {
       if (isMobileTopology) return getMobileHomeNodePositions(sceneMetrics);
-      if (sceneMetrics.width < COMPACT_TOPOLOGY_BREAKPOINT) return getCompactHomeNodePositions(nodePositions, sceneMetrics);
-      return nodePositions;
+      const widthAdjustedPositions = sceneMetrics.width < COMPACT_TOPOLOGY_BREAKPOINT
+        ? getCompactHomeNodePositions(nodePositions, sceneMetrics)
+        : nodePositions;
+      return getHeightSafeHomeNodePositions(widthAdjustedPositions, sceneMetrics, desktopTopologyScale);
     },
-    [isMobileTopology, nodePositions, sceneMetrics],
+    [desktopTopologyScale, isMobileTopology, nodePositions, sceneMetrics],
   );
 
   useEffect(() => {
@@ -1343,11 +1430,61 @@ export function TopologyHero() {
     phoneRingingRef.current = phoneRinging;
   }, [phoneRinging]);
 
-  const aboutCableAttach = getAnimatedDevicePoint("about", getRouterCableAttachPoint(topologyNodePositions, isMobileTopology, sceneMetrics.width), topologyNodePositions, active, draggingNode);
-  const homeAttach = getAnimatedDevicePoint("home", getAttachPoint("home", topologyNodePositions), topologyNodePositions, active, draggingNode);
-  const contactAttach = getAnimatedDevicePoint("contact", getAttachPoint("contact", topologyNodePositions), topologyNodePositions, active, draggingNode);
-  const switchLeftCableEnd = getAnimatedDevicePoint("projects", getSwitchCableStubEnd("left", topologyNodePositions, sceneMetrics.width, isMobileTopology, sceneMetrics.height), topologyNodePositions, active, draggingNode);
-  const switchRightCableEnd = getAnimatedDevicePoint("projects", getSwitchCableStubEnd("right", topologyNodePositions, sceneMetrics.width, isMobileTopology, sceneMetrics.height), topologyNodePositions, active, draggingNode);
+  const aboutCableAttach = getAnimatedDevicePoint(
+    "about",
+    scalePointAroundNode(
+      "about",
+      getRouterCableAttachPoint(topologyNodePositions, isMobileTopology, sceneMetrics.width),
+      topologyNodePositions,
+      desktopTopologyScale,
+    ),
+    topologyNodePositions,
+    active,
+    draggingNode,
+    desktopTopologyScale,
+  );
+  const homeAttach = getAnimatedDevicePoint(
+    "home",
+    scalePointAroundNode("home", getAttachPoint("home", topologyNodePositions), topologyNodePositions, desktopTopologyScale),
+    topologyNodePositions,
+    active,
+    draggingNode,
+    desktopTopologyScale,
+  );
+  const contactAttach = getAnimatedDevicePoint(
+    "contact",
+    scalePointAroundNode("contact", getAttachPoint("contact", topologyNodePositions), topologyNodePositions, desktopTopologyScale),
+    topologyNodePositions,
+    active,
+    draggingNode,
+    desktopTopologyScale,
+  );
+  const switchLeftCableEnd = getAnimatedDevicePoint(
+    "projects",
+    scalePointAroundNode(
+      "projects",
+      getSwitchCableStubEnd("left", topologyNodePositions, sceneMetrics.width, isMobileTopology, sceneMetrics.height),
+      topologyNodePositions,
+      desktopTopologyScale,
+    ),
+    topologyNodePositions,
+    active,
+    draggingNode,
+    desktopTopologyScale,
+  );
+  const switchRightCableEnd = getAnimatedDevicePoint(
+    "projects",
+    scalePointAroundNode(
+      "projects",
+      getSwitchCableStubEnd("right", topologyNodePositions, sceneMetrics.width, isMobileTopology, sceneMetrics.height),
+      topologyNodePositions,
+      desktopTopologyScale,
+    ),
+    topologyNodePositions,
+    active,
+    draggingNode,
+    desktopTopologyScale,
+  );
   const chromeMobileSwitchCableNudgeY = isMobileTopology && useChromeMobileCableAlignment
     ? (CHROME_MOBILE_SWITCH_CABLE_NUDGE_Y_PX * VIEWBOX.height) / Math.max(sceneMetrics.height, 1)
     : 0;
@@ -1540,18 +1677,12 @@ export function TopologyHero() {
   useEffect(() => {
     if (networkMode !== "repairing") return;
 
-    setRepairLooseEnd((current) => current ?? looseEndRef.current ?? detachedOrigin ?? getSwitchCableStubEnd(
-      "left",
-      topologyNodePositionsRef.current,
-      sceneMetricsRef.current.width,
-      mobileTopologyRef.current,
-      sceneMetricsRef.current.height,
-    ));
+    setRepairLooseEnd((current) => current ?? looseEndRef.current ?? detachedOrigin ?? switchLeftCableEndRef.current);
   }, [networkMode, detachedOrigin]);
 
   useEffect(() => {
     if (networkMode === "repairing") {
-      const target = getSwitchCableStubEnd("left", topologyNodePositionsRef.current, sceneMetricsRef.current.width, mobileTopologyRef.current);
+      const target = switchLeftCableEndRef.current;
       setRepairLooseEnd((current) => {
         const next = stepToward(current ?? looseEndRef.current ?? detachedOrigin ?? target, target, 4.4);
         if (Math.hypot(next.x - target.x, next.y - target.y) < 0.5) {
@@ -1964,6 +2095,7 @@ export function TopologyHero() {
                   layer={40}
                   dragging={draggingNode === "about"}
                   mobile={isMobileTopology}
+                  layoutScale={desktopTopologyScale}
                   onHover={() => { setActive("about"); triggerNodeAnimation("about"); }}
                   onLeave={() => setActive((current) => (current === "about" ? null : current))}
                   onPointerDown={handlePointerDown}
@@ -1989,6 +2121,7 @@ export function TopologyHero() {
                   layer={isMobileTopology ? 16 : 40}
                   dragging={draggingNode === "projects"}
                   mobile={isMobileTopology}
+                  layoutScale={desktopTopologyScale}
                   onHover={() => { setActive("projects"); triggerNodeAnimation("projects"); }}
                   onLeave={() => setActive((current) => (current === "projects" ? null : current))}
                   onPointerDown={handlePointerDown}
@@ -2027,6 +2160,7 @@ export function TopologyHero() {
                   layer={40}
                   dragging={draggingNode === "home"}
                   mobile={isMobileTopology}
+                  layoutScale={desktopTopologyScale}
                   onHover={() => { setActive("home"); triggerNodeAnimation("home"); }}
                   onLeave={() => setActive((current) => (current === "home" ? null : current))}
                   onPointerDown={handlePointerDown}
@@ -2045,6 +2179,7 @@ export function TopologyHero() {
                   layer={40}
                   dragging={draggingNode === "contact"}
                   mobile={isMobileTopology}
+                  layoutScale={desktopTopologyScale}
                   onHover={() => { setActive("contact"); triggerNodeAnimation("contact"); }}
                   onLeave={() => setActive((current) => (current === "contact" ? null : current))}
                   onPointerDown={handlePointerDown}
@@ -2127,7 +2262,7 @@ export function TopologyHero() {
                   <DetachedEthernetStub
                     bottom={switchLeftCableEnd}
                     zIndex={switchStubZIndex}
-                    scale={isMobileTopology ? MOBILE_DEVICE_VISUAL_SCALE.projects : 1}
+                    scale={isMobileTopology ? MOBILE_DEVICE_VISUAL_SCALE.projects : desktopTopologyScale}
                     nudgeY={-1}
                     hoverActive={!isMobileTopology && switchHoverMotionActive}
                   />
@@ -2136,7 +2271,7 @@ export function TopologyHero() {
                   <DetachedEthernetStub
                     bottom={looseEnd}
                     zIndex={switchStubZIndex}
-                    scale={isMobileTopology ? MOBILE_DEVICE_VISUAL_SCALE.projects : 1}
+                    scale={isMobileTopology ? MOBILE_DEVICE_VISUAL_SCALE.projects : desktopTopologyScale}
                     rotationDeg={detachedStubRotationDeg}
                     nudgeY={-1}
                     hoverActive={false}
@@ -2145,7 +2280,7 @@ export function TopologyHero() {
                 <DetachedEthernetStub
                   bottom={switchRightCableEnd}
                   zIndex={switchStubZIndex}
-                  scale={isMobileTopology ? MOBILE_DEVICE_VISUAL_SCALE.projects : 1}
+                  scale={isMobileTopology ? MOBILE_DEVICE_VISUAL_SCALE.projects : desktopTopologyScale}
                   nudgeX={1}
                   nudgeY={-1}
                   hoverActive={!isMobileTopology && switchHoverMotionActive}
@@ -2332,6 +2467,7 @@ function NodeButton({
   layer = 30,
   dragging,
   mobile = false,
+  layoutScale = 1,
   onHover,
   onLeave,
   onPointerDown,
@@ -2348,6 +2484,7 @@ function NodeButton({
   layer?: number;
   dragging: boolean;
   mobile?: boolean;
+  layoutScale?: number;
   onHover: () => void;
   onLeave: () => void;
   onPointerDown: (node: NodeKey, event: ReactPointerEvent<HTMLButtonElement>) => void;
@@ -2386,7 +2523,14 @@ function NodeButton({
         onPointerDown={(event) => onPointerDown(node, event)}
         onContextMenu={(event) => event.preventDefault()}
         className="group relative isolate h-full w-full overflow-visible select-none text-left focus:outline-none"
-        style={{ touchAction: mobile ? "manipulation" : "none", cursor: mobile ? "pointer" : dragging ? "grabbing" : "grab", userSelect: "none", zIndex: dragging ? 26 : active ? 18 : 12 }}
+        style={{
+          touchAction: mobile ? "manipulation" : "none",
+          cursor: mobile ? "pointer" : dragging ? "grabbing" : "grab",
+          userSelect: "none",
+          zIndex: dragging ? 26 : active ? 18 : 12,
+          transform: layoutScale < 0.999 ? `scale(${layoutScale})` : undefined,
+          transformOrigin: "top center",
+        }}
       >
         <motion.div
           animate={{
