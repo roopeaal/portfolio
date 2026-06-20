@@ -382,51 +382,6 @@ function getDesktopTopologyScale(metrics: SceneMetrics) {
   return clamp(availableHeight / tallestColumnHeight, MIN_DESKTOP_TOPOLOGY_SCALE, 1);
 }
 
-function getHeightSafeHomeNodePositions(
-  base: Record<NodeKey, NodePosition>,
-  metrics: SceneMetrics,
-  nodeScale: number,
-): Record<NodeKey, NodePosition> {
-  const sceneHeight = Math.max(metrics.height, 1);
-  const toPixels = (value: number) => (value / VIEWBOX.height) * sceneHeight;
-  const toViewbox = (value: number) => (value / sceneHeight) * VIEWBOX.height;
-  const result = {
-    about: { ...base.about },
-    projects: { ...base.projects },
-    home: { ...base.home },
-    contact: { ...base.contact },
-  };
-
-  const fitColumn = (topNode: NodeKey, bottomNode: NodeKey) => {
-    const topHeight = getDesktopNodeContentHeight(topNode) * nodeScale;
-    const bottomHeight = getDesktopNodeContentHeight(bottomNode) * nodeScale;
-    const topMax = Math.max(DESKTOP_NODE_EDGE_GAP, sceneHeight - topHeight - DESKTOP_NODE_EDGE_GAP);
-    const bottomMax = Math.max(DESKTOP_NODE_EDGE_GAP, sceneHeight - bottomHeight - DESKTOP_NODE_EDGE_GAP);
-    let topY = clamp(toPixels(base[topNode].y), DESKTOP_NODE_EDGE_GAP, topMax);
-    let bottomY = clamp(toPixels(base[bottomNode].y), DESKTOP_NODE_EDGE_GAP, bottomMax);
-    const requiredBottomY = topY + topHeight + DESKTOP_NODE_ROW_GAP;
-
-    if (bottomY < requiredBottomY) {
-      bottomY = Math.min(requiredBottomY, bottomMax);
-    }
-
-    if (bottomY < topY + topHeight + DESKTOP_NODE_ROW_GAP) {
-      topY = Math.max(
-        DESKTOP_NODE_EDGE_GAP,
-        bottomY - topHeight - DESKTOP_NODE_ROW_GAP,
-      );
-    }
-
-    result[topNode].y = toViewbox(topY);
-    result[bottomNode].y = toViewbox(bottomY);
-  };
-
-  fitColumn("about", "home");
-  fitColumn("projects", "contact");
-
-  return result;
-}
-
 function lerp(start: number, end: number, t: number) {
   return start + (end - start) * t;
 }
@@ -1390,12 +1345,11 @@ export function TopologyHero() {
   const topologyNodePositions = useMemo(
     () => {
       if (isMobileTopology) return getMobileHomeNodePositions(sceneMetrics);
-      const widthAdjustedPositions = sceneMetrics.width < COMPACT_TOPOLOGY_BREAKPOINT
+      return sceneMetrics.width < COMPACT_TOPOLOGY_BREAKPOINT
         ? getCompactHomeNodePositions(nodePositions, sceneMetrics)
         : nodePositions;
-      return getHeightSafeHomeNodePositions(widthAdjustedPositions, sceneMetrics, desktopTopologyScale);
     },
-    [desktopTopologyScale, isMobileTopology, nodePositions, sceneMetrics],
+    [isMobileTopology, nodePositions, sceneMetrics],
   );
 
   useEffect(() => {
