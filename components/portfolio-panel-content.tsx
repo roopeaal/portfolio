@@ -17,6 +17,90 @@ export interface PanelSidebarItem {
 
 const INSTAGRAM_URL = "https://www.instagram.com/roope_aaltonen";
 
+type CertificationAward = {
+  title: string;
+  issuer: "Cisco Networking Academy" | "AWS Academy" | "Red Hat Academy";
+  issued: string;
+  badgeSrc: string;
+  certificateHref: string;
+  kind: "medal" | "trophy" | "plaque";
+};
+
+const CERTIFICATION_AWARDS: CertificationAward[] = [
+  {
+    title: "CCNA: Switching, Routing & Wireless Essentials",
+    issuer: "Cisco Networking Academy",
+    issued: "November 2024",
+    badgeSrc: "/certifications/badges/cisco-ccna-srwe.png",
+    certificateHref: "/certifications/certificates/cisco-ccna-srwe.pdf",
+    kind: "medal",
+  },
+  {
+    title: "AWS Cloud Architecting",
+    issuer: "AWS Academy",
+    issued: "October 2025",
+    badgeSrc: "/certifications/badges/aws-cloud-architecting.png",
+    certificateHref: "/certifications/certificates/aws-cloud-architecting.pdf",
+    kind: "trophy",
+  },
+  {
+    title: "CCNA: Enterprise Networking, Security & Automation",
+    issuer: "Cisco Networking Academy",
+    issued: "May 2025",
+    badgeSrc: "/certifications/badges/cisco-ccna-ensa.png",
+    certificateHref: "/certifications/certificates/cisco-ccna-ensa.pdf",
+    kind: "medal",
+  },
+  {
+    title: "CyberOps Associate",
+    issuer: "Cisco Networking Academy",
+    issued: "May 2025",
+    badgeSrc: "/certifications/badges/cisco-cyberops-associate.png",
+    certificateHref: "/certifications/certificates/cisco-cyberops-associate.pdf",
+    kind: "medal",
+  },
+  {
+    title: "Red Hat System Administration I",
+    issuer: "Red Hat Academy",
+    issued: "August 2025",
+    badgeSrc: "/certifications/badges/red-hat-system-administration-i.png",
+    certificateHref: "/certifications/certificates/red-hat-system-administration-i.pdf",
+    kind: "plaque",
+  },
+  {
+    title: "Ethical Hacker",
+    issuer: "Cisco Networking Academy",
+    issued: "January 2026",
+    badgeSrc: "/certifications/badges/cisco-ethical-hacker.png",
+    certificateHref: "/certifications/certificates/cisco-ethical-hacker.pdf",
+    kind: "medal",
+  },
+  {
+    title: "Red Hat OpenShift Development I",
+    issuer: "Red Hat Academy",
+    issued: "August 2025",
+    badgeSrc: "/certifications/badges/red-hat-openshift-development-i.png",
+    certificateHref: "/certifications/certificates/red-hat-openshift-development-i.pdf",
+    kind: "plaque",
+  },
+  {
+    title: "Red Hat OpenShift Administration I",
+    issuer: "Red Hat Academy",
+    issued: "September 2025",
+    badgeSrc: "/certifications/badges/red-hat-openshift-administration-i.png",
+    certificateHref: "/certifications/certificates/red-hat-openshift-administration-i.pdf",
+    kind: "plaque",
+  },
+  {
+    title: "Red Hat System Administration II",
+    issuer: "Red Hat Academy",
+    issued: "December 2025",
+    badgeSrc: "/certifications/badges/red-hat-system-administration-ii.png",
+    certificateHref: "/certifications/certificates/red-hat-system-administration-ii.pdf",
+    kind: "plaque",
+  },
+];
+
 function clampNumber(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);
 }
@@ -121,11 +205,9 @@ export function AboutPanelContent({
   section,
   preview = false,
 }: {
-  section?: "profile" | "direction" | "studies" | "reliability";
+  section?: "profile" | "direction" | "studies" | "reliability" | "awards";
   preview?: boolean;
 }) {
-  void section;
-
   const heroLineTop = "ROOPE AALTONEN IS AN ICT ENGINEERING STUDENT";
   const heroLineBottom = "LIVING AND WORKING IN THE HELSINKI METROPOLITAN AREA";
   const portraitSrc = "/about-vintage-roope.png";
@@ -157,6 +239,10 @@ export function AboutPanelContent({
         </div>
       </div>
     );
+  }
+
+  if (section === "awards") {
+    return <AwardsCabinet />;
   }
 
   return (
@@ -239,6 +325,125 @@ export function AboutPanelContent({
         </div>
       </div>
     </div>
+  );
+}
+
+function AwardsCabinet() {
+  return (
+    <div
+      className="relative h-full overflow-x-hidden overflow-y-auto bg-[#26170f] text-[#f7ead0]"
+      style={{
+        backgroundImage: [
+          "radial-gradient(circle at 50% 0%, rgba(255,224,154,0.14), transparent 38%)",
+          "repeating-linear-gradient(91deg, rgba(255,255,255,0.018) 0 2px, rgba(0,0,0,0.035) 2px 7px)",
+          "linear-gradient(135deg, #4a2c19 0%, #25150d 54%, #3b2113 100%)",
+        ].join(","),
+      }}
+    >
+      <div className="pointer-events-none absolute inset-3 rounded-[18px] border border-[#d8ad57]/35 shadow-[inset_0_0_0_5px_rgba(40,20,9,0.7),inset_0_0_45px_rgba(0,0,0,0.65)]" />
+      <div className="relative z-[1] mx-auto min-h-full max-w-[1320px] px-5 py-7 sm:px-8 lg:px-10">
+        <header className="mx-auto max-w-3xl text-center">
+          <div className="mx-auto flex w-fit items-center gap-3 rounded-full border border-[#d5ae61]/55 bg-[#160d08]/55 px-4 py-1.5 shadow-[inset_0_1px_rgba(255,255,255,0.08)]">
+            <span className="h-px w-7 bg-[#d5ae61]/70" />
+            <span className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#e2c789]">Verified achievements</span>
+            <span className="h-px w-7 bg-[#d5ae61]/70" />
+          </div>
+          <h2
+            className="mt-3 text-[clamp(2rem,5vw,4rem)] font-semibold leading-none tracking-[-0.035em] text-[#fff5dd]"
+            style={{ fontFamily: "Georgia, 'Times New Roman', serif", textShadow: "0 3px 18px rgba(0,0,0,0.55)" }}
+          >
+            Awards Cabinet
+          </h2>
+          <p className="mx-auto mt-3 max-w-2xl text-[13px] leading-6 text-[#d8c6a7] sm:text-sm">
+            Industry training in networking, cloud, Linux, containers and cybersecurity. Select an award to open its certificate.
+          </p>
+        </header>
+
+        <div className="mt-7 grid gap-x-5 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
+          {CERTIFICATION_AWARDS.map((award) => (
+            <CertificationDisplay key={award.title} award={award} />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CertificationDisplay({ award }: { award: CertificationAward }) {
+  const frameClass = award.kind === "medal"
+    ? "rounded-full border-[#e8c66d] bg-[radial-gradient(circle_at_35%_28%,#fff2b8_0%,#c58b2d_42%,#72501d_72%,#e1bd61_100%)] p-[7px]"
+    : award.kind === "trophy"
+      ? "rounded-[24px_24px_42px_42px] border-[#d5b15e] bg-[linear-gradient(145deg,#ffe7a1_0%,#b77a24_42%,#f0d27a_72%,#7d531d_100%)] p-[8px]"
+      : "rounded-[18px] border-[#b88945] bg-[linear-gradient(145deg,#f1d797_0%,#8b5b25_34%,#d8b46c_62%,#5c3919_100%)] p-[7px]";
+
+  return (
+    <a
+      href={award.certificateHref}
+      target="_blank"
+      rel="noreferrer"
+      className="group relative flex min-h-[390px] flex-col items-center rounded-[16px] border border-[#d7b66e]/30 bg-[linear-gradient(180deg,rgba(20,11,7,0.42),rgba(7,4,3,0.7))] px-4 pb-5 pt-6 text-center shadow-[inset_0_1px_rgba(255,255,255,0.05),0_20px_36px_rgba(0,0,0,0.28)] transition duration-300 hover:-translate-y-1 hover:border-[#edce82]/60 hover:shadow-[inset_0_1px_rgba(255,255,255,0.08),0_24px_46px_rgba(0,0,0,0.4)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f0cc77] focus-visible:ring-offset-2 focus-visible:ring-offset-[#26170f]"
+      aria-label={`Open certificate: ${award.title}`}
+    >
+      <div className="absolute inset-x-5 top-3 h-px bg-[linear-gradient(90deg,transparent,#e4c27788,transparent)]" />
+
+      <div className="relative flex h-[238px] w-full items-center justify-center">
+        {award.kind === "medal" ? (
+          <>
+            <span className="absolute left-1/2 top-0 h-[92px] w-[46px] -translate-x-[76%] -rotate-[11deg] bg-[linear-gradient(90deg,#183d68_0_34%,#e8e9ec_34%_66%,#2c78a9_66%)] shadow-lg [clip-path:polygon(0_0,100%_0,84%_100%,50%_82%,16%_100%)]" />
+            <span className="absolute left-1/2 top-0 h-[92px] w-[46px] -translate-x-[24%] rotate-[11deg] bg-[linear-gradient(90deg,#2c78a9_0_34%,#e8e9ec_34%_66%,#183d68_66%)] shadow-lg [clip-path:polygon(0_0,100%_0,84%_100%,50%_82%,16%_100%)]" />
+          </>
+        ) : null}
+
+        {award.kind === "trophy" ? (
+          <>
+            <span className="absolute left-1/2 top-[70px] h-[82px] w-[58px] -translate-x-[102px] rounded-l-full border-[12px] border-r-0 border-[#bd8530]" />
+            <span className="absolute right-1/2 top-[70px] h-[82px] w-[58px] translate-x-[102px] rounded-r-full border-[12px] border-l-0 border-[#bd8530]" />
+            <span className="absolute bottom-[18px] left-1/2 h-[34px] w-[22px] -translate-x-1/2 bg-[linear-gradient(90deg,#8b5d20,#f2d37b,#8b5d20)]" />
+            <span className="absolute bottom-[5px] left-1/2 h-[18px] w-[112px] -translate-x-1/2 rounded-t-[8px] border border-[#e6c86e] bg-[linear-gradient(180deg,#d4a947,#76501e)]" />
+          </>
+        ) : null}
+
+        {award.kind === "plaque" ? (
+          <>
+            <span className="absolute left-[15%] top-[20px] h-[188px] w-[6px] rounded-full bg-[linear-gradient(180deg,#f0d484,#7b4e20,#d4ae5e)]" />
+            <span className="absolute right-[15%] top-[20px] h-[188px] w-[6px] rounded-full bg-[linear-gradient(180deg,#f0d484,#7b4e20,#d4ae5e)]" />
+            <span className="absolute bottom-[7px] left-1/2 h-[15px] w-[78%] -translate-x-1/2 rounded-t-[6px] bg-[linear-gradient(180deg,#b77b32,#4a2a14)] shadow-lg" />
+          </>
+        ) : null}
+
+        <div className={`relative z-[2] h-[188px] w-[188px] border shadow-[0_12px_24px_rgba(0,0,0,0.35)] transition duration-300 group-hover:scale-[1.025] ${frameClass}`}>
+          <div
+            className={`absolute overflow-hidden border border-white/70 bg-white ${
+              award.kind === "medal"
+                ? "inset-[15px] rounded-[18px]"
+                : award.kind === "trophy"
+                  ? "inset-[8px] rounded-[18px_18px_28px_28px]"
+                  : "inset-[7px] rounded-[11px]"
+            }`}
+          >
+            <Image
+              src={award.badgeSrc}
+              alt={`${award.title} badge`}
+              fill
+              sizes="188px"
+              className="object-contain p-1.5"
+              draggable={false}
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="relative mt-2 w-full rounded-[7px] border border-[#d5ae61]/55 bg-[linear-gradient(180deg,#e6ca88_0%,#b78942_48%,#7c5227_100%)] px-3 py-2 text-[#241309] shadow-[inset_0_1px_rgba(255,255,255,0.45),0_5px_12px_rgba(0,0,0,0.3)]">
+        <p className="text-[10px] font-bold uppercase tracking-[0.16em]">{award.issuer}</p>
+        <h3 className="mt-1 text-[13px] font-semibold leading-[1.25]">{award.title}</h3>
+        <p className="mt-1 text-[10px] font-medium uppercase tracking-[0.12em] text-[#4e2e18]">{award.issued}</p>
+      </div>
+
+      <span className="mt-3 inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#dbc184]">
+        View certificate
+        <span aria-hidden="true" className="inline-block h-1.5 w-1.5 rotate-45 border-r border-t border-current" />
+      </span>
+    </a>
   );
 }
 

@@ -1266,6 +1266,7 @@ export function TopologyHero() {
   const [routerPowerOn, setRouterPowerOn] = useState(true);
   const [routerSignalLevel, setRouterSignalLevel] = useState<0 | 1 | 2>(2);
   const [routerWifiReady, setRouterWifiReady] = useState(true);
+  const [aboutSection, setAboutSection] = useState<"summary" | "awards">("summary");
   const [contactSection, setContactSection] = useState<"overview">("overview");
   const [sceneMetrics, setSceneMetrics] = useState({ width: VIEWBOX.width, height: VIEWBOX.height });
   const useChromeMobileCableAlignment = useMemo(() => isChromeLikeBrowser(), []);
@@ -1360,8 +1361,21 @@ export function TopologyHero() {
   const selectedProject = useMemo(() => projects.find((project) => project.slug === selectedProjectSlug) ?? null, [selectedProjectSlug]);
 
   const aboutSidebarItems = useMemo<PanelSidebarItem[]>(
-    () => [{ id: "summary", label: "Summary", active: true }],
-    [],
+    () => [
+      {
+        id: "summary",
+        label: "Summary",
+        active: aboutSection === "summary",
+        onSelect: () => setAboutSection("summary"),
+      },
+      {
+        id: "awards",
+        label: "Awards Cabinet",
+        active: aboutSection === "awards",
+        onSelect: () => setAboutSection("awards"),
+      },
+    ],
+    [aboutSection],
   );
 
   const projectsSidebarItems = useMemo<PanelSidebarItem[]>(
@@ -2397,7 +2411,7 @@ export function TopologyHero() {
         sidebarItems={aboutSidebarItems}
         shellTitle="Global Settings"
       >
-        <AboutPanelContent />
+        <AboutPanelContent section={aboutSection === "awards" ? "awards" : "profile"} />
       </PacketWindow>
 
       <PacketWindow
