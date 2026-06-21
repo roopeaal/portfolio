@@ -408,9 +408,10 @@ function getCablePathGeometry(
   disconnected = false,
   looseEnd?: { x: number; y: number },
   routeOffsetX = 0,
+  attachDrop = CABLE_ATTACH_DROP,
 ) {
   const baseEnd = disconnected && looseEnd ? looseEnd : to;
-  const cableAttachDrop = disconnected ? 0 : CABLE_ATTACH_DROP;
+  const cableAttachDrop = disconnected ? 0 : attachDrop;
   const end = { x: baseEnd.x, y: baseEnd.y + cableAttachDrop };
   const deltaX = end.x - from.x;
   const deltaY = end.y - from.y;
@@ -536,8 +537,14 @@ function buildDetachedCableWavePath(points: Array<{ x: number; y: number }>) {
   return path;
 }
 
-function pointOnCablePath(from: { x: number; y: number }, to: { x: number; y: number }, t: number, routeOffsetX = 0) {
-  const geometry = getCablePathGeometry(from, to, false, undefined, routeOffsetX);
+function pointOnCablePath(
+  from: { x: number; y: number },
+  to: { x: number; y: number },
+  t: number,
+  routeOffsetX = 0,
+  attachDrop = CABLE_ATTACH_DROP,
+) {
+  const geometry = getCablePathGeometry(from, to, false, undefined, routeOffsetX, attachDrop);
   const clampedT = clamp(t, 0, 1);
 
   if (!geometry.corner) {
@@ -943,6 +950,32 @@ function getAttachPoint(node: NodeKey, positions: Record<NodeKey, NodePosition>)
   };
 }
 
+function cssPixelsToViewboxX(pixels: number, sceneWidth: number) {
+  return pixels * (VIEWBOX.width / Math.max(sceneWidth, 1));
+}
+
+function cssPixelsToViewboxY(pixels: number, sceneHeight: number) {
+  return pixels * (VIEWBOX.height / Math.max(sceneHeight, 1));
+}
+
+function getDesktopDevicePoint(
+  node: NodeKey,
+  positions: Record<NodeKey, NodePosition>,
+  localX: number,
+  localY: number,
+  sceneMetrics: SceneMetrics,
+  layoutScale: number,
+) {
+  const { width } = NODE_META[node];
+  const centerX = positions[node].x + width / 2;
+  const localOffsetX = (localX - UNIFIED_DEVICE_WIDTH / 2) * layoutScale;
+
+  return {
+    x: centerX + cssPixelsToViewboxX(localOffsetX, sceneMetrics.width),
+    y: positions[node].y + cssPixelsToViewboxY(localY * layoutScale, sceneMetrics.height),
+  };
+}
+
 function getMobileDeviceCenterOffsetX(node: NodeKey, sceneWidth = VIEWBOX.width) {
   const visualScale = MOBILE_DEVICE_VISUAL_SCALE[node];
   const cssOffset = ((visualScale - 1) * UNIFIED_DEVICE_WIDTH) / 2 + MOBILE_DEVICE_CENTER_NUDGE_X[node];
@@ -956,6 +989,29 @@ function getRouterCableAttachPoint(positions: Record<NodeKey, NodePosition>, mob
   return {
     x: x + (mobile ? width / 2 + getMobileDeviceCenterOffsetX("about", sceneWidth) : width * 0.74),
     y: y + 126,
+  };
+}
+
+function getDesktopRouterCableAttachPoint(
+  positions: Record<NodeKey, NodePosition>,
+  sceneMetrics: SceneMetrics,
+  layoutScale: number,
+) {
+  const point = getDesktopDevicePoint(
+    "about",
+    positions,
+    UNIFIED_DEVICE_WIDTH * 0.74,
+    126,
+    sceneMetrics,
+    layoutScale,
+  );
+  const { x } = positions.about;
+  const { width } = NODE_META.about;
+  const centerX = x + width / 2;
+
+  return {
+    ...point,
+    x: centerX + (x + width * 0.74 - centerX) * layoutScale,
   };
 }
 
@@ -977,6 +1033,7 @@ function getAnimatedDevicePoint(
   activeNode: NodeKey | null,
   draggingNode: NodeKey | null,
   layoutScale = 1,
+  sceneMetrics?: SceneMetrics,
 ) {
   if (activeNode !== node || draggingNode === node) {
     return point;
@@ -984,30 +1041,17 @@ function getAnimatedDevicePoint(
 
   const { width, deviceHeight } = NODE_META[node];
   const centerX = positions[node].x + width / 2;
-  const centerY = positions[node].y + (deviceHeight * layoutScale) / 2;
+  const centerY = sceneMetrics
+    ? positions[node].y + cssPixelsToViewboxY((deviceHeight * layoutScale) / 2, sceneMetrics.height)
+    : positions[node].y + (deviceHeight * layoutScale) / 2;
+  const hoverLift = sceneMetrics
+    ? cssPixelsToViewboxY(4 * layoutScale, sceneMetrics.height)
+    : 4 * layoutScale;
   const scale = 1.035;
 
   return {
     x: centerX + (point.x - centerX) * scale,
-    y: centerY + (point.y - centerY) * scale - 4 * layoutScale,
-  };
-}
-
-function scalePointAroundNode(
-  node: NodeKey,
-  point: { x: number; y: number },
-  positions: Record<NodeKey, NodePosition>,
-  layoutScale: number,
-) {
-  if (layoutScale === 1) return point;
-
-  const { width } = NODE_META[node];
-  const originX = positions[node].x + width / 2;
-  const originY = positions[node].y;
-
-  return {
-    x: originX + (point.x - originX) * layoutScale,
-    y: originY + (point.y - originY) * layoutScale,
+    y: centerY + (point.y - centerY) * scale - hoverLift,
   };
 }
 
@@ -1017,6 +1061,7 @@ function getSwitchCableStubEnd(
   sceneWidth = VIEWBOX.width,
   compact = false,
   sceneHeight = VIEWBOX.height,
+  layoutScale = 1,
 ) {
   const { x, y } = positions.projects;
   const portIndex = port === "left" ? SWITCH_LEFT_CABLE_PORT_INDEX : SWITCH_RIGHT_CABLE_PORT_INDEX;
@@ -1038,16 +1083,14 @@ function getSwitchCableStubEnd(
     };
   }
 
-  const switchWidthPx = UNIFIED_DEVICE_WIDTH;
-  const renderedSwitchWidthInViewboxUnits = switchWidthPx * (VIEWBOX.width / Math.max(sceneWidth, 1));
-  const relativeScale = renderedSwitchWidthInViewboxUnits / projectNodeWidth;
-  const centeredOffset = projectNodeWidth / 2;
-  const responsiveOffset = centeredOffset + (baseOffset - centeredOffset) * relativeScale;
-
-  return {
-    x: x + responsiveOffset,
-    y: y + SWITCH_STUB_Y,
-  };
+  return getDesktopDevicePoint(
+    "projects",
+    positions,
+    baseOffset,
+    SWITCH_STUB_Y,
+    { width: sceneWidth, height: sceneHeight },
+    layoutScale,
+  );
 }
 
 function getPreviewStyle(node: NodeKey, positions: Record<NodeKey, NodePosition>): CSSProperties {
@@ -1386,59 +1429,90 @@ export function TopologyHero() {
 
   const aboutCableAttach = getAnimatedDevicePoint(
     "about",
-    scalePointAroundNode(
-      "about",
-      getRouterCableAttachPoint(topologyNodePositions, isMobileTopology, sceneMetrics.width),
-      topologyNodePositions,
-      desktopTopologyScale,
-    ),
+    isMobileTopology
+      ? getRouterCableAttachPoint(topologyNodePositions, true, sceneMetrics.width)
+      : getDesktopRouterCableAttachPoint(
+          topologyNodePositions,
+          sceneMetrics,
+          desktopTopologyScale,
+        ),
     topologyNodePositions,
     active,
     draggingNode,
     desktopTopologyScale,
+    isMobileTopology ? undefined : sceneMetrics,
   );
   const homeAttach = getAnimatedDevicePoint(
     "home",
-    scalePointAroundNode("home", getAttachPoint("home", topologyNodePositions), topologyNodePositions, desktopTopologyScale),
+    isMobileTopology
+      ? getAttachPoint("home", topologyNodePositions)
+      : getDesktopDevicePoint(
+          "home",
+          topologyNodePositions,
+          UNIFIED_DEVICE_WIDTH / 2,
+          UNIFIED_DEVICE_HEIGHT / 2,
+          sceneMetrics,
+          desktopTopologyScale,
+        ),
     topologyNodePositions,
     active,
     draggingNode,
     desktopTopologyScale,
+    isMobileTopology ? undefined : sceneMetrics,
   );
   const contactAttach = getAnimatedDevicePoint(
     "contact",
-    scalePointAroundNode("contact", getAttachPoint("contact", topologyNodePositions), topologyNodePositions, desktopTopologyScale),
+    isMobileTopology
+      ? getAttachPoint("contact", topologyNodePositions)
+      : getDesktopDevicePoint(
+          "contact",
+          topologyNodePositions,
+          UNIFIED_DEVICE_WIDTH / 2,
+          UNIFIED_DEVICE_HEIGHT / 2,
+          sceneMetrics,
+          desktopTopologyScale,
+        ),
     topologyNodePositions,
     active,
     draggingNode,
     desktopTopologyScale,
+    isMobileTopology ? undefined : sceneMetrics,
   );
   const switchLeftCableEnd = getAnimatedDevicePoint(
     "projects",
-    scalePointAroundNode(
-      "projects",
-      getSwitchCableStubEnd("left", topologyNodePositions, sceneMetrics.width, isMobileTopology, sceneMetrics.height),
+    getSwitchCableStubEnd(
+      "left",
       topologyNodePositions,
+      sceneMetrics.width,
+      isMobileTopology,
+      sceneMetrics.height,
       desktopTopologyScale,
     ),
     topologyNodePositions,
     active,
     draggingNode,
     desktopTopologyScale,
+    isMobileTopology ? undefined : sceneMetrics,
   );
   const switchRightCableEnd = getAnimatedDevicePoint(
     "projects",
-    scalePointAroundNode(
-      "projects",
-      getSwitchCableStubEnd("right", topologyNodePositions, sceneMetrics.width, isMobileTopology, sceneMetrics.height),
+    getSwitchCableStubEnd(
+      "right",
       topologyNodePositions,
+      sceneMetrics.width,
+      isMobileTopology,
+      sceneMetrics.height,
       desktopTopologyScale,
     ),
     topologyNodePositions,
     active,
     draggingNode,
     desktopTopologyScale,
+    isMobileTopology ? undefined : sceneMetrics,
   );
+  const cableAttachDrop = isMobileTopology
+    ? CABLE_ATTACH_DROP
+    : cssPixelsToViewboxY(CABLE_ATTACH_DROP * desktopTopologyScale, sceneMetrics.height);
   const chromeMobileSwitchCableNudgeY = isMobileTopology && useChromeMobileCableAlignment
     ? (CHROME_MOBILE_SWITCH_CABLE_NUDGE_Y_PX * VIEWBOX.height) / Math.max(sceneMetrics.height, 1)
     : 0;
@@ -1935,8 +2009,20 @@ export function TopologyHero() {
       : "none";
   const topIndicatorStops = isMobileTopology ? [0.42, 0.65] : [0.32, 0.7];
   const diagIndicatorStops = isMobileTopology ? [0.36, 0.78] : [0.4, 0.78];
-  const topIndicators = topIndicatorStops.map((value) => pointOnCablePath(aboutCableAttach, switchLeftCablePathEnd, value, LEFT_CABLE_ROUTE_OFFSET_X));
-  const diagIndicators = diagIndicatorStops.map((value) => pointOnCablePath(homeAttach, switchRightCablePathEnd, value, RIGHT_CABLE_ROUTE_OFFSET_X));
+  const topIndicators = topIndicatorStops.map((value) => pointOnCablePath(
+    aboutCableAttach,
+    switchLeftCablePathEnd,
+    value,
+    LEFT_CABLE_ROUTE_OFFSET_X,
+    cableAttachDrop,
+  ));
+  const diagIndicators = diagIndicatorStops.map((value) => pointOnCablePath(
+    homeAttach,
+    switchRightCablePathEnd,
+    value,
+    RIGHT_CABLE_ROUTE_OFFSET_X,
+    cableAttachDrop,
+  ));
   const activePreview = active && !draggingNode ? getPreviewByNode(active) : null;
   const previewStyle = active && !draggingNode && !isMobileTopology ? getPreviewStyle(active, topologyNodePositions) : undefined;
   const nodeStyle = useMemo(() => {
@@ -2162,8 +2248,14 @@ export function TopologyHero() {
                     mode={networkMode}
                     routeOffsetX={LEFT_CABLE_ROUTE_OFFSET_X}
                     mobile={isMobileTopology}
+                    attachDrop={cableAttachDrop}
                   />
-                  <CableSegment from={homeAttach} to={switchRightCablePathEnd} routeOffsetX={RIGHT_CABLE_ROUTE_OFFSET_X} />
+                  <CableSegment
+                    from={homeAttach}
+                    to={switchRightCablePathEnd}
+                    routeOffsetX={RIGHT_CABLE_ROUTE_OFFSET_X}
+                    attachDrop={cableAttachDrop}
+                  />
 
                   {topLineStatus === "green"
                     ? topIndicators.map((point, index) => <StatusTriangle key={`top-${index}`} {...point} sceneMetrics={sceneMetrics} />)
@@ -2206,8 +2298,14 @@ export function TopologyHero() {
                         mode={networkMode}
                         routeOffsetX={LEFT_CABLE_ROUTE_OFFSET_X}
                         mobile={isMobileTopology}
+                        attachDrop={cableAttachDrop}
                       />
-                      <CableSegment from={homeAttach} to={switchRightCablePathEnd} routeOffsetX={RIGHT_CABLE_ROUTE_OFFSET_X} />
+                      <CableSegment
+                        from={homeAttach}
+                        to={switchRightCablePathEnd}
+                        routeOffsetX={RIGHT_CABLE_ROUTE_OFFSET_X}
+                        attachDrop={cableAttachDrop}
+                      />
                     </motion.svg>
                   </div>
                 ) : null}
@@ -2863,6 +2961,7 @@ const CableSegment = memo(function CableSegment({
   mode = "stable",
   routeOffsetX = 0,
   mobile = false,
+  attachDrop = CABLE_ATTACH_DROP,
 }: {
   from: { x: number; y: number };
   to: { x: number; y: number };
@@ -2873,8 +2972,9 @@ const CableSegment = memo(function CableSegment({
   mode?: NetworkMode;
   routeOffsetX?: number;
   mobile?: boolean;
+  attachDrop?: number;
 }) {
-  const geometry = getCablePathGeometry(from, to, disconnected, looseEnd, routeOffsetX);
+  const geometry = getCablePathGeometry(from, to, disconnected, looseEnd, routeOffsetX, attachDrop);
   let path = `M ${geometry.from.x} ${geometry.from.y} L ${geometry.end.x} ${geometry.end.y}`;
 
   if (disconnected) {
