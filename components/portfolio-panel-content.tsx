@@ -329,20 +329,27 @@ export function AboutPanelContent({
 }
 
 function AwardsCabinet() {
+  const awardRows = Array.from({ length: Math.ceil(CERTIFICATION_AWARDS.length / 3) }, (_, index) =>
+    CERTIFICATION_AWARDS.slice(index * 3, index * 3 + 3),
+  );
+
   return (
     <div
-      className="relative h-full overflow-x-hidden overflow-y-auto bg-[#26170f] text-[#f7ead0]"
+      className="relative h-full overflow-x-hidden overflow-y-auto bg-[#24140c] text-[#f7ead0]"
       style={{
         backgroundImage: [
-          "radial-gradient(circle at 50% 0%, rgba(255,224,154,0.14), transparent 38%)",
-          "repeating-linear-gradient(91deg, rgba(255,255,255,0.018) 0 2px, rgba(0,0,0,0.035) 2px 7px)",
-          "linear-gradient(135deg, #4a2c19 0%, #25150d 54%, #3b2113 100%)",
+          "radial-gradient(circle at 50% 5%, rgba(255,226,164,0.13), transparent 34%)",
+          "repeating-linear-gradient(90deg, rgba(255,255,255,0.015) 0 1px, rgba(0,0,0,0.055) 1px 8px)",
+          "linear-gradient(135deg, #422615 0%, #1e1009 56%, #321b0f 100%)",
         ].join(","),
       }}
     >
-      <div className="pointer-events-none absolute inset-3 rounded-[18px] border border-[#d8ad57]/35 shadow-[inset_0_0_0_5px_rgba(40,20,9,0.7),inset_0_0_45px_rgba(0,0,0,0.65)]" />
-      <div className="relative z-[1] mx-auto min-h-full max-w-[1320px] px-5 py-7 sm:px-8 lg:px-10">
-        <header className="mx-auto max-w-3xl text-center">
+      <div className="relative z-[1] mx-auto min-h-full max-w-[1380px] px-3 py-4 sm:px-6 sm:py-6 lg:px-8">
+        <div className="relative overflow-hidden rounded-[12px] border-[9px] border-[#4d2b17] bg-[#180d08] shadow-[inset_0_0_0_2px_#b27b3e,inset_0_0_0_7px_#25140b,0_22px_55px_rgba(0,0,0,0.45)] sm:border-[14px]">
+          <div className="pointer-events-none absolute inset-0 z-[5] bg-[linear-gradient(112deg,rgba(255,255,255,0.075)_0%,transparent_18%,transparent_65%,rgba(255,255,255,0.035)_77%,transparent_100%)]" />
+          <div className="pointer-events-none absolute inset-x-0 top-0 z-[6] h-[10px] bg-[linear-gradient(180deg,#b47b3d,#4a2916)] shadow-[0_3px_10px_rgba(0,0,0,0.7)]" />
+
+          <header className="relative border-b-[10px] border-[#4b2916] bg-[radial-gradient(circle_at_50%_0%,#55331d_0%,#25130b_72%)] px-5 pb-6 pt-8 text-center shadow-[inset_0_-2px_#b27b3e,0_8px_16px_rgba(0,0,0,0.55)]">
           <div className="mx-auto flex w-fit items-center gap-3 rounded-full border border-[#d5ae61]/55 bg-[#160d08]/55 px-4 py-1.5 shadow-[inset_0_1px_rgba(255,255,255,0.08)]">
             <span className="h-px w-7 bg-[#d5ae61]/70" />
             <span className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#e2c789]">Verified achievements</span>
@@ -357,12 +364,25 @@ function AwardsCabinet() {
           <p className="mx-auto mt-3 max-w-2xl text-[13px] leading-6 text-[#d8c6a7] sm:text-sm">
             Industry training in networking, cloud, Linux, containers and cybersecurity. Select an award to open its certificate.
           </p>
-        </header>
+          </header>
 
-        <div className="mt-7 grid gap-x-5 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
-          {CERTIFICATION_AWARDS.map((award) => (
-            <CertificationDisplay key={award.title} award={award} />
-          ))}
+          <div className="relative bg-[linear-gradient(90deg,#211109_0%,#321b0f_5%,#211109_50%,#321b0f_95%,#211109_100%)] px-3 pt-4 sm:px-6">
+            {awardRows.map((row, rowIndex) => (
+              <div
+                key={`cabinet-row-${rowIndex}`}
+                className="relative grid gap-2 pb-[34px] pt-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 lg:gap-6"
+              >
+                {row.map((award) => (
+                  <CertificationDisplay key={award.title} award={award} />
+                ))}
+                <div className="pointer-events-none absolute inset-x-[-18px] bottom-0 z-[4] h-[34px] sm:inset-x-[-30px]">
+                  <div className="absolute inset-x-0 top-0 h-[9px] bg-[linear-gradient(180deg,#cf9450_0%,#74411f_42%,#3d2112_100%)] shadow-[0_-1px_#e0b273,0_8px_14px_rgba(0,0,0,0.7)]" />
+                  <div className="absolute inset-x-0 top-[9px] h-[19px] bg-[repeating-linear-gradient(91deg,#60361d_0_8px,#704022_8px_15px,#4b2917_15px_23px)] shadow-[inset_0_2px_rgba(255,255,255,0.08),inset_0_-3px_rgba(0,0,0,0.5)]" />
+                  <div className="absolute inset-x-3 bottom-0 h-[6px] rounded-b bg-[#2b170d] shadow-[0_5px_8px_rgba(0,0,0,0.65)]" />
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
@@ -370,80 +390,86 @@ function AwardsCabinet() {
 }
 
 function CertificationDisplay({ award }: { award: CertificationAward }) {
-  const frameClass = award.kind === "medal"
-    ? "rounded-full border-[#e8c66d] bg-[radial-gradient(circle_at_35%_28%,#fff2b8_0%,#c58b2d_42%,#72501d_72%,#e1bd61_100%)] p-[7px]"
-    : award.kind === "trophy"
-      ? "rounded-[24px_24px_42px_42px] border-[#d5b15e] bg-[linear-gradient(145deg,#ffe7a1_0%,#b77a24_42%,#f0d27a_72%,#7d531d_100%)] p-[8px]"
-      : "rounded-[18px] border-[#b88945] bg-[linear-gradient(145deg,#f1d797_0%,#8b5b25_34%,#d8b46c_62%,#5c3919_100%)] p-[7px]";
+  const isMedal = award.kind === "medal";
+  const isCup = award.kind === "trophy";
 
   return (
     <a
       href={award.certificateHref}
       target="_blank"
       rel="noreferrer"
-      className="group relative flex min-h-[390px] flex-col items-center rounded-[16px] border border-[#d7b66e]/30 bg-[linear-gradient(180deg,rgba(20,11,7,0.42),rgba(7,4,3,0.7))] px-4 pb-5 pt-6 text-center shadow-[inset_0_1px_rgba(255,255,255,0.05),0_20px_36px_rgba(0,0,0,0.28)] transition duration-300 hover:-translate-y-1 hover:border-[#edce82]/60 hover:shadow-[inset_0_1px_rgba(255,255,255,0.08),0_24px_46px_rgba(0,0,0,0.4)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f0cc77] focus-visible:ring-offset-2 focus-visible:ring-offset-[#26170f]"
+      className="group relative flex min-h-[430px] flex-col items-center justify-end px-2 pb-1 pt-4 text-center transition duration-300 hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f0cc77] focus-visible:ring-offset-2 focus-visible:ring-offset-[#26170f]"
       aria-label={`Open certificate: ${award.title}`}
     >
-      <div className="absolute inset-x-5 top-3 h-px bg-[linear-gradient(90deg,transparent,#e4c27788,transparent)]" />
+      {isMedal ? <MedalAward award={award} /> : <TrophyAward award={award} cup={isCup} />}
+    </a>
+  );
+}
 
-      <div className="relative flex h-[238px] w-full items-center justify-center">
-        {award.kind === "medal" ? (
-          <>
-            <span className="absolute left-1/2 top-0 h-[92px] w-[46px] -translate-x-[76%] -rotate-[11deg] bg-[linear-gradient(90deg,#183d68_0_34%,#e8e9ec_34%_66%,#2c78a9_66%)] shadow-lg [clip-path:polygon(0_0,100%_0,84%_100%,50%_82%,16%_100%)]" />
-            <span className="absolute left-1/2 top-0 h-[92px] w-[46px] -translate-x-[24%] rotate-[11deg] bg-[linear-gradient(90deg,#2c78a9_0_34%,#e8e9ec_34%_66%,#183d68_66%)] shadow-lg [clip-path:polygon(0_0,100%_0,84%_100%,50%_82%,16%_100%)]" />
-          </>
-        ) : null}
-
-        {award.kind === "trophy" ? (
-          <>
-            <span className="absolute left-1/2 top-[70px] h-[82px] w-[58px] -translate-x-[102px] rounded-l-full border-[12px] border-r-0 border-[#bd8530]" />
-            <span className="absolute right-1/2 top-[70px] h-[82px] w-[58px] translate-x-[102px] rounded-r-full border-[12px] border-l-0 border-[#bd8530]" />
-            <span className="absolute bottom-[18px] left-1/2 h-[34px] w-[22px] -translate-x-1/2 bg-[linear-gradient(90deg,#8b5d20,#f2d37b,#8b5d20)]" />
-            <span className="absolute bottom-[5px] left-1/2 h-[18px] w-[112px] -translate-x-1/2 rounded-t-[8px] border border-[#e6c86e] bg-[linear-gradient(180deg,#d4a947,#76501e)]" />
-          </>
-        ) : null}
-
-        {award.kind === "plaque" ? (
-          <>
-            <span className="absolute left-[15%] top-[20px] h-[188px] w-[6px] rounded-full bg-[linear-gradient(180deg,#f0d484,#7b4e20,#d4ae5e)]" />
-            <span className="absolute right-[15%] top-[20px] h-[188px] w-[6px] rounded-full bg-[linear-gradient(180deg,#f0d484,#7b4e20,#d4ae5e)]" />
-            <span className="absolute bottom-[7px] left-1/2 h-[15px] w-[78%] -translate-x-1/2 rounded-t-[6px] bg-[linear-gradient(180deg,#b77b32,#4a2a14)] shadow-lg" />
-          </>
-        ) : null}
-
-        <div className={`relative z-[2] h-[188px] w-[188px] border shadow-[0_12px_24px_rgba(0,0,0,0.35)] transition duration-300 group-hover:scale-[1.025] ${frameClass}`}>
-          <div
-            className={`absolute overflow-hidden border border-white/70 bg-white ${
-              award.kind === "medal"
-                ? "inset-[15px] rounded-[18px]"
-                : award.kind === "trophy"
-                  ? "inset-[8px] rounded-[18px_18px_28px_28px]"
-                  : "inset-[7px] rounded-[11px]"
-            }`}
-          >
-            <Image
-              src={award.badgeSrc}
-              alt={`${award.title} badge`}
-              fill
-              sizes="188px"
-              className="object-contain p-1.5"
-              draggable={false}
-            />
+function MedalAward({ award }: { award: CertificationAward }) {
+  return (
+    <div className="flex h-full w-full flex-col items-center justify-end">
+      <div className="relative h-[252px] w-full">
+        <div className="absolute left-1/2 top-0 h-5 w-5 -translate-x-1/2 rounded-full border-4 border-[#b88935] bg-[#2a170d] shadow-[0_3px_8px_rgba(0,0,0,0.65)]" />
+        <div className="absolute left-1/2 top-[14px] h-[112px] w-[62px] -translate-x-[88%] -rotate-[14deg] bg-[linear-gradient(90deg,#173a65_0_30%,#f4f4ed_30%_68%,#2f86bc_68%)] shadow-[0_7px_10px_rgba(0,0,0,0.45)] [clip-path:polygon(8%_0,92%_0,82%_100%,50%_82%,18%_100%)]" />
+        <div className="absolute left-1/2 top-[14px] h-[112px] w-[62px] -translate-x-[12%] rotate-[14deg] bg-[linear-gradient(90deg,#2f86bc_0_32%,#f4f4ed_32%_70%,#173a65_70%)] shadow-[0_7px_10px_rgba(0,0,0,0.45)] [clip-path:polygon(8%_0,92%_0,82%_100%,50%_82%,18%_100%)]" />
+        <div className="absolute bottom-0 left-1/2 h-[184px] w-[184px] -translate-x-1/2 rounded-full border-[8px] border-[#deb95c] bg-[radial-gradient(circle_at_35%_28%,#fff0ad_0%,#d19832_29%,#80531d_66%,#edcb73_82%,#573513_100%)] shadow-[inset_0_0_0_3px_#754917,inset_0_0_0_7px_#eac971,0_16px_22px_rgba(0,0,0,0.52)] transition duration-300 group-hover:scale-[1.025]">
+          <div className="absolute inset-[19px] overflow-hidden rounded-[18px] border-2 border-white/90 bg-white shadow-[0_4px_12px_rgba(0,0,0,0.3)]">
+            <Image src={award.badgeSrc} alt={`${award.title} badge`} fill sizes="146px" className="object-contain p-1" draggable={false} />
           </div>
         </div>
       </div>
+      <AwardPlaque award={award} wallMounted />
+    </div>
+  );
+}
 
-      <div className="relative mt-2 w-full rounded-[7px] border border-[#d5ae61]/55 bg-[linear-gradient(180deg,#e6ca88_0%,#b78942_48%,#7c5227_100%)] px-3 py-2 text-[#241309] shadow-[inset_0_1px_rgba(255,255,255,0.45),0_5px_12px_rgba(0,0,0,0.3)]">
-        <p className="text-[10px] font-bold uppercase tracking-[0.16em]">{award.issuer}</p>
-        <h3 className="mt-1 text-[13px] font-semibold leading-[1.25]">{award.title}</h3>
-        <p className="mt-1 text-[10px] font-medium uppercase tracking-[0.12em] text-[#4e2e18]">{award.issued}</p>
+function TrophyAward({ award, cup }: { award: CertificationAward; cup: boolean }) {
+  return (
+    <div className="flex h-full w-full flex-col items-center justify-end">
+      <div className="relative h-[298px] w-full">
+        {cup ? (
+          <>
+            <div className="absolute left-1/2 top-[54px] h-[102px] w-[80px] -translate-x-[139px] rounded-l-full border-[14px] border-r-0 border-[#c28c35] bg-transparent shadow-[-5px_7px_12px_rgba(0,0,0,0.3)]" />
+            <div className="absolute right-1/2 top-[54px] h-[102px] w-[80px] translate-x-[139px] rounded-r-full border-[14px] border-l-0 border-[#c28c35] bg-transparent shadow-[5px_7px_12px_rgba(0,0,0,0.3)]" />
+            <div className="absolute left-1/2 top-[22px] h-[172px] w-[206px] -translate-x-1/2 rounded-b-[82px] rounded-t-[34px] border-[7px] border-[#e6c66e] bg-[linear-gradient(115deg,#8a5a1c_0%,#f4dc89_18%,#bd8430_48%,#ffe9a0_66%,#805018_100%)] shadow-[inset_0_5px_8px_rgba(255,255,255,0.35),0_16px_22px_rgba(0,0,0,0.48)]" />
+          </>
+        ) : (
+          <>
+            <div className="absolute left-1/2 top-[25px] h-[202px] w-[188px] -translate-x-1/2 [clip-path:polygon(15%_0,85%_0,100%_18%,90%_100%,10%_100%,0_18%)] bg-[linear-gradient(115deg,#714519,#e2bd65_19%,#8e5c23_48%,#f0d47e_70%,#624018_100%)] shadow-[0_16px_22px_rgba(0,0,0,0.48)]" />
+            <div className="absolute left-1/2 top-[34px] h-[184px] w-[170px] -translate-x-1/2 [clip-path:polygon(15%_0,85%_0,100%_18%,90%_100%,10%_100%,0_18%)] bg-[#321a0e]" />
+          </>
+        )}
+
+        <div className={`absolute left-1/2 z-[2] -translate-x-1/2 overflow-hidden border-2 border-white/90 bg-white shadow-[0_7px_15px_rgba(0,0,0,0.35)] transition duration-300 group-hover:scale-[1.025] ${cup ? "top-[46px] h-[126px] w-[142px] rounded-[18px_18px_32px_32px]" : "top-[53px] h-[146px] w-[142px] rounded-[12px]"}`}>
+          <Image src={award.badgeSrc} alt={`${award.title} badge`} fill sizes="142px" className="object-contain p-1.5" draggable={false} />
+        </div>
+
+        <div className="absolute bottom-[66px] left-1/2 h-[52px] w-[30px] -translate-x-1/2 bg-[linear-gradient(90deg,#754718,#f4d87e_45%,#754718)] shadow-[0_7px_9px_rgba(0,0,0,0.4)]" />
+        <div className="absolute bottom-[48px] left-1/2 h-[24px] w-[132px] -translate-x-1/2 rounded-t-[8px] border border-[#dbb85b] bg-[linear-gradient(180deg,#d9ad4f,#76501e)] shadow-[0_7px_10px_rgba(0,0,0,0.5)]" />
+        <div className="absolute bottom-0 left-1/2 h-[52px] w-[210px] -translate-x-1/2 rounded-t-[7px] border border-[#5c3518] bg-[linear-gradient(180deg,#75411f,#2a160c)] shadow-[inset_0_2px_rgba(255,255,255,0.08),0_8px_12px_rgba(0,0,0,0.58)]" />
+        <div className="absolute bottom-[6px] left-1/2 z-[3] flex min-h-[40px] w-[190px] -translate-x-1/2 flex-col items-center justify-center rounded-[3px] border border-[#e0c276]/75 bg-[linear-gradient(180deg,#e7cb86,#a97937)] px-2 py-1 text-[#241309] shadow-[inset_0_1px_rgba(255,255,255,0.5)]">
+          <p className="text-[7px] font-bold uppercase tracking-[0.11em]">{award.issuer}</p>
+          <p className="mt-0.5 line-clamp-2 text-[9px] font-semibold leading-[1.08]">{award.title}</p>
+          <p className="mt-0.5 text-[7px] font-medium uppercase tracking-[0.1em] text-[#553118]">{award.issued}</p>
+        </div>
       </div>
-
-      <span className="mt-3 inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#dbc184]">
-        View certificate
+      <span className="mb-1 mt-2 inline-flex items-center gap-2 text-[9px] font-semibold uppercase tracking-[0.17em] text-[#dbc184]">
+        Open certificate
         <span aria-hidden="true" className="inline-block h-1.5 w-1.5 rotate-45 border-r border-t border-current" />
       </span>
-    </a>
+    </div>
+  );
+}
+
+function AwardPlaque({ award, wallMounted = false }: { award: CertificationAward; wallMounted?: boolean }) {
+  return (
+    <div className={`relative mt-4 w-[min(100%,310px)] rounded-[5px] border border-[#d8b76a] bg-[linear-gradient(180deg,#e8ce8a_0%,#b47f38_52%,#815022_100%)] px-5 py-3 text-[#241309] shadow-[inset_0_1px_rgba(255,255,255,0.5),0_7px_12px_rgba(0,0,0,0.42)] ${wallMounted ? "before:absolute before:left-2 before:top-2 before:h-1.5 before:w-1.5 before:rounded-full before:bg-[#5d3818] before:shadow-[inset_0_1px_#e5c477] after:absolute after:right-2 after:top-2 after:h-1.5 after:w-1.5 after:rounded-full after:bg-[#5d3818] after:shadow-[inset_0_1px_#e5c477]" : ""}`}>
+      <p className="text-[9px] font-bold uppercase tracking-[0.15em]">{award.issuer}</p>
+      <h3 className="mt-1 text-[12px] font-semibold leading-[1.22]">{award.title}</h3>
+      <p className="mt-1 text-[9px] font-medium uppercase tracking-[0.12em] text-[#543019]">{award.issued}</p>
+      <p className="mt-2 text-[8px] font-semibold uppercase tracking-[0.15em] text-[#4d2d18]">Open certificate</p>
+    </div>
   );
 }
 
