@@ -863,7 +863,9 @@ function resolveNonOverlappingPosition(
 const SWITCH_PORT_CENTERS = [73, 90, 108, 125, 143, 160] as const;
 const SWITCH_LEFT_CABLE_PORT_INDEX = 0;
 const SWITCH_RIGHT_CABLE_PORT_INDEX = 5;
-const SWITCH_STUB_Y = 136.0;
+// The desktop switch is vertically centered inside its responsive node wrapper.
+// Keep the port anchor local to the illustration, then add the wrapper offset.
+const SWITCH_DESKTOP_PORT_ANCHOR_Y = 98.0;
 const MOBILE_SWITCH_INLINE_STUB_Y = 102.0;
 const SWITCH_LEFT_STUB_X_OFFSET = 31.0;
 const SWITCH_RIGHT_STUB_X_OFFSET = -21.0;
@@ -976,6 +978,13 @@ function getDesktopDevicePoint(
   };
 }
 
+function getDesktopDeviceContentOffsetY(node: NodeKey, sceneHeight: number) {
+  const { height, deviceHeight } = NODE_META[node];
+  const wrapperHeightPx = sceneHeight * (height / VIEWBOX.height);
+
+  return Math.max(0, (wrapperHeightPx - deviceHeight) / 2);
+}
+
 function getMobileDeviceCenterOffsetX(node: NodeKey, sceneWidth = VIEWBOX.width) {
   const visualScale = MOBILE_DEVICE_VISUAL_SCALE[node];
   const cssOffset = ((visualScale - 1) * UNIFIED_DEVICE_WIDTH) / 2 + MOBILE_DEVICE_CENTER_NUDGE_X[node];
@@ -1041,8 +1050,14 @@ function getAnimatedDevicePoint(
 
   const { width, deviceHeight } = NODE_META[node];
   const centerX = positions[node].x + width / 2;
+  const contentOffsetY = sceneMetrics && node === "projects"
+    ? getDesktopDeviceContentOffsetY(node, sceneMetrics.height)
+    : 0;
   const centerY = sceneMetrics
-    ? positions[node].y + cssPixelsToViewboxY((deviceHeight * layoutScale) / 2, sceneMetrics.height)
+    ? positions[node].y + cssPixelsToViewboxY(
+        (contentOffsetY + deviceHeight / 2) * layoutScale,
+        sceneMetrics.height,
+      )
     : positions[node].y + (deviceHeight * layoutScale) / 2;
   const hoverLift = sceneMetrics
     ? cssPixelsToViewboxY(4 * layoutScale, sceneMetrics.height)
@@ -1083,11 +1098,13 @@ function getSwitchCableStubEnd(
     };
   }
 
+  const contentOffsetY = getDesktopDeviceContentOffsetY("projects", sceneHeight);
+
   return getDesktopDevicePoint(
     "projects",
     positions,
     baseOffset,
-    SWITCH_STUB_Y,
+    contentOffsetY + SWITCH_DESKTOP_PORT_ANCHOR_Y,
     { width: sceneWidth, height: sceneHeight },
     layoutScale,
   );
