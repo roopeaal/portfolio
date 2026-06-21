@@ -354,8 +354,10 @@ function AwardsCabinet() {
           aria-hidden="true"
         />
         <div className="relative z-[2] min-w-0 flex-1 pb-[28px]">
-          <div className="relative overflow-hidden rounded-[8px] border-[10px] border-[#4a2917] bg-[#180d08] shadow-[inset_0_0_0_2px_#b27b3e,inset_0_0_0_7px_#25140b,0_22px_55px_rgba(0,0,0,0.45)] sm:border-[15px]">
+          <div className="absolute inset-x-[3%] bottom-[4px] top-[18px] rounded-[12px] bg-[#261209] shadow-[18px_20px_30px_rgba(45,28,17,0.32)]" aria-hidden="true" />
+          <div className="relative overflow-hidden rounded-[8px] border-[10px] border-[#4a2917] bg-[#180d08] shadow-[inset_5px_0_0_#8b552b,inset_-5px_0_0_#291309,inset_0_5px_0_#a56a36,inset_0_-6px_0_#241108,inset_0_0_0_7px_#25140b,0_22px_55px_rgba(0,0,0,0.45)] sm:border-[15px]">
             <div className="pointer-events-none absolute inset-0 z-[20] bg-[linear-gradient(111deg,rgba(255,255,255,0.09)_0%,transparent_16%,transparent_47%,rgba(255,255,255,0.035)_58%,transparent_78%)]" />
+            <div className="pointer-events-none absolute inset-x-[13px] top-[12px] z-[19] h-[18px] bg-[linear-gradient(180deg,rgba(255,224,168,0.18),rgba(30,12,5,0.72))] [clip-path:polygon(0_0,100%_0,98.5%_100%,1.5%_100%)]" />
             <div className="pointer-events-none absolute inset-y-0 left-0 z-[18] w-[12px] bg-[linear-gradient(90deg,#2a150b,#784522,#30180d)] shadow-[5px_0_12px_rgba(0,0,0,0.55)]" />
             <div className="pointer-events-none absolute inset-y-0 right-0 z-[18] w-[12px] bg-[linear-gradient(90deg,#30180d,#784522,#2a150b)] shadow-[-5px_0_12px_rgba(0,0,0,0.55)]" />
 
@@ -414,7 +416,7 @@ function CabinetShelf() {
   return (
     <div className="pointer-events-none absolute inset-x-[-18px] bottom-0 z-[10] h-[35px] sm:inset-x-[-30px]">
       <div className="absolute inset-x-0 top-0 h-[10px] bg-[linear-gradient(180deg,#d39a55_0%,#75411f_44%,#3c2011_100%)] shadow-[0_-1px_#e3b778,0_8px_14px_rgba(0,0,0,0.72)]" />
-      <div className="absolute inset-x-0 top-[10px] h-[19px] bg-[repeating-linear-gradient(91deg,#60361d_0_8px,#704022_8px_15px,#4b2917_15px_23px)] shadow-[inset_0_2px_rgba(255,255,255,0.08),inset_0_-3px_rgba(0,0,0,0.5)]" />
+      <div className="absolute inset-x-[1px] top-[8px] h-[23px] origin-top bg-[repeating-linear-gradient(91deg,#60361d_0_8px,#704022_8px_15px,#4b2917_15px_23px)] shadow-[inset_0_2px_rgba(255,255,255,0.08),inset_0_-4px_rgba(0,0,0,0.55),0_8px_12px_rgba(0,0,0,0.5)] [clip-path:polygon(0_0,100%_0,98.8%_100%,1.2%_100%)]" />
       <div className="absolute inset-x-3 bottom-0 h-[6px] rounded-b bg-[#2b170d] shadow-[0_5px_8px_rgba(0,0,0,0.65)]" />
     </div>
   );
@@ -437,17 +439,50 @@ function CertificationDisplay({ award, awardIndex }: { award: CertificationAward
 }
 
 function MedalFrame({ award }: { award: CertificationAward }) {
+  const medalIndex = CERTIFICATION_AWARDS.filter((item) => item.kind === "medal").indexOf(award);
+  const ribbons = [
+    {
+      left: "linear-gradient(90deg,#153a69 0 34%,#f5f0df 34% 66%,#a72d38 66%)",
+      right: "linear-gradient(90deg,#a72d38 0 34%,#f5f0df 34% 66%,#153a69 66%)",
+      metal: "radial-gradient(circle at 35% 28%,#fff0ad 0%,#d19832 29%,#80531d 66%,#edcb73 82%,#573513 100%)",
+      border: "#deb95c",
+    },
+    {
+      left: "linear-gradient(90deg,#2c673c 0 34%,#f1df93 34% 66%,#183f67 66%)",
+      right: "linear-gradient(90deg,#183f67 0 34%,#f1df93 34% 66%,#2c673c 66%)",
+      metal: "radial-gradient(circle at 35% 28%,#f9f9f4 0%,#bfc5c7 32%,#747b80 66%,#e9ecec 84%,#565c61 100%)",
+      border: "#c8ccce",
+    },
+    {
+      left: "linear-gradient(90deg,#6e254d 0 34%,#e9c36a 34% 66%,#382159 66%)",
+      right: "linear-gradient(90deg,#382159 0 34%,#e9c36a 34% 66%,#6e254d 66%)",
+      metal: "radial-gradient(circle at 35% 28%,#ffe0b4 0%,#bd7040 31%,#6d3623 67%,#dfa06c 84%,#4d281e 100%)",
+      border: "#c78355",
+    },
+    {
+      left: "linear-gradient(90deg,#151515 0 34%,#efb735 34% 66%,#b52e2e 66%)",
+      right: "linear-gradient(90deg,#b52e2e 0 34%,#efb735 34% 66%,#151515 66%)",
+      metal: "radial-gradient(circle at 35% 28%,#fff1b0 0%,#d3a12f 30%,#78501d 66%,#f0cb65 83%,#563513 100%)",
+      border: "#d8ac43",
+    },
+  ];
+  const ribbon = ribbons[Math.max(0, medalIndex) % ribbons.length];
+
   return (
     <div className="flex h-full w-full flex-col items-center justify-end">
-      <div className="relative h-[350px] w-[min(100%,300px)] rounded-[8px] border-[9px] border-[#6d421f] bg-[linear-gradient(135deg,#b77c38,#3b2111_18%,#5d361b_82%,#c28a43)] p-[5px] shadow-[inset_0_0_0_2px_#d6a85e,0_14px_20px_rgba(0,0,0,0.52)] transition duration-300 group-hover:scale-[1.015]">
+      <div className="relative h-[350px] w-[min(100%,300px)] rounded-[8px] border-[9px] border-[#6d421f] bg-[linear-gradient(135deg,#d5a15a_0%,#4b2a15_12%,#2a160d_50%,#6f421f_88%,#d0984b_100%)] p-[5px] shadow-[inset_3px_3px_0_#e0b66f,inset_-4px_-4px_0_#32180b,0_15px_22px_rgba(0,0,0,0.56)] transition duration-300 group-hover:scale-[1.015]">
         <div className="relative h-full overflow-hidden rounded-[3px] border border-[#bd9a5b]/60 bg-[radial-gradient(circle_at_50%_34%,#3b2b22,#17100c_72%)] shadow-[inset_0_0_22px_rgba(0,0,0,0.8)]">
           <div className="absolute left-1/2 top-4 h-4 w-4 -translate-x-1/2 rounded-full border-[3px] border-[#b88935] bg-[#1a100b]" />
-          <div className="absolute left-1/2 top-[27px] h-[100px] w-[56px] -translate-x-[88%] -rotate-[12deg] bg-[linear-gradient(90deg,#173a65_0_30%,#f4f4ed_30%_68%,#2f86bc_68%)] [clip-path:polygon(8%_0,92%_0,82%_100%,50%_82%,18%_100%)]" />
-          <div className="absolute left-1/2 top-[27px] h-[100px] w-[56px] -translate-x-[12%] rotate-[12deg] bg-[linear-gradient(90deg,#2f86bc_0_32%,#f4f4ed_32%_70%,#173a65_70%)] [clip-path:polygon(8%_0,92%_0,82%_100%,50%_82%,18%_100%)]" />
-          <div className="absolute left-1/2 top-[87px] h-[166px] w-[166px] -translate-x-1/2 rounded-full border-[8px] border-[#deb95c] bg-[radial-gradient(circle_at_35%_28%,#fff0ad_0%,#d19832_29%,#80531d_66%,#edcb73_82%,#573513_100%)] shadow-[inset_0_0_0_3px_#754917,inset_0_0_0_7px_#eac971,0_12px_18px_rgba(0,0,0,0.55)]">
-            <div className="absolute inset-[18px] overflow-hidden rounded-[15px] border-2 border-white/90 bg-white">
-              <Image src={award.badgeSrc} alt={`${award.title} badge`} fill sizes="130px" className="object-contain p-1" draggable={false} />
+          <div className="absolute left-1/2 top-[27px] h-[100px] w-[56px] -translate-x-[88%] -rotate-[12deg] shadow-[0_7px_10px_rgba(0,0,0,0.38)] [clip-path:polygon(8%_0,92%_0,82%_100%,50%_82%,18%_100%)]" style={{ background: ribbon.left }} />
+          <div className="absolute left-1/2 top-[27px] h-[100px] w-[56px] -translate-x-[12%] rotate-[12deg] shadow-[0_7px_10px_rgba(0,0,0,0.38)] [clip-path:polygon(8%_0,92%_0,82%_100%,50%_82%,18%_100%)]" style={{ background: ribbon.right }} />
+          <div
+            className="absolute left-1/2 top-[87px] h-[166px] w-[166px] -translate-x-1/2 rounded-full border-[8px] shadow-[inset_0_0_0_3px_rgba(68,39,15,0.72),inset_0_0_0_7px_rgba(255,231,157,0.55),0_13px_19px_rgba(0,0,0,0.58)]"
+            style={{ borderColor: ribbon.border, background: ribbon.metal }}
+          >
+            <div className="absolute inset-[28px] overflow-hidden rounded-full border-[3px] border-white/70 bg-[radial-gradient(circle,#fffdf7,#ddd4c5)] shadow-[inset_0_3px_5px_rgba(0,0,0,0.18),0_3px_5px_rgba(0,0,0,0.22)]">
+              <Image src={award.badgeSrc} alt={`${award.title} badge`} fill sizes="104px" className="object-contain p-2.5" draggable={false} />
             </div>
+            <AwardShine />
           </div>
           <div className="absolute inset-x-3 bottom-3">
             <AwardPlaque award={award} />
@@ -459,49 +494,44 @@ function MedalFrame({ award }: { award: CertificationAward }) {
 }
 
 function TrophyAward({ award, awardIndex }: { award: CertificationAward; awardIndex: number }) {
-  const redHatVariants: Record<number, "spire" | "column" | "shield" | "diamond"> = {
-    4: "column",
-    6: "spire",
-    7: "shield",
-    8: "diamond",
+  const redHatVariants: Record<number, "star" | "cup" | "laurel"> = {
+    4: "star",
+    6: "cup",
+    7: "laurel",
+    8: "star",
   };
-  const variant = award.kind === "trophy" ? "cup" : redHatVariants[awardIndex] ?? "spire";
-  const scaleClass = ["scale-[0.92]", "scale-100", "scale-[0.96]", "scale-[0.9]"][awardIndex % 4];
+  const variant = award.kind === "trophy" ? "cup" : redHatVariants[awardIndex] ?? "star";
+  const scaleClass = ["scale-[0.92]", "scale-100", "scale-[0.95]", "scale-[0.91]"][awardIndex % 4];
+  const isCup = variant === "cup";
+  const badgeFrameClass = isCup
+    ? "top-[67px] h-[104px] w-[104px] rounded-full"
+    : variant === "laurel"
+      ? "top-[77px] h-[102px] w-[102px] rounded-full"
+      : "top-[62px] h-[96px] w-[96px] rounded-full";
 
   return (
     <div className="flex h-full w-full flex-col items-center justify-end">
       <div className={`relative h-[365px] w-full origin-bottom transition duration-300 group-hover:scale-[1.02] ${scaleClass}`}>
-        {variant === "cup" ? (
+        {isCup ? (
           <>
-            <div className="absolute left-1/2 top-[38px] h-[112px] w-[84px] -translate-x-[143px] rounded-l-full border-[15px] border-r-0 border-[#c28c35]" />
-            <div className="absolute right-1/2 top-[38px] h-[112px] w-[84px] translate-x-[143px] rounded-r-full border-[15px] border-l-0 border-[#c28c35]" />
-            <div className="absolute left-1/2 top-[8px] h-[190px] w-[214px] -translate-x-1/2 rounded-b-[90px] rounded-t-[38px] border-[7px] border-[#e6c66e] bg-[linear-gradient(115deg,#8a5a1c_0%,#f4dc89_18%,#bd8430_48%,#ffe9a0_66%,#805018_100%)] shadow-[inset_0_5px_8px_rgba(255,255,255,0.35),0_16px_22px_rgba(0,0,0,0.48)]" />
+            <div className="absolute left-1/2 top-[62px] h-[102px] w-[74px] -translate-x-[138px] rounded-l-full border-[14px] border-r-0 border-[#b77d27] shadow-[-6px_7px_9px_rgba(0,0,0,0.28)]" />
+            <div className="absolute right-1/2 top-[62px] h-[102px] w-[74px] translate-x-[138px] rounded-r-full border-[14px] border-l-0 border-[#b77d27] shadow-[6px_7px_9px_rgba(0,0,0,0.28)]" />
+            <div className="absolute left-1/2 top-[24px] h-[190px] w-[190px] -translate-x-1/2 rounded-b-[86px] rounded-t-[30px] border-[7px] border-[#e4bd58] bg-[linear-gradient(108deg,#704313_0%,#f5d978_18%,#b77b25_42%,#fff0a5_59%,#9b631c_80%,#5f3912_100%)] shadow-[inset_8px_5px_9px_rgba(255,255,255,0.28),inset_-9px_-5px_10px_rgba(66,35,8,0.32),0_17px_24px_rgba(0,0,0,0.5)]" />
+            <div className="absolute left-1/2 top-[21px] h-[22px] w-[176px] -translate-x-1/2 rounded-[50%] border border-[#f7dd83] bg-[linear-gradient(180deg,#ffe9a0,#9a621d)] shadow-[inset_0_4px_rgba(255,255,255,0.28)]" />
           </>
-        ) : variant === "spire" ? (
+        ) : variant === "star" ? (
           <>
-            <div className="absolute left-1/2 top-[12px] h-[235px] w-[174px] -translate-x-1/2 [clip-path:polygon(50%_0,94%_20%,82%_100%,18%_100%,6%_20%)] bg-[linear-gradient(115deg,#714519,#e7c873_22%,#865520_52%,#f1d684_76%,#624018)] shadow-[0_16px_22px_rgba(0,0,0,0.48)]" />
-            <div className="absolute left-1/2 top-[24px] h-[214px] w-[150px] -translate-x-1/2 [clip-path:polygon(50%_0,94%_20%,82%_100%,18%_100%,6%_20%)] bg-[#2a170d]" />
-          </>
-        ) : variant === "column" ? (
-          <>
-            <div className="absolute left-1/2 top-[18px] h-[48px] w-[48px] -translate-x-1/2 rotate-45 border-[7px] border-[#e2c36e] bg-[#70451a] shadow-[0_8px_12px_rgba(0,0,0,0.4)]" />
-            <div className="absolute left-1/2 top-[58px] h-[184px] w-[136px] -translate-x-1/2 rounded-t-[68px] border-[8px] border-[#d9b45c] bg-[linear-gradient(90deg,#714318,#efd27c,#84531e)] shadow-[0_14px_20px_rgba(0,0,0,0.48)]" />
-          </>
-        ) : variant === "shield" ? (
-          <>
-            <div className="absolute left-1/2 top-[14px] h-[230px] w-[194px] -translate-x-1/2 [clip-path:polygon(50%_0,96%_16%,88%_72%,50%_100%,12%_72%,4%_16%)] bg-[linear-gradient(115deg,#704317,#f0d17a_24%,#89561f_54%,#ebca6e_78%,#5e3914)] shadow-[0_16px_22px_rgba(0,0,0,0.5)]" />
-            <div className="absolute left-1/2 top-[28px] h-[202px] w-[166px] -translate-x-1/2 [clip-path:polygon(50%_0,96%_16%,88%_72%,50%_100%,12%_72%,4%_16%)] bg-[#2a170d]" />
+            <div className="absolute left-1/2 top-[8px] h-[204px] w-[204px] -translate-x-1/2 bg-[linear-gradient(120deg,#76501b,#f8dc7f_24%,#a66c20_52%,#ffe99a_75%,#654015)] shadow-[0_16px_22px_rgba(0,0,0,0.48)] [clip-path:polygon(50%_0,61%_34%,98%_35%,68%_56%,79%_94%,50%_72%,21%_94%,32%_56%,2%_35%,39%_34%)]" />
+            <div className="absolute left-1/2 top-[27px] h-[166px] w-[166px] -translate-x-1/2 bg-[#5f3a13] [clip-path:polygon(50%_0,61%_34%,98%_35%,68%_56%,79%_94%,50%_72%,21%_94%,32%_56%,2%_35%,39%_34%)]" />
           </>
         ) : (
-          <>
-            <div className="absolute left-1/2 top-[12px] h-[228px] w-[178px] -translate-x-1/2 [clip-path:polygon(50%_0,100%_32%,78%_100%,22%_100%,0_32%)] bg-[linear-gradient(120deg,#704317,#f3db8a_25%,#8e5b22_52%,#e7c467_79%,#5c3713)] shadow-[0_16px_22px_rgba(0,0,0,0.5)]" />
-            <div className="absolute left-1/2 top-[27px] h-[204px] w-[152px] -translate-x-1/2 [clip-path:polygon(50%_0,100%_32%,78%_100%,22%_100%,0_32%)] bg-[#28160c]" />
-          </>
+          <LaurelTrophyBody />
         )}
 
-        <div className={`absolute left-1/2 z-[2] -translate-x-1/2 overflow-hidden border-2 border-white/90 bg-white shadow-[0_7px_15px_rgba(0,0,0,0.35)] ${variant === "cup" ? "top-[36px] h-[140px] w-[148px] rounded-[20px_20px_38px_38px]" : "top-[65px] h-[142px] w-[132px] rounded-[10px]"}`}>
-          <Image src={award.badgeSrc} alt={`${award.title} badge`} fill sizes="142px" className="object-contain p-1.5" draggable={false} />
+        <div className={`absolute left-1/2 z-[3] -translate-x-1/2 overflow-hidden border-[3px] border-[#f2d676] bg-[radial-gradient(circle,#fffdf7,#d9caa9)] shadow-[inset_0_4px_7px_rgba(0,0,0,0.2),0_5px_10px_rgba(0,0,0,0.34)] ${badgeFrameClass}`}>
+          <Image src={award.badgeSrc} alt={`${award.title} badge`} fill sizes="92px" className="object-contain p-3" draggable={false} />
         </div>
+        <AwardShine />
 
         <div className="absolute bottom-[66px] left-1/2 h-[70px] w-[28px] -translate-x-1/2 bg-[linear-gradient(90deg,#754718,#f4d87e_45%,#754718)] shadow-[0_7px_9px_rgba(0,0,0,0.4)]" />
         <div className="absolute bottom-[48px] left-1/2 h-[24px] w-[136px] -translate-x-1/2 rounded-t-[8px] border border-[#dbb85b] bg-[linear-gradient(180deg,#d9ad4f,#76501e)] shadow-[0_7px_10px_rgba(0,0,0,0.5)]" />
@@ -513,6 +543,45 @@ function TrophyAward({ award, awardIndex }: { award: CertificationAward; awardIn
         </div>
       </div>
     </div>
+  );
+}
+
+function LaurelTrophyBody() {
+  const leaves = Array.from({ length: 16 }, (_, index) => {
+    const angle = 54 + (index * 252) / 15;
+    const radians = (angle * Math.PI) / 180;
+
+    return {
+      left: 50 + Math.cos(radians) * 43,
+      top: 50 + Math.sin(radians) * 43,
+      rotate: angle + 90,
+    };
+  });
+
+  return (
+    <div className="absolute left-1/2 top-[16px] h-[210px] w-[210px] -translate-x-1/2 rounded-full bg-[radial-gradient(circle_at_42%_35%,#d6ac4a_0%,#94601e_55%,#5b3511_100%)] shadow-[inset_8px_6px_12px_rgba(255,239,174,0.18),0_17px_24px_rgba(0,0,0,0.48)]">
+      <div className="absolute inset-[23px] rounded-full border-[8px] border-[#e0b850] bg-[radial-gradient(circle,#bd8730,#6c4117)] shadow-[inset_0_0_0_5px_#76501d]" />
+      {leaves.map((leaf, index) => (
+        <span
+          key={index}
+          className="absolute z-[2] h-[30px] w-[14px] origin-center border border-[#f0d276]/65 bg-[linear-gradient(110deg,#745018,#f0d16d_48%,#91601c)] shadow-[2px_3px_4px_rgba(0,0,0,0.24)] [clip-path:polygon(50%_0,100%_34%,78%_100%,22%_100%,0_34%)]"
+          style={{
+            left: `${leaf.left}%`,
+            top: `${leaf.top}%`,
+            transform: `translate(-50%, -50%) rotate(${leaf.rotate}deg)`,
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+function AwardShine() {
+  return (
+    <span
+      className="award-shine pointer-events-none absolute left-[16%] top-[7%] z-[5] h-[42%] w-[16%] -rotate-[20deg] rounded-full bg-white/70 blur-[1px]"
+      aria-hidden="true"
+    />
   );
 }
 

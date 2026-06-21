@@ -270,6 +270,34 @@ select {
   }
 }
 
+.award-shine {
+  animation: award-shine 4.8s ease-in-out infinite;
+  opacity: 0;
+  transform: translate3d(-145%, -12%, 0) rotate(-20deg);
+}
+
+@keyframes award-shine {
+  0%,
+  66% {
+    opacity: 0;
+    transform: translate3d(-145%, -12%, 0) rotate(-20deg);
+  }
+
+  72% {
+    opacity: 0.72;
+  }
+
+  84% {
+    opacity: 0;
+    transform: translate3d(520%, 34%, 0) rotate(-20deg);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(520%, 34%, 0) rotate(-20deg);
+  }
+}
+
 @media (min-width: 1024px) {
   .case-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
