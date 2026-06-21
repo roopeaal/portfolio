@@ -329,124 +329,171 @@ export function AboutPanelContent({
 }
 
 function AwardsCabinet() {
-  const awardRows = Array.from({ length: Math.ceil(CERTIFICATION_AWARDS.length / 3) }, (_, index) =>
-    CERTIFICATION_AWARDS.slice(index * 3, index * 3 + 3),
-  );
-
   return (
     <div
-      className="relative h-full overflow-x-hidden overflow-y-auto bg-[#24140c] text-[#f7ead0]"
+      className="relative h-full overflow-x-hidden overflow-y-auto bg-[#d8d2c5] text-[#f7ead0]"
       style={{
         backgroundImage: [
-          "radial-gradient(circle at 50% 5%, rgba(255,226,164,0.13), transparent 34%)",
-          "repeating-linear-gradient(90deg, rgba(255,255,255,0.015) 0 1px, rgba(0,0,0,0.055) 1px 8px)",
-          "linear-gradient(135deg, #422615 0%, #1e1009 56%, #321b0f 100%)",
+          "linear-gradient(rgba(255,255,255,0.5),rgba(255,255,255,0.08))",
+          "repeating-linear-gradient(90deg,rgba(92,82,67,0.035) 0 1px,transparent 1px 8px)",
+          "linear-gradient(135deg,#ded9cf,#c8c0b3)",
         ].join(","),
       }}
     >
-      <div className="relative z-[1] mx-auto min-h-full max-w-[1380px] px-3 py-4 sm:px-6 sm:py-6 lg:px-8">
-        <div className="relative overflow-hidden rounded-[12px] border-[9px] border-[#4d2b17] bg-[#180d08] shadow-[inset_0_0_0_2px_#b27b3e,inset_0_0_0_7px_#25140b,0_22px_55px_rgba(0,0,0,0.45)] sm:border-[14px]">
-          <div className="pointer-events-none absolute inset-0 z-[5] bg-[linear-gradient(112deg,rgba(255,255,255,0.075)_0%,transparent_18%,transparent_65%,rgba(255,255,255,0.035)_77%,transparent_100%)]" />
-          <div className="pointer-events-none absolute inset-x-0 top-0 z-[6] h-[10px] bg-[linear-gradient(180deg,#b47b3d,#4a2916)] shadow-[0_3px_10px_rgba(0,0,0,0.7)]" />
+      <div className="relative z-[1] mx-auto flex min-h-full max-w-[1480px] items-start gap-5 px-2 py-4 sm:px-5 sm:py-6 lg:px-7">
+        <div className="relative min-w-0 flex-1 pb-[28px]">
+          <div className="relative overflow-hidden rounded-[8px] border-[10px] border-[#4a2917] bg-[#180d08] shadow-[inset_0_0_0_2px_#b27b3e,inset_0_0_0_7px_#25140b,0_22px_55px_rgba(0,0,0,0.45)] sm:border-[15px]">
+            <div className="pointer-events-none absolute inset-0 z-[20] bg-[linear-gradient(111deg,rgba(255,255,255,0.09)_0%,transparent_16%,transparent_47%,rgba(255,255,255,0.035)_58%,transparent_78%)]" />
+            <div className="pointer-events-none absolute bottom-0 left-1/2 top-0 z-[19] w-px bg-white/10 shadow-[1px_0_rgba(0,0,0,0.5)]" />
+            <div className="pointer-events-none absolute inset-y-0 left-0 z-[18] w-[12px] bg-[linear-gradient(90deg,#2a150b,#784522,#30180d)] shadow-[5px_0_12px_rgba(0,0,0,0.55)]" />
+            <div className="pointer-events-none absolute inset-y-0 right-0 z-[18] w-[12px] bg-[linear-gradient(90deg,#30180d,#784522,#2a150b)] shadow-[-5px_0_12px_rgba(0,0,0,0.55)]" />
 
-          <header className="relative border-b-[10px] border-[#4b2916] bg-[radial-gradient(circle_at_50%_0%,#55331d_0%,#25130b_72%)] px-5 pb-6 pt-8 text-center shadow-[inset_0_-2px_#b27b3e,0_8px_16px_rgba(0,0,0,0.55)]">
-          <div className="mx-auto flex w-fit items-center gap-3 rounded-full border border-[#d5ae61]/55 bg-[#160d08]/55 px-4 py-1.5 shadow-[inset_0_1px_rgba(255,255,255,0.08)]">
-            <span className="h-px w-7 bg-[#d5ae61]/70" />
-            <span className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#e2c789]">Verified achievements</span>
-            <span className="h-px w-7 bg-[#d5ae61]/70" />
-          </div>
-          <h2
-            className="mt-3 text-[clamp(2rem,5vw,4rem)] font-semibold leading-none tracking-[-0.035em] text-[#fff5dd]"
-            style={{ fontFamily: "Georgia, 'Times New Roman', serif", textShadow: "0 3px 18px rgba(0,0,0,0.55)" }}
-          >
-            Awards Cabinet
-          </h2>
-          <p className="mx-auto mt-3 max-w-2xl text-[13px] leading-6 text-[#d8c6a7] sm:text-sm">
-            Industry training in networking, cloud, Linux, containers and cybersecurity. Select an award to open its certificate.
-          </p>
-          </header>
-
-          <div className="relative bg-[linear-gradient(90deg,#211109_0%,#321b0f_5%,#211109_50%,#321b0f_95%,#211109_100%)] px-3 pt-4 sm:px-6">
-            {awardRows.map((row, rowIndex) => (
-              <div
-                key={`cabinet-row-${rowIndex}`}
-                className="relative grid gap-2 pb-[34px] pt-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 lg:gap-6"
-              >
-                {row.map((award) => (
-                  <CertificationDisplay key={award.title} award={award} />
-                ))}
-                <div className="pointer-events-none absolute inset-x-[-18px] bottom-0 z-[4] h-[34px] sm:inset-x-[-30px]">
-                  <div className="absolute inset-x-0 top-0 h-[9px] bg-[linear-gradient(180deg,#cf9450_0%,#74411f_42%,#3d2112_100%)] shadow-[0_-1px_#e0b273,0_8px_14px_rgba(0,0,0,0.7)]" />
-                  <div className="absolute inset-x-0 top-[9px] h-[19px] bg-[repeating-linear-gradient(91deg,#60361d_0_8px,#704022_8px_15px,#4b2917_15px_23px)] shadow-[inset_0_2px_rgba(255,255,255,0.08),inset_0_-3px_rgba(0,0,0,0.5)]" />
-                  <div className="absolute inset-x-3 bottom-0 h-[6px] rounded-b bg-[#2b170d] shadow-[0_5px_8px_rgba(0,0,0,0.65)]" />
-                </div>
+            <header className="relative border-b-[12px] border-[#4b2916] bg-[radial-gradient(circle_at_50%_0%,#55331d_0%,#25130b_72%)] px-4 pb-5 pt-7 text-center shadow-[inset_0_-2px_#b27b3e,0_8px_16px_rgba(0,0,0,0.55)]">
+              <div className="mx-auto w-fit rounded-[4px] border border-[#d1aa62]/60 bg-[linear-gradient(180deg,#6c431e,#2a170d)] px-7 py-2 shadow-[inset_0_1px_rgba(255,255,255,0.1),0_5px_12px_rgba(0,0,0,0.5)]">
+                <h2
+                  className="text-[clamp(1.65rem,4vw,3.2rem)] font-semibold leading-none tracking-[-0.03em] text-[#fff1d1]"
+                  style={{ fontFamily: "Georgia, 'Times New Roman', serif", textShadow: "0 2px 8px rgba(0,0,0,0.65)" }}
+                >
+                  Awards Cabinet
+                </h2>
               </div>
-            ))}
+            </header>
+
+            <div className="relative bg-[linear-gradient(90deg,#211109_0%,#321b0f_5%,#211109_50%,#321b0f_95%,#211109_100%)] px-3 sm:px-6">
+              <CabinetShelves columns={3} className="hidden xl:block" />
+              <CabinetShelves columns={2} className="hidden sm:block xl:hidden" />
+              <CabinetShelves columns={1} className="sm:hidden" />
+            </div>
           </div>
+          <div className="absolute inset-x-[5%] bottom-[13px] h-[18px] rounded-b-[10px] border border-[#3b2012] bg-[linear-gradient(180deg,#70401f,#32190d)] shadow-[0_9px_14px_rgba(0,0,0,0.35)]" />
+          <div className="absolute bottom-0 left-[8%] h-[18px] w-[42px] rounded-b bg-[#32190d]" />
+          <div className="absolute bottom-0 right-[8%] h-[18px] w-[42px] rounded-b bg-[#32190d]" />
         </div>
+        <CabinetPlant />
       </div>
     </div>
   );
 }
 
-function CertificationDisplay({ award }: { award: CertificationAward }) {
+function CabinetShelves({ columns, className }: { columns: 1 | 2 | 3; className: string }) {
+  const rows = Array.from({ length: Math.ceil(CERTIFICATION_AWARDS.length / columns) }, (_, index) =>
+    CERTIFICATION_AWARDS.slice(index * columns, index * columns + columns),
+  );
+
+  return (
+    <div className={className}>
+      {rows.map((row, rowIndex) => (
+        <div
+          key={`${columns}-column-row-${rowIndex}`}
+          className="relative grid gap-2 pb-[35px] pt-4 sm:gap-4 lg:gap-6"
+          style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}
+        >
+          {row.map((award) => {
+            const awardIndex = CERTIFICATION_AWARDS.indexOf(award);
+            return <CertificationDisplay key={award.title} award={award} awardIndex={awardIndex} />;
+          })}
+          <CabinetShelf />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function CabinetShelf() {
+  return (
+    <div className="pointer-events-none absolute inset-x-[-18px] bottom-0 z-[10] h-[35px] sm:inset-x-[-30px]">
+      <div className="absolute inset-x-0 top-0 h-[10px] bg-[linear-gradient(180deg,#d39a55_0%,#75411f_44%,#3c2011_100%)] shadow-[0_-1px_#e3b778,0_8px_14px_rgba(0,0,0,0.72)]" />
+      <div className="absolute inset-x-0 top-[10px] h-[19px] bg-[repeating-linear-gradient(91deg,#60361d_0_8px,#704022_8px_15px,#4b2917_15px_23px)] shadow-[inset_0_2px_rgba(255,255,255,0.08),inset_0_-3px_rgba(0,0,0,0.5)]" />
+      <div className="absolute inset-x-3 bottom-0 h-[6px] rounded-b bg-[#2b170d] shadow-[0_5px_8px_rgba(0,0,0,0.65)]" />
+    </div>
+  );
+}
+
+function CertificationDisplay({ award, awardIndex }: { award: CertificationAward; awardIndex: number }) {
   const isMedal = award.kind === "medal";
-  const isCup = award.kind === "trophy";
 
   return (
     <a
       href={award.certificateHref}
       target="_blank"
       rel="noreferrer"
-      className="group relative flex min-h-[430px] flex-col items-center justify-end px-2 pb-1 pt-4 text-center transition duration-300 hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f0cc77] focus-visible:ring-offset-2 focus-visible:ring-offset-[#26170f]"
+      className="group relative flex min-h-[390px] flex-col items-center justify-end px-1 pb-0 pt-2 text-center transition duration-300 hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f0cc77] focus-visible:ring-offset-2 focus-visible:ring-offset-[#26170f] sm:min-h-[420px]"
       aria-label={`Open certificate: ${award.title}`}
     >
-      {isMedal ? <MedalAward award={award} /> : <TrophyAward award={award} cup={isCup} />}
+      {isMedal ? <MedalFrame award={award} /> : <TrophyAward award={award} awardIndex={awardIndex} />}
     </a>
   );
 }
 
-function MedalAward({ award }: { award: CertificationAward }) {
+function MedalFrame({ award }: { award: CertificationAward }) {
   return (
     <div className="flex h-full w-full flex-col items-center justify-end">
-      <div className="relative h-[252px] w-full">
-        <div className="absolute left-1/2 top-0 h-5 w-5 -translate-x-1/2 rounded-full border-4 border-[#b88935] bg-[#2a170d] shadow-[0_3px_8px_rgba(0,0,0,0.65)]" />
-        <div className="absolute left-1/2 top-[14px] h-[112px] w-[62px] -translate-x-[88%] -rotate-[14deg] bg-[linear-gradient(90deg,#173a65_0_30%,#f4f4ed_30%_68%,#2f86bc_68%)] shadow-[0_7px_10px_rgba(0,0,0,0.45)] [clip-path:polygon(8%_0,92%_0,82%_100%,50%_82%,18%_100%)]" />
-        <div className="absolute left-1/2 top-[14px] h-[112px] w-[62px] -translate-x-[12%] rotate-[14deg] bg-[linear-gradient(90deg,#2f86bc_0_32%,#f4f4ed_32%_70%,#173a65_70%)] shadow-[0_7px_10px_rgba(0,0,0,0.45)] [clip-path:polygon(8%_0,92%_0,82%_100%,50%_82%,18%_100%)]" />
-        <div className="absolute bottom-0 left-1/2 h-[184px] w-[184px] -translate-x-1/2 rounded-full border-[8px] border-[#deb95c] bg-[radial-gradient(circle_at_35%_28%,#fff0ad_0%,#d19832_29%,#80531d_66%,#edcb73_82%,#573513_100%)] shadow-[inset_0_0_0_3px_#754917,inset_0_0_0_7px_#eac971,0_16px_22px_rgba(0,0,0,0.52)] transition duration-300 group-hover:scale-[1.025]">
-          <div className="absolute inset-[19px] overflow-hidden rounded-[18px] border-2 border-white/90 bg-white shadow-[0_4px_12px_rgba(0,0,0,0.3)]">
-            <Image src={award.badgeSrc} alt={`${award.title} badge`} fill sizes="146px" className="object-contain p-1" draggable={false} />
+      <div className="relative h-[350px] w-[min(100%,300px)] rounded-[8px] border-[9px] border-[#6d421f] bg-[linear-gradient(135deg,#b77c38,#3b2111_18%,#5d361b_82%,#c28a43)] p-[5px] shadow-[inset_0_0_0_2px_#d6a85e,0_14px_20px_rgba(0,0,0,0.52)] transition duration-300 group-hover:scale-[1.015]">
+        <div className="relative h-full overflow-hidden rounded-[3px] border border-[#bd9a5b]/60 bg-[radial-gradient(circle_at_50%_34%,#3b2b22,#17100c_72%)] shadow-[inset_0_0_22px_rgba(0,0,0,0.8)]">
+          <div className="absolute left-1/2 top-4 h-4 w-4 -translate-x-1/2 rounded-full border-[3px] border-[#b88935] bg-[#1a100b]" />
+          <div className="absolute left-1/2 top-[27px] h-[100px] w-[56px] -translate-x-[88%] -rotate-[12deg] bg-[linear-gradient(90deg,#173a65_0_30%,#f4f4ed_30%_68%,#2f86bc_68%)] [clip-path:polygon(8%_0,92%_0,82%_100%,50%_82%,18%_100%)]" />
+          <div className="absolute left-1/2 top-[27px] h-[100px] w-[56px] -translate-x-[12%] rotate-[12deg] bg-[linear-gradient(90deg,#2f86bc_0_32%,#f4f4ed_32%_70%,#173a65_70%)] [clip-path:polygon(8%_0,92%_0,82%_100%,50%_82%,18%_100%)]" />
+          <div className="absolute left-1/2 top-[87px] h-[166px] w-[166px] -translate-x-1/2 rounded-full border-[8px] border-[#deb95c] bg-[radial-gradient(circle_at_35%_28%,#fff0ad_0%,#d19832_29%,#80531d_66%,#edcb73_82%,#573513_100%)] shadow-[inset_0_0_0_3px_#754917,inset_0_0_0_7px_#eac971,0_12px_18px_rgba(0,0,0,0.55)]">
+            <div className="absolute inset-[18px] overflow-hidden rounded-[15px] border-2 border-white/90 bg-white">
+              <Image src={award.badgeSrc} alt={`${award.title} badge`} fill sizes="130px" className="object-contain p-1" draggable={false} />
+            </div>
+          </div>
+          <div className="absolute inset-x-3 bottom-3">
+            <AwardPlaque award={award} />
           </div>
         </div>
       </div>
-      <AwardPlaque award={award} wallMounted />
     </div>
   );
 }
 
-function TrophyAward({ award, cup }: { award: CertificationAward; cup: boolean }) {
+function TrophyAward({ award, awardIndex }: { award: CertificationAward; awardIndex: number }) {
+  const redHatVariants: Record<number, "spire" | "column" | "shield" | "diamond"> = {
+    4: "column",
+    6: "spire",
+    7: "shield",
+    8: "diamond",
+  };
+  const variant = award.kind === "trophy" ? "cup" : redHatVariants[awardIndex] ?? "spire";
+  const scaleClass = ["scale-[0.92]", "scale-100", "scale-[0.96]", "scale-[0.9]"][awardIndex % 4];
+
   return (
     <div className="flex h-full w-full flex-col items-center justify-end">
-      <div className="relative h-[298px] w-full">
-        {cup ? (
+      <div className={`relative h-[365px] w-full origin-bottom transition duration-300 group-hover:scale-[1.02] ${scaleClass}`}>
+        {variant === "cup" ? (
           <>
-            <div className="absolute left-1/2 top-[54px] h-[102px] w-[80px] -translate-x-[139px] rounded-l-full border-[14px] border-r-0 border-[#c28c35] bg-transparent shadow-[-5px_7px_12px_rgba(0,0,0,0.3)]" />
-            <div className="absolute right-1/2 top-[54px] h-[102px] w-[80px] translate-x-[139px] rounded-r-full border-[14px] border-l-0 border-[#c28c35] bg-transparent shadow-[5px_7px_12px_rgba(0,0,0,0.3)]" />
-            <div className="absolute left-1/2 top-[22px] h-[172px] w-[206px] -translate-x-1/2 rounded-b-[82px] rounded-t-[34px] border-[7px] border-[#e6c66e] bg-[linear-gradient(115deg,#8a5a1c_0%,#f4dc89_18%,#bd8430_48%,#ffe9a0_66%,#805018_100%)] shadow-[inset_0_5px_8px_rgba(255,255,255,0.35),0_16px_22px_rgba(0,0,0,0.48)]" />
+            <div className="absolute left-1/2 top-[38px] h-[112px] w-[84px] -translate-x-[143px] rounded-l-full border-[15px] border-r-0 border-[#c28c35]" />
+            <div className="absolute right-1/2 top-[38px] h-[112px] w-[84px] translate-x-[143px] rounded-r-full border-[15px] border-l-0 border-[#c28c35]" />
+            <div className="absolute left-1/2 top-[8px] h-[190px] w-[214px] -translate-x-1/2 rounded-b-[90px] rounded-t-[38px] border-[7px] border-[#e6c66e] bg-[linear-gradient(115deg,#8a5a1c_0%,#f4dc89_18%,#bd8430_48%,#ffe9a0_66%,#805018_100%)] shadow-[inset_0_5px_8px_rgba(255,255,255,0.35),0_16px_22px_rgba(0,0,0,0.48)]" />
+          </>
+        ) : variant === "spire" ? (
+          <>
+            <div className="absolute left-1/2 top-[12px] h-[235px] w-[174px] -translate-x-1/2 [clip-path:polygon(50%_0,94%_20%,82%_100%,18%_100%,6%_20%)] bg-[linear-gradient(115deg,#714519,#e7c873_22%,#865520_52%,#f1d684_76%,#624018)] shadow-[0_16px_22px_rgba(0,0,0,0.48)]" />
+            <div className="absolute left-1/2 top-[24px] h-[214px] w-[150px] -translate-x-1/2 [clip-path:polygon(50%_0,94%_20%,82%_100%,18%_100%,6%_20%)] bg-[#2a170d]" />
+          </>
+        ) : variant === "column" ? (
+          <>
+            <div className="absolute left-1/2 top-[18px] h-[48px] w-[48px] -translate-x-1/2 rotate-45 border-[7px] border-[#e2c36e] bg-[#70451a] shadow-[0_8px_12px_rgba(0,0,0,0.4)]" />
+            <div className="absolute left-1/2 top-[58px] h-[184px] w-[136px] -translate-x-1/2 rounded-t-[68px] border-[8px] border-[#d9b45c] bg-[linear-gradient(90deg,#714318,#efd27c,#84531e)] shadow-[0_14px_20px_rgba(0,0,0,0.48)]" />
+          </>
+        ) : variant === "shield" ? (
+          <>
+            <div className="absolute left-1/2 top-[14px] h-[230px] w-[194px] -translate-x-1/2 [clip-path:polygon(50%_0,96%_16%,88%_72%,50%_100%,12%_72%,4%_16%)] bg-[linear-gradient(115deg,#704317,#f0d17a_24%,#89561f_54%,#ebca6e_78%,#5e3914)] shadow-[0_16px_22px_rgba(0,0,0,0.5)]" />
+            <div className="absolute left-1/2 top-[28px] h-[202px] w-[166px] -translate-x-1/2 [clip-path:polygon(50%_0,96%_16%,88%_72%,50%_100%,12%_72%,4%_16%)] bg-[#2a170d]" />
           </>
         ) : (
           <>
-            <div className="absolute left-1/2 top-[25px] h-[202px] w-[188px] -translate-x-1/2 [clip-path:polygon(15%_0,85%_0,100%_18%,90%_100%,10%_100%,0_18%)] bg-[linear-gradient(115deg,#714519,#e2bd65_19%,#8e5c23_48%,#f0d47e_70%,#624018_100%)] shadow-[0_16px_22px_rgba(0,0,0,0.48)]" />
-            <div className="absolute left-1/2 top-[34px] h-[184px] w-[170px] -translate-x-1/2 [clip-path:polygon(15%_0,85%_0,100%_18%,90%_100%,10%_100%,0_18%)] bg-[#321a0e]" />
+            <div className="absolute left-1/2 top-[12px] h-[228px] w-[178px] -translate-x-1/2 [clip-path:polygon(50%_0,100%_32%,78%_100%,22%_100%,0_32%)] bg-[linear-gradient(120deg,#704317,#f3db8a_25%,#8e5b22_52%,#e7c467_79%,#5c3713)] shadow-[0_16px_22px_rgba(0,0,0,0.5)]" />
+            <div className="absolute left-1/2 top-[27px] h-[204px] w-[152px] -translate-x-1/2 [clip-path:polygon(50%_0,100%_32%,78%_100%,22%_100%,0_32%)] bg-[#28160c]" />
           </>
         )}
 
-        <div className={`absolute left-1/2 z-[2] -translate-x-1/2 overflow-hidden border-2 border-white/90 bg-white shadow-[0_7px_15px_rgba(0,0,0,0.35)] transition duration-300 group-hover:scale-[1.025] ${cup ? "top-[46px] h-[126px] w-[142px] rounded-[18px_18px_32px_32px]" : "top-[53px] h-[146px] w-[142px] rounded-[12px]"}`}>
+        <div className={`absolute left-1/2 z-[2] -translate-x-1/2 overflow-hidden border-2 border-white/90 bg-white shadow-[0_7px_15px_rgba(0,0,0,0.35)] ${variant === "cup" ? "top-[36px] h-[140px] w-[148px] rounded-[20px_20px_38px_38px]" : "top-[65px] h-[142px] w-[132px] rounded-[10px]"}`}>
           <Image src={award.badgeSrc} alt={`${award.title} badge`} fill sizes="142px" className="object-contain p-1.5" draggable={false} />
         </div>
 
-        <div className="absolute bottom-[66px] left-1/2 h-[52px] w-[30px] -translate-x-1/2 bg-[linear-gradient(90deg,#754718,#f4d87e_45%,#754718)] shadow-[0_7px_9px_rgba(0,0,0,0.4)]" />
-        <div className="absolute bottom-[48px] left-1/2 h-[24px] w-[132px] -translate-x-1/2 rounded-t-[8px] border border-[#dbb85b] bg-[linear-gradient(180deg,#d9ad4f,#76501e)] shadow-[0_7px_10px_rgba(0,0,0,0.5)]" />
+        <div className="absolute bottom-[66px] left-1/2 h-[70px] w-[28px] -translate-x-1/2 bg-[linear-gradient(90deg,#754718,#f4d87e_45%,#754718)] shadow-[0_7px_9px_rgba(0,0,0,0.4)]" />
+        <div className="absolute bottom-[48px] left-1/2 h-[24px] w-[136px] -translate-x-1/2 rounded-t-[8px] border border-[#dbb85b] bg-[linear-gradient(180deg,#d9ad4f,#76501e)] shadow-[0_7px_10px_rgba(0,0,0,0.5)]" />
         <div className="absolute bottom-0 left-1/2 h-[52px] w-[210px] -translate-x-1/2 rounded-t-[7px] border border-[#5c3518] bg-[linear-gradient(180deg,#75411f,#2a160c)] shadow-[inset_0_2px_rgba(255,255,255,0.08),0_8px_12px_rgba(0,0,0,0.58)]" />
         <div className="absolute bottom-[6px] left-1/2 z-[3] flex min-h-[40px] w-[190px] -translate-x-1/2 flex-col items-center justify-center rounded-[3px] border border-[#e0c276]/75 bg-[linear-gradient(180deg,#e7cb86,#a97937)] px-2 py-1 text-[#241309] shadow-[inset_0_1px_rgba(255,255,255,0.5)]">
           <p className="text-[7px] font-bold uppercase tracking-[0.11em]">{award.issuer}</p>
@@ -454,21 +501,39 @@ function TrophyAward({ award, cup }: { award: CertificationAward; cup: boolean }
           <p className="mt-0.5 text-[7px] font-medium uppercase tracking-[0.1em] text-[#553118]">{award.issued}</p>
         </div>
       </div>
-      <span className="mb-1 mt-2 inline-flex items-center gap-2 text-[9px] font-semibold uppercase tracking-[0.17em] text-[#dbc184]">
-        Open certificate
-        <span aria-hidden="true" className="inline-block h-1.5 w-1.5 rotate-45 border-r border-t border-current" />
-      </span>
     </div>
   );
 }
 
-function AwardPlaque({ award, wallMounted = false }: { award: CertificationAward; wallMounted?: boolean }) {
+function AwardPlaque({ award }: { award: CertificationAward }) {
   return (
-    <div className={`relative mt-4 w-[min(100%,310px)] rounded-[5px] border border-[#d8b76a] bg-[linear-gradient(180deg,#e8ce8a_0%,#b47f38_52%,#815022_100%)] px-5 py-3 text-[#241309] shadow-[inset_0_1px_rgba(255,255,255,0.5),0_7px_12px_rgba(0,0,0,0.42)] ${wallMounted ? "before:absolute before:left-2 before:top-2 before:h-1.5 before:w-1.5 before:rounded-full before:bg-[#5d3818] before:shadow-[inset_0_1px_#e5c477] after:absolute after:right-2 after:top-2 after:h-1.5 after:w-1.5 after:rounded-full after:bg-[#5d3818] after:shadow-[inset_0_1px_#e5c477]" : ""}`}>
-      <p className="text-[9px] font-bold uppercase tracking-[0.15em]">{award.issuer}</p>
-      <h3 className="mt-1 text-[12px] font-semibold leading-[1.22]">{award.title}</h3>
-      <p className="mt-1 text-[9px] font-medium uppercase tracking-[0.12em] text-[#543019]">{award.issued}</p>
-      <p className="mt-2 text-[8px] font-semibold uppercase tracking-[0.15em] text-[#4d2d18]">Open certificate</p>
+    <div className="relative w-full rounded-[4px] border border-[#d8b76a] bg-[linear-gradient(180deg,#e8ce8a_0%,#b47f38_52%,#815022_100%)] px-4 py-2 text-[#241309] shadow-[inset_0_1px_rgba(255,255,255,0.5),0_5px_10px_rgba(0,0,0,0.42)] before:absolute before:left-2 before:top-2 before:h-1.5 before:w-1.5 before:rounded-full before:bg-[#5d3818] before:shadow-[inset_0_1px_#e5c477] after:absolute after:right-2 after:top-2 after:h-1.5 after:w-1.5 after:rounded-full after:bg-[#5d3818] after:shadow-[inset_0_1px_#e5c477]">
+      <p className="text-[8px] font-bold uppercase tracking-[0.12em]">{award.issuer}</p>
+      <h3 className="mt-0.5 line-clamp-2 text-[10px] font-semibold leading-[1.15]">{award.title}</h3>
+      <p className="mt-1 text-[8px] font-medium uppercase tracking-[0.1em] text-[#543019]">{award.issued}</p>
+    </div>
+  );
+}
+
+function CabinetPlant() {
+  return (
+    <div className="sticky top-7 mt-[150px] hidden h-[430px] w-[155px] shrink-0 min-[1380px]:block" aria-hidden="true">
+      <div className="absolute bottom-[84px] left-1/2 h-[210px] w-[12px] -translate-x-1/2 rounded-full bg-[linear-gradient(90deg,#31441e,#71884a,#263719)]" />
+      {[
+        ["left-[18px] top-[72px] -rotate-[34deg]", "h-[126px] w-[62px]"],
+        ["right-[14px] top-[52px] rotate-[31deg]", "h-[140px] w-[66px]"],
+        ["left-[42px] top-[6px] -rotate-[12deg]", "h-[150px] w-[65px]"],
+        ["right-[36px] top-[128px] rotate-[47deg]", "h-[112px] w-[58px]"],
+        ["left-[7px] top-[158px] -rotate-[50deg]", "h-[104px] w-[54px]"],
+      ].map(([position, size], index) => (
+        <div
+          key={index}
+          className={`absolute ${position} ${size} origin-bottom rounded-[80%_15%_80%_15%] border border-[#486332] bg-[linear-gradient(135deg,#9eb96d_0%,#547439_42%,#263c23_100%)] shadow-[inset_5px_4px_rgba(255,255,255,0.12),0_8px_13px_rgba(0,0,0,0.18)]`}
+        />
+      ))}
+      <div className="absolute bottom-[40px] left-1/2 h-[82px] w-[120px] -translate-x-1/2 [clip-path:polygon(8%_0,92%_0,80%_100%,20%_100%)] bg-[linear-gradient(90deg,#8e4d2c,#d07a48_45%,#7a3d24)] shadow-[inset_0_7px_rgba(255,255,255,0.1),0_13px_18px_rgba(0,0,0,0.25)]" />
+      <div className="absolute bottom-[112px] left-1/2 h-[18px] w-[128px] -translate-x-1/2 rounded-[50%] bg-[linear-gradient(180deg,#e18b55,#884326)]" />
+      <div className="absolute bottom-[30px] left-1/2 h-[14px] w-[104px] -translate-x-1/2 rounded-[50%] bg-[#75401f]/45 blur-[2px]" />
     </div>
   );
 }
