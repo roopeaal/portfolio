@@ -340,7 +340,7 @@ function AwardsCabinet() {
         ].join(","),
       }}
     >
-      <div className="relative z-[1] mx-auto flex min-h-full max-w-[1480px] items-end gap-6 overflow-hidden px-2 pb-8 pt-4 sm:px-5 sm:pb-10 sm:pt-6 lg:px-7">
+      <div className="relative z-[1] mx-auto flex min-h-full max-w-[1480px] items-end gap-3 overflow-hidden px-2 pb-8 pt-4 sm:px-5 sm:pb-10 sm:pt-6 lg:px-7">
         <div
           className="pointer-events-none absolute inset-x-0 bottom-0 h-[210px] border-t-2 border-[#a79b89] bg-[#b9aa94]"
           style={{
@@ -598,27 +598,26 @@ function AwardPlaque({ award }: { award: CertificationAward }) {
 
 function CabinetPlant() {
   const leaves = [
-    { className: "left-[12px] top-[166px] h-[142px] w-[72px] -rotate-[58deg]", tone: "from-[#8eae63] via-[#4f733e] to-[#213b29]" },
-    { className: "left-[22px] top-[74px] h-[176px] w-[78px] -rotate-[38deg]", tone: "from-[#a4bd70] via-[#587d43] to-[#263f2b]" },
-    { className: "left-[62px] top-[8px] h-[198px] w-[82px] -rotate-[16deg]", tone: "from-[#a8c175] via-[#5f8449] to-[#28442f]" },
-    { className: "right-[42px] top-[28px] h-[190px] w-[80px] rotate-[18deg]", tone: "from-[#94b465] via-[#50743e] to-[#203a27]" },
-    { className: "right-[8px] top-[104px] h-[170px] w-[76px] rotate-[48deg]", tone: "from-[#a6c477] via-[#5e8247] to-[#29462f]" },
-    { className: "right-[18px] top-[216px] h-[136px] w-[68px] rotate-[64deg]", tone: "from-[#88aa5f] via-[#486d3b] to-[#203a28]" },
-    { className: "left-[55px] top-[212px] h-[146px] w-[70px] -rotate-[22deg]", tone: "from-[#9fbc71] via-[#537940] to-[#24412d]" },
+    { className: "left-[9px] top-[154px] h-[150px] w-[54px] -rotate-[34deg]", tone: "from-[#8eae63] via-[#4f733e] to-[#213b29]" },
+    { className: "left-[25px] top-[72px] h-[184px] w-[58px] -rotate-[21deg]", tone: "from-[#a4bd70] via-[#587d43] to-[#263f2b]" },
+    { className: "left-[47px] top-[12px] h-[208px] w-[60px] -rotate-[6deg]", tone: "from-[#a8c175] via-[#5f8449] to-[#28442f]" },
+    { className: "right-[24px] top-[48px] h-[194px] w-[58px] rotate-[17deg]", tone: "from-[#94b465] via-[#50743e] to-[#203a27]" },
+    { className: "right-[7px] top-[132px] h-[158px] w-[54px] rotate-[33deg]", tone: "from-[#a6c477] via-[#5e8247] to-[#29462f]" },
+    { className: "left-[48px] top-[194px] h-[154px] w-[56px] rotate-[4deg]", tone: "from-[#9fbc71] via-[#537940] to-[#24412d]" },
   ];
 
   return (
-    <div className="relative z-[3] hidden h-[570px] w-[210px] shrink-0 min-[1380px]:block" aria-hidden="true">
-      <div className="absolute bottom-[118px] left-[102px] h-[300px] w-[10px] -rotate-[2deg] rounded-full bg-[linear-gradient(90deg,#263c24,#748653_52%,#20331f)] shadow-[3px_0_5px_rgba(22,43,26,0.22)]" />
-      <div className="absolute bottom-[145px] left-[91px] h-[244px] w-[8px] -rotate-[22deg] rounded-full bg-[linear-gradient(90deg,#263c24,#687d49,#20331f)]" />
-      <div className="absolute bottom-[146px] right-[83px] h-[242px] w-[8px] rotate-[25deg] rounded-full bg-[linear-gradient(90deg,#20331f,#687d49,#263c24)]" />
-      <div className="absolute bottom-[170px] left-[70px] h-[180px] w-[7px] -rotate-[48deg] rounded-full bg-[#48633d]" />
-      <div className="absolute bottom-[170px] right-[63px] h-[174px] w-[7px] rotate-[51deg] rounded-full bg-[#48633d]" />
+    <div className="relative z-[3] hidden h-[570px] w-[150px] shrink-0 min-[1380px]:block" aria-hidden="true">
+      <div className="absolute bottom-[108px] left-[73px] h-[310px] w-[9px] -rotate-[1deg] rounded-full bg-[linear-gradient(90deg,#263c24,#748653_52%,#20331f)] shadow-[3px_0_5px_rgba(22,43,26,0.22)]" />
+      <div className="absolute bottom-[136px] left-[68px] h-[248px] w-[7px] -rotate-[15deg] rounded-full bg-[linear-gradient(90deg,#263c24,#687d49,#20331f)]" />
+      <div className="absolute bottom-[137px] right-[67px] h-[242px] w-[7px] rotate-[16deg] rounded-full bg-[linear-gradient(90deg,#20331f,#687d49,#263c24)]" />
+      <div className="absolute bottom-[155px] left-[54px] h-[176px] w-[6px] -rotate-[31deg] rounded-full bg-[#48633d]" />
+      <div className="absolute bottom-[156px] right-[49px] h-[174px] w-[6px] rotate-[31deg] rounded-full bg-[#48633d]" />
 
       {leaves.map((leaf, index) => (
         <div
           key={index}
-          className={`absolute ${leaf.className} origin-bottom overflow-hidden rounded-[92%_12%_88%_18%] border border-[#3f6037] bg-gradient-to-br ${leaf.tone} shadow-[inset_8px_5px_rgba(255,255,255,0.12),0_10px_16px_rgba(0,0,0,0.16)]`}
+          className={`absolute ${leaf.className} origin-bottom overflow-hidden rounded-[82%_22%_78%_28%] border border-[#3f6037] bg-gradient-to-br ${leaf.tone} shadow-[inset_7px_5px_rgba(255,255,255,0.12),0_9px_14px_rgba(0,0,0,0.15)]`}
         >
           <span className="absolute bottom-[8%] left-1/2 top-[9%] w-px -translate-x-1/2 rotate-[5deg] bg-[#d4e0a1]/45" />
           <span className="absolute left-[23%] top-[38%] h-px w-[35%] -rotate-[24deg] bg-[#d4e0a1]/25" />
@@ -626,10 +625,10 @@ function CabinetPlant() {
         </div>
       ))}
 
-      <div className="absolute bottom-[9px] left-1/2 h-[114px] w-[146px] -translate-x-1/2 [clip-path:polygon(7%_0,93%_0,81%_100%,19%_100%)] bg-[linear-gradient(90deg,#74391f_0%,#c87543_24%,#e39159_48%,#a55231_72%,#67331e_100%)] shadow-[inset_0_8px_rgba(255,255,255,0.1),0_16px_20px_rgba(0,0,0,0.28)]" />
-      <div className="absolute bottom-[111px] left-1/2 h-[22px] w-[158px] -translate-x-1/2 rounded-[50%] border border-[#71381f] bg-[linear-gradient(180deg,#e59a64,#8a4426)] shadow-[inset_0_4px_rgba(255,255,255,0.14)]" />
-      <div className="absolute bottom-[115px] left-1/2 h-[10px] w-[132px] -translate-x-1/2 rounded-[50%] bg-[#3b2c1e]" />
-      <div className="absolute bottom-0 left-1/2 h-[18px] w-[152px] -translate-x-1/2 rounded-[50%] bg-[#49331f]/35 blur-[3px]" />
+      <div className="absolute bottom-[9px] left-1/2 h-[104px] w-[108px] -translate-x-1/2 [clip-path:polygon(7%_0,93%_0,81%_100%,19%_100%)] bg-[linear-gradient(90deg,#74391f_0%,#c87543_24%,#e39159_48%,#a55231_72%,#67331e_100%)] shadow-[inset_0_8px_rgba(255,255,255,0.1),0_16px_20px_rgba(0,0,0,0.28)]" />
+      <div className="absolute bottom-[101px] left-1/2 h-[20px] w-[118px] -translate-x-1/2 rounded-[50%] border border-[#71381f] bg-[linear-gradient(180deg,#e59a64,#8a4426)] shadow-[inset_0_4px_rgba(255,255,255,0.14)]" />
+      <div className="absolute bottom-[105px] left-1/2 h-[9px] w-[98px] -translate-x-1/2 rounded-[50%] bg-[#3b2c1e]" />
+      <div className="absolute bottom-0 left-1/2 h-[16px] w-[112px] -translate-x-1/2 rounded-[50%] bg-[#49331f]/35 blur-[3px]" />
     </div>
   );
 }
