@@ -608,33 +608,77 @@ function AwardPlaque({ award }: { award: CertificationAward }) {
 }
 
 function CabinetPlant() {
-  const leaves = [
-    { className: "left-[9px] top-[154px] h-[150px] w-[54px] -rotate-[34deg]", tone: "from-[#8eae63] via-[#4f733e] to-[#213b29]" },
-    { className: "left-[25px] top-[72px] h-[184px] w-[58px] -rotate-[21deg]", tone: "from-[#a4bd70] via-[#587d43] to-[#263f2b]" },
-    { className: "left-[47px] top-[12px] h-[208px] w-[60px] -rotate-[6deg]", tone: "from-[#a8c175] via-[#5f8449] to-[#28442f]" },
-    { className: "right-[24px] top-[48px] h-[194px] w-[58px] rotate-[17deg]", tone: "from-[#94b465] via-[#50743e] to-[#203a27]" },
-    { className: "right-[7px] top-[132px] h-[158px] w-[54px] rotate-[33deg]", tone: "from-[#a6c477] via-[#5e8247] to-[#29462f]" },
-    { className: "left-[48px] top-[194px] h-[154px] w-[56px] rotate-[4deg]", tone: "from-[#9fbc71] via-[#537940] to-[#24412d]" },
-  ];
-
   return (
     <div className="relative z-[3] hidden h-[570px] w-[150px] shrink-0 min-[1380px]:block" aria-hidden="true">
-      <div className="absolute bottom-[108px] left-[73px] h-[310px] w-[9px] -rotate-[1deg] rounded-full bg-[linear-gradient(90deg,#263c24,#748653_52%,#20331f)] shadow-[3px_0_5px_rgba(22,43,26,0.22)]" />
-      <div className="absolute bottom-[136px] left-[68px] h-[248px] w-[7px] -rotate-[15deg] rounded-full bg-[linear-gradient(90deg,#263c24,#687d49,#20331f)]" />
-      <div className="absolute bottom-[137px] right-[67px] h-[242px] w-[7px] rotate-[16deg] rounded-full bg-[linear-gradient(90deg,#20331f,#687d49,#263c24)]" />
-      <div className="absolute bottom-[155px] left-[54px] h-[176px] w-[6px] -rotate-[31deg] rounded-full bg-[#48633d]" />
-      <div className="absolute bottom-[156px] right-[49px] h-[174px] w-[6px] rotate-[31deg] rounded-full bg-[#48633d]" />
+      <svg
+        viewBox="0 0 150 450"
+        className="absolute bottom-[106px] left-0 h-[450px] w-[150px] overflow-visible drop-shadow-[0_10px_8px_rgba(20,45,24,0.16)]"
+      >
+        <defs>
+          <linearGradient id="kentia-stem" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stopColor="#263b27" />
+            <stop offset="0.48" stopColor="#819263" />
+            <stop offset="1" stopColor="#30472d" />
+          </linearGradient>
+          <linearGradient id="kentia-leaf" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stopColor="#9ab66f" />
+            <stop offset="0.42" stopColor="#537b49" />
+            <stop offset="1" stopColor="#28442f" />
+          </linearGradient>
+        </defs>
 
-      {leaves.map((leaf, index) => (
-        <div
-          key={index}
-          className={`absolute ${leaf.className} origin-bottom overflow-hidden rounded-[82%_22%_78%_28%] border border-[#3f6037] bg-gradient-to-br ${leaf.tone} shadow-[inset_7px_5px_rgba(255,255,255,0.12),0_9px_14px_rgba(0,0,0,0.15)]`}
-        >
-          <span className="absolute bottom-[8%] left-1/2 top-[9%] w-px -translate-x-1/2 rotate-[5deg] bg-[#d4e0a1]/45" />
-          <span className="absolute left-[23%] top-[38%] h-px w-[35%] -rotate-[24deg] bg-[#d4e0a1]/25" />
-          <span className="absolute right-[21%] top-[55%] h-px w-[36%] rotate-[25deg] bg-[#d4e0a1]/25" />
-        </div>
-      ))}
+        <g fill="none" stroke="url(#kentia-stem)" strokeLinecap="round">
+          <path d="M69 450 Q64 386 67 318" strokeWidth="8" />
+          <path d="M75 450 Q76 372 74 302" strokeWidth="9" />
+          <path d="M81 450 Q89 386 80 326" strokeWidth="7" />
+        </g>
+
+        <g fill="none" stroke="url(#kentia-stem)" strokeLinecap="round" strokeWidth="4">
+          <path d="M67 320 Q39 264 8 224" />
+          <path d="M70 312 Q48 193 17 103" />
+          <path d="M74 304 Q72 166 75 45" />
+          <path d="M78 313 Q100 194 132 101" />
+          <path d="M80 326 Q111 277 145 222" />
+        </g>
+
+        <g fill="none" stroke="url(#kentia-leaf)" strokeLinecap="round">
+          <path d="M17 235 Q7 236 0 249 M17 235 Q28 243 32 258" strokeWidth="7" />
+          <path d="M28 252 Q13 255 3 270 M28 252 Q42 260 47 278" strokeWidth="8" />
+          <path d="M40 270 Q23 275 12 292 M40 270 Q54 280 58 298" strokeWidth="9" />
+          <path d="M53 290 Q38 297 29 313 M53 290 Q65 300 68 316" strokeWidth="8" />
+
+          <path d="M23 121 Q8 111 0 117 M23 121 Q43 124 51 143" strokeWidth="7" />
+          <path d="M30 147 Q10 139 0 150 M30 147 Q50 153 58 173" strokeWidth="8" />
+          <path d="M39 177 Q17 172 4 187 M39 177 Q59 185 66 205" strokeWidth="9" />
+          <path d="M49 211 Q27 211 12 229 M49 211 Q65 222 70 241" strokeWidth="9" />
+          <path d="M59 250 Q40 255 28 273 M59 250 Q70 263 72 281" strokeWidth="8" />
+
+          <path d="M75 53 Q56 40 41 46 M75 53 Q94 40 109 47" strokeWidth="7" />
+          <path d="M74 80 Q51 67 33 76 M74 80 Q98 67 116 77" strokeWidth="8" />
+          <path d="M74 111 Q47 99 27 112 M74 111 Q101 98 122 112" strokeWidth="9" />
+          <path d="M73 147 Q44 137 23 153 M73 147 Q102 136 126 153" strokeWidth="9" />
+          <path d="M73 187 Q45 180 24 198 M73 187 Q101 179 124 198" strokeWidth="9" />
+          <path d="M73 231 Q49 228 31 246 M73 231 Q97 227 117 246" strokeWidth="8" />
+          <path d="M73 270 Q55 270 42 284 M73 270 Q91 270 106 284" strokeWidth="7" />
+
+          <path d="M127 120 Q142 110 150 117 M127 120 Q107 124 99 143" strokeWidth="7" />
+          <path d="M120 147 Q140 139 150 150 M120 147 Q100 153 92 173" strokeWidth="8" />
+          <path d="M111 177 Q133 172 146 187 M111 177 Q91 185 84 205" strokeWidth="9" />
+          <path d="M101 211 Q123 211 138 229 M101 211 Q85 222 80 241" strokeWidth="9" />
+          <path d="M91 250 Q110 255 122 273 M91 250 Q80 263 78 281" strokeWidth="8" />
+
+          <path d="M133 235 Q143 236 150 249 M133 235 Q122 243 118 258" strokeWidth="7" />
+          <path d="M122 252 Q137 255 147 270 M122 252 Q108 260 103 278" strokeWidth="8" />
+          <path d="M110 270 Q127 275 138 292 M110 270 Q96 280 92 298" strokeWidth="9" />
+          <path d="M97 290 Q112 297 121 313 M97 290 Q85 300 82 316" strokeWidth="8" />
+        </g>
+
+        <g fill="none" stroke="#d8e4a6" strokeLinecap="round" strokeWidth="1.2" opacity="0.3">
+          <path d="M17 103 Q48 193 70 312" />
+          <path d="M75 34 Q72 166 74 304" />
+          <path d="M132 101 Q100 194 78 313" />
+        </g>
+      </svg>
 
       <div className="absolute bottom-[9px] left-1/2 h-[104px] w-[108px] -translate-x-1/2 [clip-path:polygon(7%_0,93%_0,81%_100%,19%_100%)] bg-[linear-gradient(90deg,#74391f_0%,#c87543_24%,#e39159_48%,#a55231_72%,#67331e_100%)] shadow-[inset_0_8px_rgba(255,255,255,0.1),0_16px_20px_rgba(0,0,0,0.28)]" />
       <div className="absolute bottom-[101px] left-1/2 h-[20px] w-[118px] -translate-x-1/2 rounded-[50%] border border-[#71381f] bg-[linear-gradient(180deg,#e59a64,#8a4426)] shadow-[inset_0_4px_rgba(255,255,255,0.14)]" />
