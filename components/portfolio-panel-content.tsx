@@ -533,7 +533,8 @@ function TrophyAward({ award, awardIndex }: { award: CertificationAward; awardIn
         </div>
         <AwardShine />
 
-        <div className="absolute bottom-[66px] left-1/2 h-[70px] w-[28px] -translate-x-1/2 bg-[linear-gradient(90deg,#754718,#f4d87e_45%,#754718)] shadow-[0_7px_9px_rgba(0,0,0,0.4)]" />
+        <div className="absolute bottom-[66px] left-1/2 h-[92px] w-[28px] -translate-x-1/2 bg-[linear-gradient(90deg,#754718,#f4d87e_45%,#754718)] shadow-[0_7px_9px_rgba(0,0,0,0.4)]" />
+        <div className="absolute bottom-[150px] left-1/2 h-[18px] w-[54px] -translate-x-1/2 rounded-[50%] border border-[#d5aa48] bg-[linear-gradient(180deg,#f3d774,#8b591b)] shadow-[inset_0_3px_rgba(255,255,255,0.2),0_4px_6px_rgba(0,0,0,0.28)]" />
         <div className="absolute bottom-[48px] left-1/2 h-[24px] w-[136px] -translate-x-1/2 rounded-t-[8px] border border-[#dbb85b] bg-[linear-gradient(180deg,#d9ad4f,#76501e)] shadow-[0_7px_10px_rgba(0,0,0,0.5)]" />
         <div className="absolute bottom-0 left-1/2 h-[52px] w-[210px] -translate-x-1/2 rounded-t-[7px] border border-[#5c3518] bg-[linear-gradient(180deg,#75411f,#2a160c)] shadow-[inset_0_2px_rgba(255,255,255,0.08),0_8px_12px_rgba(0,0,0,0.58)]" />
         <div className="absolute bottom-[6px] left-1/2 z-[3] flex min-h-[40px] w-[190px] -translate-x-1/2 flex-col items-center justify-center rounded-[3px] border border-[#e0c276]/75 bg-[linear-gradient(180deg,#e7cb86,#a97937)] px-2 py-1 text-[#241309] shadow-[inset_0_1px_rgba(255,255,255,0.5)]">
