@@ -479,10 +479,10 @@ function MedalFrame({ award }: { award: CertificationAward }) {
             className="absolute left-1/2 top-[87px] h-[166px] w-[166px] -translate-x-1/2 rounded-full border-[8px] shadow-[inset_0_0_0_3px_rgba(68,39,15,0.72),inset_0_0_0_7px_rgba(255,231,157,0.55),0_13px_19px_rgba(0,0,0,0.58)]"
             style={{ borderColor: ribbon.border, background: ribbon.metal }}
           >
+            <AwardReflection shape="medal" />
             <div className="absolute inset-[28px] overflow-hidden rounded-full border-[3px] border-white/70 bg-[radial-gradient(circle,#fffdf7,#ddd4c5)] shadow-[inset_0_3px_5px_rgba(0,0,0,0.18),0_3px_5px_rgba(0,0,0,0.22)]">
               <Image src={award.badgeSrc} alt={`${award.title} badge`} fill sizes="104px" className="object-contain p-2.5" draggable={false} />
             </div>
-            <AwardShine />
           </div>
           <div className="absolute inset-x-3 bottom-3">
             <AwardPlaque award={award} />
@@ -518,11 +518,14 @@ function TrophyAward({ award, awardIndex }: { award: CertificationAward; awardIn
             <div className="absolute right-1/2 top-[62px] h-[102px] w-[74px] translate-x-[138px] rounded-r-full border-[14px] border-l-0 border-[#b77d27] shadow-[6px_7px_9px_rgba(0,0,0,0.28)]" />
             <div className="absolute left-1/2 top-[24px] h-[190px] w-[190px] -translate-x-1/2 rounded-b-[86px] rounded-t-[30px] border-[7px] border-[#e4bd58] bg-[linear-gradient(108deg,#704313_0%,#f5d978_18%,#b77b25_42%,#fff0a5_59%,#9b631c_80%,#5f3912_100%)] shadow-[inset_8px_5px_9px_rgba(255,255,255,0.28),inset_-9px_-5px_10px_rgba(66,35,8,0.32),0_17px_24px_rgba(0,0,0,0.5)]" />
             <div className="absolute left-1/2 top-[21px] h-[22px] w-[176px] -translate-x-1/2 rounded-[50%] border border-[#f7dd83] bg-[linear-gradient(180deg,#ffe9a0,#9a621d)] shadow-[inset_0_4px_rgba(255,255,255,0.28)]" />
+            <AwardReflection shape="cup" />
           </>
         ) : variant === "star" ? (
           <>
             <div className="absolute left-1/2 top-[8px] h-[204px] w-[204px] -translate-x-1/2 bg-[linear-gradient(120deg,#76501b,#f8dc7f_24%,#a66c20_52%,#ffe99a_75%,#654015)] shadow-[0_16px_22px_rgba(0,0,0,0.48)] [clip-path:polygon(50%_0,61%_34%,98%_35%,68%_56%,79%_94%,50%_72%,21%_94%,32%_56%,2%_35%,39%_34%)]" />
             <div className="absolute left-1/2 top-[27px] h-[166px] w-[166px] -translate-x-1/2 bg-[#5f3a13] [clip-path:polygon(50%_0,61%_34%,98%_35%,68%_56%,79%_94%,50%_72%,21%_94%,32%_56%,2%_35%,39%_34%)]" />
+            <div className="absolute left-1/2 top-[151px] z-[1] h-[79px] w-[36px] -translate-x-1/2 bg-[linear-gradient(90deg,#6b4114_0%,#d7a83d_23%,#ffe68b_49%,#b97c24_72%,#5c3711_100%)] shadow-[inset_4px_0_5px_rgba(255,244,186,0.18),inset_-4px_0_5px_rgba(67,36,9,0.24),0_8px_10px_rgba(0,0,0,0.36)] [clip-path:polygon(30%_0,70%_0,88%_100%,12%_100%)]" />
+            <AwardReflection shape="star" />
           </>
         ) : (
           <LaurelTrophyBody />
@@ -531,7 +534,6 @@ function TrophyAward({ award, awardIndex }: { award: CertificationAward; awardIn
         <div className={`absolute left-1/2 z-[3] -translate-x-1/2 overflow-hidden border-[3px] border-[#f2d676] bg-[radial-gradient(circle,#fffdf7,#d9caa9)] shadow-[inset_0_4px_7px_rgba(0,0,0,0.2),0_5px_10px_rgba(0,0,0,0.34)] ${badgeFrameClass}`}>
           <Image src={award.badgeSrc} alt={`${award.title} badge`} fill sizes="92px" className="object-contain p-3" draggable={false} />
         </div>
-        <AwardShine />
 
         <div className="absolute bottom-[66px] left-1/2 h-[92px] w-[28px] -translate-x-1/2 bg-[linear-gradient(90deg,#754718,#f4d87e_45%,#754718)] shadow-[0_7px_9px_rgba(0,0,0,0.4)]" />
         <div className="absolute bottom-[150px] left-1/2 h-[18px] w-[54px] -translate-x-1/2 rounded-[50%] border border-[#d5aa48] bg-[linear-gradient(180deg,#f3d774,#8b591b)] shadow-[inset_0_3px_rgba(255,255,255,0.2),0_4px_6px_rgba(0,0,0,0.28)]" />
@@ -562,6 +564,7 @@ function LaurelTrophyBody() {
   return (
     <div className="absolute left-1/2 top-[16px] h-[210px] w-[210px] -translate-x-1/2 rounded-full bg-[radial-gradient(circle_at_42%_35%,#d6ac4a_0%,#94601e_55%,#5b3511_100%)] shadow-[inset_8px_6px_12px_rgba(255,239,174,0.18),0_17px_24px_rgba(0,0,0,0.48)]">
       <div className="absolute inset-[23px] rounded-full border-[8px] border-[#e0b850] bg-[radial-gradient(circle,#bd8730,#6c4117)] shadow-[inset_0_0_0_5px_#76501d]" />
+      <AwardReflection shape="laurel" />
       {leaves.map((leaf, index) => (
         <span
           key={index}
@@ -577,12 +580,20 @@ function LaurelTrophyBody() {
   );
 }
 
-function AwardShine() {
+function AwardReflection({ shape }: { shape: "medal" | "cup" | "star" | "laurel" }) {
+  const shapeClass = {
+    medal: "inset-[3px] rounded-full",
+    cup: "left-1/2 top-[28px] h-[180px] w-[180px] -translate-x-1/2 rounded-b-[80px] rounded-t-[26px]",
+    star: "left-1/2 top-[8px] h-[204px] w-[204px] -translate-x-1/2 [clip-path:polygon(50%_0,61%_34%,98%_35%,68%_56%,79%_94%,50%_72%,21%_94%,32%_56%,2%_35%,39%_34%)]",
+    laurel: "inset-[5px] rounded-full",
+  }[shape];
+
   return (
-    <span
-      className="award-shine pointer-events-none absolute left-[16%] top-[7%] z-[5] h-[42%] w-[16%] -rotate-[20deg] rounded-full bg-white/70 blur-[1px]"
-      aria-hidden="true"
-    />
+    <span className={`pointer-events-none absolute z-[2] overflow-hidden ${shapeClass}`} aria-hidden="true">
+      <span className="absolute -left-[6%] -top-[12%] h-[86%] w-[58%] -rotate-[10deg] rounded-[50%] bg-[linear-gradient(112deg,transparent_8%,rgba(255,248,210,0.02)_29%,rgba(255,255,238,0.28)_39%,rgba(255,246,197,0.08)_49%,transparent_64%)] opacity-80 transition duration-700 ease-out group-hover:translate-x-[7%] group-hover:opacity-100" />
+      <span className="absolute left-[20%] top-[13%] h-[7%] w-[24%] -rotate-[13deg] rounded-full bg-[#fff8d7]/30 blur-[1px]" />
+      <span className="absolute bottom-[15%] right-[10%] h-[22%] w-[12%] rotate-[18deg] rounded-full bg-[#fff1a8]/10 blur-[3px]" />
+    </span>
   );
 }
 
