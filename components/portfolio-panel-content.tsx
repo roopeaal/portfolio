@@ -375,6 +375,7 @@ const STACK_CATEGORIES = [
 function TechStackLab() {
   const fieldRef = useRef<HTMLDivElement | null>(null);
   const pointerFrameRef = useRef<number | null>(null);
+  const shouldReduceMotion = useReducedMotion();
 
   const resetPointerPush = useCallback(() => {
     const field = fieldRef.current;
@@ -388,6 +389,7 @@ function TechStackLab() {
   }, []);
 
   const handlePointerMove = useCallback((event: React.PointerEvent<HTMLDivElement>) => {
+    if (shouldReduceMotion) return;
     if (event.pointerType === "touch") return;
     const field = fieldRef.current;
     if (!field) return;
@@ -421,7 +423,7 @@ function TechStackLab() {
         }
       });
     });
-  }, []);
+  }, [shouldReduceMotion]);
 
   useEffect(
     () => () => {
@@ -433,17 +435,18 @@ function TechStackLab() {
   );
 
   return (
-    <section className="tech-stack-lab relative h-full min-h-[560px] overflow-x-hidden overflow-y-auto bg-[#07131d] text-[#e8f1f5]">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,rgba(43,105,123,0.26),transparent_34%),radial-gradient(circle_at_14%_12%,rgba(69,143,159,0.16),transparent_27%),linear-gradient(145deg,#07131d_0%,#0d2029_52%,#071117_100%)]" />
-      <div className="pointer-events-none absolute inset-0 opacity-35 [background-image:linear-gradient(rgba(117,178,187,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(117,178,187,0.1)_1px,transparent_1px)] [background-size:34px_34px]" />
+    <section className="tech-stack-lab relative h-full min-h-[560px] overflow-x-hidden overflow-y-auto bg-[#040608] text-[#e8f1f5]">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_48%,rgba(64,136,151,0.3),transparent_31%),radial-gradient(circle_at_18%_18%,rgba(66,202,221,0.14),transparent_29%),radial-gradient(circle_at_84%_20%,rgba(231,161,75,0.1),transparent_26%),linear-gradient(145deg,#030506_0%,#091a22_48%,#030506_100%)]" />
+      <div className="pointer-events-none absolute inset-0 opacity-25 [background-image:linear-gradient(rgba(117,178,187,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(117,178,187,0.1)_1px,transparent_1px)] [background-size:34px_34px]" />
+      <div className="pointer-events-none absolute inset-x-[8%] top-[14%] h-[70%] rounded-full bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.08),transparent_66%)] blur-2xl" />
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#83d9df]/70 to-transparent" />
 
       <div className="relative z-[1] mx-auto flex min-h-full w-full max-w-[1420px] flex-col px-4 py-5 sm:px-6 md:py-7">
         <header className="mx-auto w-full max-w-[1180px]">
           <div className="flex flex-col gap-4 border-b border-[#7bc9d0]/25 pb-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.34em] text-[#7fd0d7]">Systems toolkit</p>
-              <h2 className="mt-1 text-[clamp(2rem,5vw,4.5rem)] font-semibold leading-[0.92] tracking-[-0.055em] text-white">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.38em] text-[#7fd0d7]">Practical systems toolkit</p>
+              <h2 className="mt-1 text-[clamp(2rem,5vw,4.5rem)] font-black uppercase leading-[0.92] tracking-[-0.075em] text-white">
                 My Tech Stack
               </h2>
             </div>
@@ -460,14 +463,17 @@ function TechStackLab() {
           className="tech-stack-field relative mx-auto mt-3 min-h-[520px] w-full max-w-[1180px] flex-1 touch-pan-y"
         >
           <div className="tech-stack-title pointer-events-none absolute inset-0 hidden items-center justify-center xl:flex">
-            <div className="text-center">
-              <p className="text-[clamp(3.4rem,9vw,8.5rem)] font-black uppercase leading-[0.72] tracking-[-0.08em] text-white/[0.055]">
-                Build
-              </p>
-              <p className="mt-5 text-[clamp(2rem,5.5vw,5.2rem)] font-light uppercase tracking-[0.22em] text-[#a7e0e4]/[0.12]">
-                Test · Document
-              </p>
-            </div>
+            <p className="text-center text-[clamp(4.2rem,10vw,9.6rem)] font-black uppercase leading-[0.78] tracking-[-0.11em] text-white/[0.075]">
+              My
+              <br />
+              Techstack
+            </p>
+          </div>
+          <div className="tech-stack-orbits pointer-events-none absolute inset-0 hidden xl:block" aria-hidden="true">
+            <span className="tech-stack-orbit tech-stack-orbit-a" />
+            <span className="tech-stack-orbit tech-stack-orbit-b" />
+            <span className="tech-stack-orbit tech-stack-orbit-c" />
+            <span className="tech-stack-core-glow" />
           </div>
 
           <div className="tech-stack-mobile-grid grid grid-cols-2 gap-3 py-4 sm:grid-cols-3 xl:hidden">
@@ -509,6 +515,7 @@ function TechStackToken({ item, mobile = false }: { item: TechStackItem; mobile?
         "--push-x": "0px",
         "--push-y": "0px",
         "--pointer-scale": "1",
+        "--tech-z": `${Math.round((item.depth - 0.8) * 90)}px`,
         "--drift-duration": `${item.drift}s`,
         "--drift-delay": `${item.delay}s`,
         left: `${item.x}%`,

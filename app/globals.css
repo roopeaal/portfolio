@@ -275,12 +275,64 @@ select {
   --push-x: 0px;
   --push-y: 0px;
   --pointer-scale: 1;
+  --tech-z: 0px;
   position: absolute;
   width: var(--tech-size);
   height: var(--tech-size);
-  transform: translate(-50%, -50%) translate3d(var(--push-x), var(--push-y), 0) scale(var(--pointer-scale));
+  transform: translate(-50%, -50%) translate3d(var(--push-x), var(--push-y), var(--tech-z)) scale(var(--pointer-scale));
   transition: transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
   will-change: transform;
+}
+
+.tech-stack-field {
+  perspective: 900px;
+  transform-style: preserve-3d;
+}
+
+.tech-stack-title {
+  transform: translateZ(-120px);
+  text-shadow: 0 0 48px rgba(109, 210, 220, 0.08);
+}
+
+.tech-stack-orbit {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  border: 1px solid rgba(136, 219, 224, 0.16);
+  border-radius: 999px;
+  box-shadow: inset 0 0 28px rgba(91, 198, 207, 0.05), 0 0 32px rgba(91, 198, 207, 0.05);
+  transform: translate(-50%, -50%) rotate(var(--orbit-rotate));
+}
+
+.tech-stack-orbit-a {
+  --orbit-rotate: -11deg;
+  width: min(82%, 900px);
+  height: min(58%, 320px);
+}
+
+.tech-stack-orbit-b {
+  --orbit-rotate: 18deg;
+  width: min(70%, 760px);
+  height: min(74%, 410px);
+}
+
+.tech-stack-orbit-c {
+  --orbit-rotate: 42deg;
+  width: min(48%, 540px);
+  height: min(82%, 450px);
+  border-color: rgba(232, 169, 72, 0.12);
+}
+
+.tech-stack-core-glow {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(34vw, 390px);
+  height: min(34vw, 390px);
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(116, 219, 224, 0.13), transparent 68%);
+  filter: blur(8px);
+  transform: translate(-50%, -50%);
 }
 
 .tech-token-drift {
@@ -300,15 +352,36 @@ select {
   border-radius: 999px;
   color: #071118;
   background:
-    radial-gradient(circle at 30% 22%, rgba(255, 255, 255, 0.96) 0 8%, transparent 9%),
-    radial-gradient(circle at 34% 28%, #ffffff 0 9%, color-mix(in srgb, var(--tech-color) 28%, white) 31%, var(--tech-color) 68%, color-mix(in srgb, var(--tech-color) 68%, #061018) 100%);
+    radial-gradient(circle at 31% 21%, rgba(255, 255, 255, 0.98) 0 7%, transparent 8%),
+    radial-gradient(circle at 38% 34%, rgba(255, 255, 255, 0.88) 0 8%, color-mix(in srgb, var(--tech-color) 25%, white) 29%, var(--tech-color) 62%, color-mix(in srgb, var(--tech-color) 54%, #061018) 100%);
   box-shadow:
-    inset 10px 11px 18px rgba(255, 255, 255, 0.42),
-    inset -13px -15px 22px rgba(2, 15, 21, 0.32),
-    0 14px 24px rgba(0, 0, 0, 0.35),
-    0 0 24px color-mix(in srgb, var(--tech-color) 28%, transparent);
+    inset 12px 13px 18px rgba(255, 255, 255, 0.48),
+    inset -16px -17px 24px rgba(2, 15, 21, 0.38),
+    0 18px 30px rgba(0, 0, 0, 0.44),
+    0 0 28px color-mix(in srgb, var(--tech-color) 32%, transparent);
   transform: rotate(-4deg);
   transition: box-shadow 260ms ease, transform 260ms ease;
+}
+
+.tech-token-sphere::before {
+  position: absolute;
+  inset: 9%;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: inherit;
+  background:
+    linear-gradient(128deg, transparent 0 42%, rgba(255, 255, 255, 0.2) 43% 45%, transparent 46% 100%),
+    radial-gradient(circle at 55% 64%, rgba(0, 0, 0, 0.18), transparent 38%);
+  content: "";
+}
+
+.tech-token-sphere::after {
+  position: absolute;
+  inset: 22%;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.24);
+  box-shadow: inset 0 2px 5px rgba(255, 255, 255, 0.52), inset 0 -4px 7px rgba(0, 0, 0, 0.18);
+  content: "";
+  opacity: 0.6;
 }
 
 .tech-token-glare {
@@ -325,16 +398,17 @@ select {
 
 .tech-token-glyph {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   max-width: 78%;
   overflow: hidden;
+  color: #061218;
   font-family: "Trebuchet MS", "Avenir Next", sans-serif;
-  font-size: clamp(0.78rem, calc(var(--tech-size) * 0.23), 1.45rem);
+  font-size: clamp(0.78rem, calc(var(--tech-size) * 0.225), 1.45rem);
   font-weight: 900;
-  letter-spacing: -0.06em;
+  letter-spacing: -0.07em;
   line-height: 1;
   text-align: center;
-  text-shadow: 0 1px rgba(255, 255, 255, 0.35);
+  text-shadow: 0 1px rgba(255, 255, 255, 0.42);
 }
 
 .tech-token-label {
@@ -386,11 +460,11 @@ select {
 .tech-token-anchor:hover .tech-token-sphere,
 .tech-token-anchor[data-near="true"] .tech-token-sphere {
   box-shadow:
-    inset 10px 11px 18px rgba(255, 255, 255, 0.48),
-    inset -13px -15px 22px rgba(2, 15, 21, 0.28),
-    0 18px 28px rgba(0, 0, 0, 0.4),
-    0 0 34px color-mix(in srgb, var(--tech-color) 50%, transparent);
-  transform: rotate(3deg) scale(1.08);
+    inset 12px 13px 18px rgba(255, 255, 255, 0.54),
+    inset -16px -17px 24px rgba(2, 15, 21, 0.3),
+    0 24px 34px rgba(0, 0, 0, 0.48),
+    0 0 44px color-mix(in srgb, var(--tech-color) 58%, transparent);
+  transform: rotate(3deg) scale(1.1);
 }
 
 .tech-token-anchor:hover .tech-token-label,
