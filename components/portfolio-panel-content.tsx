@@ -205,7 +205,7 @@ export function AboutPanelContent({
   section,
   preview = false,
 }: {
-  section?: "profile" | "direction" | "studies" | "reliability" | "awards";
+  section?: "profile" | "direction" | "studies" | "reliability" | "stack" | "awards";
   preview?: boolean;
 }) {
   const heroLineTop = "ROOPE AALTONEN IS AN ICT ENGINEERING STUDENT";
@@ -243,6 +243,10 @@ export function AboutPanelContent({
 
   if (section === "awards") {
     return <AwardsCabinet />;
+  }
+
+  if (section === "stack") {
+    return <TechStackLab />;
   }
 
   return (
@@ -323,6 +327,213 @@ export function AboutPanelContent({
             </section>
           </div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+type TechStackItem = {
+  name: string;
+  glyph: string;
+  category: "Networks & Security" | "Cloud & Operations" | "Software" | "Embedded & IoT";
+  color: string;
+  x: number;
+  y: number;
+  size: number;
+  depth: number;
+  drift: number;
+  delay: number;
+};
+
+const TECH_STACK_ITEMS: TechStackItem[] = [
+  { name: "Cisco Networks", glyph: "CISCO", category: "Networks & Security", color: "#68d5e8", x: 10, y: 22, size: 108, depth: 1.1, drift: 7.2, delay: -1.4 },
+  { name: "Linux", glyph: ">_", category: "Networks & Security", color: "#f3cb58", x: 26, y: 13, size: 88, depth: 0.9, drift: 6.8, delay: -3.1 },
+  { name: "Suricata IDS", glyph: "IDS", category: "Networks & Security", color: "#ef765f", x: 88, y: 22, size: 94, depth: 1, drift: 7.5, delay: -4.4 },
+  { name: "CML / GNS3 / EVE-NG", glyph: "LAB", category: "Networks & Security", color: "#87c78d", x: 75, y: 12, size: 78, depth: 0.7, drift: 8.1, delay: -2.2 },
+  { name: "AWS", glyph: "AWS", category: "Cloud & Operations", color: "#f5a83d", x: 16, y: 72, size: 92, depth: 0.9, drift: 7.8, delay: -5.1 },
+  { name: "Docker & ContainerLab", glyph: "CTR", category: "Cloud & Operations", color: "#62a8ee", x: 31, y: 82, size: 76, depth: 0.7, drift: 6.6, delay: -1.8 },
+  { name: "Git & GitHub Actions", glyph: "GIT", category: "Cloud & Operations", color: "#df785d", x: 68, y: 83, size: 82, depth: 0.8, drift: 7.1, delay: -4.8 },
+  { name: "Render & GitHub Pages", glyph: "CI", category: "Cloud & Operations", color: "#9da8b8", x: 87, y: 72, size: 90, depth: 0.9, drift: 8.4, delay: -2.7 },
+  { name: "Python", glyph: "Py", category: "Software", color: "#f0c34d", x: 17, y: 45, size: 82, depth: 0.8, drift: 6.9, delay: -2.4 },
+  { name: "TypeScript", glyph: "TS", category: "Software", color: "#4f9de3", x: 35, y: 34, size: 94, depth: 1, drift: 7.6, delay: -4.1 },
+  { name: "React & Next.js", glyph: "R/N", category: "Software", color: "#78d7e9", x: 50, y: 19, size: 74, depth: 0.7, drift: 8.2, delay: -1.1 },
+  { name: "Flask", glyph: "F", category: "Software", color: "#d6dde7", x: 65, y: 34, size: 88, depth: 0.9, drift: 7, delay: -5.4 },
+  { name: "MySQL", glyph: "SQL", category: "Software", color: "#5db5c7", x: 83, y: 45, size: 82, depth: 0.8, drift: 8, delay: -3.6 },
+  { name: "C & Pico SDK", glyph: "C", category: "Embedded & IoT", color: "#7da7df", x: 34, y: 65, size: 84, depth: 0.8, drift: 7.4, delay: -5.8 },
+  { name: "Raspberry Pi Pico", glyph: "PICO", category: "Embedded & IoT", color: "#dc6687", x: 50, y: 78, size: 104, depth: 1.1, drift: 7.9, delay: -2.9 },
+  { name: "MicroPython", glyph: "µPy", category: "Embedded & IoT", color: "#e5c653", x: 66, y: 65, size: 80, depth: 0.8, drift: 6.7, delay: -4.6 },
+  { name: "MQTT", glyph: "MQTT", category: "Embedded & IoT", color: "#a384d6", x: 48, y: 48, size: 90, depth: 1, drift: 7.3, delay: -1.7 },
+];
+
+const STACK_CATEGORIES = [
+  { name: "Networks & Security", color: "#68d5e8" },
+  { name: "Cloud & Operations", color: "#f5a83d" },
+  { name: "Software", color: "#4f9de3" },
+  { name: "Embedded & IoT", color: "#dc6687" },
+] as const;
+
+function TechStackLab() {
+  const fieldRef = useRef<HTMLDivElement | null>(null);
+  const pointerFrameRef = useRef<number | null>(null);
+
+  const resetPointerPush = useCallback(() => {
+    const field = fieldRef.current;
+    if (!field) return;
+    field.querySelectorAll<HTMLElement>("[data-tech-node]").forEach((node) => {
+      node.style.setProperty("--push-x", "0px");
+      node.style.setProperty("--push-y", "0px");
+      node.style.setProperty("--pointer-scale", "1");
+      delete node.dataset.near;
+    });
+  }, []);
+
+  const handlePointerMove = useCallback((event: React.PointerEvent<HTMLDivElement>) => {
+    if (event.pointerType === "touch") return;
+    const field = fieldRef.current;
+    if (!field) return;
+    const clientX = event.clientX;
+    const clientY = event.clientY;
+
+    if (pointerFrameRef.current !== null) {
+      cancelAnimationFrame(pointerFrameRef.current);
+    }
+
+    pointerFrameRef.current = requestAnimationFrame(() => {
+      const fieldRect = field.getBoundingClientRect();
+      field.querySelectorAll<HTMLElement>("[data-tech-node]").forEach((node) => {
+        const x = Number(node.dataset.x ?? 50);
+        const y = Number(node.dataset.y ?? 50);
+        const depth = Number(node.dataset.depth ?? 1);
+        const anchorX = fieldRect.left + (fieldRect.width * x) / 100;
+        const anchorY = fieldRect.top + (fieldRect.height * y) / 100;
+        const deltaX = anchorX - clientX;
+        const deltaY = anchorY - clientY;
+        const distance = Math.max(1, Math.hypot(deltaX, deltaY));
+        const influence = Math.max(0, 1 - distance / 155);
+        const force = influence * influence * 42 * depth;
+        node.style.setProperty("--push-x", `${(deltaX / distance) * force}px`);
+        node.style.setProperty("--push-y", `${(deltaY / distance) * force}px`);
+        node.style.setProperty("--pointer-scale", `${1 + influence * 0.08}`);
+        if (influence > 0.42) {
+          node.dataset.near = "true";
+        } else {
+          delete node.dataset.near;
+        }
+      });
+    });
+  }, []);
+
+  useEffect(
+    () => () => {
+      if (pointerFrameRef.current !== null) {
+        cancelAnimationFrame(pointerFrameRef.current);
+      }
+    },
+    [],
+  );
+
+  return (
+    <section className="tech-stack-lab relative h-full min-h-[560px] overflow-x-hidden overflow-y-auto bg-[#07131d] text-[#e8f1f5]">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,rgba(43,105,123,0.26),transparent_34%),radial-gradient(circle_at_14%_12%,rgba(69,143,159,0.16),transparent_27%),linear-gradient(145deg,#07131d_0%,#0d2029_52%,#071117_100%)]" />
+      <div className="pointer-events-none absolute inset-0 opacity-35 [background-image:linear-gradient(rgba(117,178,187,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(117,178,187,0.1)_1px,transparent_1px)] [background-size:34px_34px]" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#83d9df]/70 to-transparent" />
+
+      <div className="relative z-[1] mx-auto flex min-h-full w-full max-w-[1420px] flex-col px-4 py-5 sm:px-6 md:py-7">
+        <header className="mx-auto w-full max-w-[1180px]">
+          <div className="flex flex-col gap-4 border-b border-[#7bc9d0]/25 pb-4 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.34em] text-[#7fd0d7]">Systems toolkit</p>
+              <h2 className="mt-1 text-[clamp(2rem,5vw,4.5rem)] font-semibold leading-[0.92] tracking-[-0.055em] text-white">
+                My Tech Stack
+              </h2>
+            </div>
+            <p className="max-w-[430px] text-sm leading-6 text-[#a9bec7] sm:text-right">
+              Technologies I have configured, programmed, tested or documented in practical projects and lab environments.
+            </p>
+          </div>
+        </header>
+
+        <div
+          ref={fieldRef}
+          onPointerMove={handlePointerMove}
+          onPointerLeave={resetPointerPush}
+          className="tech-stack-field relative mx-auto mt-3 min-h-[520px] w-full max-w-[1180px] flex-1 touch-pan-y"
+        >
+          <div className="tech-stack-title pointer-events-none absolute inset-0 hidden items-center justify-center xl:flex">
+            <div className="text-center">
+              <p className="text-[clamp(3.4rem,9vw,8.5rem)] font-black uppercase leading-[0.72] tracking-[-0.08em] text-white/[0.055]">
+                Build
+              </p>
+              <p className="mt-5 text-[clamp(2rem,5.5vw,5.2rem)] font-light uppercase tracking-[0.22em] text-[#a7e0e4]/[0.12]">
+                Test · Document
+              </p>
+            </div>
+          </div>
+
+          <div className="tech-stack-mobile-grid grid grid-cols-2 gap-3 py-4 sm:grid-cols-3 xl:hidden">
+            {TECH_STACK_ITEMS.map((item) => (
+              <TechStackToken key={item.name} item={item} mobile />
+            ))}
+          </div>
+
+          <div className="hidden h-full min-h-[520px] xl:block">
+            {TECH_STACK_ITEMS.map((item) => (
+              <TechStackToken key={item.name} item={item} />
+            ))}
+          </div>
+        </div>
+
+        <footer className="mx-auto mt-1 flex w-full max-w-[1180px] flex-wrap items-center justify-center gap-x-5 gap-y-2 border-t border-[#7bc9d0]/20 pt-4">
+          {STACK_CATEGORIES.map((category) => (
+            <div key={category.name} className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#b6c8cf]">
+              <span className="h-2 w-2 rounded-full shadow-[0_0_10px_currentColor]" style={{ color: category.color, backgroundColor: category.color }} />
+              {category.name}
+            </div>
+          ))}
+        </footer>
+      </div>
+    </section>
+  );
+}
+
+function TechStackToken({ item, mobile = false }: { item: TechStackItem; mobile?: boolean }) {
+  const style = mobile
+    ? ({
+        "--tech-color": item.color,
+        "--drift-duration": `${item.drift}s`,
+        "--drift-delay": `${item.delay}s`,
+      } as CSSProperties)
+    : ({
+        "--tech-color": item.color,
+        "--tech-size": `${item.size}px`,
+        "--push-x": "0px",
+        "--push-y": "0px",
+        "--pointer-scale": "1",
+        "--drift-duration": `${item.drift}s`,
+        "--drift-delay": `${item.delay}s`,
+        left: `${item.x}%`,
+        top: `${item.y}%`,
+      } as CSSProperties);
+
+  return (
+    <div
+      data-tech-node={!mobile ? "" : undefined}
+      data-x={!mobile ? item.x : undefined}
+      data-y={!mobile ? item.y : undefined}
+      data-depth={!mobile ? item.depth : undefined}
+      className={mobile ? "tech-token-mobile group" : "tech-token-anchor group"}
+      style={style}
+      title={`${item.name} · ${item.category}`}
+    >
+      <div className="tech-token-drift">
+        <div className="tech-token-sphere">
+          <span className="tech-token-glare" aria-hidden="true" />
+          <span className="tech-token-glyph">{item.glyph}</span>
+        </div>
+      </div>
+      <div className="tech-token-label">
+        <span>{item.name}</span>
+        <small>{item.category}</small>
       </div>
     </div>
   );
@@ -609,81 +820,67 @@ function AwardPlaque({ award }: { award: CertificationAward }) {
 
 function CabinetPlant() {
   return (
-    <div className="relative z-[3] hidden h-[570px] w-[150px] shrink-0 min-[1380px]:block" aria-hidden="true">
+    <div className="relative z-[3] hidden h-[560px] w-[112px] shrink-0 min-[1380px]:block" aria-hidden="true">
       <svg
-        viewBox="0 0 150 450"
-        className="absolute bottom-[106px] left-0 h-[450px] w-[150px] overflow-visible drop-shadow-[0_10px_8px_rgba(20,45,24,0.16)]"
+        viewBox="0 0 112 430"
+        className="absolute bottom-[102px] left-0 h-[430px] w-[112px] overflow-visible drop-shadow-[0_10px_8px_rgba(20,45,24,0.16)]"
       >
         <defs>
           <linearGradient id="kentia-stem" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0" stopColor="#263b27" />
-            <stop offset="0.48" stopColor="#819263" />
-            <stop offset="1" stopColor="#30472d" />
+            <stop offset="0" stopColor="#31422a" />
+            <stop offset="0.5" stopColor="#8d9d63" />
+            <stop offset="1" stopColor="#31462e" />
           </linearGradient>
-          <linearGradient id="kentia-leaf" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stopColor="#9ab66f" />
-            <stop offset="0.42" stopColor="#537b49" />
-            <stop offset="1" stopColor="#28442f" />
+          <linearGradient id="kentia-leaf-left" x1="1" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="#b8cf7c" />
+            <stop offset="0.45" stopColor="#6f944f" />
+            <stop offset="1" stopColor="#263f2d" />
+          </linearGradient>
+          <linearGradient id="kentia-leaf-right" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stopColor="#b8cf7c" />
+            <stop offset="0.46" stopColor="#628b4a" />
+            <stop offset="1" stopColor="#243d2c" />
           </linearGradient>
         </defs>
 
-        <g fill="none" stroke="url(#kentia-stem)" strokeLinecap="round">
-          <path d="M69 450 Q64 386 67 318" strokeWidth="8" />
-          <path d="M75 450 Q76 372 74 302" strokeWidth="9" />
-          <path d="M81 450 Q89 386 80 326" strokeWidth="7" />
+        <path d="M53 430 C52 354 52 279 56 205 C59 147 63 94 62 30" fill="none" stroke="url(#kentia-stem)" strokeLinecap="round" strokeWidth="8" />
+        <path d="M61 430 C65 345 64 272 59 206 C56 159 50 113 43 67" fill="none" stroke="#455c35" strokeLinecap="round" strokeWidth="4" opacity="0.55" />
+
+        <g>
+          {[
+            "M58 58 C33 45 13 55 2 78 C24 72 40 76 57 95 C51 79 50 68 58 58Z",
+            "M57 103 C28 101 9 121 1 151 C28 136 49 137 72 159 C62 138 58 121 57 103Z",
+            "M56 154 C31 168 17 196 15 229 C39 203 61 198 84 213 C68 190 59 173 56 154Z",
+            "M55 206 C34 227 29 258 37 292 C51 258 70 243 94 249 C74 232 61 220 55 206Z",
+          ].map((path) => (
+            <path key={path} d={path} fill="url(#kentia-leaf-left)" stroke="#223a2c" strokeLinejoin="round" strokeWidth="1" />
+          ))}
+        </g>
+        <g>
+          {[
+            "M62 49 C88 37 105 51 110 80 C89 72 75 78 62 99 C68 78 68 62 62 49Z",
+            "M61 96 C89 91 108 107 112 137 C88 127 69 134 52 159 C58 134 61 114 61 96Z",
+            "M60 146 C86 156 104 181 109 214 C82 192 62 192 40 211 C55 186 62 164 60 146Z",
+            "M58 199 C82 216 92 245 88 278 C68 248 48 238 25 249 C46 229 55 213 58 199Z",
+          ].map((path) => (
+            <path key={path} d={path} fill="url(#kentia-leaf-right)" stroke="#223a2c" strokeLinejoin="round" strokeWidth="1" />
+          ))}
         </g>
 
-        <g fill="none" stroke="url(#kentia-stem)" strokeLinecap="round" strokeWidth="4">
-          <path d="M67 320 Q39 264 8 224" />
-          <path d="M70 312 Q48 193 17 103" />
-          <path d="M74 304 Q72 166 75 45" />
-          <path d="M78 313 Q100 194 132 101" />
-          <path d="M80 326 Q111 277 145 222" />
-        </g>
-
-        <g fill="none" stroke="url(#kentia-leaf)" strokeLinecap="round">
-          <path d="M17 235 Q7 236 0 249 M17 235 Q28 243 32 258" strokeWidth="7" />
-          <path d="M28 252 Q13 255 3 270 M28 252 Q42 260 47 278" strokeWidth="8" />
-          <path d="M40 270 Q23 275 12 292 M40 270 Q54 280 58 298" strokeWidth="9" />
-          <path d="M53 290 Q38 297 29 313 M53 290 Q65 300 68 316" strokeWidth="8" />
-
-          <path d="M23 121 Q8 111 0 117 M23 121 Q43 124 51 143" strokeWidth="7" />
-          <path d="M30 147 Q10 139 0 150 M30 147 Q50 153 58 173" strokeWidth="8" />
-          <path d="M39 177 Q17 172 4 187 M39 177 Q59 185 66 205" strokeWidth="9" />
-          <path d="M49 211 Q27 211 12 229 M49 211 Q65 222 70 241" strokeWidth="9" />
-          <path d="M59 250 Q40 255 28 273 M59 250 Q70 263 72 281" strokeWidth="8" />
-
-          <path d="M75 53 Q56 40 41 46 M75 53 Q94 40 109 47" strokeWidth="7" />
-          <path d="M74 80 Q51 67 33 76 M74 80 Q98 67 116 77" strokeWidth="8" />
-          <path d="M74 111 Q47 99 27 112 M74 111 Q101 98 122 112" strokeWidth="9" />
-          <path d="M73 147 Q44 137 23 153 M73 147 Q102 136 126 153" strokeWidth="9" />
-          <path d="M73 187 Q45 180 24 198 M73 187 Q101 179 124 198" strokeWidth="9" />
-          <path d="M73 231 Q49 228 31 246 M73 231 Q97 227 117 246" strokeWidth="8" />
-          <path d="M73 270 Q55 270 42 284 M73 270 Q91 270 106 284" strokeWidth="7" />
-
-          <path d="M127 120 Q142 110 150 117 M127 120 Q107 124 99 143" strokeWidth="7" />
-          <path d="M120 147 Q140 139 150 150 M120 147 Q100 153 92 173" strokeWidth="8" />
-          <path d="M111 177 Q133 172 146 187 M111 177 Q91 185 84 205" strokeWidth="9" />
-          <path d="M101 211 Q123 211 138 229 M101 211 Q85 222 80 241" strokeWidth="9" />
-          <path d="M91 250 Q110 255 122 273 M91 250 Q80 263 78 281" strokeWidth="8" />
-
-          <path d="M133 235 Q143 236 150 249 M133 235 Q122 243 118 258" strokeWidth="7" />
-          <path d="M122 252 Q137 255 147 270 M122 252 Q108 260 103 278" strokeWidth="8" />
-          <path d="M110 270 Q127 275 138 292 M110 270 Q96 280 92 298" strokeWidth="9" />
-          <path d="M97 290 Q112 297 121 313 M97 290 Q85 300 82 316" strokeWidth="8" />
-        </g>
-
-        <g fill="none" stroke="#d8e4a6" strokeLinecap="round" strokeWidth="1.2" opacity="0.3">
-          <path d="M17 103 Q48 193 70 312" />
-          <path d="M75 34 Q72 166 74 304" />
-          <path d="M132 101 Q100 194 78 313" />
+        <g fill="none" stroke="#d9e8a6" strokeLinecap="round" strokeWidth="1.2" opacity="0.28">
+          <path d="M57 103 C39 114 24 128 9 151" />
+          <path d="M56 154 C42 181 30 205 15 229" />
+          <path d="M61 96 C78 107 94 121 112 137" />
+          <path d="M60 146 C77 169 93 190 109 214" />
+          <path d="M62 49 C75 60 89 69 110 80" />
+          <path d="M58 58 C42 66 25 70 2 78" />
         </g>
       </svg>
 
-      <div className="absolute bottom-[9px] left-1/2 h-[104px] w-[108px] -translate-x-1/2 [clip-path:polygon(7%_0,93%_0,81%_100%,19%_100%)] bg-[linear-gradient(90deg,#74391f_0%,#c87543_24%,#e39159_48%,#a55231_72%,#67331e_100%)] shadow-[inset_0_8px_rgba(255,255,255,0.1),0_16px_20px_rgba(0,0,0,0.28)]" />
-      <div className="absolute bottom-[101px] left-1/2 h-[20px] w-[118px] -translate-x-1/2 rounded-[50%] border border-[#71381f] bg-[linear-gradient(180deg,#e59a64,#8a4426)] shadow-[inset_0_4px_rgba(255,255,255,0.14)]" />
-      <div className="absolute bottom-[105px] left-1/2 h-[9px] w-[98px] -translate-x-1/2 rounded-[50%] bg-[#3b2c1e]" />
-      <div className="absolute bottom-0 left-1/2 h-[16px] w-[112px] -translate-x-1/2 rounded-[50%] bg-[#49331f]/35 blur-[3px]" />
+      <div className="absolute bottom-[8px] left-1/2 h-[102px] w-[92px] -translate-x-1/2 [clip-path:polygon(8%_0,92%_0,80%_100%,20%_100%)] bg-[linear-gradient(90deg,#6e351f_0%,#b76339_24%,#d48753_48%,#9a4b2f_72%,#5d2e1d_100%)] shadow-[inset_0_8px_rgba(255,255,255,0.1),0_16px_20px_rgba(0,0,0,0.28)]" />
+      <div className="absolute bottom-[99px] left-1/2 h-[19px] w-[102px] -translate-x-1/2 rounded-[50%] border border-[#71381f] bg-[linear-gradient(180deg,#e59a64,#844025)] shadow-[inset_0_4px_rgba(255,255,255,0.14)]" />
+      <div className="absolute bottom-[103px] left-1/2 h-[8px] w-[82px] -translate-x-1/2 rounded-[50%] bg-[#3b2c1e]" />
+      <div className="absolute bottom-0 left-1/2 h-[15px] w-[104px] -translate-x-1/2 rounded-[50%] bg-[#49331f]/35 blur-[3px]" />
     </div>
   );
 }

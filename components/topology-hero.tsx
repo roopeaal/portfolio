@@ -1283,7 +1283,7 @@ export function TopologyHero() {
   const [routerPowerOn, setRouterPowerOn] = useState(true);
   const [routerSignalLevel, setRouterSignalLevel] = useState<0 | 1 | 2>(2);
   const [routerWifiReady, setRouterWifiReady] = useState(true);
-  const [aboutSection, setAboutSection] = useState<"summary" | "awards">("summary");
+  const [aboutSection, setAboutSection] = useState<"summary" | "stack" | "awards">("summary");
   const [contactSection, setContactSection] = useState<"overview">("overview");
   const [sceneMetrics, setSceneMetrics] = useState({ width: VIEWBOX.width, height: VIEWBOX.height });
   const useChromeMobileCableAlignment = useMemo(() => isChromeLikeBrowser(), []);
@@ -1384,6 +1384,12 @@ export function TopologyHero() {
         label: "Summary",
         active: aboutSection === "summary",
         onSelect: () => setAboutSection("summary"),
+      },
+      {
+        id: "stack",
+        label: "Tech Stack",
+        active: aboutSection === "stack",
+        onSelect: () => setAboutSection("stack"),
       },
       {
         id: "awards",
@@ -2428,7 +2434,7 @@ export function TopologyHero() {
         sidebarItems={aboutSidebarItems}
         shellTitle="Global Settings"
       >
-        <AboutPanelContent section={aboutSection === "awards" ? "awards" : "profile"} />
+        <AboutPanelContent section={aboutSection === "awards" ? "awards" : aboutSection === "stack" ? "stack" : "profile"} />
       </PacketWindow>
 
       <PacketWindow
