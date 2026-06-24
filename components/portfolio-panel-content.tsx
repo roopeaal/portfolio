@@ -8,8 +8,8 @@ import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, 
 import { projects } from "@/content/projects";
 import { profile } from "@/content/profile";
 
-const AboutTechStack = dynamic(
-  () => import("@/components/about-tech-stack").then((module) => module.AboutTechStack),
+const MyTechstack = dynamic(
+  () => import("@/components/about-tech-stack").then((module) => module.MyTechstack),
   { ssr: false },
 );
 
@@ -252,7 +252,7 @@ export function AboutPanelContent({
   }
 
   if (section === "stack") {
-    return <AboutTechStack />;
+    return <MyTechstack />;
   }
 
   return (

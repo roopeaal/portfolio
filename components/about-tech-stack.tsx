@@ -1,10 +1,11 @@
 "use client";
 
+import { Decal } from "@react-three/drei";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { BallCollider, CuboidCollider, Physics, RigidBody, type RapierRigidBody } from "@react-three/rapier";
 import { useReducedMotion } from "framer-motion";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { CanvasTexture, Color, MeshPhysicalMaterial, SRGBColorSpace, Vector3 } from "three";
+import { CanvasTexture, SRGBColorSpace, Vector3 } from "three";
 
 type Skill = {
   name: string;
@@ -27,14 +28,9 @@ const SKILLS: Skill[] = [
   { name: "Testing", mark: "QA", accent: "#d1aa55" },
   { name: "IoT", mark: "IOT", accent: "#56b987" },
   { name: "REST APIs", mark: "API", accent: "#8ba4b1" },
-  { name: "Linux", mark: "LNX", accent: "#ead45e" },
-  { name: "AWS", mark: "AWS", accent: "#ef9f38" },
 ];
 
-const DESKTOP_COUNT = 24;
-const MOBILE_COUNT = 14;
-
-export function AboutTechStack() {
+export function MyTechstack() {
   const prefersReducedMotion = useReducedMotion();
   const [compact, setCompact] = useState(false);
 
@@ -46,20 +42,21 @@ export function AboutTechStack() {
     return () => query.removeEventListener("change", sync);
   }, []);
 
-  const count = compact ? MOBILE_COUNT : DESKTOP_COUNT;
-
   return (
     <section className="relative h-full min-h-[520px] overflow-hidden bg-[#050505] text-white">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_54%,rgba(65,80,82,0.18),transparent_38%),radial-gradient(circle_at_15%_20%,rgba(255,255,255,0.035),transparent_28%),linear-gradient(180deg,#070707,#020202)]" />
-      <div className="pointer-events-none absolute inset-x-0 top-[11%] z-[1] text-center">
-        <p className="text-[9px] font-semibold uppercase tracking-[0.42em] text-white/42 sm:text-[10px]">Practical systems toolkit</p>
-        <h2 className="mt-3 whitespace-nowrap text-[clamp(2.8rem,8vw,7.5rem)] font-light uppercase leading-none tracking-[-0.065em] text-white/90">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_56%,rgba(60,104,105,0.22),transparent_37%),radial-gradient(circle_at_16%_18%,rgba(96,173,167,0.07),transparent_24%),linear-gradient(180deg,#080a0b,#020303)]" />
+      <div className="pointer-events-none absolute inset-0 opacity-[0.08] [background-image:linear-gradient(rgba(255,255,255,0.12)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.12)_1px,transparent_1px)] [background-size:42px_42px]" />
+      <div className="pointer-events-none absolute inset-x-5 top-[8%] z-[1] text-center sm:inset-x-10">
+        <h2 className="whitespace-nowrap text-[clamp(2.75rem,8vw,7rem)] font-light leading-none tracking-[-0.065em] text-white/92">
           My Techstack
         </h2>
+        <p className="mx-auto mt-4 max-w-[680px] text-[clamp(0.72rem,1.5vw,0.95rem)] leading-6 text-white/48">
+          Tools and technologies I use when building, testing, and understanding real systems.
+        </p>
       </div>
 
       <div className="absolute inset-0 z-[2]">
-        {prefersReducedMotion ? <StaticSkillCloud compact={compact} /> : <PhysicsSkillCloud compact={compact} count={count} />}
+        {prefersReducedMotion ? <StaticSkillCloud compact={compact} /> : <TechStack3D compact={compact} />}
       </div>
 
       <div className="pointer-events-none absolute inset-x-0 bottom-4 z-[3] text-center">
@@ -71,15 +68,15 @@ export function AboutTechStack() {
   );
 }
 
-function PhysicsSkillCloud({ compact, count }: { compact: boolean; count: number }) {
+function TechStack3D({ compact }: { compact: boolean }) {
   const balls = useMemo(
     () =>
-      Array.from({ length: count }, (_, index) => ({
-        skill: SKILLS[index % SKILLS.length],
+      SKILLS.map((skill, index) => ({
+        skill,
         index,
-        scale: (compact ? 0.49 : 0.63) + ((index * 17) % 5) * (compact ? 0.035 : 0.055),
+        scale: (compact ? 0.48 : 0.64) + ((index * 17) % 4) * (compact ? 0.035 : 0.055),
       })),
-    [compact, count],
+    [compact],
   );
 
   return (
@@ -96,14 +93,14 @@ function PhysicsSkillCloud({ compact, count }: { compact: boolean; count: number
         <PointerCollider compact={compact} />
         <StageBounds compact={compact} />
         {balls.map((ball) => (
-          <SkillBall key={`${ball.skill.name}-${ball.index}`} {...ball} compact={compact} />
+          <TechBall key={ball.skill.name} {...ball} compact={compact} />
         ))}
       </Physics>
     </Canvas>
   );
 }
 
-function SkillBall({
+function TechBall({
   skill,
   index,
   scale,
@@ -116,12 +113,13 @@ function SkillBall({
 }) {
   const bodyRef = useRef<RapierRigidBody | null>(null);
   const centreVector = useMemo(() => new Vector3(), []);
-  const material = useSkillMaterial(skill);
+  const labelTexture = useSkillLabelTexture(skill);
   const angle = index * 2.399;
-  const startRadius = compact ? 3.2 + (index % 3) * 0.38 : 5.4 + (index % 4) * 0.62;
+  const startRadiusX = compact ? 2.15 + (index % 3) * 0.18 : 3.4 + (index % 4) * 0.2;
+  const startRadiusY = compact ? 3.4 + (index % 2) * 0.2 : 2.45 + (index % 3) * 0.16;
   const position: [number, number, number] = [
-    Math.cos(angle) * startRadius,
-    Math.sin(angle) * startRadius * (compact ? 1.12 : 0.72),
+    Math.cos(angle) * startRadiusX,
+    Math.sin(angle) * startRadiusY,
     ((index % 5) - 2) * 0.24,
   ];
 
@@ -145,8 +143,7 @@ function SkillBall({
     const translation = body.translation();
     const impulse = centreVector
       .set(translation.x, translation.y, translation.z)
-      .normalize()
-      .multiplyScalar(-Math.min(delta, 0.05) * scale * (compact ? 0.42 : 0.56));
+      .multiplyScalar(-Math.min(delta, 0.05) * scale * (compact ? 0.1 : 0.12));
     body.applyImpulse(impulse, true);
   });
 
@@ -162,56 +159,53 @@ function SkillBall({
       canSleep={false}
     >
       <BallCollider args={[scale]} mass={scale * 1.6} />
-      <mesh castShadow receiveShadow scale={scale} material={material}>
+      <mesh castShadow receiveShadow scale={scale}>
         <sphereGeometry args={[1, 32, 32]} />
+        <meshPhysicalMaterial
+          color="#cdd4d3"
+          roughness={0.28}
+          metalness={0.24}
+          clearcoat={0.82}
+          clearcoatRoughness={0.2}
+        />
+        <Decal position={[0, 0, 0.985]} rotation={[0, 0, 0]} scale={1.35} map={labelTexture} />
+        <Decal position={[0, 0, -0.985]} rotation={[0, Math.PI, 0]} scale={1.35} map={labelTexture} />
       </mesh>
     </RigidBody>
   );
 }
 
-function useSkillMaterial(skill: Skill) {
+function useSkillLabelTexture(skill: Skill) {
   return useMemo(() => {
     const canvas = document.createElement("canvas");
     canvas.width = 512;
     canvas.height = 512;
     const context = canvas.getContext("2d");
-    if (!context) return new MeshPhysicalMaterial({ color: "#f3f3f0" });
+    if (!context) return new CanvasTexture(canvas);
 
-    const gradient = context.createRadialGradient(170, 120, 10, 250, 260, 360);
-    gradient.addColorStop(0, "#ffffff");
-    gradient.addColorStop(0.48, "#f3f4f1");
-    gradient.addColorStop(1, "#aeb5b3");
-    context.fillStyle = gradient;
-    context.fillRect(0, 0, 512, 512);
-
-    context.fillStyle = skill.accent;
-    context.fillRect(0, 0, 512, 24);
-    context.fillRect(0, 488, 512, 24);
+    context.clearRect(0, 0, 512, 512);
+    context.beginPath();
+    context.arc(256, 256, 220, 0, Math.PI * 2);
+    context.fillStyle = "rgba(244,247,245,0.96)";
+    context.fill();
+    context.lineWidth = 20;
+    context.strokeStyle = skill.accent;
+    context.stroke();
 
     context.textAlign = "center";
     context.textBaseline = "middle";
     context.fillStyle = "#091012";
-    context.font = `900 ${skill.mark.length > 2 ? 112 : 150}px Arial`;
-    context.fillText(skill.mark, 256, 222);
-    context.font = "700 37px Arial";
-    context.letterSpacing = "2px";
-    context.fillText(skill.name.toUpperCase(), 256, 330);
+    context.font = `900 ${skill.mark.length > 2 ? 105 : 136}px Arial`;
+    context.fillText(skill.mark, 256, 220);
+    context.font = `700 ${skill.name.length > 12 ? 29 : 34}px Arial`;
+    context.letterSpacing = "1px";
+    context.fillText(skill.name.toUpperCase(), 256, 326);
 
     const texture = new CanvasTexture(canvas);
     texture.colorSpace = SRGBColorSpace;
     texture.anisotropy = 4;
     texture.needsUpdate = true;
-
-    return new MeshPhysicalMaterial({
-      map: texture,
-      color: new Color("#ffffff"),
-      roughness: 0.38,
-      metalness: 0.18,
-      clearcoat: 0.72,
-      clearcoatRoughness: 0.25,
-      emissive: new Color(skill.accent),
-      emissiveIntensity: 0.035,
-    });
+    return texture;
   }, [skill]);
 }
 
@@ -240,8 +234,8 @@ function PointerCollider({ compact }: { compact: boolean }) {
 }
 
 function StageBounds({ compact }: { compact: boolean }) {
-  const width = compact ? 3.65 : 7.4;
-  const height = compact ? 5.25 : 4.2;
+  const width = compact ? 3.25 : 6.9;
+  const height = compact ? 4.7 : 3.75;
 
   return (
     <RigidBody type="fixed" colliders={false}>
