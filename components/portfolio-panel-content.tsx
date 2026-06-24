@@ -2,10 +2,16 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { useReducedMotion } from "framer-motion";
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type FormEvent, type MouseEvent as ReactMouseEvent } from "react";
 import { projects } from "@/content/projects";
 import { profile } from "@/content/profile";
+
+const AboutTechStack = dynamic(
+  () => import("@/components/about-tech-stack").then((module) => module.AboutTechStack),
+  { ssr: false },
+);
 
 export interface PanelSidebarItem {
   id: string;
@@ -246,7 +252,7 @@ export function AboutPanelContent({
   }
 
   if (section === "stack") {
-    return <TechStackLab />;
+    return <AboutTechStack />;
   }
 
   return (
@@ -327,220 +333,6 @@ export function AboutPanelContent({
             </section>
           </div>
         </div>
-      </div>
-    </div>
-  );
-}
-
-type TechStackItem = {
-  name: string;
-  glyph: string;
-  category: "Networks & Security" | "Cloud & Operations" | "Software" | "Embedded & IoT";
-  color: string;
-  x: number;
-  y: number;
-  size: number;
-  depth: number;
-  drift: number;
-  delay: number;
-};
-
-const TECH_STACK_ITEMS: TechStackItem[] = [
-  { name: "Cisco Networks", glyph: "CISCO", category: "Networks & Security", color: "#68d5e8", x: 10, y: 22, size: 108, depth: 1.1, drift: 7.2, delay: -1.4 },
-  { name: "Linux", glyph: ">_", category: "Networks & Security", color: "#f3cb58", x: 26, y: 13, size: 88, depth: 0.9, drift: 6.8, delay: -3.1 },
-  { name: "Suricata IDS", glyph: "IDS", category: "Networks & Security", color: "#ef765f", x: 88, y: 22, size: 94, depth: 1, drift: 7.5, delay: -4.4 },
-  { name: "CML / GNS3 / EVE-NG", glyph: "LAB", category: "Networks & Security", color: "#87c78d", x: 75, y: 12, size: 78, depth: 0.7, drift: 8.1, delay: -2.2 },
-  { name: "AWS", glyph: "AWS", category: "Cloud & Operations", color: "#f5a83d", x: 16, y: 72, size: 92, depth: 0.9, drift: 7.8, delay: -5.1 },
-  { name: "Docker & ContainerLab", glyph: "CTR", category: "Cloud & Operations", color: "#62a8ee", x: 31, y: 82, size: 76, depth: 0.7, drift: 6.6, delay: -1.8 },
-  { name: "Git & GitHub Actions", glyph: "GIT", category: "Cloud & Operations", color: "#df785d", x: 68, y: 83, size: 82, depth: 0.8, drift: 7.1, delay: -4.8 },
-  { name: "Render & GitHub Pages", glyph: "CI", category: "Cloud & Operations", color: "#9da8b8", x: 87, y: 72, size: 90, depth: 0.9, drift: 8.4, delay: -2.7 },
-  { name: "Python", glyph: "Py", category: "Software", color: "#f0c34d", x: 17, y: 45, size: 82, depth: 0.8, drift: 6.9, delay: -2.4 },
-  { name: "TypeScript", glyph: "TS", category: "Software", color: "#4f9de3", x: 35, y: 34, size: 94, depth: 1, drift: 7.6, delay: -4.1 },
-  { name: "React & Next.js", glyph: "R/N", category: "Software", color: "#78d7e9", x: 50, y: 19, size: 74, depth: 0.7, drift: 8.2, delay: -1.1 },
-  { name: "Flask", glyph: "F", category: "Software", color: "#d6dde7", x: 65, y: 34, size: 88, depth: 0.9, drift: 7, delay: -5.4 },
-  { name: "MySQL", glyph: "SQL", category: "Software", color: "#5db5c7", x: 83, y: 45, size: 82, depth: 0.8, drift: 8, delay: -3.6 },
-  { name: "C & Pico SDK", glyph: "C", category: "Embedded & IoT", color: "#7da7df", x: 34, y: 65, size: 84, depth: 0.8, drift: 7.4, delay: -5.8 },
-  { name: "Raspberry Pi Pico", glyph: "PICO", category: "Embedded & IoT", color: "#dc6687", x: 50, y: 78, size: 104, depth: 1.1, drift: 7.9, delay: -2.9 },
-  { name: "MicroPython", glyph: "µPy", category: "Embedded & IoT", color: "#e5c653", x: 66, y: 65, size: 80, depth: 0.8, drift: 6.7, delay: -4.6 },
-  { name: "MQTT", glyph: "MQTT", category: "Embedded & IoT", color: "#a384d6", x: 48, y: 48, size: 90, depth: 1, drift: 7.3, delay: -1.7 },
-];
-
-const STACK_CATEGORIES = [
-  { name: "Networks & Security", color: "#68d5e8" },
-  { name: "Cloud & Operations", color: "#f5a83d" },
-  { name: "Software", color: "#4f9de3" },
-  { name: "Embedded & IoT", color: "#dc6687" },
-] as const;
-
-function TechStackLab() {
-  const fieldRef = useRef<HTMLDivElement | null>(null);
-  const pointerFrameRef = useRef<number | null>(null);
-  const shouldReduceMotion = useReducedMotion();
-
-  const resetPointerPush = useCallback(() => {
-    const field = fieldRef.current;
-    if (!field) return;
-    field.querySelectorAll<HTMLElement>("[data-tech-node]").forEach((node) => {
-      node.style.setProperty("--push-x", "0px");
-      node.style.setProperty("--push-y", "0px");
-      node.style.setProperty("--pointer-scale", "1");
-      delete node.dataset.near;
-    });
-  }, []);
-
-  const handlePointerMove = useCallback((event: React.PointerEvent<HTMLDivElement>) => {
-    if (shouldReduceMotion) return;
-    if (event.pointerType === "touch") return;
-    const field = fieldRef.current;
-    if (!field) return;
-    const clientX = event.clientX;
-    const clientY = event.clientY;
-
-    if (pointerFrameRef.current !== null) {
-      cancelAnimationFrame(pointerFrameRef.current);
-    }
-
-    pointerFrameRef.current = requestAnimationFrame(() => {
-      const fieldRect = field.getBoundingClientRect();
-      field.querySelectorAll<HTMLElement>("[data-tech-node]").forEach((node) => {
-        const x = Number(node.dataset.x ?? 50);
-        const y = Number(node.dataset.y ?? 50);
-        const depth = Number(node.dataset.depth ?? 1);
-        const anchorX = fieldRect.left + (fieldRect.width * x) / 100;
-        const anchorY = fieldRect.top + (fieldRect.height * y) / 100;
-        const deltaX = anchorX - clientX;
-        const deltaY = anchorY - clientY;
-        const distance = Math.max(1, Math.hypot(deltaX, deltaY));
-        const influence = Math.max(0, 1 - distance / 155);
-        const force = influence * influence * 42 * depth;
-        node.style.setProperty("--push-x", `${(deltaX / distance) * force}px`);
-        node.style.setProperty("--push-y", `${(deltaY / distance) * force}px`);
-        node.style.setProperty("--pointer-scale", `${1 + influence * 0.08}`);
-        if (influence > 0.42) {
-          node.dataset.near = "true";
-        } else {
-          delete node.dataset.near;
-        }
-      });
-    });
-  }, [shouldReduceMotion]);
-
-  useEffect(
-    () => () => {
-      if (pointerFrameRef.current !== null) {
-        cancelAnimationFrame(pointerFrameRef.current);
-      }
-    },
-    [],
-  );
-
-  return (
-    <section className="tech-stack-lab relative h-full min-h-[560px] overflow-x-hidden overflow-y-auto bg-[#040608] text-[#e8f1f5]">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_48%,rgba(64,136,151,0.3),transparent_31%),radial-gradient(circle_at_18%_18%,rgba(66,202,221,0.14),transparent_29%),radial-gradient(circle_at_84%_20%,rgba(231,161,75,0.1),transparent_26%),linear-gradient(145deg,#030506_0%,#091a22_48%,#030506_100%)]" />
-      <div className="pointer-events-none absolute inset-0 opacity-25 [background-image:linear-gradient(rgba(117,178,187,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(117,178,187,0.1)_1px,transparent_1px)] [background-size:34px_34px]" />
-      <div className="pointer-events-none absolute inset-x-[8%] top-[14%] h-[70%] rounded-full bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.08),transparent_66%)] blur-2xl" />
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#83d9df]/70 to-transparent" />
-
-      <div className="relative z-[1] mx-auto flex min-h-full w-full max-w-[1420px] flex-col px-4 py-5 sm:px-6 md:py-7">
-        <header className="mx-auto w-full max-w-[1180px]">
-          <div className="flex flex-col gap-4 border-b border-[#7bc9d0]/25 pb-4 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.38em] text-[#7fd0d7]">Practical systems toolkit</p>
-              <h2 className="mt-1 text-[clamp(2rem,5vw,4.5rem)] font-black uppercase leading-[0.92] tracking-[-0.075em] text-white">
-                My Tech Stack
-              </h2>
-            </div>
-            <p className="max-w-[430px] text-sm leading-6 text-[#a9bec7] sm:text-right">
-              Technologies I have configured, programmed, tested or documented in practical projects and lab environments.
-            </p>
-          </div>
-        </header>
-
-        <div
-          ref={fieldRef}
-          onPointerMove={handlePointerMove}
-          onPointerLeave={resetPointerPush}
-          className="tech-stack-field relative mx-auto mt-3 min-h-[520px] w-full max-w-[1180px] flex-1 touch-pan-y"
-        >
-          <div className="tech-stack-title pointer-events-none absolute inset-0 hidden items-center justify-center xl:flex">
-            <p className="text-center text-[clamp(4.2rem,10vw,9.6rem)] font-black uppercase leading-[0.78] tracking-[-0.11em] text-white/[0.075]">
-              My
-              <br />
-              Techstack
-            </p>
-          </div>
-          <div className="tech-stack-orbits pointer-events-none absolute inset-0 hidden xl:block" aria-hidden="true">
-            <span className="tech-stack-orbit tech-stack-orbit-a" />
-            <span className="tech-stack-orbit tech-stack-orbit-b" />
-            <span className="tech-stack-orbit tech-stack-orbit-c" />
-            <span className="tech-stack-core-glow" />
-          </div>
-
-          <div className="tech-stack-mobile-grid grid grid-cols-2 gap-3 py-4 sm:grid-cols-3 xl:hidden">
-            {TECH_STACK_ITEMS.map((item) => (
-              <TechStackToken key={item.name} item={item} mobile />
-            ))}
-          </div>
-
-          <div className="hidden h-full min-h-[520px] xl:block">
-            {TECH_STACK_ITEMS.map((item) => (
-              <TechStackToken key={item.name} item={item} />
-            ))}
-          </div>
-        </div>
-
-        <footer className="mx-auto mt-1 flex w-full max-w-[1180px] flex-wrap items-center justify-center gap-x-5 gap-y-2 border-t border-[#7bc9d0]/20 pt-4">
-          {STACK_CATEGORIES.map((category) => (
-            <div key={category.name} className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#b6c8cf]">
-              <span className="h-2 w-2 rounded-full shadow-[0_0_10px_currentColor]" style={{ color: category.color, backgroundColor: category.color }} />
-              {category.name}
-            </div>
-          ))}
-        </footer>
-      </div>
-    </section>
-  );
-}
-
-function TechStackToken({ item, mobile = false }: { item: TechStackItem; mobile?: boolean }) {
-  const style = mobile
-    ? ({
-        "--tech-color": item.color,
-        "--drift-duration": `${item.drift}s`,
-        "--drift-delay": `${item.delay}s`,
-      } as CSSProperties)
-    : ({
-        "--tech-color": item.color,
-        "--tech-size": `${item.size}px`,
-        "--push-x": "0px",
-        "--push-y": "0px",
-        "--pointer-scale": "1",
-        "--tech-z": `${Math.round((item.depth - 0.8) * 90)}px`,
-        "--drift-duration": `${item.drift}s`,
-        "--drift-delay": `${item.delay}s`,
-        left: `${item.x}%`,
-        top: `${item.y}%`,
-      } as CSSProperties);
-
-  return (
-    <div
-      data-tech-node={!mobile ? "" : undefined}
-      data-x={!mobile ? item.x : undefined}
-      data-y={!mobile ? item.y : undefined}
-      data-depth={!mobile ? item.depth : undefined}
-      className={mobile ? "tech-token-mobile group" : "tech-token-anchor group"}
-      style={style}
-      title={`${item.name} · ${item.category}`}
-    >
-      <div className="tech-token-drift">
-        <div className="tech-token-sphere">
-          <span className="tech-token-glare" aria-hidden="true" />
-          <span className="tech-token-glyph">{item.glyph}</span>
-        </div>
-      </div>
-      <div className="tech-token-label">
-        <span>{item.name}</span>
-        <small>{item.category}</small>
       </div>
     </div>
   );
