@@ -1380,6 +1380,11 @@ export function TopologyHero() {
   const aboutSidebarItems = useMemo<PanelSidebarItem[]>(
     () => [
       {
+        id: "standalone-about",
+        label: "Full About Page",
+        href: "/about",
+      },
+      {
         id: "summary",
         label: "Summary",
         active: aboutSection === "summary",

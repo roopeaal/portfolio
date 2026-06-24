@@ -694,11 +694,11 @@ function MedalFrame({ award }: { award: CertificationAward }) {
           <div className="absolute left-1/2 top-[27px] h-[100px] w-[56px] -translate-x-[88%] -rotate-[12deg] shadow-[0_7px_10px_rgba(0,0,0,0.38)] [clip-path:polygon(8%_0,92%_0,82%_100%,50%_82%,18%_100%)]" style={{ background: ribbon.left }} />
           <div className="absolute left-1/2 top-[27px] h-[100px] w-[56px] -translate-x-[12%] rotate-[12deg] shadow-[0_7px_10px_rgba(0,0,0,0.38)] [clip-path:polygon(8%_0,92%_0,82%_100%,50%_82%,18%_100%)]" style={{ background: ribbon.right }} />
           <div
-            className="absolute left-1/2 top-[87px] h-[166px] w-[166px] -translate-x-1/2 rounded-full border-[8px] shadow-[inset_0_0_0_3px_rgba(68,39,15,0.72),inset_0_0_0_7px_rgba(255,231,157,0.55),0_13px_19px_rgba(0,0,0,0.58)]"
+            className="absolute left-1/2 top-[72px] h-[158px] w-[158px] -translate-x-1/2 rounded-full border-[8px] shadow-[inset_0_0_0_3px_rgba(68,39,15,0.72),inset_0_0_0_7px_rgba(255,231,157,0.55),0_13px_19px_rgba(0,0,0,0.58)]"
             style={{ borderColor: ribbon.border, background: ribbon.metal }}
           >
             <AwardReflection shape="medal" />
-            <div className="absolute inset-[28px] overflow-hidden rounded-full border-[3px] border-white/70 bg-[radial-gradient(circle,#fffdf7,#ddd4c5)] shadow-[inset_0_3px_5px_rgba(0,0,0,0.18),0_3px_5px_rgba(0,0,0,0.22)]">
+            <div className="absolute inset-[26px] overflow-hidden rounded-full border-[3px] border-white/70 bg-[radial-gradient(circle,#fffdf7,#ddd4c5)] shadow-[inset_0_3px_5px_rgba(0,0,0,0.18),0_3px_5px_rgba(0,0,0,0.22)]">
               <Image src={award.badgeSrc} alt={`${award.title} badge`} fill sizes="104px" className="object-contain p-2.5" draggable={false} />
             </div>
           </div>
@@ -754,7 +754,6 @@ function TrophyAward({ award, awardIndex }: { award: CertificationAward; awardIn
         </div>
 
         <div className="absolute bottom-[66px] left-1/2 h-[92px] w-[28px] -translate-x-1/2 bg-[linear-gradient(90deg,#754718,#f4d87e_45%,#754718)] shadow-[0_7px_9px_rgba(0,0,0,0.4)]" />
-        <TrophyNeck variant={variant} />
         <div className="absolute bottom-[48px] left-1/2 h-[24px] w-[136px] -translate-x-1/2 rounded-t-[8px] border border-[#dbb85b] bg-[linear-gradient(180deg,#d9ad4f,#76501e)] shadow-[0_7px_10px_rgba(0,0,0,0.5)]" />
         <div className="absolute bottom-0 left-1/2 h-[52px] w-[210px] -translate-x-1/2 rounded-t-[7px] border border-[#5c3518] bg-[linear-gradient(180deg,#75411f,#2a160c)] shadow-[inset_0_2px_rgba(255,255,255,0.08),0_8px_12px_rgba(0,0,0,0.58)]" />
         <div className="absolute bottom-[6px] left-1/2 z-[3] flex min-h-[40px] w-[190px] -translate-x-1/2 flex-col items-center justify-center rounded-[3px] border border-[#e0c276]/75 bg-[linear-gradient(180deg,#e7cb86,#a97937)] px-2 py-1 text-[#241309] shadow-[inset_0_1px_rgba(255,255,255,0.5)]">
@@ -764,24 +763,6 @@ function TrophyAward({ award, awardIndex }: { award: CertificationAward; awardIn
         </div>
       </div>
     </div>
-  );
-}
-
-function TrophyNeck({ variant }: { variant: "star" | "cup" | "laurel" }) {
-  if (variant === "cup") {
-    return (
-      <div className="absolute bottom-[150px] left-1/2 h-[16px] w-[72px] -translate-x-1/2 rounded-t-[10px] border border-[#d7ae4a] bg-[linear-gradient(180deg,#ffe284,#b87924_72%,#6f4317)] shadow-[inset_0_3px_rgba(255,255,255,0.22),0_4px_7px_rgba(0,0,0,0.3)]" />
-    );
-  }
-
-  if (variant === "laurel") {
-    return (
-      <div className="absolute bottom-[151px] left-1/2 h-[14px] w-[64px] -translate-x-1/2 rounded-[7px] border border-[#d7ae4a] bg-[linear-gradient(180deg,#f7d978,#9a641e)] shadow-[inset_0_2px_rgba(255,255,255,0.18),0_4px_7px_rgba(0,0,0,0.3)]" />
-    );
-  }
-
-  return (
-    <div className="absolute bottom-[150px] left-1/2 h-[20px] w-[48px] -translate-x-1/2 rounded-[4px] border border-[#d7ae4a] bg-[linear-gradient(180deg,#f4d678,#8b5a1c)] shadow-[inset_0_2px_rgba(255,255,255,0.16),0_4px_7px_rgba(0,0,0,0.32)]" />
   );
 }
 
@@ -845,10 +826,10 @@ function AwardPlaque({ award }: { award: CertificationAward }) {
 
 function CabinetPlant() {
   return (
-    <div className="relative z-[3] hidden h-[560px] w-[112px] shrink-0 min-[1380px]:block" aria-hidden="true">
+    <div className="relative z-[3] hidden h-[700px] w-[128px] shrink-0 min-[1380px]:block" aria-hidden="true">
       <svg
         viewBox="0 0 112 430"
-        className="absolute bottom-[102px] left-0 h-[430px] w-[112px] overflow-visible drop-shadow-[0_10px_8px_rgba(20,45,24,0.16)]"
+        className="absolute bottom-[112px] left-0 h-[560px] w-[128px] overflow-visible drop-shadow-[0_10px_8px_rgba(20,45,24,0.16)]"
       >
         <defs>
           <linearGradient id="kentia-stem" x1="0" y1="0" x2="1" y2="0">
@@ -902,10 +883,10 @@ function CabinetPlant() {
         </g>
       </svg>
 
-      <div className="absolute bottom-[8px] left-1/2 h-[102px] w-[92px] -translate-x-1/2 [clip-path:polygon(8%_0,92%_0,80%_100%,20%_100%)] bg-[linear-gradient(90deg,#6e351f_0%,#b76339_24%,#d48753_48%,#9a4b2f_72%,#5d2e1d_100%)] shadow-[inset_0_8px_rgba(255,255,255,0.1),0_16px_20px_rgba(0,0,0,0.28)]" />
-      <div className="absolute bottom-[99px] left-1/2 h-[19px] w-[102px] -translate-x-1/2 rounded-[50%] border border-[#71381f] bg-[linear-gradient(180deg,#e59a64,#844025)] shadow-[inset_0_4px_rgba(255,255,255,0.14)]" />
-      <div className="absolute bottom-[103px] left-1/2 h-[8px] w-[82px] -translate-x-1/2 rounded-[50%] bg-[#3b2c1e]" />
-      <div className="absolute bottom-0 left-1/2 h-[15px] w-[104px] -translate-x-1/2 rounded-[50%] bg-[#49331f]/35 blur-[3px]" />
+      <div className="absolute bottom-[8px] left-1/2 h-[112px] w-[96px] -translate-x-1/2 [clip-path:polygon(8%_0,92%_0,80%_100%,20%_100%)] bg-[linear-gradient(90deg,#6e351f_0%,#b76339_24%,#d48753_48%,#9a4b2f_72%,#5d2e1d_100%)] shadow-[inset_0_8px_rgba(255,255,255,0.1),0_16px_20px_rgba(0,0,0,0.28)]" />
+      <div className="absolute bottom-[109px] left-1/2 h-[19px] w-[108px] -translate-x-1/2 rounded-[50%] border border-[#71381f] bg-[linear-gradient(180deg,#e59a64,#844025)] shadow-[inset_0_4px_rgba(255,255,255,0.14)]" />
+      <div className="absolute bottom-[113px] left-1/2 h-[8px] w-[88px] -translate-x-1/2 rounded-[50%] bg-[#3b2c1e]" />
+      <div className="absolute bottom-0 left-1/2 h-[15px] w-[112px] -translate-x-1/2 rounded-[50%] bg-[#49331f]/35 blur-[3px]" />
     </div>
   );
 }

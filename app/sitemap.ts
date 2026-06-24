@@ -4,7 +4,7 @@ export const dynamic = "force-static";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const base = "https://roopeaaltonen.fi";
-  const lastModified = "2026-04-06";
+  const lastModified = "2026-06-24";
 
   return ["", "/about", "/projects", "/contact"].map((path) => ({
     url: `${base}${path}`,
