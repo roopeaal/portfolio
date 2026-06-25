@@ -186,8 +186,28 @@ function TechBall({
           clearcoat={0.82}
           clearcoatRoughness={0.2}
         />
-        <Decal position={[0, 0, 0.985]} rotation={[0, 0, 0]} scale={1.52} map={labelTexture} />
-        <Decal position={[0, 0, -0.985]} rotation={[0, Math.PI, 0]} scale={1.52} map={labelTexture} />
+        <Decal position={[0, 0, 0.985]} rotation={[0, 0, 0]} scale={1.52}>
+          <meshBasicMaterial
+            map={labelTexture}
+            transparent
+            depthTest
+            depthWrite
+            polygonOffset
+            polygonOffsetFactor={-2}
+            toneMapped={false}
+          />
+        </Decal>
+        <Decal position={[0, 0, -0.985]} rotation={[0, Math.PI, 0]} scale={1.52}>
+          <meshBasicMaterial
+            map={labelTexture}
+            transparent
+            depthTest
+            depthWrite
+            polygonOffset
+            polygonOffsetFactor={-2}
+            toneMapped={false}
+          />
+        </Decal>
       </mesh>
     </RigidBody>
   );
