@@ -5,29 +5,42 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { BallCollider, CuboidCollider, Physics, RigidBody, type RapierRigidBody } from "@react-three/rapier";
 import { useReducedMotion } from "framer-motion";
 import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  siAndroid,
+  siDocker,
+  siGit,
+  siMqtt,
+  siPython,
+  siRaspberrypi,
+  siReact,
+  siTypescript,
+  type SimpleIcon,
+} from "simple-icons";
 import { CanvasTexture, SRGBColorSpace, Vector3 } from "three";
 
 type Skill = {
   name: string;
   mark: string;
   accent: string;
+  icon?: SimpleIcon;
+  symbol?: "azure" | "network" | "security" | "testing" | "iot" | "api";
 };
 
 const SKILLS: Skill[] = [
-  { name: "TypeScript", mark: "TS", accent: "#3178c6" },
-  { name: "React", mark: "RE", accent: "#61dafb" },
-  { name: "Python", mark: "PY", accent: "#f3c94b" },
-  { name: "Git", mark: "GIT", accent: "#f06b4f" },
-  { name: "Docker", mark: "DK", accent: "#2496ed" },
-  { name: "Azure", mark: "AZ", accent: "#4ca5e5" },
-  { name: "Android", mark: "AN", accent: "#7fbd65" },
-  { name: "MQTT", mark: "MQ", accent: "#a487c6" },
-  { name: "Raspberry Pi", mark: "RPI", accent: "#cf6687" },
-  { name: "Networking", mark: "NET", accent: "#4fb6ae" },
-  { name: "Cybersecurity", mark: "SEC", accent: "#df725f" },
-  { name: "Testing", mark: "QA", accent: "#d1aa55" },
-  { name: "IoT", mark: "IOT", accent: "#56b987" },
-  { name: "REST APIs", mark: "API", accent: "#8ba4b1" },
+  { name: "TypeScript", mark: "TS", accent: `#${siTypescript.hex}`, icon: siTypescript },
+  { name: "React", mark: "RE", accent: `#${siReact.hex}`, icon: siReact },
+  { name: "Python", mark: "PY", accent: `#${siPython.hex}`, icon: siPython },
+  { name: "Git", mark: "GIT", accent: `#${siGit.hex}`, icon: siGit },
+  { name: "Docker", mark: "DK", accent: `#${siDocker.hex}`, icon: siDocker },
+  { name: "Azure", mark: "AZ", accent: "#1689d4", symbol: "azure" },
+  { name: "Android", mark: "AN", accent: `#${siAndroid.hex}`, icon: siAndroid },
+  { name: "MQTT", mark: "MQ", accent: `#${siMqtt.hex}`, icon: siMqtt },
+  { name: "Raspberry Pi", mark: "RPI", accent: `#${siRaspberrypi.hex}`, icon: siRaspberrypi },
+  { name: "Networking", mark: "NET", accent: "#4fb6ae", symbol: "network" },
+  { name: "Cybersecurity", mark: "SEC", accent: "#df725f", symbol: "security" },
+  { name: "Testing", mark: "QA", accent: "#d1aa55", symbol: "testing" },
+  { name: "IoT", mark: "IOT", accent: "#56b987", symbol: "iot" },
+  { name: "REST APIs", mark: "API", accent: "#8ba4b1", symbol: "api" },
 ];
 
 export function MyTechstack() {
@@ -69,12 +82,13 @@ export function MyTechstack() {
 }
 
 function TechStack3D({ compact }: { compact: boolean }) {
+  const [pointerActive, setPointerActive] = useState(false);
   const balls = useMemo(
     () =>
       SKILLS.map((skill, index) => ({
         skill,
         index,
-        scale: (compact ? 0.48 : 0.64) + ((index * 17) % 4) * (compact ? 0.035 : 0.055),
+        scale: (compact ? 0.62 : 0.82) + ((index * 17) % 4) * (compact ? 0.035 : 0.055),
       })),
     [compact],
   );
@@ -85,12 +99,16 @@ function TechStack3D({ compact }: { compact: boolean }) {
       dpr={[1, 1.45]}
       gl={{ alpha: true, antialias: true, powerPreference: "high-performance" }}
       style={{ touchAction: "pan-y" }}
+      onPointerEnter={() => setPointerActive(true)}
+      onPointerLeave={() => setPointerActive(false)}
+      onPointerDown={() => setPointerActive(true)}
+      onPointerUp={() => setPointerActive(false)}
     >
       <ambientLight intensity={1.7} />
       <directionalLight position={[7, 9, 12]} intensity={3.4} color="#ffffff" />
       <pointLight position={[-7, -2, 8]} intensity={34} distance={24} color="#79c7c1" />
       <Physics gravity={[0, 0, 0]} timeStep="vary" interpolate>
-        <PointerCollider compact={compact} />
+        <PointerCollider compact={compact} active={pointerActive} />
         <StageBounds compact={compact} />
         {balls.map((ball) => (
           <TechBall key={ball.skill.name} {...ball} compact={compact} />
@@ -115,8 +133,8 @@ function TechBall({
   const centreVector = useMemo(() => new Vector3(), []);
   const labelTexture = useSkillLabelTexture(skill);
   const angle = index * 2.399;
-  const startRadiusX = compact ? 2.15 + (index % 3) * 0.18 : 3.4 + (index % 4) * 0.2;
-  const startRadiusY = compact ? 3.4 + (index % 2) * 0.2 : 2.45 + (index % 3) * 0.16;
+  const startRadiusX = compact ? 1.95 + (index % 3) * 0.14 : 3.25 + (index % 4) * 0.16;
+  const startRadiusY = compact ? 3.05 + (index % 2) * 0.16 : 2.3 + (index % 3) * 0.14;
   const position: [number, number, number] = [
     Math.cos(angle) * startRadiusX,
     Math.sin(angle) * startRadiusY,
@@ -134,7 +152,7 @@ function TechBall({
       },
       true,
     );
-    body.setAngvel({ x: 0.18, y: index % 2 === 0 ? 0.28 : -0.28, z: 0.16 }, true);
+    body.setAngvel({ x: 0.1, y: index % 2 === 0 ? 0.18 : -0.18, z: 0.1 }, true);
   }, [angle, index]);
 
   useFrame((_state, delta) => {
@@ -143,7 +161,7 @@ function TechBall({
     const translation = body.translation();
     const impulse = centreVector
       .set(translation.x, translation.y, translation.z)
-      .multiplyScalar(-Math.min(delta, 0.05) * scale * (compact ? 0.1 : 0.12));
+      .multiplyScalar(-Math.min(delta, 0.05) * scale * (compact ? 0.18 : 0.22));
     body.applyImpulse(impulse, true);
   });
 
@@ -152,8 +170,8 @@ function TechBall({
       ref={bodyRef}
       colliders={false}
       position={position}
-      linearDamping={0.78}
-      angularDamping={0.34}
+      linearDamping={1.05}
+      angularDamping={0.62}
       friction={0.08}
       restitution={0.72}
       canSleep={false}
@@ -168,8 +186,8 @@ function TechBall({
           clearcoat={0.82}
           clearcoatRoughness={0.2}
         />
-        <Decal position={[0, 0, 0.985]} rotation={[0, 0, 0]} scale={1.35} map={labelTexture} />
-        <Decal position={[0, 0, -0.985]} rotation={[0, Math.PI, 0]} scale={1.35} map={labelTexture} />
+        <Decal position={[0, 0, 0.985]} rotation={[0, 0, 0]} scale={1.52} map={labelTexture} />
+        <Decal position={[0, 0, -0.985]} rotation={[0, Math.PI, 0]} scale={1.52} map={labelTexture} />
       </mesh>
     </RigidBody>
   );
@@ -185,21 +203,21 @@ function useSkillLabelTexture(skill: Skill) {
 
     context.clearRect(0, 0, 512, 512);
     context.beginPath();
-    context.arc(256, 256, 220, 0, Math.PI * 2);
+    context.arc(256, 256, 228, 0, Math.PI * 2);
     context.fillStyle = "rgba(244,247,245,0.96)";
     context.fill();
-    context.lineWidth = 20;
+    context.lineWidth = 18;
     context.strokeStyle = skill.accent;
     context.stroke();
 
+    drawSkillLogo(context, skill);
+
     context.textAlign = "center";
     context.textBaseline = "middle";
-    context.fillStyle = "#091012";
-    context.font = `900 ${skill.mark.length > 2 ? 105 : 136}px Arial`;
-    context.fillText(skill.mark, 256, 220);
-    context.font = `700 ${skill.name.length > 12 ? 29 : 34}px Arial`;
-    context.letterSpacing = "1px";
-    context.fillText(skill.name.toUpperCase(), 256, 326);
+    context.fillStyle = "#11181a";
+    context.font = `700 ${skill.name.length > 12 ? 28 : 34}px Arial`;
+    context.letterSpacing = "0.6px";
+    context.fillText(skill.name.toUpperCase(), 256, 376);
 
     const texture = new CanvasTexture(canvas);
     texture.colorSpace = SRGBColorSpace;
@@ -209,7 +227,159 @@ function useSkillLabelTexture(skill: Skill) {
   }, [skill]);
 }
 
-function PointerCollider({ compact }: { compact: boolean }) {
+function drawSkillLogo(context: CanvasRenderingContext2D, skill: Skill) {
+  context.save();
+  context.fillStyle = skill.accent;
+  context.strokeStyle = skill.accent;
+  context.lineCap = "round";
+  context.lineJoin = "round";
+
+  if (skill.icon) {
+    const path = new Path2D(skill.icon.path);
+    context.translate(136, 74);
+    context.scale(10, 10);
+    context.fill(path);
+    context.restore();
+    return;
+  }
+
+  switch (skill.symbol) {
+    case "azure":
+      context.beginPath();
+      context.moveTo(150, 324);
+      context.lineTo(228, 116);
+      context.lineTo(284, 116);
+      context.lineTo(230, 270);
+      context.lineTo(350, 270);
+      context.lineTo(382, 324);
+      context.closePath();
+      context.fill();
+      context.beginPath();
+      context.moveTo(268, 214);
+      context.lineTo(315, 114);
+      context.lineTo(374, 324);
+      context.lineTo(324, 324);
+      context.closePath();
+      context.fill();
+      break;
+    case "network":
+      drawNetworkLogo(context);
+      break;
+    case "security":
+      drawSecurityLogo(context);
+      break;
+    case "testing":
+      drawTestingLogo(context);
+      break;
+    case "iot":
+      drawIotLogo(context);
+      break;
+    case "api":
+      drawApiLogo(context);
+      break;
+    default:
+      context.textAlign = "center";
+      context.textBaseline = "middle";
+      context.font = "900 128px Arial";
+      context.fillText(skill.mark, 256, 235);
+  }
+  context.restore();
+}
+
+function drawNetworkLogo(context: CanvasRenderingContext2D) {
+  const nodes = [[256, 126], [150, 236], [362, 236], [256, 316]] as const;
+  context.lineWidth = 18;
+  context.beginPath();
+  context.moveTo(...nodes[0]);
+  context.lineTo(...nodes[1]);
+  context.lineTo(...nodes[3]);
+  context.lineTo(...nodes[2]);
+  context.closePath();
+  context.moveTo(...nodes[1]);
+  context.lineTo(...nodes[2]);
+  context.stroke();
+  nodes.forEach(([x, y]) => {
+    context.beginPath();
+    context.arc(x, y, 28, 0, Math.PI * 2);
+    context.fill();
+  });
+}
+
+function drawSecurityLogo(context: CanvasRenderingContext2D) {
+  context.beginPath();
+  context.moveTo(256, 104);
+  context.lineTo(370, 150);
+  context.lineTo(354, 268);
+  context.quadraticCurveTo(338, 326, 256, 354);
+  context.quadraticCurveTo(174, 326, 158, 268);
+  context.lineTo(142, 150);
+  context.closePath();
+  context.fill();
+  context.strokeStyle = "#f4f7f5";
+  context.lineWidth = 20;
+  context.beginPath();
+  context.moveTo(203, 230);
+  context.lineTo(239, 267);
+  context.lineTo(315, 186);
+  context.stroke();
+}
+
+function drawTestingLogo(context: CanvasRenderingContext2D) {
+  context.lineWidth = 22;
+  context.strokeRect(148, 120, 216, 216);
+  context.beginPath();
+  context.moveTo(190, 228);
+  context.lineTo(232, 270);
+  context.lineTo(322, 176);
+  context.stroke();
+  context.beginPath();
+  context.moveTo(194, 120);
+  context.lineTo(194, 92);
+  context.moveTo(318, 120);
+  context.lineTo(318, 92);
+  context.stroke();
+}
+
+function drawIotLogo(context: CanvasRenderingContext2D) {
+  context.lineWidth = 18;
+  context.beginPath();
+  context.arc(256, 252, 29, 0, Math.PI * 2);
+  context.fill();
+  [58, 102, 148].forEach((radius) => {
+    context.beginPath();
+    context.arc(256, 252, radius, Math.PI * 1.18, Math.PI * 1.82);
+    context.stroke();
+  });
+  context.beginPath();
+  context.moveTo(256, 280);
+  context.lineTo(256, 334);
+  context.stroke();
+}
+
+function drawApiLogo(context: CanvasRenderingContext2D) {
+  context.lineWidth = 24;
+  context.beginPath();
+  context.moveTo(214, 126);
+  context.lineTo(164, 126);
+  context.lineTo(164, 206);
+  context.lineTo(126, 246);
+  context.lineTo(164, 286);
+  context.lineTo(164, 346);
+  context.lineTo(214, 346);
+  context.moveTo(298, 126);
+  context.lineTo(348, 126);
+  context.lineTo(348, 206);
+  context.lineTo(386, 246);
+  context.lineTo(348, 286);
+  context.lineTo(348, 346);
+  context.lineTo(298, 346);
+  context.stroke();
+  context.beginPath();
+  context.arc(256, 236, 34, 0, Math.PI * 2);
+  context.fill();
+}
+
+function PointerCollider({ compact, active }: { compact: boolean; active: boolean }) {
   const ref = useRef<RapierRigidBody | null>(null);
   const viewport = useThree((state) => state.viewport);
   const smoothed = useMemo(() => new Vector3(100, 100, 0), []);
@@ -217,6 +387,10 @@ function PointerCollider({ compact }: { compact: boolean }) {
   useFrame(({ pointer }) => {
     const body = ref.current;
     if (!body) return;
+    if (!active) {
+      body.setNextKinematicTranslation({ x: 100, y: 100, z: 100 });
+      return;
+    }
     const target = new Vector3(
       pointer.x * viewport.width * 0.5,
       pointer.y * viewport.height * 0.5,
