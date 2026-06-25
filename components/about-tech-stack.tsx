@@ -56,26 +56,52 @@ export function MyTechstack() {
   }, []);
 
   return (
-    <section className="relative h-full min-h-[520px] overflow-hidden bg-[#050505] text-white">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_56%,rgba(60,104,105,0.22),transparent_37%),radial-gradient(circle_at_16%_18%,rgba(96,173,167,0.07),transparent_24%),linear-gradient(180deg,#080a0b,#020303)]" />
-      <div className="pointer-events-none absolute inset-0 opacity-[0.08] [background-image:linear-gradient(rgba(255,255,255,0.12)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.12)_1px,transparent_1px)] [background-size:42px_42px]" />
-      <div className="pointer-events-none absolute inset-x-5 top-[8%] z-[1] text-center sm:inset-x-10">
-        <h2 className="whitespace-nowrap text-[clamp(2.75rem,8vw,7rem)] font-light leading-none tracking-[-0.065em] text-white/92">
-          My Techstack
-        </h2>
-        <p className="mx-auto mt-4 max-w-[680px] text-[clamp(0.72rem,1.5vw,0.95rem)] leading-6 text-white/48">
-          Tools and technologies I use when building, testing, and understanding real systems.
-        </p>
-      </div>
+    <section className="relative isolate h-full min-h-[560px] overflow-hidden bg-[#050707] text-white">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_63%,rgba(67,131,127,0.2),transparent_32%),radial-gradient(circle_at_12%_12%,rgba(108,193,184,0.08),transparent_27%),radial-gradient(circle_at_88%_18%,rgba(92,119,130,0.08),transparent_25%),linear-gradient(180deg,#0a0d0e_0%,#050707_45%,#020303_100%)]" />
+      <div className="pointer-events-none absolute inset-0 opacity-[0.09] [background-image:linear-gradient(rgba(255,255,255,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.1)_1px,transparent_1px)] [background-size:44px_44px] [mask-image:linear-gradient(to_bottom,black,transparent_82%)]" />
+      <div className="pointer-events-none absolute inset-3 rounded-[22px] border border-white/[0.08] sm:inset-5" />
+      <div className="pointer-events-none absolute left-3 top-3 h-12 w-12 border-l border-t border-[#78bdb5]/55 sm:left-5 sm:top-5" />
+      <div className="pointer-events-none absolute right-3 top-3 h-12 w-12 border-r border-t border-[#78bdb5]/55 sm:right-5 sm:top-5" />
+      <div className="pointer-events-none absolute bottom-3 left-3 h-12 w-12 border-b border-l border-white/15 sm:bottom-5 sm:left-5" />
+      <div className="pointer-events-none absolute bottom-3 right-3 h-12 w-12 border-b border-r border-white/15 sm:bottom-5 sm:right-5" />
 
-      <div className="absolute inset-0 z-[2]">
+      <header className="pointer-events-none absolute inset-x-6 top-7 z-[3] sm:inset-x-12 sm:top-9">
+        <div className="mx-auto flex max-w-[1040px] items-start justify-between gap-8">
+          <div>
+            <div className="mb-3 flex items-center gap-3 text-[9px] font-semibold uppercase tracking-[0.32em] text-[#8ccac3]/75 sm:text-[10px]">
+              <span className="h-px w-8 bg-[#78bdb5]/70" />
+              Systems toolkit
+            </div>
+            <h2 className="whitespace-nowrap text-[clamp(2.55rem,6.2vw,5.6rem)] font-light leading-[0.88] tracking-[-0.065em] text-white/95">
+              My Techstack
+            </h2>
+            <p className="mt-4 max-w-[660px] text-[clamp(0.7rem,1.35vw,0.92rem)] leading-5 text-white/48 sm:leading-6">
+              Tools and technologies I use when building, testing, and understanding real systems.
+            </p>
+          </div>
+          <div className="hidden shrink-0 items-center gap-3 pt-4 text-right md:flex">
+            <span className="h-2 w-2 rounded-full bg-[#78bdb5] shadow-[0_0_14px_rgba(120,189,181,0.8)]" />
+            <span>
+              <strong className="block text-sm font-medium tabular-nums text-white/80">{SKILLS.length}</strong>
+              <small className="block text-[8px] uppercase tracking-[0.24em] text-white/35">Core tools</small>
+            </span>
+          </div>
+        </div>
+      </header>
+
+      <div
+        className="absolute inset-x-0 bottom-10 top-[150px] z-[2] sm:bottom-11 sm:top-[166px] lg:top-[174px]"
+        aria-label="Interactive three-dimensional technology stack"
+      >
         {prefersReducedMotion ? <StaticSkillCloud compact={compact} /> : <TechStack3D compact={compact} />}
       </div>
 
-      <div className="pointer-events-none absolute inset-x-0 bottom-4 z-[3] text-center">
-        <p className="text-[9px] font-medium uppercase tracking-[0.28em] text-white/38">
-          {compact ? "Touch and drag through the stack" : "Move the pointer through the stack"}
-        </p>
+      <div className="pointer-events-none absolute inset-x-6 bottom-5 z-[3] flex items-center justify-between text-[8px] font-medium uppercase tracking-[0.24em] text-white/32 sm:inset-x-12">
+        <span className="hidden sm:inline">Frontend · Infrastructure · Security · Embedded</span>
+        <span className="mx-auto flex items-center gap-2 sm:mx-0">
+          <span className="h-1 w-1 rounded-full bg-[#78bdb5]" />
+          {compact ? "Touch and drag" : "Move pointer to interact"}
+        </span>
       </div>
     </section>
   );
@@ -104,9 +130,12 @@ function TechStack3D({ compact }: { compact: boolean }) {
       onPointerDown={() => setPointerActive(true)}
       onPointerUp={() => setPointerActive(false)}
     >
+      <fog attach="fog" args={["#050707", 14, 25]} />
       <ambientLight intensity={1.7} />
       <directionalLight position={[7, 9, 12]} intensity={3.4} color="#ffffff" />
       <pointLight position={[-7, -2, 8]} intensity={34} distance={24} color="#79c7c1" />
+      <pointLight position={[6, 3, 5]} intensity={18} distance={18} color="#a9bdc7" />
+      <SceneBackdrop compact={compact} />
       <Physics gravity={[0, 0, 0]} timeStep="vary" interpolate>
         <PointerCollider compact={compact} active={pointerActive} />
         <StageBounds compact={compact} />
@@ -181,6 +210,8 @@ function TechBall({
         <sphereGeometry args={[1, 32, 32]} />
         <meshPhysicalMaterial
           color="#cdd4d3"
+          emissive={skill.accent}
+          emissiveIntensity={0.025}
           roughness={0.28}
           metalness={0.24}
           clearcoat={0.82}
@@ -190,10 +221,12 @@ function TechBall({
           <meshBasicMaterial
             map={labelTexture}
             transparent
+            alphaTest={0.08}
+            alphaToCoverage
             depthTest
             depthWrite
             polygonOffset
-            polygonOffsetFactor={-2}
+            polygonOffsetFactor={-1}
             toneMapped={false}
           />
         </Decal>
@@ -201,15 +234,36 @@ function TechBall({
           <meshBasicMaterial
             map={labelTexture}
             transparent
+            alphaTest={0.08}
+            alphaToCoverage
             depthTest
             depthWrite
             polygonOffset
-            polygonOffsetFactor={-2}
+            polygonOffsetFactor={-1}
             toneMapped={false}
           />
         </Decal>
       </mesh>
     </RigidBody>
+  );
+}
+
+function SceneBackdrop({ compact }: { compact: boolean }) {
+  return (
+    <group position={[0, 0, -1.42]} rotation={[0.18, 0.05, -0.14]}>
+      <mesh>
+        <torusGeometry args={[compact ? 2.35 : 4.15, 0.012, 8, 128]} />
+        <meshBasicMaterial color="#78bdb5" transparent opacity={0.24} depthWrite={false} />
+      </mesh>
+      <mesh rotation={[0.22, 0.54, 0.7]}>
+        <torusGeometry args={[compact ? 1.8 : 3.25, 0.008, 8, 128]} />
+        <meshBasicMaterial color="#b9d6d2" transparent opacity={0.12} depthWrite={false} />
+      </mesh>
+      <mesh rotation={[0.2, 0.35, 0]}>
+        <sphereGeometry args={[compact ? 2.75 : 4.7, 24, 16]} />
+        <meshBasicMaterial color="#8fc6bf" wireframe transparent opacity={0.025} depthWrite={false} />
+      </mesh>
+    </group>
   );
 }
 
@@ -447,7 +501,7 @@ function StaticSkillCloud({ compact }: { compact: boolean }) {
   const visibleSkills = compact ? SKILLS.slice(0, 10) : SKILLS;
 
   return (
-    <div className="flex h-full flex-wrap content-center justify-center gap-3 px-5 pb-12 pt-28 sm:gap-5 sm:px-12 sm:pt-36">
+    <div className="flex h-full flex-wrap content-center justify-center gap-3 px-5 py-4 sm:gap-5 sm:px-12">
       {visibleSkills.map((skill, index) => (
         <div
           key={skill.name}
